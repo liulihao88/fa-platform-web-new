@@ -78,11 +78,11 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
     if (isLastAction) {
       advanceState.hideAdvanceBtn = unref(getSchema).length <= autoAdvancedCol;
       // update-begin--author:sunjianlei---date:20211108---for: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
-      /* if (itemColSum <= BASIC_COL_LEN * 2) {
+      if (itemColSum <= BASIC_COL_LEN * 2) {
         // 小于等于2行时，不显示折叠和展开按钮
         advanceState.hideAdvanceBtn = true;
         advanceState.isAdvanced = true;
-      } else */
+      }
       // update-end--author:sunjianlei---date:20211108---for: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
       // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
       /*if (itemColSum > BASIC_COL_LEN * 2 && itemColSum <= BASIC_COL_LEN * (unref(getProps).autoAdvancedLine || 3)) {
