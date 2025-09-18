@@ -15,19 +15,20 @@ const router = useRouter();
 import { BasicTable, TableAction, ActionItem } from '/@/components/Table';
 import { useListPage } from '/@/hooks/system/useListPage';
 import { columns, searchFormSchema } from './user.data';
-import { listNoCareTenant } from './user.api';
+import { caseListApi } from './user.api';
 
 // 列表页面公共参数、方法
 const {tableContext } = useListPage({
   designScope: 'fund-list',
   tableProps: {
     title: '',
-    api: listNoCareTenant,
+    api: caseListApi,
     columns: columns,
     size: 'small',
     formConfig: {
       // labelWidth: 200,
       schemas: searchFormSchema,
+      fieldMapToTime: [['fieldTime', ['acceptStartTime', 'acceptEndTime'], 'YYYY-MM-DD HH:mm:ss']],
     },
     actionColumn: {
       fixed: 'right',

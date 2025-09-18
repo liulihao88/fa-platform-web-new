@@ -1,60 +1,54 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
 export const columns: BasicColumn[] = [
   {
     title: '序号',
-    dataIndex: 'username',
+    dataIndex: 'id',
   },
   {
     title: '案件名称',
-    dataIndex: 'realname',
+    dataIndex: 'caseName',
   },
   {
     title: '案由',
-    dataIndex: 'avatar',
-    customRender: render.renderAvatar,
+    dataIndex: 'caseReason',
   },
   {
     title: '部门受案号',
-    dataIndex: 'sex',
+    dataIndex: 'departmentCaseNumber',
     width: 80,
-    sorter: true,
-    customRender: ({ text }) => {
-      return render.renderDict(text, 'sex');
-    },
   },
   {
     title: '卷宗是否同步',
-    dataIndex: 'birthday',
+    dataIndex: 'dossierSync',
   },
   {
     title: '文件数量',
-    dataIndex: 'phone',
+    dataIndex: 'fileCount',
   },
   {
     title: '发票数量',
-    dataIndex: 'orgCodeTxt',
+    dataIndex: 'invoiceCount',
   },
   {
     title: '文件处理状态',
-    dataIndex: 'fff',
+    dataIndex: 'fileProcessStatus',
   },
   {
     title: '文件导入次数',
-    dataIndex: 'ddd',
+    dataIndex: 'fileImportCount',
   },
   {
     title: '导入笔数',
-    dataIndex: 'nnn',
+    dataIndex: 'importCount',
   },
   {
     title: '去重次数',
-    dataIndex: 'cbb',
+    dataIndex: 'deduplicationCount',
   },
   {
     title: '受理时间',
-    dataIndex: 'aaa',
+    dataIndex: 'acceptTime',
     width: 80,
   },
 ];
@@ -62,25 +56,20 @@ export const columns: BasicColumn[] = [
 export const searchFormSchema: FormSchema[] = [
   {
     label: '案件名称',
-    field: 'username',
+    field: 'caseName',
     component: 'JInput',
     colProps: { span: 6 },
   },
   {
     label: '案由',
-    field: 'realname',
+    field: 'caseReason',
     component: 'JInput',
-   colProps: { span: 6 },
+    colProps: { span: 6 },
   },
   {
     label: '部门受理号',
-    field: 'sex',
-    component: 'JDictSelectTag',
-    componentProps: {
-      dictCode: 'sex',
-      placeholder: '请选择性别',
-      stringToNumber: true,
-    },
+    field: 'departmentCaseNumber',
+    component: 'JInput',
     colProps: { span: 6 },
   },
   {
@@ -96,12 +85,11 @@ export const searchFormSchema: FormSchema[] = [
   },
   {
     label: '受理时间',
-    field: 'time',
-    component: 'JDictSelectTag',
+    field: 'fieldTime',
+    component: 'RangeDate',
     componentProps: {
-      dictCode: 'user_status',
-      placeholder: '请选择状态',
-      stringToNumber: true,
+      datetime:true,
+      valueType: 'Date',
     },
     colProps: { span: 6 },
   },
