@@ -40,10 +40,13 @@
                   :wrapperCol="{ span: 18 }"
               >
                 <a-select v-model:value="formState.fileStatus" placeholder="请选择状态">
-                  <a-select-option value="all">全部</a-select-option>
-                  <a-select-option value="active">可用</a-select-option>
-                  <a-select-option value="inactive">不可用</a-select-option>
-                  <a-select-option value="draft">草稿</a-select-option>
+                  <a-select-option
+                      v-for="item in props.fileProcessOptions"
+                      :key="item.value"
+                      :value="item.value"
+                  >
+                    {{item.label}}
+                  </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -54,7 +57,7 @@
         <a-col :span="24" class="search-buttons">
           <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
           <a-button class="ml2" @click="resetSearch">重置</a-button>
-          <a-button class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
+          <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -71,16 +74,17 @@
   >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
-        {{ (pagination.current - 1) * pagination.pageSize + index + 1 }}
+        {{ index + 1 }}
       </template>
-      <template v-if="column.key === 'status'">
+      <template v-if="column.dataIndex === 'status'">
         <a-tag :color="getStatusColor(record.status)">
           {{ getStatusText(record.status) }}
         </a-tag>
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button size="small" @click="editFile(record)">转换确认</a-button>
+          <input type="file" @change="(event)=>{changeHandle(record,event)}"/>
+          <a-button size="small" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
       </template>
@@ -89,7 +93,7 @@
   <!-- 编辑文件的Modal弹框 -->
   <a-modal
       v-model:visible="editModalVisible"
-      title="文件详情"
+      title="文件转换详情"
       :width="1200"
       :footer="null"
       wrap-class-name="full-modal"
@@ -101,36 +105,59 @@
         <a-col span="12">
           <a-card title="源文件视图">
             <a-row>
-              <a-col span="4">文件名称</a-col>
-              <a-col span="20">{{ currentFile.fileName || '-' }}</a-col>
+              <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
             </a-row>
             <a-row>
-              <a-col span="4">文件内容</a-col>
+              <a-col span="4">文件内容：</a-col>
             </a-row>
             <a-row>
-              {{ currentFile.fileAddress || '-' }}
+              <VueOfficeExcel
+                  v-if="currentFileType == 1"
+                  :src="fileStreamInfo"
+                  @rendered="onExcelRendered"
+                  @error="onExcelError"
+                  style="height: 600px; width: 100%"
+              />
+              <VueOfficePdf
+                  v-if="currentFileType == 2"
+                  :src="fileStreamInfo"
+                  @rendered="onExcelRendered"
+                  @error="onExcelError"
+                  style="height: 600px; width: 100%"
+              />
             </a-row>
           </a-card>
         </a-col>
         <a-col span="12">
           <a-card title="转换结果">
             <a-row>
-              <a-col span="4">机构名称</a-col>
-              <a-col span="20">{{ currentFile.organization || '-' }}</a-col>
+              <a-col span="24">机构名称：{{ currentFile.organization || '-' }}</a-col>
             </a-row>
             <a-row>
-              <a-col span="4">机构编码</a-col>
-              <a-col span="20">{{ currentFile.organizationCode || '-' }}</a-col>
+              <a-col span="4">机构编码：{{ currentFile.organizationCode || '-' }}</a-col>
             </a-row>
             <a-row>
-              {{ currentFile.fileAddress || '-' }}
+              <VueOfficeExcel
+                  v-if="currentFileType == 1"
+                  :src="fileStreamInfo"
+                  @rendered="onExcelRendered"
+                  @error="onExcelError"
+                  style="height: 600px; width: 100%"
+              />
+              <VueOfficePdf
+                  v-if="currentFileType == 2"
+                  :src="fileStreamInfo"
+                  @rendered="onExcelRendered"
+                  @error="onExcelError"
+                  style="height: 600px; width: 100%"
+              />
             </a-row>
           </a-card>
-          <a-row>
+<!--          <a-row>
             <a-col  :offset="16" span="4">
               <a-button type="primary"  @click="closeEditModal">确认</a-button>
             </a-col>
-          </a-row>
+          </a-row>-->
         </a-col>
       </a-row>
     </a-card>
@@ -150,7 +177,8 @@
         <a-upload-dragger
             :fileList="fileList"
             :multiple="true"
-            accept=".xls,.xlsx,.csv"
+            :customRequest="onFileListUpload"
+            accept=".xls,.xlsx,.csv,.pdf"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
         >
@@ -159,7 +187,7 @@
           </p>
           <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
           <p class="ant-upload-hint">
-            支持扩展名 .xls .xlsx .csv
+            支持扩展名 .xls .xlsx .csv .pdf
           </p>
         </a-upload-dragger>
 
@@ -195,14 +223,14 @@
         </div>
 
         <div style="margin-top: 16px; text-align: right;">
-          <a-button @click="closeUploadModal" style="margin-right: 8px;">取消</a-button>
+<!--          <a-button @click="closeUploadModal" style="margin-right: 8px;">取消</a-button>-->
           <a-button
               type="primary"
               @click="handleUpload"
               :disabled="fileList.length === 0"
               :loading="uploading"
           >
-            {{ uploading ? '保存' : '保存' }}
+            {{ uploading ? '上传中' : '确认' }}
           </a-button>
         </div>
       </a-card>
@@ -212,14 +240,29 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted } from 'vue';
-import { message, Modal, Upload} from 'ant-design-vue';
-import {caseFileListApi,deleteFileListApi,getFileConverResultApi,uploadFilesApi} from '../../user.api'
+import { ref,reactive, onMounted, defineProps } from 'vue';
+import { message, Modal} from 'ant-design-vue';
+//引入VueOfficeExcel组件
+import VueOfficeExcel from '@vue-office/excel'
+import VueOfficePdf from '@vue-office/pdf'
+//引入相关样式
+import '@vue-office/excel/lib/index.css'
+import {
+  caseFileListApi,
+  deleteFileListApi,
+  getFileConverResultApi,
+  uploadFileApi,
+  getFileStreamByFileId, getFileInfoItem
+} from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
 import {useRouter} from "vue-router";
 const router = useRouter();
+interface Props {
+  fileProcessOptions: Array<{value: string, label: string}>;
+}
 
+const props = defineProps<Props>();
 const formRef = ref();
 const {query} = useRoute();
 const formState = reactive({
@@ -227,17 +270,13 @@ const formState = reactive({
   fileName: '',
   fileStatus: undefined
 });
-
-const pagination = reactive({
-  current: 1,
-  pageSize: 10,
-  total: 50,
-  showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`
-});
 // 新增：编辑Modal相关状态
 const editModalVisible = ref(false);
+const fileStreamInfo = ref<any>();
+const currentFileType = ref<any>();
+
+
+
 let currentFile = reactive({
   fileName: '',
   fileAddress: '',
@@ -252,11 +291,11 @@ const uploading = ref(false);
 const tableLoading = ref(false);
 const searchLoading = ref(false);
 
+
 const columns = ref([
   {
     title: '序号',
-    dataIndex: 'id',
-    key: 'id',
+    key: 'index',
     width: 80,
   },
   {
@@ -288,6 +327,7 @@ const columns = ref([
   {
     title: '状态',
     dataIndex: 'status',
+    width: 100,
   },
 
   {
@@ -320,6 +360,7 @@ const fetchFileList = async () => {
     tableLoading.value = true;
 
     const params = {
+      caseId: query.caseId,
       folder: formState.folder,
       fileName: formState.fileName,
       fileStatus: formState.fileStatus
@@ -332,6 +373,43 @@ const fetchFileList = async () => {
     tableLoading.value = false;
     searchLoading.value = false;
   }
+};
+
+
+// 修改onFileListUpload方法
+const onFileListUpload = (data) => {
+  const file = fileList.value.find(item => item.uid === data.file.uid);
+  if (file) {
+    file.status = 'uploading';
+  }
+
+  const params = {
+    file: data.file,
+    data: { caseId: query.caseId },
+  };
+
+  uploadFileApi(params,true).then((res)=>{
+    if (res.code === 200) {
+      // 上传成功，更新文件状态
+      const uploadedFile = fileList.value.find(item => item.uid === data.file.uid);
+      if (uploadedFile) {
+        uploadedFile.status = 'done';
+        uploadedFile.percent = 100;
+        // 触发响应式更新
+        fileList.value = [...fileList.value];
+      }
+    }else{
+      const uploadedFile = fileList.value.find(item => item.uid === data.file.uid);
+      if (uploadedFile) {
+        uploadedFile.status = 'error';
+        uploadedFile.percent = 0;
+        // 触发响应式更新
+        fileList.value = [...fileList.value];
+      }
+      message.error(`${res.message || '上传失败'} `);
+    }
+
+  })
 };
 
 // 搜索处理
@@ -349,16 +427,6 @@ const resetSearch = () => {
 // 上传文件
 const uploadFile = () => {
   uploadModalVisible.value = true
-};
-
-// 关闭上传Modal
-const closeUploadModal = () => {
-  if (!uploading.value) {
-    uploadModalVisible.value = false;
-    fileList.value = [];
-  } else {
-    message.info('请等待上传完成或取消上传');
-  }
 };
 
 // 上传前校验
@@ -381,7 +449,6 @@ const beforeUpload = (file) => {
     status: 'pending'
   }];
 
-  return false; // 阻止默认上传
 };
 
 // 移除文件
@@ -411,76 +478,50 @@ const handleUpload = async () => {
     message.warning('请选择要上传的文件');
     return;
   }
+  uploading.value = false;
+  uploadModalVisible.value = false;
+  fileList.value = [];
 
-  uploading.value = true;
-  const formData = new FormData();
-
-  // 添加文件到FormData
-  fileList.value.forEach(file => {
-    if (file.status !== 'done') {
-      file.status = 'uploading';
-      formData.append('files', file.originFileObj);
-    }
-  });
-
-  // 模拟上传进度
-  const totalFiles = fileList.value.filter(file => file.status === 'uploading').length;
-  let completedFiles = 0;
-
-  const progressInterval = setInterval(() => {
-    fileList.value.forEach(file => {
-      if (file.status === 'uploading' && file.percent < 90) {
-        file.percent += 10;
-      }
-    });
-    fileList.value = [...fileList.value]; // 触发响应式更新
-  }, 300);
-
-  try {
-    // 调用上传API
-    await uploadFilesApi(formData);
-
-    clearInterval(progressInterval);
-
-    // 标记所有文件为完成状态
-    fileList.value.forEach(file => {
-      if (file.status === 'uploading') {
-        file.status = 'done';
-        file.percent = 100;
-      }
-    });
-    fileList.value = [...fileList.value]; // 触发响应式更新
-
-    message.success('文件上传成功');
-
-    // 2秒后关闭模态框
-    setTimeout(() => {
-      uploading.value = false;
-      uploadModalVisible.value = false;
-      fileList.value = [];
-
-      // 刷新文件列表
-      fetchFileList();
-    }, 2000);
-
-  } catch (error) {
-    clearInterval(progressInterval);
-
-    // 标记所有文件为错误状态
-    fileList.value.forEach(file => {
-      if (file.status === 'uploading') {
-        file.status = 'error';
-      }
-    });
-    fileList.value = [...fileList.value]; // 触发响应式更新
-
-    message.error('文件上传失败');
-    uploading.value = false;
-  }
+  // 刷新文件列表
+  fetchFileList();
 };
-// 编辑文件
+// 转换查看
 const editFile = async (record) => {
-  const convertInfo = await getFileConverResultApi({fileId:record.id})
+   const fileInfo = await getFileInfoItem({fileId:record.id})
+   const { fileType } = fileInfo
+   if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
+     currentFileType.value = 1
+   }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
+     currentFileType.value = 2
+   }
+  console.info('currentFileType----------->',currentFileType.value)
+   console.info('文件的详细信息----------->',fileInfo)
+   fileStreamInfo.value = ''
+  // 查询转换基本信息
+   const convertInfo = await getFileConverResultApi({fileId:record.id})
+   // 预览文件excel或者pdf
+   getFileStreamByFileId({fileId:record.id}).then((res)=>{
+    // 方法1: 使用 instanceof 检查
+    if (res instanceof ArrayBuffer) {
+      console.info('fileStreamInfo 是 ArrayBuffer')
+      fileStreamInfo.value = res
+    } else {
+      console.info('fileStreamInfo 不是 ArrayBuffer，实际类型:', typeof res)
+
+      // 如果是 Blob，可以转换为 ArrayBuffer
+      if (res instanceof Blob) {
+        console.info('fileStreamInfo 是 Blob，正在转换为 ArrayBuffer...')
+        const arrayBuffer =  res.arrayBuffer()
+        fileStreamInfo.value = arrayBuffer
+      } else {
+        // 其他类型处理
+        fileStreamInfo.value = ''
+        console.info('需要特殊处理的数据类型')
+      }
+    }
+  }).catch(()=>{
+     fileStreamInfo.value = ''
+  })
   currentFile = convertInfo || {};
   // 显示Modal
   editModalVisible.value = true;
@@ -508,7 +549,6 @@ const deleteFile = async (record) => {
     onOk() {
 
       deleteFileListApi({fileId:record.id}).then(()=>{
-        message.success(`文件已删除`);
         fetchFileList();
       })
 
@@ -516,25 +556,58 @@ const deleteFile = async (record) => {
   });
 };
 
-// 状态颜色
-const getStatusColor = (status) => {
-  const colors = {
-    active: 'green',
-    inactive: 'red',
-    draft: 'orange'
-  };
-  return colors[status] || 'default';
+// 状态颜色映射（可根据需要调整）
+const statusColorMap = {
+  '1': 'green',    // 成功
+  '2': 'red',      // 失败
+  '3': 'orange',   // 处理中
+  '4': 'blue',     // 待处理
+  '5': 'gray'      // 其他状态
 };
 
-// 状态文本
-const getStatusText = (status) => {
-  const texts = {
-    active: '可用',
-    inactive: '不可用',
-    draft: '草稿'
-  };
-  return texts[status] || '未知';
+// 状态颜色
+const getStatusColor = (status) => {
+  return statusColorMap[status] || 'default';
 };
+
+// 状态文本 - 从fileProcessOptions中获取
+const getStatusText = (statusValue) => {
+  if (!props.fileProcessOptions || !Array.isArray(props.fileProcessOptions)) {
+    return '未知';
+  }
+  const option = props.fileProcessOptions.find(opt => opt.value === statusValue);
+  return option ? option.label : '未知';
+};
+
+// Excel渲染事件处理
+const onExcelRendered = () => {
+  console.log('Excel渲染完成');
+};
+
+const onExcelError = (error) => {
+  console.error('Excel渲染错误:', error);
+};
+const changeHandle= async(record,event)=>{
+  console.info('event',event)
+  console.info('record',record)
+  const fileInfo = await getFileInfoItem({fileId:record.id})
+  const { fileType } = fileInfo
+
+
+
+  let file = event.target.files[0]
+  let fileReader = new FileReader()
+  fileReader.readAsArrayBuffer(file)
+  fileReader.onload =  () => {
+    fileStreamInfo.value = fileReader.result
+    editModalVisible.value = true;
+    if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
+      currentFileType.value = 1
+    }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
+      currentFileType.value = 2
+    }
+  }
+}
 
 
 </script>

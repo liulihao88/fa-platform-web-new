@@ -213,7 +213,7 @@ const selectSheet = async(sheet) => {
     tableLoading.value = true;
     const params = {
       fileId:selectedFileId.value, // file.id,
-      filePageId: sheet.id,
+      filePageId: sheet.pageId,
     };
     const response = await standardTableApi(params);
     const {bankCustomers,bankTransactions} = response

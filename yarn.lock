@@ -2176,6 +2176,16 @@
     "@volar/language-core" "1.11.1"
     path-browserify "^1.0.1"
 
+"@vue-office/excel@^1.7.14":
+  version "1.7.14"
+  resolved "https://registry.yarnpkg.com/@vue-office/excel/-/excel-1.7.14.tgz#6e1446abae9690a09eed6f5e8c09bb923b3d5b10"
+  integrity sha512-pVUgt+emDQUnW7q22CfnQ+jl43mM/7IFwYzOg7lwOwPEbiVB4K4qEQf+y/bc4xGXz75w1/e3Kz3G6wAafmFBFg==
+
+"@vue-office/pdf@^2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@vue-office/pdf/-/pdf-2.0.10.tgz#2d85e449c017289084e64dc029613d05767afa5c"
+  integrity sha512-yHVLrMAKpMPBkhBwofFyGEtEeJF0Zd7oGmf56Pe5aj/xObdRq3E1CIZqTqhWJNgHV8oLQqaX0vs4p5T1zq+GIA==
+
 "@vue/babel-helper-vue-transform-on@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@vue/babel-helper-vue-transform-on/-/babel-helper-vue-transform-on-1.5.0.tgz#b7e99d37eeb144d7b9757d7a1f40cd977fde748a"
@@ -10168,6 +10178,11 @@ vue-cropperjs@^5.0.0:
   integrity sha512-RhnC8O33uRZNkn74aiHZwNHnBJOXWlS4P6gsRI0lw4cZlWjKSCywZI9oSI9POlIPI6OYv30jvnHMXGch85tw7w==
   dependencies:
     cropperjs "^1.5.6"
+
+vue-demi@0.14.6:
+  version "0.14.6"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.6.tgz#dc706582851dc1cdc17a0054f4fec2eb6df74c92"
+  integrity sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==
 
 vue-demi@>=0.14.5, vue-demi@>=0.14.8, vue-demi@latest:
   version "0.14.10"

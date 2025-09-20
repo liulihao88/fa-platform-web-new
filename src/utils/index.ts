@@ -6,6 +6,7 @@ import { unref } from 'vue';
 import { isObject, isFunction, isString } from '/@/utils/is';
 import Big from 'big.js';
 import dayjs from "dayjs";
+import {getDictItems} from "@/api/common/api";
 // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`;
 // update-end--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
@@ -665,3 +666,18 @@ export const split = (str) => {
   }
   return str;
 };
+export const getCommonDictionary = async(key)=>{
+  return new Promise((resolve,reject)=>{
+    getDictItems(key).then((res) => {
+      if (res && res.length) {
+        const resArr = res.map((item) => ({value: item.value, label: item.text, title: item.text, color: item.color}));
+        resolve(resArr)
+      }else{
+        resolve([])
+      }
+    }).catch(()=>{
+      resolve([])
+    })
+  })
+
+}

@@ -6,10 +6,13 @@
         <a-col :span="8">
           <a-form-item label="涉案人种类" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-select v-model:value="formState.involvedKind" placeholder="请选择涉案人种类">
-              <a-select-option value="all">全部</a-select-option>
-              <a-select-option value="victim">受害人</a-select-option>
-              <a-select-option value="suspect">嫌疑人</a-select-option>
-              <a-select-option value="other">其他人</a-select-option>
+              <a-select-option
+                  v-for="item in props.involvedKindOptions"
+                  :key="item.value"
+                  :value="item.value"
+              >
+                {{item.label}}
+              </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
@@ -34,12 +37,17 @@
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
       </template>
-      <template v-if="column.key === 'type'">
+      <template v-if="column.dataIndex === 'type'">
         <a-tag :color="getTypeColor(record.type)">
           {{ getTypeText(record.type) }}
         </a-tag>
       </template>
-      <template v-if="column.key === 'relationCount'">
+      <template v-if="column.dataIndex === 'involvedKind'">
+        <a-tag :color="getTypeColor(record.type)">
+          {{ getStatusText(record.involvedKind) }}
+        </a-tag>
+      </template>
+      <template v-if="column.dataIndex === 'relationCount'">
         <span :style="{ color: record.relationCount > 0 ? '#1890ff' : '#999' }">
           {{ record.relationCount }}
         </span>
@@ -48,6 +56,7 @@
         <div class="table-operations">
           <a-button size="small" type="primary" @click="adjustRelation(record)">调整关系</a-button>
           <a-button class="ml1" size="small" type="primary" @click="viewDetails(record)">关系</a-button>
+          <a-button class="ml1" size="small" type="primary" @click="showPersonDetail(record)">涉案人详情</a-button>
         </div>
       </template>
     </template>
@@ -58,9 +67,13 @@
     <a-form :model="adjustFormState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-form-item label="关系" required>
         <a-select v-model:value="adjustFormState.involvedKind" placeholder="请选择关系">
-          <a-select-option value="victim">受害人</a-select-option>
-          <a-select-option value="suspect">嫌疑人</a-select-option>
-          <a-select-option value="other">其他人</a-select-option>
+          <a-select-option
+              v-for="item in props.involvedKindOptions"
+              :key="item.value"
+              :value="item.value"
+          >
+            {{item.label}}
+          </a-select-option>
         </a-select>
       </a-form-item>
     </a-form>
@@ -72,39 +85,42 @@
       <h3>涉案人【{{ currentRecord.involvedName }}】相关方关系：</h3>
       <a-button type="primary" class="add-btn" @click="addNewRelation">新增关系</a-button>
       <a-table :columns="detailColumns" :data-source="detailData" bordered class="relation-table" :pagination="false">
-        <template #bodyCell="{ column, record }">
+        <template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'index'">
-            {{ record.index }}
+            {{ index + 1 }}
           </template>
           <template v-if="column.key === 'involvedName'">
-            <div class="editable-cell">
-              <div v-if="!record.editing" class="editable-cell-value-wrap">
-                {{ record.involvedName }}
-              </div>
-              <a-input v-else v-model:value="record.involvedName" />
-            </div>
+            {{ currentRecord.involvedName }}
           </template>
           <template v-if="column.key === 'relatedPerson'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
                 {{ record.relatedPerson }}
               </div>
-              <a-input v-else v-model:value="record.relatedPerson" />
+              <a-select v-else v-model:value="record.relation" style="width: 100%">
+                <a-select-option
+                    v-for="item in relatedPersonList"
+                    :key="item.value"
+                    :value="item.value"
+                >
+                  {{item.label}}
+                </a-select-option>
+              </a-select>
             </div>
           </template>
-          <template v-if="column.key === 'relation'">
+          <template v-if="column.key === 'relationCode'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
                 {{ record.relation }}
               </div>
-              <a-select v-else v-model:value="record.relation" style="width: 100%">
-                <a-select-option value="控股">控股</a-select-option>
-                <a-select-option value="夫妻">夫妻</a-select-option>
-                <a-select-option value="持股">持股</a-select-option>
-                <a-select-option value="兄弟">兄弟</a-select-option>
-                <a-select-option value="姐妹">姐妹</a-select-option>
-                <a-select-option value="父子">父子</a-select-option>
-                <a-select-option value="母女">母女</a-select-option>
+              <a-select v-else v-model:value="record.relationCode" style="width: 100%">
+                <a-select-option
+                    v-for="item in props.involvedRelateOptions"
+                    :key="item.value"
+                    :value="item.value"
+                >
+                  {{item.label}}
+                </a-select-option>
               </a-select>
             </div>
           </template>
@@ -122,52 +138,139 @@
       </a-table>
     </a-card>
   </a-modal>
+  <!-- 企业详情抽屉 -->
+  <a-drawer
+      v-model:visible="companyDrawerVisible"
+      title="企业详情"
+      width="700px"
+      placement="right"
+  >
+    <a-card v-if="currentCompanyDetail">
+      <h3>企业基本信息</h3>
+      <a-descriptions bordered :column="1">
+        <a-descriptions-item label="营业执照">{{ currentCompanyDetail.enterpriseLicenseNum || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="法人">{{ currentCompanyDetail.enterpriseLegalPersonName || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentCompanyDetail.idType)}}</a-descriptions-item>
+        <a-descriptions-item label="证件号">{{ currentCompanyDetail.idNum || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="电话">{{ currentCompanyDetail.teleNum || '-' }}</a-descriptions-item>
+      </a-descriptions>
+
+      <h3 style="margin-top: 20px;">人物关系信息</h3>
+      <div v-for="(relation, index) in currentCompanyDetail.relationPersons" :key="index">
+        <p>和 {{ relation.name }} - {{ relation.type }}</p>
+      </div>
+
+      <h3 style="margin-top: 20px;">账户信息</h3>
+      <div v-for="(account, index) in currentCompanyDetail.accounts" :key="index">
+        <p><strong>{{ account.bank }}</strong></p>
+        <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
+          {{ item.type }} {{ item.number }}
+        </p>
+      </div>
+    </a-card>
+    <a-skeleton v-else active />
+  </a-drawer>
+
+  <!-- 个人详情抽屉 -->
+  <a-drawer
+      v-model:visible="personDrawerVisible"
+      title="个人详情"
+      width="700px"
+      placement="right"
+  >
+    <a-card v-if="currentPersonDetail">
+      <h3>人员基本信息</h3>
+      <a-descriptions bordered :column="1">
+        <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentPersonDetail.idType)}}</a-descriptions-item>
+        <a-descriptions-item label="证件号">{{ currentPersonDetail.idNum || '-' }}</a-descriptions-item>
+        <a-descriptions-item label="电话">{{ currentPersonDetail.teleNum || '-' }}</a-descriptions-item>
+      </a-descriptions>
+
+      <h3 style="margin-top: 20px;">人物关系信息</h3>
+      <div v-for="(relation, index) in currentPersonDetail.relationPersons" :key="index">
+        <p>和 {{ relation.name }} - {{ relation.type }}</p>
+      </div>
+
+      <h3 style="margin-top: 20px;">账户信息</h3>
+      <div v-for="(account, index) in currentPersonDetail.relationPersons" :key="index">
+        <p><strong>{{ account.bank }}</strong></p>
+        <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
+          {{ item.type }} {{ item.number }}
+        </p>
+      </div>
+    </a-card>
+    <a-skeleton v-else active />
+  </a-drawer>
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref, reactive, onMounted } from 'vue';
+import {ref, reactive, onMounted, defineProps} from 'vue';
 import { message } from 'ant-design-vue';
 import { useRoute } from "vue-router";
-import { involvedPersonListApi, updatePersonRelationApi, getInvolvedPersonApi,updateInvolvedPersonApi } from "@/views/fund/analysis/user.api";
+import {
+  involvedPersonListApi,
+  updatePersonRelationApi,
+  getInvolvedRelationApi,
+  getInvolvedPersonApi,
+  updateInvolvedPersonApi,
+  getCompanyOrPersonDetailApi
+} from "@/views/fund/analysis/user.api";
 
 const { query } = useRoute();
 const formState = reactive({
   involvedKind: undefined,
   involvedName: ''
 });
+interface Props {
+  involvedRelateOptions: Array<{value: string, label: string}>;
+  involvedKindOptions: Array<{value: string, label: string}>;
+  idCardTypeOptions: Array<{value: string, label: string}>;
+
+
+}
+
+const props = defineProps<Props>();
 const tableLoading = ref(false);
 const searchLoading = ref(false);
 // 调整关系弹窗相关状态
 const adjustModalVisible = ref(false);
 const adjustConfirmLoading = ref(false);
+
+const relatedPersonList = ref([]);
+
 const adjustFormState = reactive({
   id: "",
   involvedKind: "",
   involvedName: "",
-  relationCount: 0
+  involvedKindCode: 0
 });
 
 // 查看详情弹窗相关状态
 const detailModalVisible = ref(false);
 const currentRecord = reactive({});
 const detailData = ref([]);
+// 添加详情抽屉相关状态
+const companyDrawerVisible = ref(false);
+const personDrawerVisible = ref(false);
+const currentCompanyDetail = ref(null);
+const currentPersonDetail = ref(null);
 
 const detailColumns = ref([
   {
     title: '序号',
     key: 'index',
-    width: 60,
+    width: 100,
   },
   {
-    title: '涉案人',
+    title: '相关方',
     dataIndex: 'involvedName',
     key: 'involvedName',
     width: 200,
   },
   {
     title: '关系',
-    dataIndex: 'relation',
-    key: 'relation',
+    dataIndex: 'relationCode',
+    key: 'relationCode',
     width: 150,
   },
   {
@@ -226,8 +329,8 @@ const fetchInvolvedList = async () => {
 
     const params = {
       caseId: query.caseId,
-      involvedName: formState.involvedName,
-      involvedKind: formState.involvedKind,
+     // involvedName: formState.involvedName,
+     // involvedKind: formState.involvedKind,
     };
 
     const response = await involvedPersonListApi(params);
@@ -253,13 +356,12 @@ const handleAdjustOk = () => {
 
   const params = {
     id: adjustFormState.id,
-    involvedKind: adjustFormState.involvedKind,
+    involvedKindCode: Number(adjustFormState.involvedKind),
   };
 
   updatePersonRelationApi(params).then(() => {
     adjustConfirmLoading.value = false;
     adjustModalVisible.value = false;
-    message.success('调整成功');
     fetchInvolvedList();
   }).catch(() => {
     adjustConfirmLoading.value = false;
@@ -267,13 +369,46 @@ const handleAdjustOk = () => {
   })
 };
 
+// 添加显示涉案人详情的方法
+const showPersonDetail = async (record) => {
+  try {
+    const response = await getCompanyOrPersonDetailApi({ involvedId: record.id });
+    const {customerType} = response // 1企业 2个人
+    if(customerType == 1){
+      currentCompanyDetail.value = response;
+      companyDrawerVisible.value = true;
+    }else if(customerType == 2){
+      currentPersonDetail.value = response;
+      personDrawerVisible.value = true;
+    }
+  } catch (error) {
+    message.error('获取详情失败');
+  }
+};
+
+// getInvolvedPersonApi
+const getRelationPersonListByInvolvedId = (record) => {
+  const params = {
+    involvedId: record.id,
+  };
+  getInvolvedPersonApi(params).then((res) => {
+    // 为每条数据添加编辑状态和原始数据备份
+    relatedPersonList.value = res || []
+  }).catch(() => {
+  })
+};
+
+
 const viewDetails = (record) => {
+  if(relatedPersonList.value.length == 0){ // 查询关联的涉案人的关联人下拉选
+    getRelationPersonListByInvolvedId(record)
+  }
   Object.assign(currentRecord, record);
   const params = {
     involvedId: record.id,
   };
 
-  getInvolvedPersonApi(params).then((res) => {
+  getInvolvedRelationApi(params).then((res) => {
     // 为每条数据添加编辑状态和原始数据备份
     detailData.value = res.map((item, index) => ({
       ...item,
@@ -299,26 +434,26 @@ const editRelation = (record) => {
 };
 
 const saveRelation = (record) => {
+  console.info('44444444444444444',)
   // 验证数据
-  if (!record.involvedName || !record.relatedPerson || !record.relation || record.relation === '请选择关系') {
+  if (!record.relatedPersonId || !record.relationCode) {
     message.error('请填写完整信息');
     return;
   }
   const params = {
     id: record.id,
-   // involvedId: "",
-    involvedName:record.involvedName,
-    relation: record.relation,
-   // relationCode: "",
-    // relatedPersonId: "",
-    relatedPersonName: record.relatedPerson
+    involvedId: currentRecord.id,
+    relationCode: record.relationCode,
+    relatedPersonId: record.relatedPersonId,
   };
 
   updateInvolvedPersonApi(params).then(() => {
     record.editing = false;
     fetchInvolvedList();
+    detailModalVisible.value = false
   }).catch(() => {
     record.editing = false;
+    detailModalVisible.value = false
   })
 
 };
@@ -374,6 +509,23 @@ const resetSearch = () => {
   formState.involvedName = '';
   fetchInvolvedList()
 };
+// 状态文本 - 从fileProcessOptions中获取
+const getStatusText = (statusValue) => {
+  if (!props.involvedKindOptions || !Array.isArray(props.involvedKindOptions)) {
+    return '未知';
+  }
+  const option = props.involvedKindOptions.find(opt => opt.value === statusValue);
+  return option ? option.label : '未知';
+};
+
+const getTdTypeDesc = (statusValue) => {
+  if (!props.idCardTypeOptions || !Array.isArray(props.idCardTypeOptions)) {
+    return '未知';
+  }
+  const option = props.idCardTypeOptions.find(opt => opt.value === statusValue);
+  return option ? option.label : '未知';
+};
+
 </script>
 
 <style scoped>
