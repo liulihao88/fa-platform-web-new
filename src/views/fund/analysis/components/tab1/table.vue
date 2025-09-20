@@ -593,7 +593,11 @@ const changeHandle= async(record,event)=>{
   const fileInfo = await getFileInfoItem({fileId:record.id})
   const { fileType } = fileInfo
 
-
+  if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
+    currentFileType.value = 1
+  }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
+    currentFileType.value = 2
+  }
 
   let file = event.target.files[0]
   let fileReader = new FileReader()
@@ -601,11 +605,7 @@ const changeHandle= async(record,event)=>{
   fileReader.onload =  () => {
     fileStreamInfo.value = fileReader.result
     editModalVisible.value = true;
-    if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
-      currentFileType.value = 1
-    }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
-      currentFileType.value = 2
-    }
+
   }
 }
 

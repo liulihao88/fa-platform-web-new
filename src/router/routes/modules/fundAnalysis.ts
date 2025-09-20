@@ -15,16 +15,6 @@ const dashboard: AppRouteModule = {
   },
   children: [
     {
-      path: 'analysis',
-      name: 'AnalysisPage',
-      component: () => import('/@/views/fund/analysis/index.vue'),
-      meta: {
-        title: t('routes.dashboard.analysis'),
-        icon: 'simple-icons:analysis-dot-me',
-        hideMenu: true,
-      },
-    },
-    {
       path: 'cases',
       name: 'CasePage',
       component: () => import('/@/views/fund/analysis/case.vue'),
