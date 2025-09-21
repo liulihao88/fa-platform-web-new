@@ -94,21 +94,18 @@
   <a-modal
       v-model:visible="editModalVisible"
       title="文件转换详情"
-      :width="1200"
+      :width="1400"
       :footer="null"
       wrap-class-name="full-modal"
       @ok="closeEditModal"
       @cancel="closeEditModal"
   >
     <a-card>
-      <a-row>
-        <a-col span="12">
-          <a-card title="源文件视图">
+      <a-row :gutter="16">
+        <a-col span="8">
+          <a-card title="源文件视图" size="small">
             <a-row>
               <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
-            </a-row>
-            <a-row>
-              <a-col span="4">文件内容：</a-col>
             </a-row>
             <a-row>
               <VueOfficeExcel
@@ -128,36 +125,97 @@
             </a-row>
           </a-card>
         </a-col>
-        <a-col span="12">
-          <a-card title="转换结果">
-            <a-row>
-              <a-col span="24">机构名称：{{ currentFile.organization || '-' }}</a-col>
+        <a-col span="16">
+          <a-card title="转换结果" size="small">
+            <!-- 文件归属银行选择区域 -->
+            <a-row style="margin-bottom: 16px;">
+              <a-col :span="4">
+                <span style="line-height: 32px;">文件归属银行：</span>
+              </a-col>
+              <a-col :span="6">
+                <a-select
+                    v-model:value="selectedBank"
+                    placeholder="请选择银行"
+                    style="width: 100%"
+                >
+                  <a-select-option value="广东发展银行">广东发展银行</a-select-option>
+                  <a-select-option value="招商银行">招商银行</a-select-option>
+                  <a-select-option value="邮储银行">邮储银行</a-select-option>
+                  <!-- 其他银行选项 -->
+                </a-select>
+              </a-col>
+              <a-col :span="4">
+                <a-button type="primary" @click="confirmBank" style="margin-left: 8px;">修改</a-button>
+                <a-button type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
+              </a-col>
             </a-row>
-            <a-row>
-              <a-col span="4">机构编码：{{ currentFile.organizationCode || '-' }}</a-col>
-            </a-row>
-            <a-row>
-              <VueOfficeExcel
-                  v-if="currentFileType == 1"
-                  :src="fileStreamInfo"
-                  @rendered="onExcelRendered"
-                  @error="onExcelError"
-                  style="height: 600px; width: 100%"
-              />
-              <VueOfficePdf
-                  v-if="currentFileType == 2"
-                  :src="fileStreamInfo"
-                  @rendered="onExcelRendered"
-                  @error="onExcelError"
-                  style="height: 600px; width: 100%"
-              />
+
+            <!-- Sheet列表区域 -->
+            <a-row style="margin-bottom: 16px;">
+              <a-col :span="4">
+                <div class="sheet-list">
+                  <h3>文件页码</h3>
+                  <div
+                      v-for="sheet in currentFile.filePages"
+                      :key="sheet.pageId"
+                      :class="['file-item', { active: activeSheet === sheet.pageId }]"
+                      @click="selectSheet(sheet)"
+                  >
+                    {{ sheet.pageName }}
+                  </div>
+                </div>
+              </a-col>
+              <a-col :span="20">
+                <!-- 银行客户信息表格 -->
+                <a-table
+                    v-if="activeSheetData.bankCustomers.length"
+                    :columns="bankCustomerColumns"
+                    :data-source="activeSheetData.bankCustomers"
+                    size="small"
+                    bordered
+                    :pagination="false"
+                    style="margin-bottom: 16px;"
+                />
+
+                <!-- 银行交易流水表格 -->
+                <a-table
+                    v-if="activeSheetData.bankTransactions.length"
+                    :columns="bankTransactionColumns"
+                    :data-source="activeSheetData.bankTransactions"
+                    size="small"
+                    bordered
+                    :pagination="false"
+                    style="margin-bottom: 16px;"
+                />
+
+                <!-- 非银行客户信息表格 -->
+                <a-table
+                    v-if="activeSheetData.notBankCustomers.length"
+                    :columns="nonBankCustomerColumns"
+                    :data-source="activeSheetData.notBankCustomers"
+                    size="small"
+                    bordered
+                    :pagination="false"
+                    style="margin-bottom: 16px;"
+                />
+
+                <!-- 非银行交易流水表格 -->
+                <a-table
+                    v-if="activeSheetData.notBankTransactions.length"
+                    :columns="nonBankTransactionColumns"
+                    :data-source="activeSheetData.notBankTransactions"
+                    size="small"
+                    bordered
+                    :pagination="false"
+                />
+              </a-col>
             </a-row>
           </a-card>
         </a-col>
       </a-row>
     </a-card>
-
   </a-modal>
+
   <!-- 上传文件的Modal弹框 -->
   <a-modal
       v-model:visible="uploadModalVisible"
@@ -250,7 +308,9 @@ import {
   deleteFileListApi,
   getFileConverResultApi,
   uploadFileApi,
-  getFileStreamByFileId, getFileInfoItem
+  getFileStreamByFileId,
+  getFileInfoItem,
+  standardTableApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -272,8 +332,68 @@ const formState = reactive({
 const editModalVisible = ref(false);
 const fileStreamInfo = ref<any>();
 const currentFileType = ref<any>();
+const selectedBank = ref('广东发展银行');
+const sheetList = ref([
+  { name: 'sheet1', title: '银行客户信息' },
+  { name: 'sheet2', title: '银行交易流水' },
+  { name: 'sheet3', title: '非银行客户信息' },
+  { name: 'sheet4', title: '非银行交易流水' }
+]);
+const activeSheet = ref('');
+const activeSheetData = ref({
+  bankCustomers:[],
+  bankTransactions:[],
+  notBankCustomers:[],
+  notBankTransactions:[]
+});
 
+// 表格列定义
+const bankCustomerColumns = ref([
+  { title: '行号', dataIndex: 'rowNumber', key: 'rowNumber', width: 80 },
+  { title: '归属机构', dataIndex: 'belongOrg', key: 'belongOrg', width: 120 },
+  { title: '客户种类', dataIndex: 'customerType', key: 'customerType', width: 100 },
+  { title: '客户名称', dataIndex: 'customerName', key: 'customerName', width: 120 },
+  { title: '证件种类', dataIndex: 'idType', key: 'idType', width: 100 },
+  { title: '证件号码', dataIndex: 'idNumber', key: 'idNumber', width: 150 },
+  { title: '营业执照', dataIndex: 'businessLicense', key: 'businessLicense', width: 120 },
+  { title: '法人姓名', dataIndex: 'legalPerson', key: 'legalPerson', width: 100 },
+  { title: '是否商户', dataIndex: 'isMerchant', key: 'isMerchant', width: 80 },
+  { title: '商户号', dataIndex: 'merchantNumber', key: 'merchantNumber', width: 120 },
+  { title: '终端号', dataIndex: 'terminalNumber', key: 'terminalNumber', width: 120 },
+  { title: '结算银行', dataIndex: 'settlementBank', key: 'settlementBank', width: 120 },
+  { title: '结算账号', dataIndex: 'settlementAccount', key: 'settlementAccount', width: 150 },
+  { title: '币种', dataIndex: 'currency', key: 'currency', width: 80 },
+  { title: '账户类型', dataIndex: 'accountType', key: 'accountType', width: 100 },
+  { title: '状态', dataIndex: 'status', key: 'status', width: 80 },
+  { title: '其他字段', dataIndex: 'otherFields', key: 'otherFields' }
+]);
 
+const bankTransactionColumns = ref([
+  { title: '行号', dataIndex: 'rowNumber', key: 'rowNumber', width: 80 },
+  { title: '发起行', dataIndex: 'issuingBank', key: 'issuingBank', width: 120 },
+  { title: '户名', dataIndex: 'accountName', key: 'accountName', width: 120 },
+  { title: '账号', dataIndex: 'accountNumber', key: 'accountNumber', width: 150 },
+  { title: '卡号', dataIndex: 'cardNumber', key: 'cardNumber', width: 150 },
+  { title: '流水号', dataIndex: 'serialNumber', key: 'serialNumber', width: 120 },
+  { title: '交易渠道', dataIndex: 'transactionChannel', key: 'transactionChannel', width: 100 },
+  { title: '币种', dataIndex: 'currency', key: 'currency', width: 80 },
+  { title: '交易方向', dataIndex: 'transactionDirection', key: 'transactionDirection', width: 100 },
+  { title: '交易金额', dataIndex: 'transactionAmount', key: 'transactionAmount', width: 120 },
+  { title: '交易种类', dataIndex: 'transactionType', key: 'transactionType', width: 100 },
+  { title: '交易余额', dataIndex: 'transactionBalance', key: 'transactionBalance', width: 120 },
+  { title: '业务日期', dataIndex: 'businessDate', key: 'businessDate', width: 120 },
+  { title: '交易时间', dataIndex: 'transactionTime', key: 'transactionTime', width: 120 },
+  { title: '对方开户银行', dataIndex: 'counterpartyBank', key: 'counterpartyBank', width: 150 },
+  { title: '对方户名', dataIndex: 'counterpartyName', key: 'counterpartyName', width: 120 },
+  { title: '对方账号', dataIndex: 'counterpartyAccount', key: 'counterpartyAccount', width: 150 },
+  { title: '卡号', dataIndex: 'counterpartyCardNumber', key: 'counterpartyCardNumber', width: 150 },
+  { title: '交易状态', dataIndex: 'transactionStatus', key: 'transactionStatus', width: 100 },
+  { title: 'IP地址', dataIndex: 'ipAddress', key: 'ipAddress', width: 120 },
+  { title: '其他字段', dataIndex: 'otherFields', key: 'otherFields' }
+]);
+
+const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
+const nonBankTransactionColumns = ref([...bankTransactionColumns.value]);
 
 let currentFile = reactive({
   fileName: '',
@@ -483,6 +603,40 @@ const handleUpload = async () => {
   // 刷新文件列表
   fetchFileList();
 };
+
+// 选择sheet
+const selectSheet = async (sheet) => {
+  console.info('11111111111111111111111111',sheet)
+  activeSheet.value = sheet.pageId;
+  try {
+    // 调用API获取sheet数据
+    const response = await standardTableApi({
+      filePageId: sheet.pageId,
+    });
+    console.info('vvvvvvvvvvvvvvvv',response)
+    activeSheetData.value = response || {
+      bankCustomers:[],
+      bankTransactions:[],
+      notBankCustomers:[],
+      notBankTransactions:[]
+    };
+  } catch (error) {
+    message.error('获取sheet数据失败');
+    activeSheetData.value = {
+      bankCustomers:[],
+      bankTransactions:[],
+      notBankCustomers:[],
+      notBankTransactions:[]
+    };
+  }
+};
+
+// 确认银行选择
+const confirmBank = () => {
+  message.success(`已选择银行: ${selectedBank.value}`);
+  // 这里可以添加保存银行选择的逻辑
+};
+
 // 转换查看
 const editFile = async (record) => {
   const fileInfo = await getFileInfoItem({fileId:record.id})
@@ -513,6 +667,13 @@ const editFile = async (record) => {
     fileStreamInfo.value = ''
   })
   currentFile = convertInfo || {};
+
+  // 默认选择第一个sheet并加载数据
+  const {filePages} = convertInfo
+  if (filePages && filePages.length > 0) {
+    await selectSheet(filePages[0]);
+  }
+
   // 显示Modal
   editModalVisible.value = true;
 };
@@ -526,6 +687,12 @@ const closeEditModal = () => {
     pageNumber: '',
     fileContent: ''
   });
+  activeSheetData.value = {
+    bankCustomers:[],
+    bankTransactions:[],
+    notBankCustomers:[],
+    notBankTransactions:[]
+  };
 };
 
 // 删除文件
@@ -657,5 +824,27 @@ const changeHandle= async(record,event)=>{
 
 .upload-actions {
   margin-left: 8px;
+}
+
+.sheet-list {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 10px;
+  background: #fff;
+  height: 100%;
+  overflow-y: auto;
+}
+.file-item, .sheet-item {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.file-item:hover, .sheet-item:hover {
+  background-color: #f0f7ff;
+}
+.file-item.active, .sheet-item.active {
+  background-color: #e6f7ff;
+  border-right: 3px solid #1890ff;
 }
 </style>

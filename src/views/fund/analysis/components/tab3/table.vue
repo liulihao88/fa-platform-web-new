@@ -237,7 +237,7 @@ const selectSheet = async(sheet) => {
   border-radius: 6px;
   padding: 10px;
   background: #fff;
-  height: 400px;
+  height: 100%;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
