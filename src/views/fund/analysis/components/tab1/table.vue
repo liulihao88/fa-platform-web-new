@@ -153,11 +153,6 @@
               />
             </a-row>
           </a-card>
-<!--          <a-row>
-            <a-col  :offset="16" span="4">
-              <a-button type="primary"  @click="closeEditModal">确认</a-button>
-            </a-col>
-          </a-row>-->
         </a-col>
       </a-row>
     </a-card>
@@ -167,12 +162,13 @@
   <a-modal
       v-model:visible="uploadModalVisible"
       title="上传文件"
-      width="600px"
+      width="800px"
       :maskClosable="false"
       :keyboard="false"
       :footer="null"
   >
     <div>
+      <div class="ml4" style="color:red">注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
       <a-card>
         <a-upload-dragger
             :fileList="fileList"
@@ -181,14 +177,17 @@
             accept=".xls,.xlsx,.csv,.pdf"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
+            class="custom-upload-dragger"
         >
-          <p class="ant-upload-drag-icon">
-            <inbox-outlined style="font-size: 48px; color: #1890ff;"></inbox-outlined>
-          </p>
-          <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
-          <p class="ant-upload-hint">
-            支持扩展名 .xls .xlsx .csv .pdf
-          </p>
+          <div class="upload-dragger-content">
+            <p class="ant-upload-drag-icon">
+              <inbox-outlined style="font-size: 48px; color: #1890ff;"></inbox-outlined>
+            </p>
+            <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
+            <p class="ant-upload-hint">
+              支持扩展名 .xls .xlsx .csv .pdf
+            </p>
+          </div>
         </a-upload-dragger>
 
         <div class="upload-list">
@@ -223,7 +222,6 @@
         </div>
 
         <div style="margin-top: 16px; text-align: right;">
-<!--          <a-button @click="closeUploadModal" style="margin-right: 8px;">取消</a-button>-->
           <a-button
               type="primary"
               @click="handleUpload"
@@ -487,40 +485,32 @@ const handleUpload = async () => {
 };
 // 转换查看
 const editFile = async (record) => {
-   const fileInfo = await getFileInfoItem({fileId:record.id})
-   const { fileType } = fileInfo
-   if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
-     currentFileType.value = 1
-   }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
-     currentFileType.value = 2
-   }
-  console.info('currentFileType----------->',currentFileType.value)
-   console.info('文件的详细信息----------->',fileInfo)
-   fileStreamInfo.value = ''
+  const fileInfo = await getFileInfoItem({fileId:record.id})
+  const { fileType } = fileInfo
+  if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
+    currentFileType.value = 1
+  }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
+    currentFileType.value = 2
+  }
+  fileStreamInfo.value = ''
   // 查询转换基本信息
-   const convertInfo = await getFileConverResultApi({fileId:record.id})
-   // 预览文件excel或者pdf
-   getFileStreamByFileId({fileId:record.id}).then((res)=>{
+  const convertInfo = await getFileConverResultApi({fileId:record.id})
+  // 预览文件excel或者pdf
+  getFileStreamByFileId({fileId:record.id}).then((res)=>{
     // 方法1: 使用 instanceof 检查
     if (res instanceof ArrayBuffer) {
-      console.info('fileStreamInfo 是 ArrayBuffer')
       fileStreamInfo.value = res
     } else {
-      console.info('fileStreamInfo 不是 ArrayBuffer，实际类型:', typeof res)
-
       // 如果是 Blob，可以转换为 ArrayBuffer
       if (res instanceof Blob) {
-        console.info('fileStreamInfo 是 Blob，正在转换为 ArrayBuffer...')
         const arrayBuffer =  res.arrayBuffer()
         fileStreamInfo.value = arrayBuffer
       } else {
-        // 其他类型处理
         fileStreamInfo.value = ''
-        console.info('需要特殊处理的数据类型')
       }
     }
   }).catch(()=>{
-     fileStreamInfo.value = ''
+    fileStreamInfo.value = ''
   })
   currentFile = convertInfo || {};
   // 显示Modal
@@ -588,8 +578,6 @@ const onExcelError = (error) => {
   console.error('Excel渲染错误:', error);
 };
 const changeHandle= async(record,event)=>{
-  console.info('event',event)
-  console.info('record',record)
   const fileInfo = await getFileInfoItem({fileId:record.id})
   const { fileType } = fileInfo
 
@@ -613,11 +601,9 @@ const changeHandle= async(record,event)=>{
 </script>
 
 <style scoped>
-
 .search-form :deep(label) {
   width: 100%;
 }
-
 
 .search-form :deep(.ant-form-item-control) {
   width: 100%;
@@ -629,5 +615,47 @@ const changeHandle= async(record,event)=>{
 
 .search-form :deep(.ant-select) {
   width: 100%;
+}
+
+/* 自定义上传拖拽区域样式 */
+.custom-upload-dragger :deep{
+  .ant-upload-btn :deep{
+    height: 280px;
+  }
+
+}
+
+.upload-dragger-content {
+  text-align: center;
+}
+
+/* 增加上传列表项的间距 */
+.upload-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.upload-item-info {
+  flex: 1;
+  margin-left: 8px;
+}
+
+.upload-item-name {
+  font-weight: 500;
+}
+
+.upload-item-size {
+  color: #999;
+  font-size: 12px;
+}
+
+.progress-container {
+  margin-top: 4px;
+}
+
+.upload-actions {
+  margin-left: 8px;
 }
 </style>

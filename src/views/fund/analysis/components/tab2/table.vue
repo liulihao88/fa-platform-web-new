@@ -92,12 +92,12 @@
           <template v-if="column.key === 'involvedName'">
             {{ currentRecord.involvedName }}
           </template>
-          <template v-if="column.key === 'relatedPerson'">
+          <template v-if="column.key === 'relatedPersonCode'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
-                {{ record.relatedPerson }}
+                {{ getRelatedPersonText(record.relatedPersonCode) }}
               </div>
-              <a-select v-else v-model:value="record.relation" style="width: 100%">
+              <a-select v-else v-model:value="record.relatedPersonCode" style="width: 100%">
                 <a-select-option
                     v-for="item in relatedPersonList"
                     :key="item.value"
@@ -108,12 +108,12 @@
               </a-select>
             </div>
           </template>
-          <template v-if="column.key === 'relationCode'">
+          <template v-if="column.key === 'relation'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
-                {{ record.relation }}
+                {{ getRelatedText(record.relation) }}
               </div>
-              <a-select v-else v-model:value="record.relationCode" style="width: 100%">
+              <a-select v-else v-model:value="record.relation" style="width: 100%">
                 <a-select-option
                     v-for="item in props.involvedRelateOptions"
                     :key="item.value"
@@ -269,14 +269,14 @@ const detailColumns = ref([
   },
   {
     title: '关系',
-    dataIndex: 'relationCode',
-    key: 'relationCode',
+    dataIndex: 'relation',
+    key: 'relation',
     width: 150,
   },
   {
     title: '相关方',
-    dataIndex: 'relatedPerson',
-    key: 'relatedPerson',
+    dataIndex: 'relatedPersonCode',
+    key: 'relatedPersonCode',
     width: 200,
   },
   {
@@ -434,7 +434,6 @@ const editRelation = (record) => {
 };
 
 const saveRelation = (record) => {
-  console.info('44444444444444444',)
   // 验证数据
   if (!record.relatedPersonId || !record.relationCode) {
     message.error('请填写完整信息');
@@ -525,6 +524,25 @@ const getTdTypeDesc = (statusValue) => {
   const option = props.idCardTypeOptions.find(opt => opt.value === statusValue);
   return option ? option.label : '未知';
 };
+
+
+// 状态文本 - 从fileProcessOptions中获取
+const getRelatedText = (statusValue) => {
+  if (!props.involvedRelateOptions || !Array.isArray(props.involvedRelateOptions)) {
+    return '未知';
+  }
+  const option = props.involvedRelateOptions.find(opt => opt.value === statusValue);
+  return option ? option.label : '未知';
+};
+
+const getRelatedPersonText = (statusValue) => {
+  if (!relatedPersonList.value || !Array.isArray(relatedPersonList)) {
+    return '未知';
+  }
+  const option = relatedPersonList.value.find(opt => opt.value === statusValue);
+  return option ? option.label : '未知';
+};
+
 
 </script>
 
