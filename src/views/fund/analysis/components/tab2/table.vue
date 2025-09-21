@@ -9,7 +9,7 @@
               <a-select-option
                   v-for="item in props.involvedKindOptions"
                   :key="item.value"
-                  :value="item.value"
+                  :value="parseInt(item.value)"
               >
                 {{item.label}}
               </a-select-option>
@@ -37,14 +37,9 @@
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
       </template>
-      <template v-if="column.dataIndex === 'type'">
-        <a-tag :color="getTypeColor(record.type)">
-          {{ getTypeText(record.type) }}
-        </a-tag>
-      </template>
       <template v-if="column.dataIndex === 'involvedKind'">
-        <a-tag :color="getTypeColor(record.type)">
-          {{ getStatusText(record.involvedKind) }}
+        <a-tag :color="getKindColor(record.involvedKind)">
+          {{ getKindText(record.involvedKind) }}
         </a-tag>
       </template>
       <template v-if="column.dataIndex === 'relationCount'">
@@ -92,34 +87,44 @@
           <template v-if="column.key === 'involvedName'">
             {{ currentRecord.involvedName }}
           </template>
-          <template v-if="column.key === 'relatedPersonCode'">
+          <template v-if="column.key === 'relation'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
-                {{ getRelatedPersonText(record.relatedPersonCode) }}
+                {{ getRelatedText(record.relation) }}
               </div>
-              <a-select v-else v-model:value="record.relatedPersonCode" style="width: 100%">
+              <a-select
+                  v-else
+                  v-model:value="record.relation"
+                  style="width: 100%"
+                  placeholder="请选择关系"
+              >
                 <a-select-option
-                    v-for="item in relatedPersonList"
+                    v-for="item in props.involvedRelateOptions"
                     :key="item.value"
-                    :value="item.value"
+                    :value="parseInt(item.value)"
                 >
                   {{item.label}}
                 </a-select-option>
               </a-select>
             </div>
           </template>
-          <template v-if="column.key === 'relation'">
+          <template v-if="column.key === 'relatedPersonCode'">
             <div class="editable-cell">
               <div v-if="!record.editing" class="editable-cell-value-wrap">
-                {{ getRelatedText(record.relation) }}
+                {{ getRelatedPersonText(record.relatedPersonCode) }}
               </div>
-              <a-select v-else v-model:value="record.relation" style="width: 100%">
+              <a-select
+                  v-else
+                  v-model:value="record.relatedPersonCode"
+                  style="width: 100%"
+                  placeholder="请选择相关方"
+              >
                 <a-select-option
-                    v-for="item in props.involvedRelateOptions"
-                    :key="item.value"
-                    :value="item.value"
+                    v-for="item in relatedPersonList"
+                    :key="item.id"
+                    :value="parseInt(item.id)"
                 >
-                  {{item.label}}
+                  {{item.customerName}}
                 </a-select-option>
               </a-select>
             </div>
@@ -138,6 +143,7 @@
       </a-table>
     </a-card>
   </a-modal>
+
   <!-- 企业详情抽屉 -->
   <a-drawer
       v-model:visible="companyDrawerVisible"
@@ -225,8 +231,6 @@ interface Props {
   involvedRelateOptions: Array<{value: string, label: string}>;
   involvedKindOptions: Array<{value: string, label: string}>;
   idCardTypeOptions: Array<{value: string, label: string}>;
-
-
 }
 
 const props = defineProps<Props>();
@@ -240,7 +244,7 @@ const relatedPersonList = ref([]);
 
 const adjustFormState = reactive({
   id: "",
-  involvedKind: "",
+  involvedKind: undefined,
   involvedName: "",
   involvedKindCode: 0
 });
@@ -329,13 +333,14 @@ const fetchInvolvedList = async () => {
 
     const params = {
       caseId: query.caseId,
-     // involvedName: formState.involvedName,
-     // involvedKind: formState.involvedKind,
+      involvedName: formState.involvedName,
+      involvedKind: formState.involvedKind,
     };
 
     const response = await involvedPersonListApi(params);
     dataSource.value = response;
   } catch (error) {
+    message.error('获取涉案人列表失败');
   } finally {
     tableLoading.value = false;
     searchLoading.value = false;
@@ -343,7 +348,8 @@ const fetchInvolvedList = async () => {
 };
 
 const onSearch = () => {
-  fetchInvolvedList()
+  searchLoading.value = true;
+  fetchInvolvedList();
 };
 
 const adjustRelation = (record) => {
@@ -362,6 +368,7 @@ const handleAdjustOk = () => {
   updatePersonRelationApi(params).then(() => {
     adjustConfirmLoading.value = false;
     adjustModalVisible.value = false;
+    message.success('调整成功');
     fetchInvolvedList();
   }).catch(() => {
     adjustConfirmLoading.value = false;
@@ -395,9 +402,9 @@ const getRelationPersonListByInvolvedId = (record) => {
     // 为每条数据添加编辑状态和原始数据备份
     relatedPersonList.value = res || []
   }).catch(() => {
+    message.error('获取关联人员列表失败');
   })
 };
-
 
 const viewDetails = (record) => {
   if(relatedPersonList.value.length == 0){ // 查询关联的涉案人的关联人下拉选
@@ -412,6 +419,7 @@ const viewDetails = (record) => {
     // 为每条数据添加编辑状态和原始数据备份
     detailData.value = res.map((item, index) => ({
       ...item,
+      key: item.id || `temp-${index}`,
       index: index + 1,
       editing: false,
       originalData: { ...item }
@@ -433,28 +441,40 @@ const editRelation = (record) => {
   record.editing = true;
 };
 
-const saveRelation = (record) => {
+const saveRelation = async (record) => {
   // 验证数据
-  if (!record.relatedPersonId || !record.relationCode) {
+  if (!record.relatedPersonCode || !record.relation) {
     message.error('请填写完整信息');
     return;
   }
-  const params = {
-    id: record.id,
-    involvedId: currentRecord.id,
-    relationCode: record.relationCode,
-    relatedPersonId: record.relatedPersonId,
-  };
 
-  updateInvolvedPersonApi(params).then(() => {
-    record.editing = false;
-    fetchInvolvedList();
-    detailModalVisible.value = false
-  }).catch(() => {
-    record.editing = false;
-    detailModalVisible.value = false
-  })
+  try {
+    const params = {
+      id: record.id,
+      involvedId: currentRecord.id,
+      relationCode: record.relation,
+      relatedPersonId: record.relatedPersonCode,
+    };
 
+    await updateInvolvedPersonApi(params);
+    record.editing = false;
+    message.success('保存成功');
+
+    // 刷新数据
+    const refreshParams = {
+      involvedId: currentRecord.id,
+    };
+    const res = await getInvolvedRelationApi(refreshParams);
+    detailData.value = res.map((item, index) => ({
+      ...item,
+      key: item.id || `temp-${index}`,
+      index: index + 1,
+      editing: false,
+      originalData: { ...item }
+    }));
+  } catch (error) {
+    message.error('保存失败');
+  }
 };
 
 const cancelEdit = (record) => {
@@ -465,19 +485,24 @@ const cancelEdit = (record) => {
   record.editing = false;
 };
 
-const deleteRelation = (record) => {
-  // 模拟删除关系
-  detailData.value = detailData.value.filter(item => item.key !== record.key);
-  message.success('删除成功');
+const deleteRelation = async (record) => {
+  try {
+    // 这里应该调用删除API
+    // await deleteInvolvedRelationApi(record.id);
+    detailData.value = detailData.value.filter(item => item.key !== record.key);
+    message.success('删除成功');
+  } catch (error) {
+    message.error('删除失败');
+  }
 };
 
 const addNewRelation = () => {
   const newRecord = {
-    key: `${Date.now()}`,
+    key: `temp-${Date.now()}`,
     index: detailData.value.length + 1,
     involvedName: '',
-    relatedPerson: '',
-    relation: '请选择关系',
+    relatedPersonCode: undefined,
+    relation: undefined,
     editing: true,
     originalData: null
   };
@@ -485,36 +510,27 @@ const addNewRelation = () => {
   detailData.value.push(newRecord);
 };
 
-const getTypeColor = (type) => {
+const getKindColor = (kind) => {
   const colors = {
-    victim: 'green',
-    suspect: 'red',
-    other: 'orange'
+    1: 'green',
+    2: 'red',
+    3: 'orange'
   };
-  return colors[type] || 'default';
+  return colors[kind] || 'default';
 };
 
-const getTypeText = (type) => {
-  const texts = {
-    victim: '受害人',
-    suspect: '嫌疑人',
-    other: '其他人'
-  };
-  return texts[type] || '未知';
+const getKindText = (kind) => {
+  if (!props.involvedKindOptions || !Array.isArray(props.involvedKindOptions)) {
+    return '未知';
+  }
+  const option = props.involvedKindOptions.find(opt => parseInt(opt.value) === kind);
+  return option ? option.label : '未知';
 };
 
 const resetSearch = () => {
   formState.involvedKind = undefined;
   formState.involvedName = '';
   fetchInvolvedList()
-};
-// 状态文本 - 从fileProcessOptions中获取
-const getStatusText = (statusValue) => {
-  if (!props.involvedKindOptions || !Array.isArray(props.involvedKindOptions)) {
-    return '未知';
-  }
-  const option = props.involvedKindOptions.find(opt => opt.value === statusValue);
-  return option ? option.label : '未知';
 };
 
 const getTdTypeDesc = (statusValue) => {
@@ -525,24 +541,23 @@ const getTdTypeDesc = (statusValue) => {
   return option ? option.label : '未知';
 };
 
-
-// 状态文本 - 从fileProcessOptions中获取
 const getRelatedText = (statusValue) => {
   if (!props.involvedRelateOptions || !Array.isArray(props.involvedRelateOptions)) {
     return '未知';
   }
-  const option = props.involvedRelateOptions.find(opt => opt.value === statusValue);
+  const option = props.involvedRelateOptions.find(opt => parseInt(opt.value) === statusValue);
   return option ? option.label : '未知';
 };
 
-const getRelatedPersonText = (statusValue) => {
-  if (!relatedPersonList.value || !Array.isArray(relatedPersonList)) {
+const getRelatedPersonText = (id) => {
+  console.info('1111111111111----->',id)
+  console.info('22222222222222222------>',relatedPersonList.value)
+  if (!relatedPersonList.value || !Array.isArray(relatedPersonList.value)) {
     return '未知';
   }
-  const option = relatedPersonList.value.find(opt => opt.value === statusValue);
-  return option ? option.label : '未知';
+  const person = relatedPersonList.value.find(item => item.id === id);
+  return person ? person.customerName : '未知';
 };
-
 
 </script>
 

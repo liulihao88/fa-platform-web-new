@@ -27,7 +27,7 @@ export const getInvolvedPersonApi = (params) => defHttp.post({ url: 'fa/caseInvo
 
 
 export const updateInvolvedPersonApi = (params) => defHttp.post({ url: 'fa/caseInvolved/saveOrUpdateInvolvedRelation', params });
-
+export const saveEditBankApi = (params) => defHttp.post({ url: 'fa/casefile/updateOrg', params });
 export const standardFileListApi = (params) => defHttp.post({ url: 'fa/caseStandardData/fileList', params });
 export const standardSheetListApi = (params) => defHttp.post({ url: 'fa/caseStandardData/pageList', params });
 export const standardTableApi = (params) => defHttp.post({ url: 'fa/caseStandardData/standardDataList', params });
@@ -37,4 +37,8 @@ export const uploadFileApi = (params, isReturnResponse) => {
     return defHttp.uploadFile({ url: 'fa/casefile/upload' }, params, { isReturnResponse });
 };
 // 获取文件流信息，供预览使用
-export const getFileStreamByFileId = (params) => defHttp.get({ url: `fa/casefile/previewFileArrayBuffer/${params.fileId}`, params },{isReturnNativeResponse:true});
+export const getFileStreamByFileId = (params) => defHttp.get({
+    url: `fa/casefile/previewFile/${params.fileId}`,
+    params,
+    responseType: 'arraybuffer'
+},{isReturnNativeResponse:true});

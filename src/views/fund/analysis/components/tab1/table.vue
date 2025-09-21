@@ -83,7 +83,6 @@
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <input type="file" @change="(event)=>{changeHandle(record,event)}"/>
           <a-button size="small" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
@@ -108,20 +107,40 @@
               <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
             </a-row>
             <a-row>
-              <VueOfficeExcel
-                  v-if="currentFileType == 1"
-                  :src="fileStreamInfo"
-                  @rendered="onExcelRendered"
-                  @error="onExcelError"
-                  style="height: 600px; width: 100%"
-              />
-              <VueOfficePdf
-                  v-if="currentFileType == 2"
-                  :src="fileStreamInfo"
-                  @rendered="onExcelRendered"
-                  @error="onExcelError"
-                  style="height: 600px; width: 100%"
-              />
+              <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 600px" >
+                <VueOfficeExcel
+                    :src="fileStreamInfo"
+                    :options="vueExcelOptions"
+                    @rendered="onExcelRendered"
+                    @error="onExcelError"
+                />
+              </a-col>
+              <a-col v-if="currentFileType == 'pdf'" span="24">
+                <VueOfficePdf
+                    :src="fileStreamInfo"
+                    @rendered="onExcelRendered"
+                    style="height: 600px;width: 100%"
+                    @error="onExcelError"
+                />
+              </a-col>
+              <a-col v-else-if="currentFileType === 'csv'" span="24">
+                <!-- CSV预览 - 仿Excel表格样式 -->
+                <div class="csv-preview">
+                  <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
+                    <thead>
+                    <tr>
+                      <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
+                      <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </a-col>
+
             </a-row>
           </a-card>
         </a-col>
@@ -133,20 +152,15 @@
                 <span style="line-height: 32px;">文件归属银行：</span>
               </a-col>
               <a-col :span="6">
-                <a-select
-                    v-model:value="selectedBank"
-                    placeholder="请选择银行"
-                    style="width: 100%"
-                >
-                  <a-select-option value="广东发展银行">广东发展银行</a-select-option>
-                  <a-select-option value="招商银行">招商银行</a-select-option>
-                  <a-select-option value="邮储银行">邮储银行</a-select-option>
-                  <!-- 其他银行选项 -->
-                </a-select>
+                <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="请选择文件归属银行"  allow-clear ></JSearchSelect>
               </a-col>
               <a-col :span="4">
-                <a-button type="primary" @click="confirmBank" style="margin-left: 8px;">修改</a-button>
-                <a-button type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
+                <template v-if="bankEfit">
+                  <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
+                  <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
+                </template>
+                <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
+
               </a-col>
             </a-row>
 
@@ -174,6 +188,7 @@
                     size="small"
                     bordered
                     :pagination="false"
+                    :scroll="{ x: 1500 }"
                     style="margin-bottom: 16px;"
                 />
 
@@ -185,6 +200,7 @@
                     size="small"
                     bordered
                     :pagination="false"
+                    :scroll="{ x: 1500 }"
                     style="margin-bottom: 16px;"
                 />
 
@@ -196,6 +212,7 @@
                     size="small"
                     bordered
                     :pagination="false"
+                    :scroll="{ x: 1500 }"
                     style="margin-bottom: 16px;"
                 />
 
@@ -205,6 +222,7 @@
                     :columns="nonBankTransactionColumns"
                     :data-source="activeSheetData.notBankTransactions"
                     size="small"
+                    :scroll="{ x: 1500 }"
                     bordered
                     :pagination="false"
                 />
@@ -296,13 +314,14 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps } from 'vue';
+import { ref,reactive, onMounted, defineProps,computed } from 'vue';
 import { message, Modal} from 'ant-design-vue';
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
 import VueOfficePdf from '@vue-office/pdf'
 //引入相关样式
 import '@vue-office/excel/lib/index.css'
+import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
 import {
   caseFileListApi,
   deleteFileListApi,
@@ -310,7 +329,8 @@ import {
   uploadFileApi,
   getFileStreamByFileId,
   getFileInfoItem,
-  standardTableApi
+  standardTableApi,
+  saveEditBankApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -319,6 +339,21 @@ const router = useRouter();
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
 }
+// CSV表头
+const csvHeaders = computed(() => {
+  if (csvData.value.length > 0) {
+    return csvData.value[0];
+  }
+  return [];
+});
+
+// CSV行数据
+const csvRows = computed(() => {
+  if (csvData.value.length > 1) {
+    return csvData.value.slice(1);
+  }
+  return [];
+});
 
 const props = defineProps<Props>();
 const formRef = ref();
@@ -331,14 +366,19 @@ const formState = reactive({
 // 新增：编辑Modal相关状态
 const editModalVisible = ref(false);
 const fileStreamInfo = ref<any>();
-const currentFileType = ref<any>();
-const selectedBank = ref('广东发展银行');
-const sheetList = ref([
-  { name: 'sheet1', title: '银行客户信息' },
-  { name: 'sheet2', title: '银行交易流水' },
-  { name: 'sheet3', title: '非银行客户信息' },
-  { name: 'sheet4', title: '非银行交易流水' }
-]);
+// 定义支持的文件类型
+const supportedTypes = ['pdf', 'csv', 'xls', 'xlsm', 'xlsx']
+const currentFileType = ref('');
+const csvContent = ref('')
+const csvData = ref([])
+const vueExcelOptions =ref({
+  transformImage:true,
+  xls:true
+})
+
+
+const bankEfit = ref(false);
+const selectedBank = ref('');
 const activeSheet = ref('');
 const activeSheetData = ref({
   bankCustomers:[],
@@ -349,47 +389,47 @@ const activeSheetData = ref({
 
 // 表格列定义
 const bankCustomerColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber', key: 'rowNumber', width: 80 },
-  { title: '归属机构', dataIndex: 'belongOrg', key: 'belongOrg', width: 120 },
-  { title: '客户种类', dataIndex: 'customerType', key: 'customerType', width: 100 },
-  { title: '客户名称', dataIndex: 'customerName', key: 'customerName', width: 120 },
-  { title: '证件种类', dataIndex: 'idType', key: 'idType', width: 100 },
-  { title: '证件号码', dataIndex: 'idNumber', key: 'idNumber', width: 150 },
-  { title: '营业执照', dataIndex: 'businessLicense', key: 'businessLicense', width: 120 },
-  { title: '法人姓名', dataIndex: 'legalPerson', key: 'legalPerson', width: 100 },
-  { title: '是否商户', dataIndex: 'isMerchant', key: 'isMerchant', width: 80 },
-  { title: '商户号', dataIndex: 'merchantNumber', key: 'merchantNumber', width: 120 },
-  { title: '终端号', dataIndex: 'terminalNumber', key: 'terminalNumber', width: 120 },
-  { title: '结算银行', dataIndex: 'settlementBank', key: 'settlementBank', width: 120 },
-  { title: '结算账号', dataIndex: 'settlementAccount', key: 'settlementAccount', width: 150 },
-  { title: '币种', dataIndex: 'currency', key: 'currency', width: 80 },
-  { title: '账户类型', dataIndex: 'accountType', key: 'accountType', width: 100 },
-  { title: '状态', dataIndex: 'status', key: 'status', width: 80 },
-  { title: '其他字段', dataIndex: 'otherFields', key: 'otherFields' }
+  { title: '行号', dataIndex: 'rowNumber'},
+  { title: '归属机构', dataIndex: 'belongOrg'},
+  { title: '客户种类', dataIndex: 'customerType'},
+  { title: '客户名称', dataIndex: 'customerName'},
+  { title: '证件种类', dataIndex: 'idType'},
+  { title: '证件号码', dataIndex: 'idNumber'},
+  { title: '营业执照', dataIndex: 'businessLicense'},
+  { title: '法人姓名', dataIndex: 'legalPerson'},
+  { title: '是否商户', dataIndex: 'isMerchant'},
+  { title: '商户号', dataIndex: 'merchantNumber'},
+  { title: '终端号', dataIndex: 'terminalNumber'},
+  { title: '结算银行', dataIndex: 'settlementBank'},
+  { title: '结算账号', dataIndex: 'settlementAccount'},
+  { title: '币种', dataIndex: 'currency'},
+  { title: '账户类型', dataIndex: 'accountType'},
+  { title: '状态', dataIndex: 'status'},
+  { title: '其他字段', dataIndex: 'otherFields'}
 ]);
 
 const bankTransactionColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber', key: 'rowNumber', width: 80 },
-  { title: '发起行', dataIndex: 'issuingBank', key: 'issuingBank', width: 120 },
-  { title: '户名', dataIndex: 'accountName', key: 'accountName', width: 120 },
-  { title: '账号', dataIndex: 'accountNumber', key: 'accountNumber', width: 150 },
-  { title: '卡号', dataIndex: 'cardNumber', key: 'cardNumber', width: 150 },
-  { title: '流水号', dataIndex: 'serialNumber', key: 'serialNumber', width: 120 },
-  { title: '交易渠道', dataIndex: 'transactionChannel', key: 'transactionChannel', width: 100 },
-  { title: '币种', dataIndex: 'currency', key: 'currency', width: 80 },
-  { title: '交易方向', dataIndex: 'transactionDirection', key: 'transactionDirection', width: 100 },
-  { title: '交易金额', dataIndex: 'transactionAmount', key: 'transactionAmount', width: 120 },
-  { title: '交易种类', dataIndex: 'transactionType', key: 'transactionType', width: 100 },
-  { title: '交易余额', dataIndex: 'transactionBalance', key: 'transactionBalance', width: 120 },
-  { title: '业务日期', dataIndex: 'businessDate', key: 'businessDate', width: 120 },
-  { title: '交易时间', dataIndex: 'transactionTime', key: 'transactionTime', width: 120 },
-  { title: '对方开户银行', dataIndex: 'counterpartyBank', key: 'counterpartyBank', width: 150 },
-  { title: '对方户名', dataIndex: 'counterpartyName', key: 'counterpartyName', width: 120 },
-  { title: '对方账号', dataIndex: 'counterpartyAccount', key: 'counterpartyAccount', width: 150 },
-  { title: '卡号', dataIndex: 'counterpartyCardNumber', key: 'counterpartyCardNumber', width: 150 },
-  { title: '交易状态', dataIndex: 'transactionStatus', key: 'transactionStatus', width: 100 },
-  { title: 'IP地址', dataIndex: 'ipAddress', key: 'ipAddress', width: 120 },
-  { title: '其他字段', dataIndex: 'otherFields', key: 'otherFields' }
+  { title: '行号', dataIndex: 'rowNumber'},
+  { title: '发起行', dataIndex: 'issuingBank'},
+  { title: '户名', dataIndex: 'accountName'},
+  { title: '账号', dataIndex: 'accountNumber'},
+  { title: '卡号', dataIndex: 'cardNumber'},
+  { title: '流水号', dataIndex: 'serialNumber'},
+  { title: '交易渠道', dataIndex: 'transactionChannel'},
+  { title: '币种', dataIndex: 'currency'},
+  { title: '交易方向', dataIndex: 'transactionDirection',},
+  { title: '交易金额', dataIndex: 'transactionAmount'},
+  { title: '交易种类', dataIndex: 'transactionType'},
+  { title: '交易余额', dataIndex: 'transactionBalance' },
+  { title: '业务日期', dataIndex: 'businessDate'},
+  { title: '交易时间', dataIndex: 'transactionTime' },
+  { title: '对方开户银行', dataIndex: 'counterpartyBank' },
+  { title: '对方户名', dataIndex: 'counterpartyName'},
+  { title: '对方账号', dataIndex: 'counterpartyAccount' },
+  { title: '卡号', dataIndex: 'counterpartyCardNumber' },
+  { title: '交易状态', dataIndex: 'transactionStatus' },
+  { title: 'IP地址', dataIndex: 'ipAddress' },
+  { title: '其他字段', dataIndex: 'otherFields' }
 ]);
 
 const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
@@ -606,14 +646,14 @@ const handleUpload = async () => {
 
 // 选择sheet
 const selectSheet = async (sheet) => {
-  console.info('11111111111111111111111111',sheet)
   activeSheet.value = sheet.pageId;
   try {
     // 调用API获取sheet数据
     const response = await standardTableApi({
-      filePageId: sheet.pageId,
+     // filePageId: sheet.pageId,
+      filePageId: '40288188995b3e1901995b51ee2c0005',
+      //
     });
-    console.info('vvvvvvvvvvvvvvvv',response)
     activeSheetData.value = response || {
       bankCustomers:[],
       bankTransactions:[],
@@ -631,52 +671,107 @@ const selectSheet = async (sheet) => {
   }
 };
 
+//
+const doBankEdit = () => {
+  bankEfit.value = true
+};
+
+const cancelBank = () => {
+  bankEfit.value = false
+};
 // 确认银行选择
 const confirmBank = () => {
-  message.success(`已选择银行: ${selectedBank.value}`);
-  // 这里可以添加保存银行选择的逻辑
+  const params = {
+    fileId: currentFile.id,
+    organizationCode: selectedBank.value
+  }
+  saveEditBankApi(params).then(()=>{
+    bankEfit.value = false
+  }).catch(()=>{
+    bankEfit.value = false
+  })
 };
 
 // 转换查看
 const editFile = async (record) => {
-  const fileInfo = await getFileInfoItem({fileId:record.id})
-  const { fileType } = fileInfo
-  if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
-    currentFileType.value = 1
-  }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
-    currentFileType.value = 2
-  }
-  fileStreamInfo.value = ''
   // 查询转换基本信息
   const convertInfo = await getFileConverResultApi({fileId:record.id})
-  // 预览文件excel或者pdf
-  getFileStreamByFileId({fileId:record.id}).then((res)=>{
-    // 方法1: 使用 instanceof 检查
-    if (res instanceof ArrayBuffer) {
-      fileStreamInfo.value = res
-    } else {
-      // 如果是 Blob，可以转换为 ArrayBuffer
-      if (res instanceof Blob) {
-        const arrayBuffer =  res.arrayBuffer()
-        fileStreamInfo.value = arrayBuffer
-      } else {
-        fileStreamInfo.value = ''
-      }
-    }
-  }).catch(()=>{
-    fileStreamInfo.value = ''
-  })
-  currentFile = convertInfo || {};
+  const fileInfo = await getFileInfoItem({fileId:record.id})
+  const { fileType } = fileInfo
+  currentFileType.value = (fileType || '').toLowerCase() // 设置文件类型
+  if (supportedTypes.includes(currentFileType.value)) {
+    console.log('开始预览文件')
+    previewFile(record)
+  } else {
+    message.error(`不支持的文件类型: ${fileType.value}`)
+  }
 
+  currentFile = convertInfo || {};
+  if(convertInfo.organizationCode){ // 设置银行
+    selectedBank.value = convertInfo.organizationCode
+  }
   // 默认选择第一个sheet并加载数据
   const {filePages} = convertInfo
   if (filePages && filePages.length > 0) {
     await selectSheet(filePages[0]);
   }
-
   // 显示Modal
   editModalVisible.value = true;
 };
+// 清理创建的对象URL
+const cleanupUrl = () => {
+  if (fileStreamInfo.value) {
+    fileStreamInfo.value = ''
+  }
+}
+// 解析CSV数据
+const parseCSV = (csvText) => {
+  const lines = csvText.split('\n');
+  const result = [];
+
+  lines.forEach(line => {
+    if (line.trim() !== '') {
+      // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
+      const cells = line.split(',').map(cell => {
+        // 去除可能存在的引号
+        return cell.trim().replace(/^"(.*)"$/, '$1');
+      });
+      result.push(cells);
+    }
+  });
+
+  return result;
+};
+// 预览文件excel或者pdf或者csv文件
+const previewFile = (record)=>{
+  getFileStreamByFileId({fileId:record.id}).then((response)=>{
+    if (currentFileType.value === 'csv') {
+      // CSV文件以文本形式获取
+      csvContent.value = response.data
+      csvData.value = parseCSV(response.data)
+    } else {
+      // 其他文件类型以arrayBuffer形式获取
+      cleanupUrl() // 清理之前的URL
+      // 对于Excel文件，使用arrayBuffer创建blob
+      if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
+        const blob = new Blob([response.data], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        fileStreamInfo.value = blob;
+      }
+      // 对于PDF文件，使用arrayBuffer创建blob
+      else if (currentFileType.value === 'pdf') {
+        const blob = new Blob([response.data], {
+          type: 'application/pdf'
+        });
+        fileStreamInfo.value = blob;
+      }
+    }
+  }).catch(()=>{
+    fileStreamInfo.value = ''
+  })
+}
+
 
 // 关闭编辑Modal
 const closeEditModal = () => {
@@ -744,25 +839,6 @@ const onExcelRendered = () => {
 const onExcelError = (error) => {
   console.error('Excel渲染错误:', error);
 };
-const changeHandle= async(record,event)=>{
-  const fileInfo = await getFileInfoItem({fileId:record.id})
-  const { fileType } = fileInfo
-
-  if(['xlsx','xlsx','csx'].includes(fileType)){ // 加载vue-office-excel
-    currentFileType.value = 1
-  }else if(['pdf'].includes(fileType)){// 加载vue-office-pdf
-    currentFileType.value = 2
-  }
-
-  let file = event.target.files[0]
-  let fileReader = new FileReader()
-  fileReader.readAsArrayBuffer(file)
-  fileReader.onload =  () => {
-    fileStreamInfo.value = fileReader.result
-    editModalVisible.value = true;
-
-  }
-}
 
 
 </script>
@@ -847,4 +923,84 @@ const changeHandle= async(record,event)=>{
   background-color: #e6f7ff;
   border-right: 3px solid #1890ff;
 }
+/* 新增Excel预览容器样式 */
+.excel-preview-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.excel-container {
+  height: 600px;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #e8e8e8;
+  margin-top: 10px;
+}
+
+/* 修复VueOfficeExcel样式问题 */
+:deep(.vue-office-excel) {
+  height: 100% !important;
+}
+
+:deep(.vue-office-excel .luckysheet) {
+  height: 100% !important;
+  min-width: unset !important;
+}
+
+:deep(.vue-office-excel .luckysheet-cell-sheettable) {
+  overflow: auto !important;
+}
+
+:deep(.vue-office-excel .luckysheet-wa-calc) {
+  min-width: unset !important;
+}
+
+/* 调整Sheet选项卡样式 */
+:deep(.vue-office-excel .luckysheet-sheet-area) {
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+}
+
+:deep(.vue-office-excel .luckysheet-sheet-container) {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+}
+
+/* 确保内容区域适应容器 */
+:deep(.vue-office-excel .luckysheet-grid-container) {
+  max-width: 100% !important;
+}
+.csv-preview {
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+}
+
+.csv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    text-align: left;
+  }
+
+  th, td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  tr:hover {
+    background-color: #f0f0f0;
+  }
+}
+
 </style>
