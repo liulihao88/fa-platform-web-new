@@ -57,7 +57,7 @@
                           <img v-else style="margin-top: 2px; max-width: initial" :src="codeImg" @click="handleChangeCheckCode" />
                         </div>
                       </div>
-                      <div class="aui-flex">
+<!--                      <div class="aui-flex">
                         <div class="aui-flex-box">
                           <div class="aui-choice">
                             <a-input class="fix-auto-fill" type="checkbox" v-model:value="rememberMe" />
@@ -67,7 +67,7 @@
                         <div class="aui-forget">
                           <a @click="forgetHandelClick"> {{ t('sys.login.forgetPassword') }}</a>
                         </div>
-                      </div>
+                      </div>-->
                     </div>
                   </a-form>
                   <a-form v-else ref="phoneFormRef" :model="phoneFormData" @keyup.enter.native="loginHandleClick">
@@ -92,15 +92,15 @@
                     <a-button :loading="loginLoading" class="aui-link-login" type="primary" @click="loginHandleClick">
                       {{ t('sys.login.loginButton') }}</a-button>
                   </div>
-                  <div class="aui-flex">
+<!--                  <div class="aui-flex">
                     <a class="aui-linek-code aui-flex-box" @click="codeHandleClick">{{ t('sys.login.qrSignInFormTitle') }}</a>
                   </div>
                   <div class="aui-flex">
                     <a class="aui-linek-code aui-flex-box" @click="registerHandleClick">{{ t('sys.login.registerButton') }}</a>
-                  </div>
+                  </div>-->
                 </div>
               </div>
-              <a-form @keyup.enter.native="loginHandleClick">
+<!--              <a-form @keyup.enter.native="loginHandleClick">
                 <div class="aui-flex aui-third-text">
                   <div class="aui-flex-box aui-third-border">
                     <span>{{ t('sys.login.otherSignIn') }}</span>
@@ -128,7 +128,7 @@
                     </div>
                   </div>
                 </div>
-              </a-form>
+              </a-form>-->
             </div>
           </div>
         </div>
