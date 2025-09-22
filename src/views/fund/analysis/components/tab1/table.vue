@@ -728,9 +728,10 @@ const cleanupUrl = () => {
 }
 // 解析CSV数据
 const parseCSV = (csvText) => {
+
   const lines = csvText.split('\n');
   const result = [];
-
+  console.info('lines',lines)
   lines.forEach(line => {
     if (line.trim() !== '') {
       // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
@@ -741,14 +742,17 @@ const parseCSV = (csvText) => {
       result.push(cells);
     }
   });
-
+  console.info('result',result)
   return result;
 };
 // 预览文件excel或者pdf或者csv文件
 const previewFile = (record)=>{
-  getFileStreamByFileId({fileId:record.id}).then((response)=>{
+  const  responseType = currentFileType.value === 'csv'?'text':'arraybuffer'
+  getFileStreamByFileId({fileId:record.id},responseType).then((response)=>{
+    console.info('文件类型',currentFileType.value)
     if (currentFileType.value === 'csv') {
       // CSV文件以文本形式获取
+      console.info('文件内容',response)
       csvContent.value = response.data
       csvData.value = parseCSV(response.data)
     } else {

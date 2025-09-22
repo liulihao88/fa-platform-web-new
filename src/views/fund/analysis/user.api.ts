@@ -40,8 +40,7 @@ export const uploadFileApi = (params, isReturnResponse) => {
     return defHttp.uploadFile({ url: 'fa/casefile/upload' }, params, { isReturnResponse });
 };
 // 获取文件流信息，供预览使用
-export const getFileStreamByFileId = (params) => defHttp.get({
+export const getFileStreamByFileId = (params,responseType='arraybuffer') => defHttp.get({
     url: `fa/casefile/previewFile/${params.fileId}`,
-    params,
-    responseType: 'arraybuffer'
+    responseType:responseType
 },{isReturnNativeResponse:true});
