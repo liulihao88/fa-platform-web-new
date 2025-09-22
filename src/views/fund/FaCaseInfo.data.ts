@@ -28,7 +28,10 @@ export const columns: BasicColumn[] = [
    {
     title: '文件处理状态',
     align:"center",
-    dataIndex: 'processStatus'
+    dataIndex: 'processStatus',
+    customRender: ({ text }) => {
+           return render.renderDict(text, 'fa_file_process_status');
+       },
    },
    {
     title: '文件导入次数',

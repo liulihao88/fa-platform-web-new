@@ -151,29 +151,31 @@
       width="700px"
       placement="right"
   >
-    <a-card v-if="currentCompanyDetail">
-      <h3>企业基本信息</h3>
-      <a-descriptions bordered :column="1">
-        <a-descriptions-item label="营业执照">{{ currentCompanyDetail.enterpriseLicenseNum || '-' }}</a-descriptions-item>
-        <a-descriptions-item label="法人">{{ currentCompanyDetail.enterpriseLegalPersonName || '-' }}</a-descriptions-item>
-        <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentCompanyDetail.idType)}}</a-descriptions-item>
-        <a-descriptions-item label="证件号">{{ currentCompanyDetail.idNum || '-' }}</a-descriptions-item>
-        <a-descriptions-item label="电话">{{ currentCompanyDetail.teleNum || '-' }}</a-descriptions-item>
-      </a-descriptions>
+    <div v-if="currentCompanyDetail">
+      <a-card title="企业基本信息">
+        <a-descriptions bordered :column="1">
+          <a-descriptions-item label="营业执照">{{ currentCompanyDetail.enterpriseLicenseNum || '-' }}</a-descriptions-item>
+          <a-descriptions-item label="法人">{{ currentCompanyDetail.enterpriseLegalPersonName || '-' }}</a-descriptions-item>
+          <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentCompanyDetail.idType)}}</a-descriptions-item>
+          <a-descriptions-item label="证件号">{{ currentCompanyDetail.idNum || '-' }}</a-descriptions-item>
+          <a-descriptions-item label="电话">{{ currentCompanyDetail.teleNum || '-' }}</a-descriptions-item>
+        </a-descriptions>
+      </a-card>
+      <a-card title="人物关系信息" class="mt4">
+        <div v-for="(relation, index) in currentCompanyDetail.relationPersons" :key="index">
+          <p>和 {{ relation.customerNameRel }} - {{getRelatedText(relation.customerRelation) }}</p>
+        </div>
+      </a-card>
 
-      <h3 style="margin-top: 20px;">人物关系信息</h3>
-      <div v-for="(relation, index) in currentCompanyDetail.relationPersons" :key="index">
-        <p>和 {{ relation.name }} - {{ relation.type }}</p>
-      </div>
-
-      <h3 style="margin-top: 20px;">账户信息</h3>
-      <div v-for="(account, index) in currentCompanyDetail.accounts" :key="index">
-        <p><strong>{{ account.bank }}</strong></p>
-        <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
-          {{ item.type }} {{ item.number }}
-        </p>
-      </div>
-    </a-card>
+      <a-card title="账户信息" class="mt4">
+        <div v-for="(account, index) in currentCompanyDetail.accounts" :key="index">
+          <p><strong>{{ account.bank }}</strong></p>
+          <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
+            {{ item.type }} {{ item.number }}
+          </p>
+        </div>
+      </a-card>
+    </div>
     <a-skeleton v-else active />
   </a-drawer>
 

@@ -1,5 +1,5 @@
 <template>
-  <a-card class="m2">
+  <a-card class="case-body">
     <a-row>
       <a-col span="6">
         案件名称：{{caseInfo.caseName}}
@@ -11,12 +11,13 @@
         受理日期：{{caseInfo.acceptTime}}
       </a-col>
     </a-row>
-    <a-divider />
-    <a-steps
-        :current="currentStep"
-        :items="stepOptions"
-    ></a-steps>
-    <a-divider />
+    <div  class="mt4 mb2">
+      <a-steps
+          :current="currentStep"
+          :items="stepOptions"
+      ></a-steps>
+    </div>
+
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="上传文件">
         <tab1 :fileProcessOptions="fileProcessOptions"></tab1>
@@ -57,7 +58,7 @@ const involvedKindOptions = ref([]);
 const idCardTypeOptions = ref([]);
 
 
-const currentStep = ref('001');
+const currentStep = ref(0);
 
 // 页面初始化时调用接口
 onMounted(() => {
@@ -88,8 +89,8 @@ onMounted(() => {
 // 模拟从服务端获取案件信息的函数
 const fetchCaseInfo = async () => {
   caseDetailApi({caseId: query.caseId}).then((res)=>{
-
-      currentStep.value = res.fileProcessStatus
+      console.info('111111111111111',res)
+      currentStep.value = Number(res.fileProcessStatus)
       caseInfo.value = res;
    // currentStep.value = mockResponse.data.currentStep;
   })
@@ -97,4 +98,13 @@ const fetchCaseInfo = async () => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.case-body:deep(.ant-card-body){
+  padding: 10px 24px;
+}
+.case-body:deep(.ant-tabs-nav){
+  margin-bottom: 0;
+}
+
+</style>

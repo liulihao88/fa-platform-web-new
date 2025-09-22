@@ -22,8 +22,6 @@
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
-        <!-- 高级查询 -->
-        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
       </template>
       <!--操作栏-->
       <template #action="{ record }">

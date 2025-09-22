@@ -94,15 +94,15 @@
   <a-modal
       v-model:visible="editModalVisible"
       title="文件转换详情"
-      :width="1400"
       :footer="null"
+      width="100%"
       wrap-class-name="full-modal"
       @ok="closeEditModal"
       @cancel="closeEditModal"
   >
     <a-card>
       <a-row :gutter="16">
-        <a-col span="8">
+        <a-col span="10">
           <a-card title="源文件视图" size="small">
             <a-row>
               <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
@@ -145,7 +145,7 @@
             </a-row>
           </a-card>
         </a-col>
-        <a-col span="16">
+        <a-col span="14">
           <a-card title="转换结果" size="small">
             <!-- 文件归属银行选择区域 -->
             <a-row style="margin-bottom: 16px;">
@@ -961,6 +961,9 @@ const onExcelError = (error) => {
 }
 
 /* 修复VueOfficeExcel样式问题 */
+:deep(.x-spreadsheet-sheet){
+  width: 100%;
+}
 :deep(.vue-office-excel) {
   height: 100% !important;
 }
