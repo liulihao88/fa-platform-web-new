@@ -18,7 +18,8 @@
           <div class="aui-form">
             <div class="aui-image">
               <div class="aui-image-text">
-                <img :src="adTextImg" />
+                资金分析平台
+<!--                <img :src="adTextImg" />-->
               </div>
             </div>
             <div class="aui-formBox">
@@ -27,9 +28,9 @@
                   <div class="aui-flex-box" :class="activeIndex === 'accountLogin' ? 'activeNav on' : ''" @click="loginClick('accountLogin')"
                     >{{ t('sys.login.signInFormTitle') }}
                   </div>
-                  <div class="aui-flex-box" :class="activeIndex === 'phoneLogin' ? 'activeNav on' : ''" @click="loginClick('phoneLogin')"
+<!--                  <div class="aui-flex-box" :class="activeIndex === 'phoneLogin' ? 'activeNav on' : ''" @click="loginClick('phoneLogin')"
                     >{{ t('sys.login.mobileSignInFormTitle') }}
-                  </div>
+                  </div>-->
                 </div>
                 <div class="aui-form-box" style="height: 180px">
                   <a-form ref="loginRef" :model="formData" v-if="activeIndex === 'accountLogin'" @keyup.enter.native="loginHandleClick">
@@ -162,8 +163,8 @@
   import MiniForgotpad from './MiniForgotpad.vue';
   import MiniRegister from './MiniRegister.vue';
   import MiniCodelogin from './MiniCodelogin.vue';
-  import logoImg from '/@/assets/loginmini/icon/jeecg_logo.png';
-  import adTextImg from '/@/assets/loginmini/icon/jeecg_ad_text.png';
+  import logoImg from '/@/assets/loginmini/icon/icon-code.png';
+  // import adTextImg from '/@/assets/loginmini/icon/jeecg_ad_text.png';
   import { AppLocalePicker, AppDarkModeToggle } from '/@/components/Application';
   import { useLocaleStore } from '/@/store/modules/locale';
   import { useDesign } from "/@/hooks/web/useDesign";

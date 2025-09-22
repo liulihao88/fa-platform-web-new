@@ -34,7 +34,7 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     domainUrl: VITE_GLOB_DOMAIN_URL,
     apiUrl: VITE_GLOB_API_URL,
     shortName: VITE_GLOB_APP_SHORT_NAME,
-    shortTitle: shortTitle,
+    shortTitle: VITE_GLOB_APP_TITLE,
     openSso: VITE_GLOB_APP_OPEN_SSO,
     openQianKun: VITE_GLOB_APP_OPEN_QIANKUN,
     casBaseUrl: VITE_GLOB_APP_CAS_BASE_URL,

@@ -122,7 +122,7 @@
                 <a-select-option
                     v-for="item in relatedPersonList"
                     :key="item.id"
-                    :value="parseInt(item.id)"
+                    :value="item.id"
                 >
                   {{item.customerName}}
                 </a-select-option>
@@ -458,8 +458,6 @@ const saveRelation = async (record) => {
 
     await updateInvolvedPersonApi(params);
     record.editing = false;
-    message.success('保存成功');
-
     // 刷新数据
     const refreshParams = {
       involvedId: currentRecord.id,
@@ -523,7 +521,7 @@ const getKindText = (kind) => {
   if (!props.involvedKindOptions || !Array.isArray(props.involvedKindOptions)) {
     return '未知';
   }
-  const option = props.involvedKindOptions.find(opt => parseInt(opt.value) === kind);
+  const option = props.involvedKindOptions.find(opt => parseInt(opt.value) == kind);
   return option ? option.label : '未知';
 };
 

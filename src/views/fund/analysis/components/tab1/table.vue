@@ -58,6 +58,7 @@
           <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
           <a-button class="ml2" @click="resetSearch">重置</a-button>
           <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
+          <a-button class="ml2" type="primary" @click="confirmFileConvert">确认文件转换</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -250,7 +251,7 @@
             :fileList="fileList"
             :multiple="true"
             :customRequest="onFileListUpload"
-            accept=".xls,.xlsx,.csv,.pdf"
+            accept=".xls,.xlsx,.csv,.pdf,.rar,.zip"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
             class="custom-upload-dragger"
@@ -261,7 +262,7 @@
             </p>
             <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
             <p class="ant-upload-hint">
-              支持扩展名 .xls .xlsx .csv .pdf
+              支持扩展名 .xls .xlsx .csv .pdf .rar .zip
             </p>
           </div>
         </a-upload-dragger>
@@ -330,7 +331,8 @@ import {
   getFileStreamByFileId,
   getFileInfoItem,
   standardTableApi,
-  saveEditBankApi
+  saveEditBankApi,
+  convertFileListApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -650,8 +652,8 @@ const selectSheet = async (sheet) => {
   try {
     // 调用API获取sheet数据
     const response = await standardTableApi({
-     // filePageId: sheet.pageId,
-      filePageId: '40288188995b3e1901995b51ee2c0005',
+      filePageId: sheet.pageId,
+      // filePageId: '40288188995b3e1901995b51ee2c0005',
       //
     });
     activeSheetData.value = response || {
@@ -789,6 +791,22 @@ const closeEditModal = () => {
     notBankTransactions:[]
   };
 };
+
+// 确认文件转换
+const confirmFileConvert = async () => {
+  Modal.confirm({
+    title: '确认转换文件吗',
+    content: `确定要转换所有文件吗？`,
+    okText: '确认',
+    cancelText: '取消',
+    onOk() {
+      convertFileListApi({caseId:query.caseId,}).then(()=>{
+        fetchFileList();
+      })
+    }
+  });
+};
+
 
 // 删除文件
 const deleteFile = async (record) => {

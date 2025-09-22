@@ -12,6 +12,9 @@ export const caseFileListApi = (params) => defHttp.post({ url: 'fa/casefile/list
 // 删除文件
 export const deleteFileListApi = (params) => defHttp.post({ url: 'fa/casefile/deleteFile', params });
 
+// 确认转换文件
+export const convertFileListApi = (params) => defHttp.post({ url: 'fa/faCaseInfo/confirmCaseInfo', params });
+
 // 根据文件id查看转换结果
 export const getFileConverResultApi = (params) => defHttp.post({ url: 'fa/casefile/getCaseFileTransInfo', params });
 
