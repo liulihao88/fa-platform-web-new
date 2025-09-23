@@ -34,10 +34,6 @@
             <div class="group-header">
               <div class="group-title">条件组 {{ index + 1 }}</div>
               <div class="group-actions">
-                <a-button type="link" size="small" @click="addSubCondition(condition.id, 2)" class="add-sub-btn">
-                  <template #icon><PlusCircleOutlined /></template>
-                  添加子组
-                </a-button>
                 <a-button type="link" size="small" danger @click="removeCondition(condition.id)" class="delete-btn">
                   <template #icon><DeleteOutlined /></template>
                   删除组
