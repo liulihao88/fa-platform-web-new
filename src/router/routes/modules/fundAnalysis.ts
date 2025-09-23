@@ -24,6 +24,16 @@ const dashboard: AppRouteModule = {
         hideMenu: true,
       },
     },
+    {
+      path: 'intelligent',
+      name: 'Intelligent',
+      component: () => import('/src/views/fund/analysis/fundsAnalysis.vue'),
+      meta: {
+        title: t('routes.dashboard.analysis'),
+        icon: 'simple-icons:analysis-dot-me',
+        hideMenu: true,
+      },
+    },
   ],
 };
 

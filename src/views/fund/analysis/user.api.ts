@@ -46,3 +46,6 @@ export const getFileStreamByFileId = (params,responseType='arraybuffer') => defH
 },{isReturnNativeResponse:true});
 
 export const exportDataApi = '/fa/caseDuplicateData/exportXls'
+
+// 智能筛选列表
+export const intelligentTableListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/transList', params });

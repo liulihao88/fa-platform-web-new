@@ -182,6 +182,11 @@ function getTableAction(record){
 async function handleGoToDetail(record: Recordable) {
   router.push({ path: '/fund/cases', query: {caseId:record.id} });
 }
+
+async function handleGoToAnalysisDetail(record: Recordable) {
+  router.push({ path: '/fund/fundsAnalysis', query: {caseId:record.id} });
+}
+
 /**
  * 下拉操作栏
  */
@@ -189,7 +194,7 @@ function getDropDownAction(record){
   return [
     {
       label: '资金分析',
-      onClick: handleGoToDetail.bind(null, record),
+      onClick: handleGoToAnalysisDetail.bind(null, record),
       // auth: 'casefiles:fa_case_info:edit'
     },
     {
