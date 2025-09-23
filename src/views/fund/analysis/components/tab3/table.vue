@@ -57,9 +57,12 @@
                 size="middle"
                 :scroll="{ x: 1500, y: 500 }"
             >
-              <template #bodyCell="{ column, text }">
-                <template v-if="column.dataIndex === 'operation'">
+              <template #bodyCell="{ column, record }">
+<!--                <template v-if="column.dataIndex === 'affiliatedOrg'">
                   <a>查看详情</a>
+                </template>-->
+                <template v-if="column.dataIndex === 'operation'">
+                  <a @click="getAnalyzeResult(record)">查看详情</a>
                 </template>
               </template>
             </a-table>
@@ -97,7 +100,12 @@
 <script lang="ts" name="tab1" setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute } from "vue-router";
-import { standardFileListApi, standardSheetListApi, standardTableApi } from "@/views/fund/analysis/user.api";
+import {
+  getAnalyzesultApi,
+  standardFileListApi,
+  standardSheetListApi,
+  standardTableApi
+} from "@/views/fund/analysis/user.api";
 
 const { query } = useRoute();
 
@@ -225,6 +233,22 @@ const selectSheet = async(sheet) => {
     tableLoading.value = false;
   }
 };
+
+// 查看解析详情接口
+const getAnalyzeResult = async(record) => {
+    const params = {
+      caseId: query.caseId,
+      dataType: "",
+      dataId: record.id
+
+    };
+    const response = await getAnalyzesultApi(params);
+
+};
+
+
+
+
 
 </script>
 

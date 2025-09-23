@@ -27,7 +27,7 @@ export const involvedPersonListApi = (params) => defHttp.post({ url: '/fa/caseIn
 export const updatePersonRelationApi = (params) => defHttp.post({ url: '/fa/caseInvolved/updateInvolvedType', params });
 export const getInvolvedRelationApi = (params) => defHttp.post({ url: '/fa/caseInvolved/relationList', params });
 export const getInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInvolved/involvedPersonList', params });
-
+export const getAnalyzesultApi = (params) => defHttp.post({ url: '/caseStandardData/getParseDataList', params });
 
 export const updateInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInvolved/saveOrUpdateInvolvedRelation', params });
 export const saveEditBankApi = (params) => defHttp.post({ url: '/fa/casefile/updateOrg', params });

@@ -945,57 +945,11 @@ const onExcelError = (error) => {
   background-color: #e6f7ff;
   border-right: 3px solid #1890ff;
 }
-/* 新增Excel预览容器样式 */
-.excel-preview-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
 
-.excel-container {
-  height: 600px;
-  overflow: auto;
-  position: relative;
-  border: 1px solid #e8e8e8;
-  margin-top: 10px;
-}
-
-/* 修复VueOfficeExcel样式问题 */
 :deep(.x-spreadsheet-sheet){
   width: 100%;
 }
-:deep(.vue-office-excel) {
-  height: 100% !important;
-}
 
-:deep(.vue-office-excel .luckysheet) {
-  height: 100% !important;
-  min-width: unset !important;
-}
-
-:deep(.vue-office-excel .luckysheet-cell-sheettable) {
-  overflow: auto !important;
-}
-
-:deep(.vue-office-excel .luckysheet-wa-calc) {
-  min-width: unset !important;
-}
-
-/* 调整Sheet选项卡样式 */
-:deep(.vue-office-excel .luckysheet-sheet-area) {
-  overflow-x: auto !important;
-  white-space: nowrap !important;
-}
-
-:deep(.vue-office-excel .luckysheet-sheet-container) {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-}
-
-/* 确保内容区域适应容器 */
-:deep(.vue-office-excel .luckysheet-grid-container) {
-  max-width: 100% !important;
-}
 .csv-preview {
   padding: 20px;
   height: 100%;
