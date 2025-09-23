@@ -30,7 +30,7 @@ export const columns: BasicColumn[] = [
     align:"center",
     dataIndex: 'processStatus',
     customRender: ({ text }) => {
-           return render.renderDict(text, 'fa_file_process_status');
+           return render.renderDict(text, 'fa_case_process_status');
        },
    },
    {
@@ -75,10 +75,15 @@ export const searchFormSchema: FormSchema[] = [
       //colProps: {span: 6},
  	},
 	{
-      label: "文件处理状态",
+      label: "案件处理状态",
       field: 'processStatus',
-      component: 'Input',
-      //colProps: {span: 6},
+      component: 'JDictSelectTag',
+      componentProps: {
+        //字典code配置，比如通过性别字典编码：sex，也可以使用demo,name,id 表名,名称,值的方式
+        dictCode:'fa_case_process_status',
+        //支持radio(单选按钮)、radioButton(单选按钮 btn风格)、select(下拉框)
+        type:'select'
+  },
  	},
 	{
       label: "受理时间",
@@ -123,7 +128,7 @@ export const superQuerySchema = {
   caseReason: {title: '案由',order: 1,view: 'text', type: 'string',},
   deptCaseCode: {title: '部门受案号',order: 2,view: 'text', type: 'string',},
   fileNum: {title: '文件数量',order: 3,view: 'number', type: 'number',},
-  processStatus: {title: '文件处理状态',order: 4,view: 'text', type: 'string',},
+  processStatus: {title: '案件处理状态',order: 4,view: 'text', type: 'string',},
   fileImportNum: {title: '文件导入次数',order: 5,view: 'number', type: 'number',},
   importDataNum: {title: '导入笔数',order: 6,view: 'number', type: 'number',},
   repeatDataNum: {title: '去重笔数',order: 7,view: 'text', type: 'string',},
