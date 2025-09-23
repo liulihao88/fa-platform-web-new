@@ -676,7 +676,7 @@ const saveFilterCondition = () => {
 
   const newCondition = {
     name: conditionName.value,
-    conditionJson: JSON.parse(JSON.stringify(rootConditions.value)) // 深拷贝
+    conditionJson: JSON.stringify(rootConditions.value) // 深拷贝
   };
 
   savedConditions.value.push(newCondition);
