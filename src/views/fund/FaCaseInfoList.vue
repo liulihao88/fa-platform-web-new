@@ -66,6 +66,9 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     api: list,
     columns,
     canResize:true,
+    bordered:true,
+    size:'small',
+    striped:true,
     formConfig: {
       //labelWidth: 120,
       schemas: searchFormSchema,

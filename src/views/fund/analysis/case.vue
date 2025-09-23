@@ -1,23 +1,24 @@
 <template>
   <a-card class="case-body">
-    <a-row>
-      <a-col span="6">
-        案件名称：{{caseInfo.caseName}}
-      </a-col>
-      <a-col span="6">
-        部门受案号: {{caseInfo.departmentCaseNumber}}
-      </a-col>
-      <a-col span="6">
-        受理日期：{{caseInfo.acceptTime}}
-      </a-col>
-    </a-row>
-    <div  class="mt4 mb2">
-      <a-steps
-          :current="currentStep"
-          :items="stepOptions"
-      ></a-steps>
-    </div>
-
+    <a-card class="case-body">
+      <a-row>
+        <a-col span="6">
+          案件名称：{{caseInfo.caseName}}
+        </a-col>
+        <a-col span="6">
+          部门受案号: {{caseInfo.departmentCaseNumber}}
+        </a-col>
+        <a-col span="6">
+          受理日期：{{caseInfo.acceptTime}}
+        </a-col>
+      </a-row>
+      <div  class="mt4 mb2">
+        <a-steps
+            :current="currentStep"
+            :items="stepOptions"
+        ></a-steps>
+      </div>
+    </a-card>
     <a-tabs v-model:activeKey="activeKey">
       <a-tab-pane key="1" tab="上传文件">
         <tab1 :fileProcessOptions="fileProcessOptions"></tab1>
