@@ -12,7 +12,7 @@
       :data-source="repeatedFileList"
       :pagination="false"
       bordered
-      size="middle"
+      size="small"
       :loading="tableLoading"
       :row-selection="rowSelection"
       rowKey="id"
@@ -62,9 +62,6 @@ const repeatedFileList = reactive([]);
 const selectedRowKeys = ref<string[]>([]);
 
 const columns = [
-  {
-    title: '重复流水数据',
-    children: [
       {
         title: '文件一',
         children: [
@@ -123,8 +120,6 @@ const columns = [
           }
         ]
       }
-    ]
-  }
 ];
 
 // 配置行选择器

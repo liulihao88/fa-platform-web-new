@@ -54,7 +54,7 @@
                 :data-source="customerData"
                 :pagination="false"
                 bordered
-                size="middle"
+                size="small"
                 :scroll="{ x: 1500, y: 500 }"
             >
               <template #bodyCell="{ column, record }">
@@ -73,7 +73,7 @@
                 :data-source="transactionData"
                 :pagination="false"
                 bordered
-                size="middle"
+                size="small"
                 :scroll="{ x: 1500, y: 500 }"
             >
               <template #bodyCell="{ column, record }">
@@ -92,7 +92,7 @@
                 :data-source="notBankCustomersData"
                 :pagination="false"
                 bordered
-                size="middle"
+                size="small"
                 :scroll="{ x: 1500, y: 500 }"
             >
               <template #bodyCell="{ column, record }">
@@ -110,7 +110,7 @@
                 :data-source="notBankTransactionsData"
                 :pagination="false"
                 bordered
-                size="middle"
+                size="small"
                 :scroll="{ x: 1500, y: 500 }"
             >
               <template #bodyCell="{ column, record }">

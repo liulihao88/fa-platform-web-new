@@ -32,7 +32,7 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <a-table :columns="columns" :data-source="dataSource" :loading="tableLoading" bordered>
+  <a-table :columns="columns" :data-source="dataSource" :loading="tableLoading" bordered size="small">
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
@@ -79,7 +79,7 @@
     <a-card>
       <h3>涉案人【{{ currentRecord.involvedName }}】相关方关系：</h3>
       <a-button type="primary" class="add-btn" @click="addNewRelation">新增关系</a-button>
-      <a-table :columns="detailColumns" :data-source="detailData" bordered class="relation-table" :pagination="false">
+      <a-table :columns="detailColumns" :data-source="detailData" bordered size="small" class="relation-table" :pagination="false">
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'index'">
             {{ index + 1 }}
