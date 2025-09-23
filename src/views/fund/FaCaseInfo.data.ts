@@ -113,6 +113,15 @@ export const formSchema: FormSchema[] = [
     field: 'deptCaseCode',
     component: 'Input',
   },
+  {
+    label: '受理时间',
+    field: 'processDate',
+    component: 'DatePicker',
+    componentProps: {
+      showTime:true,
+      valueFormat: 'YYYY-MM-DD HH:mm:ss'
+    },
+  },
 	// TODO 主键隐藏字段，目前写死为ID
 	{
 	  label: '',
