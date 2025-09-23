@@ -20,9 +20,9 @@ export function useMethods() {
    * @param name
    * @param url
    */
-  async function exportXls(name, url, params, isXlsx = false) {
+  async function exportXls(name, url, params, isXlsx = false, method = 'get')  {
     //update-begin---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
-    const data = await defHttp.get({ url: url, params: params, responseType: 'blob', timeout: 60000 }, { isTransformResponse: false });
+    const data = await defHttp[method]({ url: url, params: params, responseType: 'blob', timeout: 60000 }, { isTransformResponse: false });
     //update-end---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
     if (!data) {
       createMessage.warning('文件下载失败');
@@ -94,7 +94,7 @@ export function useMethods() {
   }
 
   return {
-    handleExportXls: (name: string, url: string, params?: object) => exportXls(name, url, params),
+    handleExportXls: (name: string, url: string, params?: object, method?:string) => exportXls(name, url, params, false, method),
     handleImportXls: (data, url, success) => importXls(data, url, success),
     handleExportXlsx: (name: string, url: string, params?: object) => exportXls(name, url, params, true),
   };

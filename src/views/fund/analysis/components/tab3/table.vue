@@ -1,5 +1,5 @@
 <template>
-  <a-row :gutter="20">
+  <a-row :gutter="20" class="mt2">
     <!-- 左侧文件列表 -->
     <a-col :span="4">
       <div class="search-box">
@@ -36,7 +36,7 @@
               :class="['sheet-item', { active: selectedSheet === sheet }]"
               @click="selectSheet(sheet)"
           >
-             {{ sheet.pageName }}
+            {{ sheet.pageName }}
           </div>
         </a-spin>
       </div>
@@ -58,11 +58,8 @@
                 :scroll="{ x: 1500, y: 500 }"
             >
               <template #bodyCell="{ column, record }">
-<!--                <template v-if="column.dataIndex === 'affiliatedOrg'">
-                  <a>查看详情</a>
-                </template>-->
                 <template v-if="column.dataIndex === 'operation'">
-                  <a @click="getAnalyzeResult(record)">查看详情</a>
+                  <a @click="getAnalyzeResult(record,'01')">查看详情</a>
                 </template>
               </template>
             </a-table>
@@ -79,13 +76,51 @@
                 size="middle"
                 :scroll="{ x: 1500, y: 500 }"
             >
-              <template #bodyCell="{ column, text }">
+              <template #bodyCell="{ column, record }">
                 <template v-if="column.dataIndex === 'operation'">
-                  <a>查看详情</a>
+                  <a @click="getAnalyzeResult(record,'02')">查看详情</a>
                 </template>
               </template>
             </a-table>
           </div>
+
+          <!-- 非银行客户信息 -->
+          <div class="table-section" v-if="notBankCustomersData.length">
+            <div class="table-title">非银行客户信息</div>
+            <a-table
+                :columns="nonBankCustomerColumns"
+                :data-source="notBankCustomersData"
+                :pagination="false"
+                bordered
+                size="middle"
+                :scroll="{ x: 1500, y: 500 }"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'operation'">
+                  <a @click="getAnalyzeResult(record,'03')">查看详情</a>
+                </template>
+              </template>
+            </a-table>
+          </div>
+          <!-- 非银行交易流水 -->
+          <div class="table-section" v-if="notBankTransactionsData.length">
+            <div class="table-title">非银行交易流水</div>
+            <a-table
+                :columns="nonBankTransactionColumns"
+                :data-source="notBankTransactionsData"
+                :pagination="false"
+                bordered
+                size="middle"
+                :scroll="{ x: 1500, y: 500 }"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'operation'">
+                  <a @click="getAnalyzeResult(record,'04')">查看详情</a>
+                </template>
+              </template>
+            </a-table>
+          </div>
+
 
           <div v-if="!customerData.length && !transactionData.length && !tableLoading" class="loading-container">
             <a-empty description="请选择文件及Sheet页查看数据" />
@@ -95,10 +130,65 @@
 
     </a-col>
   </a-row>
+
+  <!-- 修改后的分析结果弹框 -->
+  <a-modal
+      v-model:visible="analyzeModalVisible"
+      title="数据解析详情"
+      width="90%"
+      style="top: 20px;"
+      :footer="null"
+      @cancel="closeAnalyzeModal"
+  >
+    <a-card>
+      <!-- 企业客户信息表 -->
+      <div class="table-section" v-if="analyzeData.customerInfo.length">
+        <div class="table-title">企业客户信息</div>
+        <a-table
+            :columns="enterpriseCustomerColumns"
+            :data-source="analyzeData.customerInfo"
+            size="small"
+            bordered
+            :pagination="false"
+            :scroll="{ x: 1500, y: 400 }"
+        />
+      </div>
+
+      <!-- 交易流水表 -->
+      <div class="table-section" v-if="analyzeData.transactionFlow.length">
+        <div class="table-title">交易流水</div>
+        <a-table
+            :columns="transactionFlowColumns"
+            :data-source="analyzeData.transactionFlow"
+            size="small"
+            bordered
+            :pagination="false"
+            :scroll="{ x: 1800, y: 400 }"
+        />
+      </div>
+
+      <!-- 订单表 -->
+      <div class="table-section" v-if="analyzeData.orderInfo.length">
+        <div class="table-title">订单信息</div>
+        <a-table
+            :columns="orderInfoColumns"
+            :data-source="analyzeData.orderInfo"
+            size="small"
+            bordered
+            :pagination="false"
+            :scroll="{ x: 1200, y: 400 }"
+        />
+      </div>
+
+      <div v-if="!hasAnalyzeData" class="no-data-container">
+        <a-empty description="暂无解析数据" />
+      </div>
+    </a-card>
+  </a-modal>
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute } from "vue-router";
 import {
   getAnalyzesultApi,
@@ -120,6 +210,79 @@ const filteredFiles = reactive([])
 const sheets = ref([]);
 const customerData = ref([]);
 const transactionData = ref([]);
+const notBankCustomersData = ref([]);
+const notBankTransactionsData = ref([]);
+
+// 分析结果弹框相关状态
+const analyzeModalVisible = ref(false);
+const analyzeData = reactive({
+  customerInfo: [],
+  transactionFlow: [],
+  orderInfo: []
+});
+
+// 计算属性：检查是否有分析数据
+const hasAnalyzeData = computed(() => {
+  return analyzeData.customerInfo.length > 0 ||
+      analyzeData.transactionFlow.length > 0 ||
+      analyzeData.orderInfo.length > 0;
+});
+
+// 企业客户信息表格列配置
+const enterpriseCustomerColumns = ref([
+  { title: '行号', dataIndex: 'rowNumber', width: 80 },
+  { title: '归属机构', dataIndex: 'orgCd', width: 120 },
+  { title: '客户种类', dataIndex: 'customerType', width: 100 },
+  { title: '客户名称', dataIndex: 'customerName', width: 120 },
+  { title: '证件种类', dataIndex: 'idType', width: 100 },
+  { title: '证件号码', dataIndex: 'idNum', width: 150 },
+  { title: '营业执照', dataIndex: 'enterpriseLicenseNum', width: 120 },
+  { title: '法人姓名', dataIndex: 'enterpriseLegalPersonName', width: 100 },
+  { title: '是否商户', dataIndex: 'isMerchant', width: 80 },
+  { title: '商户号', dataIndex: 'merchantNumber', width: 100 },
+  { title: '终端号', dataIndex: 'terminalNumber', width: 80 },
+  { title: '结算银行', dataIndex: 'settlementBank', width: 150 },
+  { title: '结算账号', dataIndex: 'settlementAccount', width: 150 },
+  { title: '币种', dataIndex: 'currency', width: 80 },
+  { title: '账户类型', dataIndex: 'accountType', width: 100 },
+  { title: '状态', dataIndex: 'status', width: 80 },
+  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+]);
+
+// 交易流水表格列配置
+const transactionFlowColumns = ref([
+  { title: '行号', dataIndex: 'rowNumber', width: 80 },
+  { title: '发起行', dataIndex: 'deptCaseCode', width: 120 },
+  { title: '户名', dataIndex: 'customerName', width: 120 },
+  { title: '账号', dataIndex: 'transAccountNo', width: 150 },
+  { title: '卡号', dataIndex: 'relAccountNo', width: 150 },
+  { title: '流水号', dataIndex: 'transNo', width: 120 },
+  { title: '交易渠道', dataIndex: 'channel', width: 100 },
+  { title: '币种', dataIndex: 'currNo', width: 80 },
+  { title: '交易方向', dataIndex: 'transWay', width: 100 },
+  { title: '交易金额', dataIndex: 'transAmt', width: 120 },
+  { title: '交易种类', dataIndex: 'transType', width: 100 },
+  { title: '交易余额', dataIndex: 'transactionBalance', width: 120 },
+  { title: '业务日期', dataIndex: 'bizDate', width: 120 },
+  { title: '交易时间', dataIndex: 'transTime', width: 120 },
+  { title: '对方开户银行', dataIndex: 'counterOrgName', width: 150 },
+  { title: '对方户名', dataIndex: 'counterName', width: 120 },
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 150 },
+  { title: '交易状态', dataIndex: 'status', width: 100 },
+  { title: 'IP地址', dataIndex: 'ipAddress', width: 120 },
+  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+]);
+
+// 订单信息表格列配置
+const orderInfoColumns = ref([
+  { title: '发起机构', dataIndex: 'issuingOrg', width: 120 },
+  { title: '订单号', dataIndex: 'orderNo', width: 150 },
+  { title: '流水号', dataIndex: 'transNo', width: 150 },
+  { title: '商品名称', dataIndex: 'productorName', width: 200 },
+  { title: '客户名称', dataIndex: 'customerName', width: 120 },
+  { title: '账号', dataIndex: 'transAccountNo', width: 150 },
+  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+]);
 
 // 客户信息表格列配置
 const customerColumns = ref([
@@ -165,6 +328,9 @@ const transactionColumns = ref([
   { title: '其他字段', dataIndex: 'otherFields',width: 120 },
   { title: '操作', dataIndex: 'operation',  width: 100, fixed: 'right' },
 ]);
+
+const nonBankCustomerColumns = ref([...customerColumns.value]);
+const nonBankTransactionColumns = ref([...transactionColumns.value]);
 
 onMounted(() => {
   fetchStandardFileList()
@@ -220,13 +386,16 @@ const selectSheet = async(sheet) => {
     selectedSheet.value = sheet;
     tableLoading.value = true;
     const params = {
-      fileId:selectedFileId.value, // file.id,
+      fileId:selectedFileId.value,
       filePageId: sheet.pageId,
+     // filePageId: '40288188995b3e1901995b51ee2c0005',
     };
     const response = await standardTableApi(params);
-    const {bankCustomers,bankTransactions} = response
+    const {bankCustomers,bankTransactions,notBankCustomers,notBankTransactions} = response
     customerData.value = bankCustomers
     transactionData.value = bankTransactions
+    notBankCustomersData.value = notBankCustomers
+    notBankTransactionsData.value = notBankTransactions
   } catch (error) {
 
   } finally {
@@ -235,20 +404,43 @@ const selectSheet = async(sheet) => {
 };
 
 // 查看解析详情接口
-const getAnalyzeResult = async(record) => {
+const getAnalyzeResult = async(record,dataType) => {
+  try {
     const params = {
       caseId: query.caseId,
-      dataType: "",
+      dataType,
       dataId: record.id
-
     };
-    const response = await getAnalyzesultApi(params);
 
+    const response = await getAnalyzesultApi(params);
+    const {faStandardEntities,faStandardTrans,faStandardOrders} = response
+
+    // 根据接口返回的数据结构，映射到三个表格
+    analyzeData.faStandardEntities = faStandardEntities ||  [];
+    analyzeData.faStandardTrans = faStandardTrans || [];
+    analyzeData.faStandardOrders = faStandardOrders || [];
+
+    // 显示弹框
+    analyzeModalVisible.value = true;
+
+  } catch (error) {
+    console.error('获取分析结果失败:', error);
+    // 清空数据
+    analyzeData.faStandardEntities = [];
+    analyzeData.faStandardTrans = [];
+    analyzeData.faStandardOrders = [];
+    analyzeModalVisible.value = true;
+  }
 };
 
-
-
-
+// 关闭分析结果弹框
+const closeAnalyzeModal = () => {
+  analyzeModalVisible.value = false;
+  // 清空数据
+  analyzeData.faStandardEntities = [];
+  analyzeData.faStandardTrans = [];
+  analyzeData.faStandardOrders = [];
+};
 
 </script>
 
@@ -289,6 +481,12 @@ const getAnalyzeResult = async(record) => {
   border-left: 4px solid #1890ff;
 }
 .loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+.no-data-container {
   display: flex;
   justify-content: center;
   align-items: center;

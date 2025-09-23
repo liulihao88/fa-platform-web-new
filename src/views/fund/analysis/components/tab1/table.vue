@@ -876,6 +876,7 @@ const onExcelError = (error) => {
   width: 100%;
 }
 
+
 /* 自定义上传拖拽区域样式 */
 .custom-upload-dragger :deep{
   .ant-upload-btn :deep{
@@ -941,7 +942,7 @@ const onExcelError = (error) => {
 }
 
 :deep(.x-spreadsheet-sheet){
-  width: 100%;
+  width: 100% !important;
 }
 
 .csv-preview {
