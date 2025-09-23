@@ -84,7 +84,7 @@
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button size="small" @click="editFile(record)">转换查看</a-button>
+          <a-button class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
       </template>
@@ -470,35 +470,29 @@ const columns = ref([
     width: 150,
   },
   {
-    title: '文件名称',
-    dataIndex: 'fileName',
+    title: '状态',
+    dataIndex: 'status',
     width: 100,
   },
   {
     title: '所属机构',
     dataIndex: 'organization',
-    width: 180,
+    width: 80,
   },
   {
     title: '返回信息',
     dataIndex: 'returnInfo',
-    width: 180,
+    width: 150,
   },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    width: 100,
-  },
-
   {
     title: '上传时间',
     dataIndex: 'uploadTime',
-    width: 180,
+    width: 150,
   },
   {
     title: '成功时间',
     dataIndex: 'successTime',
-    width: 180,
+    width: 150,
   },
   {
     title: '操作',

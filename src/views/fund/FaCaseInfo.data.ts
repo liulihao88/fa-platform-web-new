@@ -20,18 +20,23 @@ export const columns: BasicColumn[] = [
     align:"center",
     dataIndex: 'deptCaseCode'
    },
-   {
-    title: '文件数量',
+  {
+    title: '受理时间',
     align:"center",
-    dataIndex: 'fileNum'
-   },
-   {
+    dataIndex: 'processDate'
+  },
+  {
     title: '文件处理状态',
     align:"center",
     dataIndex: 'processStatus',
     customRender: ({ text }) => {
-           return render.renderDict(text, 'fa_case_process_status');
-       },
+      return render.renderDict(text, 'fa_case_process_status');
+    },
+  },
+   {
+    title: '文件数量',
+    align:"center",
+    dataIndex: 'fileNum'
    },
    {
     title: '文件导入次数',
@@ -48,11 +53,7 @@ export const columns: BasicColumn[] = [
     align:"center",
     dataIndex: 'repeatDataNum'
    },
-   {
-    title: '受理时间',
-    align:"center",
-    dataIndex: 'processDate'
-   },
+
 ];
 //查询数据
 export const searchFormSchema: FormSchema[] = [
@@ -136,12 +137,13 @@ export const superQuerySchema = {
   caseCode: {title: '案件名称',order: 0,view: 'text', type: 'string',},
   caseReason: {title: '案由',order: 1,view: 'text', type: 'string',},
   deptCaseCode: {title: '部门受案号',order: 2,view: 'text', type: 'string',},
-  fileNum: {title: '文件数量',order: 3,view: 'number', type: 'number',},
+  processDate: {title: '受理时间',order: 8,view: 'datetime', type: 'string',},
   processStatus: {title: '案件处理状态',order: 4,view: 'text', type: 'string',},
+  fileNum: {title: '文件数量',order: 3,view: 'number', type: 'number',},
   fileImportNum: {title: '文件导入次数',order: 5,view: 'number', type: 'number',},
   importDataNum: {title: '导入笔数',order: 6,view: 'number', type: 'number',},
   repeatDataNum: {title: '去重笔数',order: 7,view: 'text', type: 'string',},
-  processDate: {title: '受理时间',order: 8,view: 'datetime', type: 'string',},
+
 };
 
 /**

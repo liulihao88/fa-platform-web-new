@@ -25,7 +25,7 @@
       </template>
       <!--操作栏-->
       <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+        <TableAction  :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" :divider="true"/>
       </template>
       <!--字段回显插槽-->
       <template v-slot:bodyCell="{ column, record, index, text }">
@@ -80,7 +80,7 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
       ],
     },
     actionColumn: {
-      width: 120,
+      width: 150,
       fixed:'right'
     },
     beforeFetch: (params) => {
@@ -172,9 +172,9 @@ function handleSuccess() {
 function getTableAction(record){
   return [
     {
-      label: '编辑',
-      onClick: handleEdit.bind(null, record),
-    //  auth: 'casefiles:fa_case_info:edit'
+      label: '数据处理',
+      onClick: handleGoToDetail.bind(null, record),
+      // auth: 'casefiles:fa_case_info:edit'
     },
   ]
 }
@@ -188,14 +188,14 @@ async function handleGoToDetail(record: Recordable) {
 function getDropDownAction(record){
   return [
     {
-      label: '数据文件处理',
+      label: '资金分析',
       onClick: handleGoToDetail.bind(null, record),
       // auth: 'casefiles:fa_case_info:edit'
     },
     {
-      label: '资金分析',
-      onClick: handleGoToDetail.bind(null, record),
-      // auth: 'casefiles:fa_case_info:edit'
+      label: '编辑',
+      onClick: handleEdit.bind(null, record),
+      //  auth: 'casefiles:fa_case_info:edit'
     },
     {
       label: '详情',
