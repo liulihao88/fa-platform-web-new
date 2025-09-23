@@ -6,12 +6,46 @@
       <div class="query-actions">
         <a-button type="primary" @click="addRootCondition" class="add-root-btn">
           <template #icon><PlusOutlined /></template>
-          添加根条件
+          添加组
         </a-button>
         <a-button @click="resetConditions" class="action-btn">
           <template #icon><ReloadOutlined /></template>
           重置条件
         </a-button>
+
+        <!-- 保存筛选条件区域 -->
+        <div class="save-condition-area" v-if="saveMode">
+          <a-input
+              v-model:value="conditionName"
+              placeholder="输入筛选条件名称"
+              style="width: 200px; margin-right: 8px;"
+              @pressEnter="saveFilterCondition"
+          />
+          <a-button type="primary" @click="saveFilterCondition" class="action-btn">
+            确认保存
+          </a-button>
+        </div>
+
+        <a-button
+            type="dashed"
+            @click="saveMode = !saveMode"
+            class="action-btn"
+            :disabled="rootConditions.length === 0"
+        >
+          <template #icon><SaveOutlined /></template>
+          {{ saveMode ? '取消保存' : '保存筛选条件' }}
+        </a-button>
+
+        <!-- 已保存条件下拉选 -->
+        <a-select
+            v-model:value="selectedSavedCondition"
+            placeholder="选择已保存的条件"
+            style="width: 200px;"
+            allowClear
+            @change="loadSavedCondition"
+            :options="savedConditions.map(item => ({label: item.name, value: item.id}))"
+        />
+
         <a-button type="primary" @click="onSearch" :loading="searchLoading" class="action-btn search-btn">
           <template #icon><SearchOutlined /></template>
           查询
@@ -410,6 +444,7 @@
 </template>
 
 <script lang="ts" name="intelligent" setup>
+import { SaveOutlined } from '@ant-design/icons-vue';
 import { ref, reactive, onMounted, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import {
@@ -440,6 +475,11 @@ const searchLoading = ref(false);
 // 选中的行数据
 const selectedRowKeys = ref<string[]>([]);
 const selectedRows = ref<any[]>([]);
+// 新增状态管理
+const saveMode = ref(false);
+const conditionName = ref('');
+const savedConditions = ref<Array<{id: string, name: string, conditions: Condition[]}>>([]);
+const selectedSavedCondition = ref<string>('');
 
 // 分页配置
 const pagination = reactive({
@@ -602,14 +642,75 @@ const addRootCondition = () => {
   });
 };
 
-// 添加子条件
+// 保存筛选条件
+const saveFilterCondition = () => {
+  if (!conditionName.value.trim()) {
+    message.error('请输入筛选条件名称');
+    return;
+  }
+
+  if (rootConditions.value.length === 0) {
+    message.error('请至少添加一个查询条件');
+    return;
+  }
+
+  // 校验条件完整性
+  const validateConditions = (conditions: Condition[]): boolean => {
+    for (const condition of conditions) {
+      if (!condition.field || !condition.operator) {
+        return false;
+      }
+      if (condition.subConditions && condition.subConditions.length > 0) {
+        if (!validateConditions(condition.subConditions)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  if (!validateConditions(rootConditions.value)) {
+    message.error('请完善所有条件配置（字段和逻辑运算符必填）');
+    return;
+  }
+
+  const newCondition = {
+    name: conditionName.value,
+    conditionJson: JSON.parse(JSON.stringify(rootConditions.value)) // 深拷贝
+  };
+
+  savedConditions.value.push(newCondition);
+  conditionName.value = '';
+  saveMode.value = false;
+
+  console.info('筛选条件json',newCondition)
+  // todo 保存筛选条件
+  message.success('筛选条件保存成功');
+};
+
+// 加载已保存的条件
+const loadSavedCondition = (conditionId: string) => {
+  const condition = savedConditions.value.find(item => item.id === conditionId);
+  if (condition) {
+    rootConditions.value = JSON.parse(JSON.stringify(condition.conditions));
+    message.success('筛选条件加载成功');
+  }
+};
+
+// 取消保存
+const cancelSave = () => {
+  saveMode.value = false;
+  conditionName.value = '';
+};
+
+// 修改添加子条件逻辑 - 添加具体的条件行
 const addSubCondition = (parentId: string, level: number) => {
   if (level > 5) {
     message.warning('最多只能添加5级条件');
     return;
   }
 
-  const findAndAdd = (conditions: Condition[]): boolean => {
+  const findAndAddCondition = (conditions: Condition[]): boolean => {
     for (const condition of conditions) {
       if (condition.id === parentId) {
         if (!condition.subConditions) {
@@ -617,7 +718,7 @@ const addSubCondition = (parentId: string, level: number) => {
         }
         condition.subConditions.push({
           id: generateId(),
-          relation: 'and',
+          relation: condition.subConditions.length === 0 ? 'and' : 'and', // 第一个子条件默认and
           field: '',
           operator: '',
           value: '',
@@ -627,16 +728,15 @@ const addSubCondition = (parentId: string, level: number) => {
       }
 
       if (condition.subConditions && condition.subConditions.length > 0) {
-        const found = findAndAdd(condition.subConditions);
+        const found = findAndAddCondition(condition.subConditions);
         if (found) return true;
       }
     }
     return false;
   };
 
-  findAndAdd(rootConditions.value);
+  findAndAddCondition(rootConditions.value);
 };
-
 
 // 更新条件
 const updateCondition = (conditionId: string, updates: Partial<Condition>) => {
@@ -657,6 +757,7 @@ const updateCondition = (conditionId: string, updates: Partial<Condition>) => {
 
   findAndUpdate(rootConditions.value);
 };
+
 
 // 删除条件
 const removeCondition = (conditionId: string) => {
@@ -958,15 +1059,11 @@ const resetSearch = () => {
   background: rgba(255, 77, 79, 0.05);
 }
 
-/* 响应式调整 */
-@media (max-width: 1200px) {
-  .conditions-container {
-    overflow-x: auto;
-  }
-
-  .conditions-header,
-  .condition-row {
-    min-width: 800px;
-  }
+/* 新增样式 */
+.save-condition-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
 }
 </style>
