@@ -72,6 +72,7 @@
       :scroll="{ x: 1500 }"
       :loading="tableLoading"
       bordered
+      size="small"
   >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
