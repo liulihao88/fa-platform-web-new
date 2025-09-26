@@ -175,7 +175,7 @@
   import { ExceptionEnum } from "@/enums/exceptionEnum";
 
   const IconFont = createFromIconfontCN({
-    scriptUrl: '//at.alicdn.com/t/font_2316098_umqusozousr.js',
+    scriptUrl: '/resource/js/font_2316098_umqusozousr.js',
   });
   const { prefixCls } = useDesign('mini-login');
   const { notification, createMessage } = useMessage();
