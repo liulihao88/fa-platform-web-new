@@ -142,11 +142,11 @@
   >
     <a-card>
       <!-- 企业客户信息表 -->
-      <div class="table-section" v-if="analyzeData.customerInfo.length">
+      <div class="table-section" v-if="analyzeData.faStandardEntities.length">
         <div class="table-title">企业客户信息</div>
         <a-table
             :columns="enterpriseCustomerColumns"
-            :data-source="analyzeData.customerInfo"
+            :data-source="analyzeData.faStandardEntities"
             size="small"
             bordered
             :pagination="false"
@@ -155,11 +155,11 @@
       </div>
 
       <!-- 交易流水表 -->
-      <div class="table-section" v-if="analyzeData.transactionFlow.length">
+      <div class="table-section" v-if="analyzeData.faStandardTrans.length">
         <div class="table-title">交易流水</div>
         <a-table
             :columns="transactionFlowColumns"
-            :data-source="analyzeData.transactionFlow"
+            :data-source="analyzeData.faStandardTrans"
             size="small"
             bordered
             :pagination="false"
@@ -168,11 +168,11 @@
       </div>
 
       <!-- 订单表 -->
-      <div class="table-section" v-if="analyzeData.orderInfo.length">
+      <div class="table-section" v-if="analyzeData.faStandardOrders.length">
         <div class="table-title">订单信息</div>
         <a-table
             :columns="orderInfoColumns"
-            :data-source="analyzeData.orderInfo"
+            :data-source="analyzeData.faStandardOrders"
             size="small"
             bordered
             :pagination="false"
@@ -216,16 +216,16 @@ const notBankTransactionsData = ref([]);
 // 分析结果弹框相关状态
 const analyzeModalVisible = ref(false);
 const analyzeData = reactive({
-  customerInfo: [],
-  transactionFlow: [],
-  orderInfo: []
+  faStandardEntities: [],
+  faStandardTrans: [],
+  faStandardOrders: []
 });
 
 // 计算属性：检查是否有分析数据
 const hasAnalyzeData = computed(() => {
-  return analyzeData.customerInfo.length > 0 ||
-      analyzeData.transactionFlow.length > 0 ||
-      analyzeData.orderInfo.length > 0;
+  return analyzeData.faStandardEntities.length > 0 ||
+      analyzeData.faStandardTrans.length > 0 ||
+      analyzeData.faStandardOrders.length > 0;
 });
 
 // 企业客户信息表格列配置
