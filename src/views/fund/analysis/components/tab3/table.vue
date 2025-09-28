@@ -14,7 +14,7 @@
       <div class="file-list">
         <a-spin :spinning="fileLoading">
           <div
-              v-for="file in filteredFiles"
+              v-for="file in props.filteredFiles"
               :key="file.id"
               :class="['file-item', { active: selectedFileId === file.id }]"
               @click="selectFile(file)"
@@ -183,7 +183,7 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import {ref, reactive, onMounted, computed, defineProps} from 'vue';
 import { useRoute } from "vue-router";
 import {
   getAnalyzesultApi,
@@ -194,7 +194,10 @@ import {
   standardNonBankCustomerApi,
   standardNonBankTransApi
 } from "@/views/fund/analysis/user.api";
-
+interface Props {
+  filteredFiles: Array<{value: string, label: string}>;
+}
+const props = defineProps<Props>();
 const { query } = useRoute();
 
 const tableLoading = ref(false);
@@ -204,7 +207,6 @@ const fileLoading = ref(false);
 const sheetLoading = ref(false);
 const selectedFileId = ref(null);
 const selectedSheet = ref(null);
-const filteredFiles = reactive([])
 const sheets = ref([]);
 const customerData = ref([]);
 const transactionData = ref([]);
@@ -388,7 +390,7 @@ const nonBankCustomerColumns = ref([...customerColumns.value]);
 const nonBankTransactionColumns = ref([...transactionColumns.value]);
 
 onMounted(() => {
-  fetchStandardFileList()
+ // fetchStandardFileList()
 });
 
 // 获取标准数据查看列表

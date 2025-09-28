@@ -56,3 +56,5 @@ export const exportDataApi = '/fa/caseDuplicateData/exportXls'
 
 // 智能筛选列表
 export const intelligentTableListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/transList', params });
+// 根据文件ID查询文件确认信息
+export const getFileConfirmInfo = (params) => defHttp.post({ url: '/fa/casefile/getPropertyByFileId', params });

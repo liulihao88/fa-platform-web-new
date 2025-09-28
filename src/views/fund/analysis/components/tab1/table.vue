@@ -336,7 +336,7 @@
                   :class="['file-item', { active: selectedConvertFile?.id === file.id }]"
                   @click="selectConvertFile(file)"
               >
-                {{ file.fileName || file.sourceFile }}
+                {{ file.fileName }}
               </div>
             </div>
           </a-card>
@@ -352,49 +352,41 @@
                 :wrapper-col="{ span: 16 }"
             >
               <a-form-item label="文件名称">
-                <a-input v-model:value="convertFormState.fileName" placeholder="请输入文件名称" />
-<!--                <span>{{ selectedConvertFile?.fileName || selectedConvertFile?.sourceFile || '-' }}</span>-->
+                <span>{{ convertFormState?.fileName || '-' }}</span>
               </a-form-item>
 
               <a-form-item label="所属银行">
-                <JSearchSelect
-                    dict="fa_orgs_configure,org_name,org_cd"
-                    v-model:value="convertFormState.bankCode"
-                    placeholder="请选择所属银行"
-                    allow-clear
-                />
+                <span>{{ convertFormState?.orgName || '-' }}</span>
               </a-form-item>
 
-<!--              <a-form-item label="上述银行是否正确，需要重新指定">
-                <a-select v-model:value="convertFormState.needRespecify" placeholder="请选择">
+              <a-form-item label="上述银行是否正确，需要重新指定">
+                <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
                   <a-select-option value="1">是</a-select-option>
                   <a-select-option value="0">否</a-select-option>
                 </a-select>
               </a-form-item>
 
-              <a-form-item label="如果下拉菜单没有，请输入">
-                <a-input v-model:value="convertFormState.customBank" placeholder="请输入银行名称" />
-              </a-form-item>-->
-
               <a-form-item label="判断银行依据">
-                <a-input v-model:value="convertFormState.bankBasis" placeholder="请输入判断依据" />
+                <span>{{ convertFormState?.orgNameFrom || '-' }}</span>
               </a-form-item>
 
               <a-form-item label="所属目录">
-                <a-input v-model:value="convertFormState.directory" placeholder="请输入所属目录" />
+                <span>{{ convertFormState?.folderName || '-' }}</span>
               </a-form-item>
 
               <a-form-item label="数据中的机构">
-                <a-input v-model:value="convertFormState.dataOrg" placeholder="请输入机构名称" />
+                <span>{{ convertFormState?.dataOrg || '-' }}</span>
               </a-form-item>
 
               <a-form-item label="数据中的卡号">
-                <a-input v-model:value="convertFormState.dataCardNo" placeholder="请输入卡号" />
+                <span>{{ convertFormState?.dataCardNum || '-' }}</span>
+              </a-form-item>
+              <a-form-item label="确认状态">
+                <span>{{ convertFormState?.status || '-' }}</span>
               </a-form-item>
             </a-form>
 
             <div style="text-align: right; margin-top: 16px;">
-              <a-button type="primary" @click="handleNextFile" :disabled="!hasNextFile">下一个文件</a-button>
               <a-button type="primary" @click="handleConvertConfirm" style="margin-left: 8px;">确认</a-button>
             </div>
           </a-card>
@@ -422,7 +414,8 @@ import {
   getFileInfoItem,
   standardTableApi,
   saveEditBankApi,
-  convertFileListApi
+  convertFileListApi,
+  getFileConfirmInfo
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -430,6 +423,7 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
+  filteredFiles: Array<{value: string, label: string}>;
 }
 // CSV表头
 const csvHeaders = computed(() => {
@@ -473,21 +467,15 @@ const convertFileList = ref([]);
 const selectedConvertFile = ref(null);
 const convertFormRef = ref();
 const convertFormState = reactive({
-  fileName:'',
-  bankCode: '',
-  needRespecify: undefined,
-  customBank: '',
-  bankBasis: '',
-  directory: '',
+  fileName: '', // 保留原文件名
+  orgName: '',
+  orgNameFrom: '',
+  inVertical: undefined,
+  folderName: '',
   dataOrg: '',
-  dataCardNo: ''
-});
-
-// 计算属性：是否有下一个文件
-const hasNextFile = computed(() => {
-  if (!selectedConvertFile.value || convertFileList.value.length <= 1) return false;
-  const currentIndex = convertFileList.value.findIndex(file => file.id === selectedConvertFile.value.id);
-  return currentIndex < convertFileList.value.length - 1;
+  directory: '',
+  dataCardNum: '',
+  status: ''
 });
 
 
@@ -618,6 +606,7 @@ const dataSource = ref([])
 // 页面初始化时调用接口
 onMounted(() => {
   fetchFileList();
+  convertFileList.value = props.filteredFiles
 });
 
 // 修改后的方法
@@ -627,38 +616,15 @@ const handleConvertConfirmFromEdit = () => {
     return;
   }
 
-  // 使用currentRecord.value组装数组
-  convertFileList.value = [{
-    id: currentRecord.value.id,
-    fileName: currentRecord.value.fileName || currentRecord.value.sourceFile,
-    sourceFile: currentRecord.value.sourceFile,
-    status: currentRecord.value.status || '4'
-  }];
-
   // 默认选择当前文件
   selectedConvertFile.value = convertFileList.value[0];
 
   // 加载表单数据
-  loadConvertFormData(currentRecord.value);
+  getFileConvertInfo(currentRecord.value.id);
 
   // 切换Modal
   editModalVisible.value = false;
   convertModalVisible.value = true;
-};
-
-// 加载转换表单数据
-const loadConvertFormData = (file) => {
-  // 重置表单
-  resetConvertForm();
-
-  // 设置表单数据
-  convertFormState.fileName = file.fileName || '';
-  convertFormState.bankCode = file.organizationCode || selectedBank.value || '';
-  convertFormState.directory = file.folder || '';
-  convertFormState.dataOrg = file.organization || '';
-
-  // 可以根据需要设置其他字段的默认值
-  convertFormState.bankBasis = '系统自动识别'; // 默认值
 };
 
 // 不展示压缩文件后缀的文件
@@ -851,6 +817,11 @@ const confirmBank = () => {
   })
 };
 
+const getFileConvertInfo = async(id)=>{
+  const fileConfirm = await getFileConfirmInfo({fileId:id})
+  convertFormState.value = fileConfirm
+}
+
 // 转换查看
 const editFile = async (record) => {
   currentRecord.value = record;
@@ -957,10 +928,12 @@ const closeEditModal = () => {
 // 修改confirmFileConvert方法
 const confirmFileConvert = async () => {
   try {
-    // 默认选择第一个文件
-    selectedConvertFile.value = convertFileList.value[0];
     resetConvertForm();
-
+    // 默认选择第一个文件
+    if(convertFileList.value && convertFileList.value.length){
+      selectedConvertFile.value = convertFileList.value[0];
+      getFileConvertInfo(selectedConvertFile.value.id)
+    }
     // 显示模态框
     convertModalVisible.value = true;
   } catch (error) {
@@ -972,31 +945,23 @@ const confirmFileConvert = async () => {
 const selectConvertFile = (file) => {
   selectedConvertFile.value = file;
   resetConvertForm();
+  getFileConvertInfo(file.id)
   // 可以在这里加载文件的预填信息
 };
 
 // 重置表单
 const resetConvertForm = () => {
-  const fileName = convertFormState.fileName; // 保留文件名
   Object.assign(convertFormState, {
-    fileName: fileName, // 保留原文件名
-    bankCode: '',
-    needRespecify: undefined,
-    customBank: '',
-    bankBasis: '',
-    directory: '',
+    fileName: '', // 保留原文件名
+    orgName: '',
+    orgNameFrom: '',
+    inVertical: undefined,
+    folderName: '',
     dataOrg: '',
-    dataCardNo: ''
+    directory: '',
+    dataCardNum: '',
+    status: ''
   });
-};
-
-// 下一个文件
-const handleNextFile = () => {
-  if (!hasNextFile.value) return;
-
-  const currentIndex = convertFileList.value.findIndex(file => file.id === selectedConvertFile.value.id);
-  selectedConvertFile.value = convertFileList.value[currentIndex + 1];
-  resetConvertForm();
 };
 
 // 确认转换
@@ -1015,11 +980,10 @@ const handleConvertConfirm = async () => {
 
     // 调用转换接口
     await convertFileListApi(params);
-    message.success('文件转换成功');
-
-    // 关闭模态框并刷新列表
+    getFileConvertInfo(selectedConvertFile.value.id)
+/*    // 关闭模态框并刷新列表
     convertModalVisible.value = false;
-    fetchFileList();
+    fetchFileList();*/
   } catch (error) {
     message.error('文件转换失败');
   }
