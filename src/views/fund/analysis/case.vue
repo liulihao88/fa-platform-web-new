@@ -32,7 +32,9 @@
     <div class="case-tabs">
       <a-tabs v-model:activeKey="activeKey">
         <a-tab-pane key="1" tab="上传文件">
-          <tab1 :fileProcessOptions="fileProcessOptions"></tab1>
+          <tab1
+              :filteredFiles="filteredFiles"
+              :fileProcessOptions="fileProcessOptions"></tab1>
         </a-tab-pane>
         <a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2
@@ -42,7 +44,9 @@
           ></tab2>
         </a-tab-pane>
         <a-tab-pane key="3" tab="标准数据查看">
-          <tab3></tab3>
+          <tab3
+              :filteredFiles="filteredFiles"
+          ></tab3>
         </a-tab-pane>
         <a-tab-pane key="4" tab="重复数据查看">
           <tab4></tab4>
@@ -53,9 +57,9 @@
 </template>
 
 <script lang="ts" name="system-user" setup>
-  import { ref, onMounted } from 'vue';
+import {ref, onMounted, reactive} from 'vue';
   import { useRoute } from 'vue-router';
-  import { caseDetailApi } from './user.api'
+  import { caseDetailApi,standardFileListApi } from './user.api'
   import { getCommonDictionary } from '/@/utils/index';
   import tab1 from './components/tab1/table.vue'
   import tab2 from './components/tab2/table.vue'
@@ -70,7 +74,7 @@
   const involvedRelateOptions = ref([]);
   const involvedKindOptions = ref([]);
   const idCardTypeOptions = ref([]);
-
+  const filteredFiles = reactive([])
   const currentStep = ref(0);
 
   // 页面初始化时调用接口
@@ -78,6 +82,7 @@
     if(query.caseId){
       fetchCaseInfo();
     }
+    fetchStandardFileList()
     getCommonDictionary('fa_case_process_status').then((res:[])=>{
       stepOptions.value = res
     })
@@ -95,7 +100,18 @@
       idCardTypeOptions.value = res
     })
   });
-
+  // 获取标准数据查看列表
+  const fetchStandardFileList = async () => {
+    try {
+      const params = {
+        caseId: query.caseId,
+       // fileName: searchText.value,
+      };
+      const response = await standardFileListApi(params);
+      Object.assign(filteredFiles, response||[]);
+    } catch (error) {
+    }
+  }
   // 模拟从服务端获取案件信息的函数
   const fetchCaseInfo = async () => {
     caseDetailApi({caseId: query.caseId}).then((res)=>{

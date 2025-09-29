@@ -85,7 +85,7 @@
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
       </template>
@@ -154,16 +154,15 @@
                 <span style="line-height: 32px;">文件归属银行：</span>
               </a-col>
               <a-col :span="6">
-                <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="请选择文件归属银行"  allow-clear ></JSearchSelect>
+                <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="文件归属银行"  allow-clear ></JSearchSelect>
               </a-col>
-              <a-col :span="4">
+<!--              <a-col :span="4">
                 <template v-if="bankEfit">
                   <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
                   <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
                 </template>
                 <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
-
-              </a-col>
+              </a-col>-->
             </a-row>
 
             <!-- Sheet列表区域 -->
@@ -228,6 +227,9 @@
                     bordered
                     :pagination="false"
                 />
+              </a-col>
+              <a-col :span="24" style="text-align: right; margin-top: 16px;">
+                <a-button type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
               </a-col>
             </a-row>
           </a-card>
@@ -313,6 +315,85 @@
 
     </div>
   </a-modal>
+  <!-- 在模板部分添加新的Modal -->
+  <a-modal
+      v-model:visible="convertModalVisible"
+      title="文件转换确认"
+      width="90%"
+      :maskClosable="false"
+      :footer="null"
+      wrap-class-name="full-modal"
+  >
+    <a-card>
+      <a-row :gutter="16">
+        <!-- 左侧文件列表 -->
+        <a-col span="8">
+          <a-card title="文件列表" size="small">
+            <div class="file-list-container">
+              <div
+                  v-for="file in convertFileList"
+                  :key="file.id"
+                  :class="['file-item', { active: selectedConvertFile?.id === file.id }]"
+                  @click="selectConvertFile(file)"
+              >
+                {{ file.fileName }}
+              </div>
+            </div>
+          </a-card>
+        </a-col>
+
+        <!-- 右侧表单 -->
+        <a-col span="16">
+          <a-card title="转换信息" size="small">
+            <a-form
+                ref="convertFormRef"
+                :model="convertFormState"
+                :label-col="{ span: 6 }"
+                :wrapper-col="{ span: 16 }"
+            >
+              <a-form-item label="文件名称">
+                <span>{{ convertFormState?.fileName || '-' }}</span>
+              </a-form-item>
+
+              <a-form-item label="所属银行">
+                <span>{{ convertFormState?.orgName || '-' }}</span>
+              </a-form-item>
+
+              <a-form-item label="上述银行是否正确，需要重新指定">
+                <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
+                  <a-select-option value="1">是</a-select-option>
+                  <a-select-option value="0">否</a-select-option>
+                </a-select>
+              </a-form-item>
+
+              <a-form-item label="判断银行依据">
+                <span>{{ convertFormState?.orgNameFrom || '-' }}</span>
+              </a-form-item>
+
+              <a-form-item label="所属目录">
+                <span>{{ convertFormState?.folderName || '-' }}</span>
+              </a-form-item>
+
+              <a-form-item label="数据中的机构">
+                <span>{{ convertFormState?.dataOrg || '-' }}</span>
+              </a-form-item>
+
+              <a-form-item label="数据中的卡号">
+                <span>{{ convertFormState?.dataCardNum || '-' }}</span>
+              </a-form-item>
+              <a-form-item label="确认状态">
+                <span>{{ convertFormState?.status || '-' }}</span>
+              </a-form-item>
+            </a-form>
+
+            <div style="text-align: right; margin-top: 16px;">
+              <a-button type="primary" @click="handleConvertConfirm" style="margin-left: 8px;">确认</a-button>
+            </div>
+          </a-card>
+        </a-col>
+      </a-row>
+    </a-card>
+  </a-modal>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -333,7 +414,8 @@ import {
   getFileInfoItem,
   standardTableApi,
   saveEditBankApi,
-  convertFileListApi
+  convertFileListApi,
+  getFileConfirmInfo
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -341,6 +423,7 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
+  filteredFiles: Array<{value: string, label: string}>;
 }
 // CSV表头
 const csvHeaders = computed(() => {
@@ -378,6 +461,22 @@ const vueExcelOptions =ref({
   transformImage:true,
   xls:true
 })
+const currentRecord = ref(null);
+const convertModalVisible = ref(false);
+const convertFileList = ref([]);
+const selectedConvertFile = ref(null);
+const convertFormRef = ref();
+const convertFormState = reactive({
+  fileName: '', // 保留原文件名
+  orgName: '',
+  orgNameFrom: '',
+  inVertical: undefined,
+  folderName: '',
+  dataOrg: '',
+  directory: '',
+  dataCardNum: '',
+  status: ''
+});
 
 
 const bankEfit = ref(false);
@@ -507,7 +606,36 @@ const dataSource = ref([])
 // 页面初始化时调用接口
 onMounted(() => {
   fetchFileList();
+  convertFileList.value = props.filteredFiles
 });
+
+// 修改后的方法
+const handleConvertConfirmFromEdit = () => {
+  if (!currentRecord.value) {
+    message.warning('没有可转换的文件');
+    return;
+  }
+
+  // 默认选择当前文件
+  selectedConvertFile.value = convertFileList.value[0];
+
+  // 加载表单数据
+  getFileConvertInfo(currentRecord.value.id);
+
+  // 切换Modal
+  editModalVisible.value = false;
+  convertModalVisible.value = true;
+};
+
+// 不展示压缩文件后缀的文件
+const checkFilesNames=(record)=> {
+  const {sourceFile,fileName} = record
+  const lowerFile1 = sourceFile.toLowerCase();
+  const lowerFile2 = fileName.toLowerCase();
+
+  return !(lowerFile1.endsWith(".zip") || lowerFile1.endsWith(".rar") ||
+      lowerFile2.endsWith(".zip") || lowerFile2.endsWith(".rar"));
+}
 
 // 获取文件列表
 const fetchFileList = async () => {
@@ -689,8 +817,14 @@ const confirmBank = () => {
   })
 };
 
+const getFileConvertInfo = async(id)=>{
+  const fileConfirm = await getFileConfirmInfo({fileId:id})
+  convertFormState.value = fileConfirm
+}
+
 // 转换查看
 const editFile = async (record) => {
+  currentRecord.value = record;
   // 查询转换基本信息
   const convertInfo = await getFileConverResultApi({fileId:record.id})
   const fileInfo = await getFileInfoItem({fileId:record.id})
@@ -791,8 +925,72 @@ const closeEditModal = () => {
   };
 };
 
-// 确认文件转换
+// 修改confirmFileConvert方法
 const confirmFileConvert = async () => {
+  try {
+    resetConvertForm();
+    // 默认选择第一个文件
+    if(convertFileList.value && convertFileList.value.length){
+      selectedConvertFile.value = convertFileList.value[0];
+      getFileConvertInfo(selectedConvertFile.value.id)
+    }
+    // 显示模态框
+    convertModalVisible.value = true;
+  } catch (error) {
+    message.error('获取文件列表失败');
+  }
+};
+
+// 选择文件
+const selectConvertFile = (file) => {
+  selectedConvertFile.value = file;
+  resetConvertForm();
+  getFileConvertInfo(file.id)
+  // 可以在这里加载文件的预填信息
+};
+
+// 重置表单
+const resetConvertForm = () => {
+  Object.assign(convertFormState, {
+    fileName: '', // 保留原文件名
+    orgName: '',
+    orgNameFrom: '',
+    inVertical: undefined,
+    folderName: '',
+    dataOrg: '',
+    directory: '',
+    dataCardNum: '',
+    status: ''
+  });
+};
+
+// 确认转换
+const handleConvertConfirm = async () => {
+  try {
+    if (!selectedConvertFile.value) {
+      message.warning('请选择文件');
+      return;
+    }
+
+    const params = {
+      fileId: selectedConvertFile.value.id,
+      caseId: query.caseId,
+      ...convertFormState
+    };
+
+    // 调用转换接口
+    await convertFileListApi(params);
+    getFileConvertInfo(selectedConvertFile.value.id)
+/*    // 关闭模态框并刷新列表
+    convertModalVisible.value = false;
+    fetchFileList();*/
+  } catch (error) {
+    message.error('文件转换失败');
+  }
+};
+
+// 确认文件转换
+/*const confirmFileConvert = async () => {
   Modal.confirm({
     title: '确认转换文件吗',
     content: `确定要转换所有文件吗？`,
@@ -804,7 +1002,7 @@ const confirmFileConvert = async () => {
       })
     }
   });
-};
+};*/
 
 
 // 删除文件
@@ -977,5 +1175,28 @@ const onExcelError = (error) => {
     background-color: #f0f0f0;
   }
 }
+.file-list-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
 
+.file-item {
+  padding: 12px;
+  border: 1px solid #e8e8e8;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file-item:hover {
+  background-color: #f5f5f5;
+}
+
+.file-item.active {
+  background-color: #e6f7ff;
+  border-color: #1890ff;
+}
 </style>

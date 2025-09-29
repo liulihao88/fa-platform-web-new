@@ -34,6 +34,13 @@ export const saveEditBankApi = (params) => defHttp.post({ url: '/fa/casefile/upd
 export const standardFileListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/fileList', params });
 export const standardSheetListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/pageList', params });
 export const standardTableApi = (params) => defHttp.post({ url: '/fa/caseStandardData/standardDataList', params });
+
+export const standardCustomerApi = (params) => defHttp.post({ url: '/fa/caseStandardData/bankCustomerPageList', params });
+export const standardTransApi = (params) => defHttp.post({ url: '/fa/caseStandardData/bankTransPageList', params });
+export const standardNonBankCustomerApi = (params) => defHttp.post({ url: '/fa/caseStandardData/nonBankCustomerPageList', params });
+export const standardNonBankTransApi = (params) => defHttp.post({ url: '/fa/caseStandardData/nonBankTransPageList', params });
+
+
 export const repeatFileTableApi = (params) => defHttp.post({ url: '/fa/caseDuplicateData/list', params });
 export const getCompanyOrPersonDetailApi = (params) => defHttp.post({ url: '/fa/caseInvolved/detail', params });
 export const uploadFileApi = (params, isReturnResponse) => {
@@ -49,3 +56,5 @@ export const exportDataApi = '/fa/caseDuplicateData/exportXls'
 
 // 智能筛选列表
 export const intelligentTableListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/transList', params });
+// 根据文件ID查询文件确认信息
+export const getFileConfirmInfo = (params) => defHttp.post({ url: '/fa/casefile/getPropertyByFileId', params });
