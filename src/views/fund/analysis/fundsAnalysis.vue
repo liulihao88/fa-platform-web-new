@@ -17,9 +17,9 @@
       <a-tab-pane key="1" tab="智能查询">
         <intelligent/>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="流水溯源" force-render>
+<!--      <a-tab-pane key="2" tab="流水溯源" force-render>
 
-      </a-tab-pane>
+      </a-tab-pane>-->
     </a-tabs>
   </a-card>
 

@@ -41,8 +41,6 @@
         </a-spin>
       </div>
     </a-col>
-
-    <!-- 右侧数据表格 -->
     <!-- 右侧数据表格 -->
     <a-col :span="17">
       <a-card class="mt21">
