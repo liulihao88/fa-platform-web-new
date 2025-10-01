@@ -4,22 +4,13 @@
     <!-- 动态查询组件 -->
     <div class="dynamic-query">
       <div class="query-actions">
-        <a-button type="primary" @click="addRootCondition" class="add-root-btn">
-          <template #icon><PlusOutlined /></template>
-          添加组
-        </a-button>
-        <a-button @click="resetConditions" class="action-btn">
-          <template #icon><ReloadOutlined /></template>
-          重置条件
-        </a-button>
-
         <!-- 保存筛选条件区域 -->
         <div class="save-condition-area" v-if="saveMode">
           <a-input
               v-model:value="conditionName"
               placeholder="输入筛选条件名称"
               style="width: 200px; margin-right: 8px;"
-              @pressEnter="saveFilterCondition"
+              @press-enter="saveFilterCondition"
           />
           <a-button type="primary" @click="saveFilterCondition" class="action-btn">
             确认保存
@@ -50,8 +41,11 @@
           <template #icon><SearchOutlined /></template>
           查询
         </a-button>
+        <a-button @click="resetConditions" class="action-btn">
+          <template #icon><ReloadOutlined /></template>
+          重置条件
+        </a-button>
       </div>
-
       <div class="conditions-container">
         <div class="conditions-header">
           <div class="header-item">级数</div>
@@ -64,21 +58,10 @@
 
         <div class="conditions-body" v-if="rootConditions.length > 0">
           <div v-for="(condition, index) in rootConditions" :key="condition.id" class="condition-group">
-            <!-- 条件组标题和操作 -->
-            <div class="group-header">
-              <div class="group-title">条件组 {{ index + 1 }}</div>
-              <div class="group-actions">
-                <a-button type="link" size="small" danger @click="removeCondition(condition.id)" class="delete-btn">
-                  <template #icon><DeleteOutlined /></template>
-                  删除组
-                </a-button>
-              </div>
-            </div>
-
             <!-- 条件行 -->
             <div class="condition-row">
               <div class="condition-cell level-cell">
-                <span class="level-badge">第1级</span>
+                <span class="level-badge">第{{ condition.level }}级</span>
               </div>
               <div class="condition-cell">
                 <a-select
@@ -128,9 +111,13 @@
                 />
               </div>
               <div class="condition-cell actions-cell">
-                <a-button type="link" size="small" @click="addSubCondition(condition.id, 2)" class="add-sub-btn">
+                <a-button type="link" size="small" @click="addSameLevelCondition(condition.level)" class="add-same-btn">
+                  <template #icon><PlusOutlined /></template>
+                  添加同级
+                </a-button>
+                <a-button type="link" size="small" @click="addSubCondition(condition.id, condition.level + 1)" class="add-sub-btn">
                   <template #icon><PlusCircleOutlined /></template>
-                  添加子条件
+                  添加子级
                 </a-button>
                 <a-button type="link" size="small" danger @click="removeCondition(condition.id)" class="delete-btn">
                   <template #icon><DeleteOutlined /></template>
@@ -146,7 +133,7 @@
                 <div class="sub-condition-wrapper">
                   <div class="condition-row">
                     <div class="condition-cell level-cell">
-                      <span class="level-badge">第2级</span>
+                      <span class="level-badge">第{{ subCondition.level }}级</span>
                     </div>
                     <div class="condition-cell">
                       <a-select
@@ -196,9 +183,13 @@
                       />
                     </div>
                     <div class="condition-cell actions-cell">
+                      <a-button type="link" size="small" @click="addSameLevelCondition(subCondition.level)" class="add-same-btn">
+                        <template #icon><PlusOutlined /></template>
+                        添加同级
+                      </a-button>
                       <a-button type="link" size="small" @click="addSubCondition(subCondition.id, 3)" class="add-sub-btn">
                         <template #icon><PlusCircleOutlined /></template>
-                        添加子条件
+                        添加子级
                       </a-button>
                       <a-button type="link" size="small" danger @click="removeCondition(subCondition.id)" class="delete-btn">
                         <template #icon><DeleteOutlined /></template>
@@ -212,7 +203,7 @@
                     <div v-for="subCondition3 in subCondition.subConditions" :key="subCondition3.id" class="sub-condition-wrapper">
                       <div class="condition-row">
                         <div class="condition-cell level-cell">
-                          <span class="level-badge">第3级</span>
+                          <span class="level-badge">第{{ subCondition3.level }}级</span>
                         </div>
                         <div class="condition-cell">
                           <a-select
@@ -262,9 +253,13 @@
                           />
                         </div>
                         <div class="condition-cell actions-cell">
+                          <a-button type="link" size="small" @click="addSameLevelCondition(subCondition3.level)" class="add-same-btn">
+                            <template #icon><PlusOutlined /></template>
+                            添加同级
+                          </a-button>
                           <a-button type="link" size="small" @click="addSubCondition(subCondition3.id, 4)" class="add-sub-btn">
                             <template #icon><PlusCircleOutlined /></template>
-                            添加子条件
+                            添加子级
                           </a-button>
                           <a-button type="link" size="small" danger @click="removeCondition(subCondition3.id)" class="delete-btn">
                             <template #icon><DeleteOutlined /></template>
@@ -278,7 +273,7 @@
                         <div v-for="subCondition4 in subCondition3.subConditions" :key="subCondition4.id" class="sub-condition-wrapper">
                           <div class="condition-row">
                             <div class="condition-cell level-cell">
-                              <span class="level-badge">第4级</span>
+                              <span class="level-badge">第{{ subCondition4.level }}级</span>
                             </div>
                             <div class="condition-cell">
                               <a-select
@@ -328,9 +323,13 @@
                               />
                             </div>
                             <div class="condition-cell actions-cell">
+                              <a-button type="link" size="small" @click="addSameLevelCondition(subCondition4.level)" class="add-same-btn">
+                                <template #icon><PlusOutlined /></template>
+                                添加同级
+                              </a-button>
                               <a-button type="link" size="small" @click="addSubCondition(subCondition4.id, 5)" class="add-sub-btn">
                                 <template #icon><PlusCircleOutlined /></template>
-                                添加子条件
+                                添加子级
                               </a-button>
                               <a-button type="link" size="small" danger @click="removeCondition(subCondition4.id)" class="delete-btn">
                                 <template #icon><DeleteOutlined /></template>
@@ -344,7 +343,7 @@
                             <div v-for="subCondition5 in subCondition4.subConditions" :key="subCondition5.id" class="sub-condition-wrapper">
                               <div class="condition-row">
                                 <div class="condition-cell level-cell">
-                                  <span class="level-badge">第5级</span>
+                                  <span class="level-badge">第{{ subCondition5.level }}级</span>
                                 </div>
                                 <div class="condition-cell">
                                   <a-select
@@ -394,6 +393,10 @@
                                   />
                                 </div>
                                 <div class="condition-cell actions-cell">
+                                  <a-button type="link" size="small" disabled class="add-same-btn">
+                                    <template #icon><PlusOutlined /></template>
+                                    最多5级
+                                  </a-button>
                                   <a-button type="link" size="small" disabled class="add-sub-btn">
                                     <template #icon><PlusCircleOutlined /></template>
                                     最多5级
@@ -417,9 +420,28 @@
         </div>
 
         <div v-else class="empty-state">
-          <a-empty description="暂无查询条件，请添加根条件" />
+          <a-empty description="暂无查询条件，请添加条件" />
         </div>
       </div>
+    </div>
+    <div class="mt4">
+      <a-button type="primary" @click="exportCurrentPage">
+        <template #icon><ExportOutlined /></template>
+        导出本页数据
+      </a-button>
+      <a-button
+          type="primary"
+          @click="exportMarkedData"
+          class="ml2"
+          :disabled="selectedRowKeys.length === 0"
+      >
+        <template #icon><FileExcelOutlined /></template>
+        导出标记数据
+      </a-button>
+      <a-button type="primary" @click="showArchiveModal" class="ml2">
+        <template #icon><FileTextOutlined /></template>
+        生成卷宗信息
+      </a-button>
     </div>
   </a-card>
 
@@ -428,23 +450,53 @@
       class="m2"
       :columns="columns"
       :data-source="dataSource"
-      :scroll="{ x: 1500 }"
+      :scroll="{ x: 2000 }"
       :loading="tableLoading"
       :row-selection="rowSelection"
       :pagination="pagination"
       bordered
       @change="handleTableChange"
+      rowKey="id"
   >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ (pagination.current - 1) * pagination.pageSize + index + 1 }}
       </template>
+      <template v-else-if="column.key === 'transAmt'">
+        {{ record.transAmt?.toLocaleString() }}
+      </template>
     </template>
   </a-table>
+  <!-- 卷宗信息预览Modal -->
+  <a-modal
+      v-model:visible="archiveModalVisible"
+      title="卷宗信息预览"
+      width="800px"
+      :footer="null"
+  >
+    <div class="archive-preview">
+      <!-- 卷宗预览内容 -->
+      <div class="preview-content">
+        <p>这里是卷宗信息的预览内容...</p>
+        <!-- 根据实际需求展示卷宗信息 -->
+      </div>
+
+      <!-- 底部操作按钮 -->
+      <div class="modal-footer">
+        <a-button @click="archiveModalVisible = false">关闭</a-button>
+        <a-button type="primary" @click="sendArchive">发送</a-button>
+      </div>
+    </div>
+  </a-modal>
 </template>
 
 <script lang="ts" name="intelligent" setup>
-import { SaveOutlined } from '@ant-design/icons-vue';
+import {
+  SaveOutlined,
+  ExportOutlined,
+  FileExcelOutlined,
+  FileTextOutlined
+} from '@ant-design/icons-vue';
 import { ref, reactive, onMounted, computed } from 'vue';
 import { message } from 'ant-design-vue';
 import {
@@ -458,15 +510,41 @@ import {
 // 引入相关样式
 import '@vue-office/excel/lib/index.css'
 import {
-  intelligentTableListApi
+  intelligentTableListApi,
+  exportIntelligentPageData, getFileConfirmInfo
 } from './../user.api'
 
 // ts语法
 import { useRoute } from 'vue-router';
 import { useRouter } from "vue-router";
-
+import {useMethods} from "@/hooks/system/useMethods";
+const { handleExportXls } = useMethods();
 const router = useRouter();
 const { query } = useRoute();
+const archiveModalVisible = ref(false);
+
+
+// 行选择配置 - 增加全选功能
+const rowSelection = computed(() => {
+  return {
+    selectedRowKeys: selectedRowKeys.value,
+    onChange: (selectedKeys: string[], selectedRows: any[]) => {
+      selectedRowKeys.value = selectedKeys;
+      selectedRows.value = selectedRows;
+    },
+    onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
+      if (selected) {
+        selectedRowKeys.value = selectedRows.map(row => row.id);
+      } else {
+        selectedRowKeys.value = [];
+      }
+    },
+    // 全选相关配置
+    checkStrictly: false,
+    columnWidth: 60,
+    fixed: true
+  };
+});
 
 const formRef = ref();
 const tableLoading = ref(false);
@@ -495,89 +573,105 @@ const pagination = reactive({
 // 表格列配置
 const columns = ref([
   {
-    title: '序号',
-    key: 'index',
-    width: 80,
+    title: '发起行',
+    dataIndex: 'orgCd',
+    key: 'orgCd',
     align: 'center'
   },
   {
-    title: '源文件',
-    dataIndex: 'sourceFile',
-    width: 200,
+    title: '户名',
+    dataIndex: 'customerName',
+    key: 'customerName',
     ellipsis: true
   },
   {
-    title: '文件夹',
-    dataIndex: 'folder',
-    key: 'folder',
-    width: 150,
+    title: '账号/卡号',
+    dataIndex: 'transAccountNo',
+    key: 'transAccountNo',
     ellipsis: true
   },
   {
-    title: '状态',
+    title: '流水号',
+    dataIndex: 'transNo',
+    key: 'transNo',
+    ellipsis: true
+  },
+  {
+    title: '交易渠道',
+    dataIndex: 'channel',
+    key: 'channel',
+    ellipsis: true
+  },
+  {
+    title: '币种',
+    dataIndex: 'currNo',
+    key: 'currNo',
+    align: 'center'
+  },
+  {
+    title: '交易方向',
+    dataIndex: 'transWay',
+    key: 'transWay',
+    align: 'center'
+  },
+  {
+    title: '交易金额',
+    dataIndex: 'transAmt',
+    key: 'transAmt',
+    align: 'right'
+  },
+  {
+    title: '交易种类',
+    dataIndex: 'transType',
+    key: 'transType',
+    align: 'center'
+  },
+  {
+    title: '业务日期',
+    dataIndex: 'bizDate',
+    key: 'bizDate',
+    align: 'center'
+  },
+  {
+    title: '交易时间',
+    dataIndex: 'transTime',
+    key: 'transTime',
+    align: 'center'
+  },
+  {
+    title: '对方开户银行',
+    dataIndex: 'counterOrgName',
+    key: 'counterOrgName',
+    ellipsis: true
+  },
+  {
+    title: '对方户名',
+    dataIndex: 'counterName',
+    key: 'counterName',
+    ellipsis: true
+  },
+  {
+    title: '对方账号/卡号',
+    dataIndex: 'counterAccountNo',
+    key: 'counterAccountNo',
+    ellipsis: true
+  },
+  {
+    title: '交易状态',
     dataIndex: 'status',
-    width: 100,
+    key: 'status',
     align: 'center'
   },
-  {
-    title: '所属机构',
-    dataIndex: 'organization',
-    width: 80,
-    align: 'center'
-  },
-  {
-    title: '返回信息',
-    dataIndex: 'returnInfo',
-    width: 150,
-    ellipsis: true
-  },
-  {
-    title: '上传时间',
-    dataIndex: 'uploadTime',
-    width: 150,
-    align: 'center'
-  },
-  {
-    title: '成功时间',
-    dataIndex: 'successTime',
-    width: 150,
-    align: 'center'
-  },
-  {
-    title: '操作',
-    key: 'operation',
-    fixed: 'right',
-    width: 180,
-    align: 'center'
-  }
 ]);
 
 const dataSource = ref([]);
-
-// 行选择配置
-const rowSelection = computed(() => {
-  return {
-    selectedRowKeys: selectedRowKeys.value,
-    onChange: (selectedKeys: string[], selectedRows: any[]) => {
-      selectedRowKeys.value = selectedKeys;
-      selectedRows.value = selectedRows;
-    },
-    onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
-      if (selected) {
-        selectedRowKeys.value = selectedRows.map(row => row.id);
-      } else {
-        selectedRowKeys.value = [];
-      }
-    }
-  };
-});
 
 // 动态查询组件相关逻辑
 // 关系枚举
 const relationOptions = [
   { label: '与', value: 'and' },
   { label: '或', value: 'or' },
-  { label: '非', value: 'not' }
+ /* { label: '非', value: 'not' }*/
 ];
 
 // 逻辑运算符枚举
@@ -605,6 +699,7 @@ const fieldOptions = ref([
 // 条件数据结构
 interface Condition {
   id: string;
+  level: number; // 新增层级字段
   relation: string; // 与/或/非
   field: string; // 字段
   operator: string; // 逻辑运算符
@@ -612,8 +707,7 @@ interface Condition {
   subConditions: Condition[]; // 子条件
 }
 
-// 根条件列表
-const rootConditions = ref<Condition[]>([]);
+
 
 // 判断是否为间隔运算符
 const isIntervalOperator = (operator: string) => {
@@ -625,21 +719,64 @@ const generateId = () => {
   return `condition_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
-// 添加根条件
-const addRootCondition = () => {
-  if (rootConditions.value.length >= 5) {
-    message.warning('最多只能添加5个根条件');
-    return;
-  }
+// 根条件列表 - 默认显示一个空的第一级条件
+const rootConditions = ref<Condition[]>([{
+  id: generateId(),
+  level: 1,
+  relation: 'and',
+  field: '',
+  operator: '',
+  value: '',
+  subConditions: []
+}]);
 
-  rootConditions.value.push({
-    id: generateId(),
-    relation: 'and',
-    field: '',
-    operator: '',
-    value: '',
-    subConditions: []
-  });
+// 添加同级条件
+const addSameLevelCondition = (level: number) => {
+  if (level === 1) {
+    // 第一级直接添加到根条件
+    if (rootConditions.value.length >= 10) {
+      message.warning('最多只能添加10个同级条件');
+      return;
+    }
+    rootConditions.value.push({
+      id: generateId(),
+      level: 1,
+      relation: rootConditions.value.length === 0 ? 'and' : 'and',
+      field: '',
+      operator: '',
+      value: '',
+      subConditions: []
+    });
+  } else {
+    // 其他级别需要找到父级添加
+    const findParentAndAdd = (conditions: Condition[]): boolean => {
+      for (const condition of conditions) {
+        if (condition.level === level - 1 && condition.subConditions) {
+          if (condition.subConditions.length >= 10) {
+            message.warning('最多只能添加10个同级条件');
+            return true;
+          }
+          condition.subConditions.push({
+            id: generateId(),
+            level: level,
+            relation: condition.subConditions.length === 0 ? 'and' : 'and',
+            field: '',
+            operator: '',
+            value: '',
+            subConditions: []
+          });
+          return true;
+        }
+        if (condition.subConditions && condition.subConditions.length > 0) {
+          const found = findParentAndAdd(condition.subConditions);
+          if (found) return true;
+        }
+      }
+      return false;
+    };
+
+    findParentAndAdd(rootConditions.value);
+  }
 };
 
 // 保存筛选条件
@@ -675,16 +812,14 @@ const saveFilterCondition = () => {
   }
 
   const newCondition = {
+    id: generateId(),
     name: conditionName.value,
-    conditionJson: JSON.stringify(rootConditions.value) // 深拷贝
+    conditions: JSON.parse(JSON.stringify(rootConditions.value)) // 深拷贝
   };
 
   savedConditions.value.push(newCondition);
   conditionName.value = '';
   saveMode.value = false;
-
-  console.info('筛选条件json',newCondition)
-  // todo 保存筛选条件
   message.success('筛选条件保存成功');
 };
 
@@ -697,13 +832,7 @@ const loadSavedCondition = (conditionId: string) => {
   }
 };
 
-// 取消保存
-const cancelSave = () => {
-  saveMode.value = false;
-  conditionName.value = '';
-};
-
-// 修改添加子条件逻辑 - 添加具体的条件行
+// 添加子条件
 const addSubCondition = (parentId: string, level: number) => {
   if (level > 5) {
     message.warning('最多只能添加5级条件');
@@ -716,9 +845,14 @@ const addSubCondition = (parentId: string, level: number) => {
         if (!condition.subConditions) {
           condition.subConditions = [];
         }
+        if (condition.subConditions.length >= 10) {
+          message.warning('最多只能添加10个子条件');
+          return true;
+        }
         condition.subConditions.push({
           id: generateId(),
-          relation: condition.subConditions.length === 0 ? 'and' : 'and', // 第一个子条件默认and
+          level: level,
+          relation: condition.subConditions.length === 0 ? 'and' : 'and',
           field: '',
           operator: '',
           value: '',
@@ -758,9 +892,14 @@ const updateCondition = (conditionId: string, updates: Partial<Condition>) => {
   findAndUpdate(rootConditions.value);
 };
 
-
 // 删除条件
 const removeCondition = (conditionId: string) => {
+  // 检查是否是唯一的根条件
+  if (rootConditions.value.length === 1 && rootConditions.value[0].id === conditionId) {
+    message.warning('至少需要保留一个查询条件');
+    return;
+  }
+
   const findAndRemove = (conditions: Condition[]): boolean => {
     for (let i = 0; i < conditions.length; i++) {
       if (conditions[i].id === conditionId) {
@@ -781,11 +920,31 @@ const removeCondition = (conditionId: string) => {
 
 // 重置条件
 const resetConditions = () => {
-  rootConditions.value = [];
+  rootConditions.value = [{
+    id: generateId(),
+    level: 1,
+    relation: 'and',
+    field: '',
+    operator: '',
+    value: '',
+    subConditions: []
+  }];
 };
 
 // 页面初始化时调用接口
 onMounted(() => {
+  // 确保有一个第一级条件
+  if (rootConditions.value.length === 0) {
+    rootConditions.value.push({
+      id: generateId(),
+      level: 1,
+      relation: 'and',
+      field: '',
+      operator: '',
+      value: '',
+      subConditions: []
+    });
+  }
   fetchIntelligentList();
 });
 
@@ -807,7 +966,7 @@ const fetchIntelligentList = async () => {
     if (response && response.records) {
       dataSource.value = response.records;
       pagination.total = response.total;
-      pagination.current = response.current;
+     // pagination.current = response.current || 1;
     } else {
       dataSource.value = [];
       pagination.total = 0;
@@ -845,6 +1004,72 @@ const resetSearch = () => {
   pagination.current = 1;
   fetchIntelligentList();
 };
+
+// 导出本页数据
+const exportCurrentPage = async () => {
+    const params = {
+      caseId: query.caseId,
+      ids: selectedRowKeys.value,
+      conditionJson: JSON.stringify(rootConditions.value),
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize
+    };
+    handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post');
+};
+
+// 导出标记数据
+const exportMarkedData = async () => {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请先选择要导出的数据');
+    return;
+  }
+  const params = {
+    caseId: query.caseId,
+    ids: selectedRowKeys.value,
+    conditionJson: JSON.stringify(rootConditions.value),
+    pageNo: pagination.current,
+    pageSize: pagination.pageSize
+  };
+  handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post');
+};
+
+// 显示卷宗信息弹窗
+const showArchiveModal = async() => {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请先选择要生成的数据');
+    return;
+  }
+  const params = {
+    caseId: query.caseId,
+    ids: selectedRowKeys.value,
+    conditionJson: JSON.stringify(rootConditions.value),
+    pageNo: pagination.current,
+    pageSize: pagination.pageSize
+  };
+  const response = await getFileConfirmInfo(params);
+  console.info('接口响应数据:', response);
+
+  if (response) {
+    archiveModalVisible.value = true;
+  } else {
+
+  }
+
+};
+
+// 发送卷宗信息
+const sendArchive = async () => {
+  try {
+    // await sendArchiveApi({
+    //   // 卷宗相关参数
+    // });
+    message.success('卷宗信息发送成功');
+    archiveModalVisible.value = false;
+  } catch (error) {
+    message.error('发送失败');
+  }
+};
+
 </script>
 
 <style scoped>
@@ -917,7 +1142,7 @@ const resetSearch = () => {
 
 .header-item:last-child {
   border-right: none;
-  flex: 0.8;
+  flex: 1.2;
 }
 
 .conditions-body {
@@ -935,25 +1160,6 @@ const resetSearch = () => {
 
 .condition-group:last-child {
   border-bottom: none;
-}
-
-.group-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.group-title {
-  font-weight: 600;
-  color: #1890ff;
-}
-
-.group-actions {
-  display: flex;
-  gap: 8px;
 }
 
 .condition-row {
@@ -975,7 +1181,7 @@ const resetSearch = () => {
 
 .condition-cell:last-child {
   border-right: none;
-  flex: 0.8;
+  flex: 1.2;
 }
 
 .level-cell {
@@ -1001,14 +1207,14 @@ const resetSearch = () => {
   gap: 8px;
 }
 
-.add-sub-btn, .add-condition-btn {
+.add-same-btn, .add-sub-btn, .add-condition-btn {
   color: #1890ff;
   font-size: 12px;
   padding: 0 4px;
   height: auto;
 }
 
-.add-sub-btn:hover, .add-condition-btn:hover {
+.add-same-btn:hover, .add-sub-btn:hover, .add-condition-btn:hover {
   color: #40a9ff;
   background: rgba(24, 144, 255, 0.05);
 }
@@ -1042,6 +1248,7 @@ const resetSearch = () => {
 }
 
 /* 确保子条件中的按钮样式正确应用 */
+.sub-condition-wrapper .add-same-btn,
 .sub-condition-wrapper .add-sub-btn,
 .sub-condition-wrapper .delete-btn {
   color: #1890ff;
@@ -1050,6 +1257,7 @@ const resetSearch = () => {
   height: auto;
 }
 
+.sub-condition-wrapper .add-same-btn:hover,
 .sub-condition-wrapper .add-sub-btn:hover {
   color: #40a9ff;
   background: rgba(24, 144, 255, 0.05);

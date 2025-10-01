@@ -181,52 +181,69 @@
                 </div>
               </a-col>
               <a-col :span="20">
-                <!-- 银行客户信息表格 -->
-                <a-table
-                    v-if="activeSheetData.bankCustomers.length"
-                    :columns="bankCustomerColumns"
-                    :data-source="activeSheetData.bankCustomers"
-                    size="small"
-                    bordered
-                    :pagination="false"
-                    :scroll="{ x: 1500 }"
-                    style="margin-bottom: 16px;"
-                />
+                <a-card>
+                  <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+                    <!-- 银行客户信息表格 -->
+                    <a-tab-pane key="bankCustomer" tab="银行客户信息">
+                      <a-table
+                          :columns="bankCustomerColumns"
+                          :data-source="activeSheetData.bankCustomers"
+                          :pagination="bankCustomerPagination"
+                          size="small"
+                          bordered
+                          :scroll="{ x: 1500 }"
+                          :loading="tableLoading"
+                          @change="handleBankCustomerTableChange"
+                          style="margin-bottom: 16px;"
+                      />
+                    </a-tab-pane>
 
-                <!-- 银行交易流水表格 -->
-                <a-table
-                    v-if="activeSheetData.bankTransactions.length"
-                    :columns="bankTransactionColumns"
-                    :data-source="activeSheetData.bankTransactions"
-                    size="small"
-                    bordered
-                    :pagination="false"
-                    :scroll="{ x: 1500 }"
-                    style="margin-bottom: 16px;"
-                />
+                    <!-- 银行交易流水表格 -->
+                    <a-tab-pane key="bankTransaction" tab="银行交易流水">
+                      <a-table
+                          :columns="bankTransactionColumns"
+                          :data-source="activeSheetData.bankTransactions"
+                          :pagination="bankTransactionPagination"
+                          size="small"
+                          bordered
+                          :scroll="{ x: 1500 }"
+                          :loading="tableLoading"
+                          @change="handleBankTransactionTableChange"
+                          style="margin-bottom: 16px;"
+                      />
+                    </a-tab-pane>
 
-                <!-- 非银行客户信息表格 -->
-                <a-table
-                    v-if="activeSheetData.notBankCustomers.length"
-                    :columns="nonBankCustomerColumns"
-                    :data-source="activeSheetData.notBankCustomers"
-                    size="small"
-                    bordered
-                    :pagination="false"
-                    :scroll="{ x: 1500 }"
-                    style="margin-bottom: 16px;"
-                />
+                    <!-- 非银行客户信息表格 -->
+                    <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
+                      <a-table
+                          :columns="nonBankCustomerColumns"
+                          :data-source="activeSheetData.notBankCustomers"
+                          :pagination="nonBankCustomerPagination"
+                          size="small"
+                          bordered
+                          :scroll="{ x: 1500 }"
+                          :loading="tableLoading"
+                          @change="handleNonBankCustomerTableChange"
+                          style="margin-bottom: 16px;"
+                      />
+                    </a-tab-pane>
 
-                <!-- 非银行交易流水表格 -->
-                <a-table
-                    v-if="activeSheetData.notBankTransactions.length"
-                    :columns="nonBankTransactionColumns"
-                    :data-source="activeSheetData.notBankTransactions"
-                    size="small"
-                    :scroll="{ x: 1500 }"
-                    bordered
-                    :pagination="false"
-                />
+                    <!-- 非银行交易流水表格 -->
+                    <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
+                      <a-table
+                          :columns="nonBankTransactionColumns"
+                          :data-source="activeSheetData.notBankTransactions"
+                          :pagination="nonBankTransactionPagination"
+                          size="small"
+                          :scroll="{ x: 1500 }"
+                          bordered
+                          :loading="tableLoading"
+                          @change="handleNonBankTransactionTableChange"
+                      />
+                    </a-tab-pane>
+                  </a-tabs>
+                </a-card>
+
               </a-col>
               <a-col :span="24" style="text-align: right; margin-top: 16px;">
                 <a-button type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
@@ -348,8 +365,8 @@
             <a-form
                 ref="convertFormRef"
                 :model="convertFormState"
-                :label-col="{ span: 6 }"
-                :wrapper-col="{ span: 16 }"
+                :label-col="{ span: 8 }"
+                :wrapper-col="{ span: 14 }"
             >
               <a-form-item label="文件名称">
                 <span>{{ convertFormState?.fileName || '-' }}</span>
@@ -358,8 +375,7 @@
               <a-form-item label="所属银行">
                 <span>{{ convertFormState?.orgName || '-' }}</span>
               </a-form-item>
-
-              <a-form-item label="上述银行是否正确，需要重新指定">
+              <a-form-item labelWrap="true" label="上述银行是否正确，需要重新指定">
                 <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
                   <a-select-option value="1">是</a-select-option>
                   <a-select-option value="0">否</a-select-option>
@@ -415,7 +431,11 @@ import {
   standardTableApi,
   saveEditBankApi,
   convertFileListApi,
-  getFileConfirmInfo
+  getFileConfirmInfo,
+  standardCustomerApi,
+  standardTransApi,
+  standardNonBankCustomerApi,
+  standardNonBankTransApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -440,7 +460,21 @@ const csvRows = computed(() => {
   }
   return [];
 });
-
+// 新增计算属性：检查当前激活的选项卡是否有数据
+const hasTableData = computed(() => {
+  switch (activeTab.value) {
+    case 'bankCustomer':
+      return activeSheetData.value.bankCustomers.length > 0;
+    case 'bankTransaction':
+      return activeSheetData.value.bankTransactions.length > 0;
+    case 'nonBankCustomer':
+      return activeSheetData.value.notBankCustomers.length > 0;
+    case 'nonBankTransaction':
+      return activeSheetData.value.notBankTransactions.length > 0;
+    default:
+      return false;
+  }
+});
 const props = defineProps<Props>();
 const formRef = ref();
 const {query} = useRoute();
@@ -449,6 +483,52 @@ const formState = reactive({
   fileName: '',
   fileStatus: undefined
 });
+
+// 新增状态
+const activeTab = ref('bankCustomer'); // 默认激活第一个选项卡
+// 新增分页配置
+const bankCustomerPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+const bankTransactionPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+const nonBankCustomerPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+const nonBankTransactionPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+
+
 // 新增：编辑Modal相关状态
 const editModalVisible = ref(false);
 const fileStreamInfo = ref<any>();
@@ -769,32 +849,140 @@ const handleUpload = async () => {
   fetchFileList();
 };
 
-// 选择sheet
+// 修改selectSheet方法
 const selectSheet = async (sheet) => {
   activeSheet.value = sheet.pageId;
-  try {
-    // 调用API获取sheet数据
-    const response = await standardTableApi({
-      filePageId: sheet.pageId,
-      // filePageId: '40288188995b3e1901995b51ee2c0005',
-      //
-    });
-    activeSheetData.value = response || {
-      bankCustomers:[],
-      bankTransactions:[],
-      notBankCustomers:[],
-      notBankTransactions:[]
-    };
-  } catch (error) {
-    message.error('获取sheet数据失败');
-    activeSheetData.value = {
-      bankCustomers:[],
-      bankTransactions:[],
-      notBankCustomers:[],
-      notBankTransactions:[]
-    };
+  activeTab.value = 'bankCustomer'; // 重置为第一个选项卡
+
+  // 重置所有分页参数
+  resetAllPagination();
+
+  // 清空所有数据
+  activeSheetData.value = {
+    bankCustomers: [],
+    bankTransactions: [],
+    notBankCustomers: [],
+    notBankTransactions: []
+  };
+
+  // 加载第一个选项卡的数据
+  await loadTabData('bankCustomer');
+};
+// 新增：重置所有分页参数方法
+const resetAllPagination = () => {
+  bankCustomerPagination.current = 1;
+  bankCustomerPagination.total = 0;
+  bankTransactionPagination.current = 1;
+  bankTransactionPagination.total = 0;
+  nonBankCustomerPagination.current = 1;
+  nonBankCustomerPagination.total = 0;
+  nonBankTransactionPagination.current = 1;
+  nonBankTransactionPagination.total = 0;
+};
+
+// 新增：表格分页变化处理方法
+const handleBankCustomerTableChange = (pagination) => {
+  bankCustomerPagination.current = pagination.current;
+  bankCustomerPagination.pageSize = pagination.pageSize;
+  loadTabData('bankCustomer');
+};
+
+const handleBankTransactionTableChange = (pagination) => {
+  bankTransactionPagination.current = pagination.current;
+  bankTransactionPagination.pageSize = pagination.pageSize;
+  loadTabData('bankTransaction');
+};
+
+const handleNonBankCustomerTableChange = (pagination) => {
+  nonBankCustomerPagination.current = pagination.current;
+  nonBankCustomerPagination.pageSize = pagination.pageSize;
+  loadTabData('nonBankCustomer');
+};
+
+const handleNonBankTransactionTableChange = (pagination) => {
+  nonBankTransactionPagination.current = pagination.current;
+  nonBankTransactionPagination.pageSize = pagination.pageSize;
+  loadTabData('nonBankTransaction');
+};
+
+// 新增：选项卡切换处理方法
+const handleTabChange = (key) => {
+  // 如果当前选项卡没有数据，则加载数据
+  if (!hasTableData.value) {
+    loadTabData(key);
   }
 };
+
+// 新增：加载选项卡数据方法
+const loadTabData = async (tabKey) => {
+  if (!activeSheet.value) return;
+
+  try {
+    tableLoading.value = true;
+
+    let pageNo, pageSize, params, response;
+
+    switch (tabKey) {
+      case 'bankCustomer':
+        pageNo = bankCustomerPagination.current;
+        pageSize = bankCustomerPagination.pageSize;
+        params = {
+          filePageId: activeSheet.value,
+          pageNo,
+          pageSize
+        };
+        response = await standardCustomerApi(params);
+        activeSheetData.value.bankCustomers = response.records || response.bankCustomers || [];
+        bankCustomerPagination.total = response.total || 0;
+        break;
+
+      case 'bankTransaction':
+        pageNo = bankTransactionPagination.current;
+        pageSize = bankTransactionPagination.pageSize;
+        params = {
+          filePageId: activeSheet.value,
+          pageNo,
+          pageSize
+        };
+        response = await standardTransApi(params);
+        activeSheetData.value.bankTransactions = response.records || response.bankTransactions || [];
+        bankTransactionPagination.total = response.total || 0;
+        break;
+
+      case 'nonBankCustomer':
+        pageNo = nonBankCustomerPagination.current;
+        pageSize = nonBankCustomerPagination.pageSize;
+        params = {
+          filePageId: activeSheet.value,
+          pageNo,
+          pageSize
+        };
+        response = await standardNonBankCustomerApi(params);
+        activeSheetData.value.notBankCustomers = response.records || response.notBankCustomers || [];
+        nonBankCustomerPagination.total = response.total || 0;
+        break;
+
+      case 'nonBankTransaction':
+        pageNo = nonBankTransactionPagination.current;
+        pageSize = nonBankTransactionPagination.pageSize;
+        params = {
+          filePageId: activeSheet.value,
+          pageNo,
+          pageSize
+        };
+        response = await standardNonBankTransApi(params);
+        activeSheetData.value.notBankTransactions = response.records || response.notBankTransactions || [];
+        nonBankTransactionPagination.total = response.total || 0;
+        break;
+    }
+  } catch (error) {
+    console.error(`加载${tabKey}数据失败:`, error);
+    message.error(`加载数据失败`);
+  } finally {
+    tableLoading.value = false;
+  }
+};
+
 
 //
 const doBankEdit = () => {
@@ -822,30 +1010,41 @@ const getFileConvertInfo = async(id)=>{
   convertFormState.value = fileConfirm
 }
 
-// 转换查看
+// 修改editFile方法，在显示Modal后加载数据
 const editFile = async (record) => {
   currentRecord.value = record;
   // 查询转换基本信息
   const convertInfo = await getFileConverResultApi({fileId:record.id})
   const fileInfo = await getFileInfoItem({fileId:record.id})
   const { fileType } = fileInfo
-  currentFileType.value = (fileType || '').toLowerCase() // 设置文件类型
+  currentFileType.value = (fileType || '').toLowerCase()
+
   if (supportedTypes.includes(currentFileType.value)) {
-    console.log('开始预览文件')
     previewFile(record)
   } else {
     message.error(`不支持的文件类型: ${fileType.value}`)
   }
 
   currentFile = convertInfo || {};
-  if(convertInfo.organizationCode){ // 设置银行
+  if(convertInfo.organizationCode){
     selectedBank.value = convertInfo.organizationCode
   }
+
+  // 重置分页和数据
+  resetAllPagination();
+  activeSheetData.value = {
+    bankCustomers: [],
+    bankTransactions: [],
+    notBankCustomers: [],
+    notBankTransactions: []
+  };
+
   // 默认选择第一个sheet并加载数据
   const {filePages} = convertInfo
   if (filePages && filePages.length > 0) {
     await selectSheet(filePages[0]);
   }
+
   // 显示Modal
   editModalVisible.value = true;
 };
@@ -917,11 +1116,13 @@ const closeEditModal = () => {
     pageNumber: '',
     fileContent: ''
   });
+  // 重置分页和数据
+  resetAllPagination();
   activeSheetData.value = {
-    bankCustomers:[],
-    bankTransactions:[],
-    notBankCustomers:[],
-    notBankTransactions:[]
+    bankCustomers: [],
+    bankTransactions: [],
+    notBankCustomers: [],
+    notBankTransactions: []
   };
 };
 
