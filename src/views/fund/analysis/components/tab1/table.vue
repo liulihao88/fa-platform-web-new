@@ -58,7 +58,7 @@
           <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
           <a-button class="ml2" @click="resetSearch">重置</a-button>
           <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
-          <a-button class="ml2" type="primary" @click="confirmFileConvert">确认文件转换</a-button>
+          <a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>
         </a-col>
       </a-row>
     </a-form>

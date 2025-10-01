@@ -49,7 +49,7 @@
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button size="small" type="primary" @click="adjustRelation(record)">调整关系</a-button>
+          <a-button size="small" type="primary" @click="adjustRelation(record)">调整</a-button>
           <a-button class="ml1" size="small" type="primary" @click="viewDetails(record)">关系</a-button>
           <a-button class="ml1" size="small" type="primary" @click="showPersonDetail(record)">涉案人详情</a-button>
         </div>

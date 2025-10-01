@@ -436,7 +436,7 @@
           :disabled="selectedRowKeys.length === 0"
       >
         <template #icon><FileExcelOutlined /></template>
-        导出标记数据
+        导出选择数据
       </a-button>
       <a-button type="primary" @click="showArchiveModal" class="ml2">
         <template #icon><FileTextOutlined /></template>
@@ -669,7 +669,7 @@ const dataSource = ref([]);
 // 动态查询组件相关逻辑
 // 关系枚举
 const relationOptions = [
-  { label: '与', value: 'and' },
+  { label: '且', value: 'and' },
   { label: '或', value: 'or' },
  /* { label: '非', value: 'not' }*/
 ];
