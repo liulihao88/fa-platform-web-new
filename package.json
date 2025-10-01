@@ -184,5 +184,15 @@
   "homepage": "https://www.jeecg.com",
   "engines": {
     "node": "^18 || >=20"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@vue-office/excel",
+      "@vue-office/pdf"
+    ],
+    "onlyBuiltDependencies": [
+      "@vue-office/excel",
+      "@vue-office/pdf"
+    ]
   }
 }
