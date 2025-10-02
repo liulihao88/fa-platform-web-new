@@ -60,3 +60,10 @@ export const intelligentTableListApi = (params) => defHttp.post({ url: '/fa/case
 export const getFileConfirmInfo = (params) => defHttp.post({ url: '/fa/casefile/getPropertyByFileId', params });
 // 导出数据
 export const exportIntelligentPageData = '/fa/caseStandardData/exportXls'
+
+// 查询条件列表
+export const searchConditionListApi = (params) => defHttp.post({ url: '/fa/faQueryRecord/getQueryRecordList', params });
+// 保存查询条件
+export const saveQueryConditionApi = (params) => defHttp.post({ url: '/fa/faQueryRecord/add', params });
+// 文件文本预览
+export const fileContextInfo = (params) => defHttp.post({ url: '/fa/caseStandardData/generateTransText', params });

@@ -383,10 +383,10 @@ const showPersonDetail = async (record) => {
   try {
     const response = await getCompanyOrPersonDetailApi({ involvedId: record.id });
     const {customerType} = response // 1企业 2个人
-    if(customerType == 1){
+    if(customerType == 1 || customerType == '企业' ){
       currentCompanyDetail.value = response;
       companyDrawerVisible.value = true;
-    }else if(customerType == 2){
+    }else if(customerType == 2 || customerType == '个人'){
       currentPersonDetail.value = response;
       personDrawerVisible.value = true;
     }

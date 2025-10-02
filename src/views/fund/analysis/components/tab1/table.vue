@@ -163,6 +163,9 @@
                 </template>
                 <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
               </a-col>-->
+              <a-col :span="4">
+                <a-button type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
+              </a-col>
             </a-row>
 
             <!-- Sheet列表区域 -->
@@ -244,9 +247,6 @@
                   </a-tabs>
                 </a-card>
 
-              </a-col>
-              <a-col :span="24" style="text-align: right; margin-top: 16px;">
-                <a-button type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
               </a-col>
             </a-row>
           </a-card>
@@ -376,10 +376,11 @@
                 <span>{{ convertFormState?.orgName || '-' }}</span>
               </a-form-item>
               <a-form-item labelWrap="true" label="上述银行是否正确，需要重新指定">
-                <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
+<!--                <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
                   <a-select-option value="1">是</a-select-option>
                   <a-select-option value="0">否</a-select-option>
-                </a-select>
+                </a-select>-->
+                <JSearchSelect dict="fa_orgs_configure,org_name,org_cd" v-model:value="convertFormState.orgCd" placeholder="请选择"  allow-clear ></JSearchSelect>
               </a-form-item>
 
               <a-form-item label="判断银行依据">
@@ -549,6 +550,7 @@ const convertFormRef = ref();
 const convertFormState = reactive({
   fileName: '', // 保留原文件名
   orgName: '',
+  orgCd:'',
   orgNameFrom: '',
   inVertical: undefined,
   folderName: '',
