@@ -611,7 +611,7 @@
       <div class="archive-preview">
         <!-- 卷宗预览内容 -->
         <div class="preview-content">
-          <a-textarea v-model:value="archiveModalPreviewData" placeholder="卷宗信息" :rows="4" />
+          <a-textarea v-model:value="archiveModalPreviewData" placeholder="卷宗信息" :rows="14" />
         </div>
         <a-row class="mt4">
           <a-col span="8" offset="16">
