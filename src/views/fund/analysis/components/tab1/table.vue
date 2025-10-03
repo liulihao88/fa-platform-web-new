@@ -371,7 +371,12 @@
               <a-form-item label="文件名称">
                 <span>{{ convertFormState?.fileName || '-' }}</span>
               </a-form-item>
-
+              <a-form-item label="客户号">
+                <span>{{ convertFormState?.customerId || '-' }}</span>
+              </a-form-item>
+              <a-form-item label="客户名称">
+                <span>{{ convertFormState?.customerName || '-' }}</span>
+              </a-form-item>
               <a-form-item label="所属银行">
                 <span>{{ convertFormState?.orgName || '-' }}</span>
               </a-form-item>
@@ -380,9 +385,11 @@
                   <a-select-option value="1">是</a-select-option>
                   <a-select-option value="0">否</a-select-option>
                 </a-select>-->
-                <JSearchSelect dict="fa_orgs_configure,org_name,org_cd" v-model:value="convertFormState.orgCd" placeholder="请选择"  allow-clear ></JSearchSelect>
+                <JSearchSelect dict="fa_orgs_configure,org_name,org_cd" v-model:value="convertFormState.dataOrg" placeholder="请选择"  allow-clear ></JSearchSelect>
               </a-form-item>
-
+              <a-row>
+                <a-col style="color:red" span="16" offset="8">请确定所属银行和嫌疑人姓名，如果不对，请修改正确后确认</a-col>
+              </a-row>
               <a-form-item label="判断银行依据">
                 <span>{{ convertFormState?.orgNameFrom || '-' }}</span>
               </a-form-item>
@@ -392,14 +399,14 @@
               </a-form-item>
 
               <a-form-item label="数据中的机构">
-                <span>{{ convertFormState?.dataOrg || '-' }}</span>
+                <span>{{ convertFormState?.orgName || '-' }}</span>
               </a-form-item>
 
               <a-form-item label="数据中的卡号">
                 <span>{{ convertFormState?.dataCardNum || '-' }}</span>
               </a-form-item>
               <a-form-item label="确认状态">
-                <span>{{ convertFormState?.status || '-' }}</span>
+                <span>{{ convertFormState.status == '1' ||convertFormState.status == '01'?'已确认':'未确认' }}</span>
               </a-form-item>
             </a-form>
 
@@ -429,9 +436,8 @@ import {
   uploadFileApi,
   getFileStreamByFileId,
   getFileInfoItem,
-  standardTableApi,
   saveEditBankApi,
-  convertFileListApi,
+  updateFileOrg,
   getFileConfirmInfo,
   standardCustomerApi,
   standardTransApi,
@@ -547,17 +553,19 @@ const convertModalVisible = ref(false);
 const convertFileList = ref([]);
 const selectedConvertFile = ref(null);
 const convertFormRef = ref();
-const convertFormState = reactive({
+const convertFormState = ref({
   fileName: '', // 保留原文件名
   orgName: '',
+  dataOrg:undefined,
   orgCd:'',
   orgNameFrom: '',
   inVertical: undefined,
   folderName: '',
-  dataOrg: '',
   directory: '',
   dataCardNum: '',
-  status: ''
+  status: '',
+  customerName:'',
+  customerId:''
 });
 
 
@@ -1007,9 +1015,13 @@ const confirmBank = () => {
   })
 };
 
-const getFileConvertInfo = async(id)=>{
-  const fileConfirm = await getFileConfirmInfo({fileId:id})
-  convertFormState.value = fileConfirm
+const getFileConvertInfo =(id)=>{
+   getFileConfirmInfo({fileId:id}).then((response)=>{
+    convertFormState.value = response
+  }).catch((err)=>{
+    resetConvertForm()
+  })
+
 }
 
 // 修改editFile方法，在显示Modal后加载数据
@@ -1154,35 +1166,34 @@ const selectConvertFile = (file) => {
 
 // 重置表单
 const resetConvertForm = () => {
-  Object.assign(convertFormState, {
+  convertFormState.value = {
     fileName: '', // 保留原文件名
     orgName: '',
+    orgCd:'',
     orgNameFrom: '',
     inVertical: undefined,
     folderName: '',
-    dataOrg: '',
+    dataOrg: undefined,
     directory: '',
     dataCardNum: '',
-    status: ''
-  });
+    status: '',
+    customerName:'',
+    customerId:''
+  }
 };
 
-// 确认转换
+// 修改文件所属机构
 const handleConvertConfirm = async () => {
   try {
-    if (!selectedConvertFile.value) {
-      message.warning('请选择文件');
-      return;
-    }
-
+    const {dataOrg} = convertFormState.value
     const params = {
       fileId: selectedConvertFile.value.id,
       caseId: query.caseId,
-      ...convertFormState
+      organizationCode:dataOrg
     };
 
-    // 调用转换接口
-    await convertFileListApi(params);
+    // 修改文件所属机构
+    await updateFileOrg(params);
     getFileConvertInfo(selectedConvertFile.value.id)
 /*    // 关闭模态框并刷新列表
     convertModalVisible.value = false;

@@ -54,6 +54,11 @@ export const getFileStreamByFileId = (params,responseType='arraybuffer') => defH
 
 export const exportDataApi = '/fa/caseDuplicateData/exportXls'
 
+
+export const updateFileOrg = (params) => defHttp.post({ url: '/fa/casefile/updateOrg', params });
+
+
+
 // 智能筛选列表
 export const intelligentTableListApi = (params) => defHttp.post({ url: '/fa/caseStandardData/transList', params });
 // 根据文件ID查询文件确认信息
