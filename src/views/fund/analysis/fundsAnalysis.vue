@@ -14,7 +14,7 @@
       </a-row>
     </a-card>
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="1" tab="智能查询">
+      <a-tab-pane key="1" tab="智能筛查">
         <intelligent/>
       </a-tab-pane>
 <!--      <a-tab-pane key="2" tab="流水溯源" force-render>

@@ -27,7 +27,7 @@
 
     <!-- 中间Sheet列表 -->
     <a-col :span="3">
-      <h3 class="mt13">Sheet列表</h3>
+      <h3 class="mt13">文件页码</h3>
       <div class="sheet-list">
         <a-spin :spinning="sheetLoading">
           <div
@@ -43,7 +43,8 @@
     </a-col>
     <!-- 右侧数据表格 -->
     <a-col :span="17">
-      <a-card class="mt21">
+      <h3 class="mt13">转换数据</h3>
+      <a-card>
         <a-spin :spinning="tableLoading">
           <!-- Tab选项卡 -->
           <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">

@@ -49,7 +49,7 @@
       </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button size="small" type="primary" @click="adjustRelation(record)">调整关系</a-button>
+          <a-button size="small" type="primary" @click="adjustRelation(record)">调整</a-button>
           <a-button class="ml1" size="small" type="primary" @click="viewDetails(record)">关系</a-button>
           <a-button class="ml1" size="small" type="primary" @click="showPersonDetail(record)">涉案人详情</a-button>
         </div>
@@ -383,10 +383,10 @@ const showPersonDetail = async (record) => {
   try {
     const response = await getCompanyOrPersonDetailApi({ involvedId: record.id });
     const {customerType} = response // 1企业 2个人
-    if(customerType == 1){
+    if(customerType == 1 || customerType == '企业' ){
       currentCompanyDetail.value = response;
       companyDrawerVisible.value = true;
-    }else if(customerType == 2){
+    }else if(customerType == 2 || customerType == '个人'){
       currentPersonDetail.value = response;
       personDrawerVisible.value = true;
     }
