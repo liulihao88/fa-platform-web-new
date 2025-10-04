@@ -101,14 +101,19 @@
             </a-col>
             <a-col :span="12">
               <a-form-item label="数据类类别" name="dataType">
-                <a-select
+                <a-input
+                    v-model:value="formData.dataType"
+                    placeholder="请输入数据类别"
+                    :disabled="isEditMode"
+                />
+<!--                <a-select
                     v-model:value="formData.dataType"
                     placeholder="请选择数据类类别"
                     :disabled="isEditMode"
                 >
                   <a-select-option value="01">银行客户</a-select-option>
                   <a-select-option value="02">非银行客户</a-select-option>
-                </a-select>
+                </a-select>-->
               </a-form-item>
             </a-col>
           </a-row>
