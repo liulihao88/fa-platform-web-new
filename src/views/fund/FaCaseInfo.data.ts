@@ -1,8 +1,6 @@
 import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
-import { rules} from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
-import { getWeekMonthQuarterYear } from '/@/utils';
 //列表数据
 export const columns: BasicColumn[] = [
    {
@@ -13,17 +11,26 @@ export const columns: BasicColumn[] = [
    {
     title: '案由',
     align:"center",
-    dataIndex: 'caseReason'
+    dataIndex: 'caseReason',
+       customRender: ({ text }) => {
+           return text ||'--'
+       },
    },
    {
     title: '部门受案号',
     align:"center",
-    dataIndex: 'deptCaseCode'
+    dataIndex: 'deptCaseCode',
+       customRender: ({ text }) => {
+           return text ||'--'
+       },
    },
   {
     title: '受理时间',
     align:"center",
-    dataIndex: 'processDate'
+    dataIndex: 'processDate',
+      customRender: ({ text }) => {
+          return text ||'--'
+      },
   },
   {
     title: '文件处理状态',
@@ -36,22 +43,34 @@ export const columns: BasicColumn[] = [
    {
     title: '文件数量',
     align:"center",
-    dataIndex: 'fileNum'
+    dataIndex: 'fileNum',
+    customRender: ({ text }) => {
+      return text ||'0'
+    },
    },
    {
     title: '文件导入次数',
     align:"center",
-    dataIndex: 'fileImportNum'
+    dataIndex: 'fileImportNum',
+       customRender: ({ text }) => {
+           return text ||'0'
+       },
    },
    {
     title: '导入笔数',
     align:"center",
-    dataIndex: 'importDataNum'
+    dataIndex: 'importDataNum',
+       customRender: ({ text }) => {
+           return text ||'0'
+       },
    },
    {
     title: '去重笔数',
     align:"center",
-    dataIndex: 'repeatDataNum'
+    dataIndex: 'repeatDataNum',
+       customRender: ({ text }) => {
+           return text ||'0'
+       },
    },
 
 ];

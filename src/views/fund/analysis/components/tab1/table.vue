@@ -83,6 +83,15 @@
           {{ getStatusText(record.status) }}
         </a-tag>
       </template>
+      <template v-if="column.dataIndex === 'organization'">
+        {{ record.organization || '--' }}
+      </template>
+      <template v-if="column.dataIndex === 'returnInfo'">
+        {{ record.returnInfo || '--' }}
+      </template>
+      <template v-if="column.dataIndex === 'successTime'">
+        {{ record.successTime || '--' }}
+      </template>
       <template v-if="column.key === 'operation'">
         <div class="table-operations">
           <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
@@ -101,158 +110,168 @@
       @ok="closeEditModal"
       @cancel="closeEditModal"
   >
-    <a-card>
-      <a-row :gutter="16">
-        <a-col span="10">
-          <a-card title="源文件视图" size="small">
-            <a-row>
-              <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
-            </a-row>
-            <a-row>
-              <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 600px" >
-                <VueOfficeExcel
-                    :src="fileStreamInfo"
-                    :options="vueExcelOptions"
-                    @rendered="onExcelRendered"
-                    @error="onExcelError"
-                />
-              </a-col>
-              <a-col v-if="currentFileType == 'pdf'" span="24">
-                <VueOfficePdf
-                    :src="fileStreamInfo"
-                    @rendered="onExcelRendered"
-                    style="height: 600px;width: 100%"
-                    @error="onExcelError"
-                />
-              </a-col>
-              <a-col v-else-if="currentFileType === 'csv'" span="24">
-                <!-- CSV预览 - 仿Excel表格样式 -->
-                <div class="csv-preview">
-                  <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
-                    <thead>
-                    <tr>
-                      <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
-                      <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </a-col>
-
-            </a-row>
-          </a-card>
-        </a-col>
-        <a-col span="14">
-          <a-card title="转换结果" size="small">
-            <!-- 文件归属银行选择区域 -->
-            <a-row style="margin-bottom: 16px;">
-              <a-col :span="4">
-                <span style="line-height: 32px;">文件归属银行：</span>
-              </a-col>
-              <a-col :span="6">
-                <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="文件归属银行"  allow-clear ></JSearchSelect>
-              </a-col>
-<!--              <a-col :span="4">
-                <template v-if="bankEfit">
-                  <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
-                  <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
-                </template>
-                <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
-              </a-col>-->
-              <a-col :span="4">
-                <a-button type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
-              </a-col>
-            </a-row>
-
-            <!-- Sheet列表区域 -->
-            <a-row style="margin-bottom: 16px;">
-              <a-col :span="4">
-                <div class="sheet-list">
-                  <h3>文件页码</h3>
-                  <div
-                      v-for="sheet in currentFile.filePages"
-                      :key="sheet.pageId"
-                      :class="['file-item', { active: activeSheet === sheet.pageId }]"
-                      @click="selectSheet(sheet)"
-                  >
-                    {{ sheet.pageName }}
+    <div>
+      <a-button
+          type="text"
+          @click="toggleFullscreen"
+          class="fullscreen-btn"
+      >
+        <FullscreenOutlined v-if="!isFullscreen" />
+        <FullscreenExitOutlined v-else />
+      </a-button>
+      <a-card>
+        <a-row :gutter="16">
+          <a-col span="10">
+            <a-card title="源文件视图" size="small">
+              <a-row>
+                <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
+              </a-row>
+              <a-row>
+                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 600px" >
+                  <VueOfficeExcel
+                      :src="fileStreamInfo"
+                      :options="vueExcelOptions"
+                      @rendered="onExcelRendered"
+                      @error="onExcelError"
+                  />
+                </a-col>
+                <a-col v-if="currentFileType == 'pdf'" span="24">
+                  <VueOfficePdf
+                      :src="fileStreamInfo"
+                      @rendered="onExcelRendered"
+                      style="height: 600px;width: 100%"
+                      @error="onExcelError"
+                  />
+                </a-col>
+                <a-col v-else-if="currentFileType === 'csv'" span="24">
+                  <!-- CSV预览 - 仿Excel表格样式 -->
+                  <div class="csv-preview">
+                    <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
+                      <thead>
+                      <tr>
+                        <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
+                        <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+                      </tr>
+                      </tbody>
+                    </table>
                   </div>
-                </div>
-              </a-col>
-              <a-col :span="20">
-                <a-card>
-                  <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
-                    <!-- 银行客户信息表格 -->
-                    <a-tab-pane key="bankCustomer" tab="银行客户信息">
-                      <a-table
-                          :columns="bankCustomerColumns"
-                          :data-source="activeSheetData.bankCustomers"
-                          :pagination="bankCustomerPagination"
-                          size="small"
-                          bordered
-                          :scroll="{ x: 1500 }"
-                          :loading="tableLoading"
-                          @change="handleBankCustomerTableChange"
-                          style="margin-bottom: 16px;"
-                      />
-                    </a-tab-pane>
+                </a-col>
 
-                    <!-- 银行交易流水表格 -->
-                    <a-tab-pane key="bankTransaction" tab="银行交易流水">
-                      <a-table
-                          :columns="bankTransactionColumns"
-                          :data-source="activeSheetData.bankTransactions"
-                          :pagination="bankTransactionPagination"
-                          size="small"
-                          bordered
-                          :scroll="{ x: 1500 }"
-                          :loading="tableLoading"
-                          @change="handleBankTransactionTableChange"
-                          style="margin-bottom: 16px;"
-                      />
-                    </a-tab-pane>
+              </a-row>
+            </a-card>
+          </a-col>
+          <a-col span="14">
+            <a-card title="转换结果" size="small">
+              <!-- 文件归属银行选择区域 -->
+              <a-row style="margin-bottom: 16px;">
+                <a-col :span="4">
+                  <span style="line-height: 32px;">文件归属银行：</span>
+                </a-col>
+                <a-col :span="6">
+                  <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="文件归属银行"  allow-clear ></JSearchSelect>
+                </a-col>
+                <!--              <a-col :span="4">
+                                <template v-if="bankEfit">
+                                  <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
+                                  <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
+                                </template>
+                                <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
+                              </a-col>-->
+                <a-col :span="4">
+                  <a-button size="middle" type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
+                </a-col>
+              </a-row>
 
-                    <!-- 非银行客户信息表格 -->
-                    <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
-                      <a-table
-                          :columns="nonBankCustomerColumns"
-                          :data-source="activeSheetData.notBankCustomers"
-                          :pagination="nonBankCustomerPagination"
-                          size="small"
-                          bordered
-                          :scroll="{ x: 1500 }"
-                          :loading="tableLoading"
-                          @change="handleNonBankCustomerTableChange"
-                          style="margin-bottom: 16px;"
-                      />
-                    </a-tab-pane>
+              <!-- Sheet列表区域 -->
+              <a-row style="margin-bottom: 16px;">
+                <a-col :span="4">
+                  <div class="sheet-list">
+                    <h3>文件页码</h3>
+                    <div
+                        v-for="sheet in currentFile.filePages"
+                        :key="sheet.pageId"
+                        :class="['file-item', { active: activeSheet === sheet.pageId }]"
+                        @click="selectSheet(sheet)"
+                    >
+                      {{ sheet.pageName }}
+                    </div>
+                  </div>
+                </a-col>
+                <a-col :span="20">
+                  <a-card class="table-card">
+                    <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+                      <!-- 银行客户信息表格 -->
+                      <a-tab-pane key="bankCustomer" tab="银行客户信息">
+                        <a-table
+                            :columns="bankCustomerColumns"
+                            :data-source="activeSheetData.bankCustomers"
+                            :pagination="bankCustomerPagination"
+                            size="small"
+                            bordered
+                            :scroll="{ x: 1500 }"
+                            :loading="tableLoading"
+                            @change="handleBankCustomerTableChange"
+                        />
+                      </a-tab-pane>
 
-                    <!-- 非银行交易流水表格 -->
-                    <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
-                      <a-table
-                          :columns="nonBankTransactionColumns"
-                          :data-source="activeSheetData.notBankTransactions"
-                          :pagination="nonBankTransactionPagination"
-                          size="small"
-                          :scroll="{ x: 1500 }"
-                          bordered
-                          :loading="tableLoading"
-                          @change="handleNonBankTransactionTableChange"
-                      />
-                    </a-tab-pane>
-                  </a-tabs>
-                </a-card>
+                      <!-- 银行交易流水表格 -->
+                      <a-tab-pane key="bankTransaction" tab="银行交易流水">
+                        <a-table
+                            :columns="bankTransactionColumns"
+                            :data-source="activeSheetData.bankTransactions"
+                            :pagination="bankTransactionPagination"
+                            size="small"
+                            bordered
+                            :scroll="{ x: 1500 }"
+                            :loading="tableLoading"
+                            @change="handleBankTransactionTableChange"
+                            style="margin-bottom: 16px;"
+                        />
+                      </a-tab-pane>
 
-              </a-col>
-            </a-row>
-          </a-card>
-        </a-col>
-      </a-row>
-    </a-card>
+                      <!-- 非银行客户信息表格 -->
+                      <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
+                        <a-table
+                            :columns="nonBankCustomerColumns"
+                            :data-source="activeSheetData.notBankCustomers"
+                            :pagination="nonBankCustomerPagination"
+                            size="small"
+                            bordered
+                            :scroll="{ x: 1500 }"
+                            :loading="tableLoading"
+                            @change="handleNonBankCustomerTableChange"
+                            style="margin-bottom: 16px;"
+                        />
+                      </a-tab-pane>
+
+                      <!-- 非银行交易流水表格 -->
+                      <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
+                        <a-table
+                            :columns="nonBankTransactionColumns"
+                            :data-source="activeSheetData.notBankTransactions"
+                            :pagination="nonBankTransactionPagination"
+                            size="small"
+                            :scroll="{ x: 1500 }"
+                            bordered
+                            :loading="tableLoading"
+                            @change="handleNonBankTransactionTableChange"
+                        />
+                      </a-tab-pane>
+                    </a-tabs>
+                  </a-card>
+
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
+        </a-row>
+      </a-card>
+    </div>
+
   </a-modal>
 
   <!-- 上传文件的Modal弹框 -->
@@ -428,6 +447,7 @@ import VueOfficeExcel from '@vue-office/excel'
 import VueOfficePdf from '@vue-office/pdf'
 //引入相关样式
 import '@vue-office/excel/lib/index.css'
+import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
 import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
 import {
   caseFileListApi,
@@ -490,7 +510,8 @@ const formState = reactive({
   fileName: '',
   fileStatus: undefined
 });
-
+// 添加全屏状态
+const isFullscreen = ref(false);
 // 新增状态
 const activeTab = ref('bankCustomer'); // 默认激活第一个选项卡
 // 新增分页配置
@@ -784,7 +805,27 @@ const onFileListUpload = (data) => {
 
   })
 };
+// 切换全屏方法
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
 
+  const modalElement = document.querySelector('.full-modal .ant-modal');
+  if (modalElement) {
+    if (isFullscreen.value) {
+      modalElement.style.width = '100vw';
+      modalElement.style.height = '100vh';
+      modalElement.style.top = '0';
+      modalElement.style.left = '0';
+      modalElement.style.maxWidth = '100%';
+    } else {
+      modalElement.style.width = '100%';
+      modalElement.style.height = 'auto';
+      modalElement.style.top = '';
+      modalElement.style.left = '';
+      modalElement.style.maxWidth = '';
+    }
+  }
+};
 // 搜索处理
 const onSearch = () => {
   searchLoading.value = true;
@@ -1124,6 +1165,16 @@ const previewFile = (record)=>{
 // 关闭编辑Modal
 const closeEditModal = () => {
   editModalVisible.value = false;
+  isFullscreen.value = false;
+  // 重置Modal样式
+  const modalElement = document.querySelector('.full-modal .ant-modal');
+  if (modalElement) {
+    modalElement.style.width = '100%';
+    modalElement.style.height = 'auto';
+    modalElement.style.top = '';
+    modalElement.style.left = '';
+    modalElement.style.maxWidth = '';
+  }
   // 清空当前文件信息
   Object.assign(currentFile, {
     fileName: '',
@@ -1253,10 +1304,10 @@ const getStatusColor = (status) => {
 // 状态文本 - 从fileProcessOptions中获取
 const getStatusText = (statusValue) => {
   if (!props.fileProcessOptions || !Array.isArray(props.fileProcessOptions)) {
-    return '未知';
+    return '--';
   }
   const option = props.fileProcessOptions.find(opt => opt.value === statusValue);
-  return option ? option.label : '未知';
+  return option ? option.label : '--';
 };
 
 // Excel渲染事件处理
@@ -1392,7 +1443,12 @@ const onExcelError = (error) => {
   max-height: 500px;
   overflow-y: auto;
 }
-
+.table-card :deep(.ant-table-content) {
+  height: 412px;
+}
+.table-card :deep(.ant-table-placeholder .ant-table-cell) {
+  border: none!important;
+}
 .file-item {
   padding: 12px;
   border: 1px solid #e8e8e8;
@@ -1411,5 +1467,34 @@ const onExcelError = (error) => {
 .file-item.active {
   background-color: #e6f7ff;
   border-color: #1890ff;
+}
+.full-modal .ant-modal {
+  transition: all 0.3s ease;
+}
+
+.full-modal .ant-modal.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+}
+
+.fullscreen-btn {
+  position: absolute !important;
+  right: 44px !important;
+  top: 12px !important;
+  color: #1890ff !important;
+  border: 1px solid #d9d9d9 !important;
+  background: #fff !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+}
+
+.fullscreen-btn:hover {
+  color: #40a9ff !important;
+  border-color: #40a9ff !important;
+  background: #f0f8ff !important;
 }
 </style>

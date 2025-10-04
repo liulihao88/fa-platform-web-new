@@ -47,7 +47,7 @@
       <a-card>
         <a-spin :spinning="tableLoading">
           <!-- Tab选项卡 -->
-          <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+          <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
             <a-tab-pane key="customer" tab="客户信息">
               <a-table
                   :columns="customerColumns"
@@ -638,7 +638,7 @@ const closeAnalyzeModal = () => {
   border-radius: 6px;
   padding: 10px;
   background: #fff;
-  height: 100%;
+  height: 600px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
@@ -677,4 +677,12 @@ const closeAnalyzeModal = () => {
   align-items: center;
   height: 200px;
 }
+
+.table-tab :deep(.ant-table-body) {
+  height: 462px;
+}
+.table-tab :deep(.ant-table-placeholder .ant-table-cell) {
+  border: none!important;
+}
+
 </style>
