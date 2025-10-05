@@ -80,7 +80,7 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
       ],
     },
     actionColumn: {
-      width: 150,
+      width: 210,
       fixed:'right'
     },
     beforeFetch: (params) => {
@@ -176,6 +176,11 @@ function getTableAction(record){
       onClick: handleGoToDetail.bind(null, record),
       // auth: 'casefiles:fa_case_info:edit'
     },
+    {
+      label: '资金分析',
+      onClick: handleGoToAnalysisDetail.bind(null, record),
+      // auth: 'casefiles:fa_case_info:edit'
+    },
   ]
 }
 
@@ -192,11 +197,6 @@ async function handleGoToAnalysisDetail(record: Recordable) {
  */
 function getDropDownAction(record){
   return [
-    {
-      label: '资金分析',
-      onClick: handleGoToAnalysisDetail.bind(null, record),
-      // auth: 'casefiles:fa_case_info:edit'
-    },
     {
       label: '编辑',
       onClick: handleEdit.bind(null, record),
