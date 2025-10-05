@@ -806,7 +806,7 @@ const dataSource = ref([]);
 // 动态查询组件相关逻辑
 // 关系枚举
 const relationOptions = [
-  { label: '与', value: 'and' },
+  { label: '且', value: 'and' },
   { label: '或', value: 'or' },
 ];
 
