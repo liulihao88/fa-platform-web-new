@@ -7,8 +7,8 @@
         <div class="conditions-header">
           <div class="header-item">级数</div>
           <div class="header-item">关系</div>
-          <div class="header-item">字段</div>
           <div class="header-item">逻辑</div>
+          <div class="header-item">字段</div>
           <div class="header-item">值</div>
           <div class="header-item">操作</div>
         </div>
@@ -1185,6 +1185,7 @@ const resetConditions = () => {
 
 // 保存筛选条件 - 确保数据结构正确
 const saveFilterCondition = () => {
+
   if (!conditionName.value.trim()) {
     message.error('请输入筛选条件名称');
     return;
@@ -1237,12 +1238,16 @@ const saveFilterCondition = () => {
   };
 
   const saveData = processGroupForSave(rootGroups.value);
-
+  console.info('条件1111111111111111--------->',saveData)
+  const grouptootData = {
+    grouproot: saveData
+  }
+  console.info('222222222222222222222--------->',grouptootData)
   const params = {
     caseId: query.caseId,
     name: conditionName.value,
     queryType: 'trans',
-    conditionJson: JSON.stringify([saveData]) // 包装成数组
+    conditionJson: JSON.stringify(grouptootData) // 包装成数组
   };
 
   console.log('保存的数据:', params);
@@ -1266,8 +1271,8 @@ const switchSavedCondition = (conditionId: string) => {
       const parsedConditions = JSON.parse(condition.conditions);
       console.log('解析的条件数据:', parsedConditions);
 
-      if (parsedConditions && Array.isArray(parsedConditions) && parsedConditions.length > 0) {
-        const savedGroup = parsedConditions[0];
+      if (parsedConditions) {
+        const savedGroup = parsedConditions.grouproot;
 
         // 递归处理条件数据，修复字段和逻辑运算符的映射
         const processConditionGroup = (group: any): ConditionGroup => {
@@ -1339,7 +1344,7 @@ const fetchIntelligentList = async () => {
     const params = {
       caseId: query.caseId,
       ids: selectedRowKeys.value,
-      conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+      conditionJson: JSON.stringify({grouproot:rootGroups.value}),
       pageNo: pagination.current,
       pageSize: pagination.pageSize
     };
@@ -1393,7 +1398,7 @@ const exportCurrentPage = async () => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };
@@ -1409,7 +1414,7 @@ const exportMarkedData = async () => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };
@@ -1425,7 +1430,7 @@ const showArchiveModal = async() => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };

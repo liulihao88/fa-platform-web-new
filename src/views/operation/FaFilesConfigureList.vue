@@ -61,7 +61,7 @@
       canResize:true,
       useSearchForm: false,
       actionColumn: {
-        width: 240,
+        width: 160,
         fixed: 'right',
       },
       beforeFetch: async (params) => {

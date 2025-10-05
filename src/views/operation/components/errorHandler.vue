@@ -1,5 +1,9 @@
 <template>
-  <a-card title="错误处理" class="m2">
+  <a-card class="m2" title="错误处理">
+    <a-row class="mb4">
+      <a-col span="6">案件名称：{{fileInfo.caseName}}</a-col>
+      <a-col span="16">文件名称：{{fileInfo.fileName}}</a-col>
+    </a-row>
     <a-row gutter="16">
       <a-col :span="24" class="search-buttons">
         <a-button type="primary" :loading="searchLoading" @click="handleBatchProcess">处理完成</a-button>
@@ -49,7 +53,7 @@
 import { ref, reactive, onMounted, defineProps } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
-import { errorHandlerListApi, errorHandlerConfirmApi } from '../FaFilesConfigure.api';
+import { errorHandlerListApi, errorHandlerConfirmApi,fileDetailApi } from '../FaFilesConfigure.api';
 
 interface Props {
   fileProcessOptions: Array<{ value: string; label: string }>;
@@ -101,7 +105,10 @@ const pagination = reactive<Pagination>({
 
 const tableLoading = ref(false);
 const searchLoading = ref(false);
-
+const fileInfo = ref({
+  caseName:'',
+  fileName:''
+});
 const columns = ref([
   {
     title: '序号',
@@ -146,7 +153,27 @@ const dataSource = ref<ErrorRecord[]>([]);
 // 页面初始化时调用接口
 onMounted(() => {
   fetchErrorFileList();
+  fetchErrorFileInfo()
 });
+
+// 获取文件详情
+const fetchErrorFileInfo = async () => {
+  try {
+    const params = {
+      fileId: query.caseFileId,
+    };
+
+    const response = await fileDetailApi(params);
+
+    if (response) {
+      fileInfo.value = response||{}
+    } else {
+      fileInfo.value ={}
+    }
+  } catch (error) {
+
+  }
+};
 
 // 获取错误文件列表
 const fetchErrorFileList = async () => {

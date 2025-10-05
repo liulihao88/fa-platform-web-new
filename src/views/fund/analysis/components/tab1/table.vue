@@ -807,9 +807,10 @@ const onFileListUpload = (data) => {
 };
 // 切换全屏方法
 const toggleFullscreen = () => {
-  isFullscreen.value = !isFullscreen.value;
 
+  isFullscreen.value = !isFullscreen.value;
   const modalElement = document.querySelector('.full-modal .ant-modal');
+
   if (modalElement) {
     if (isFullscreen.value) {
       modalElement.style.width = '100vw';
@@ -825,6 +826,7 @@ const toggleFullscreen = () => {
       modalElement.style.maxWidth = '';
     }
   }
+
 };
 // 搜索处理
 const onSearch = () => {

@@ -60,7 +60,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'01')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'01')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -78,7 +78,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'02')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'02')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -96,7 +96,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'03')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'03')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -114,7 +114,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'04')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'04')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -128,12 +128,22 @@
   <!-- 修改后的分析结果弹框 -->
   <a-modal
       v-model:visible="analyzeModalVisible"
-      title="数据解析详情"
+      title="标准数据"
       width="90%"
       style="top: 20px;"
+      wrap-class-name="full-modal"
       :footer="null"
       @cancel="closeAnalyzeModal"
   >
+    <a-button
+        type="text"
+        @click="toggleFullscreen"
+        class="fullscreen-btn"
+    >
+      <FullscreenOutlined v-if="!isFullscreen" />
+      <FullscreenExitOutlined v-else />
+    </a-button>
+
     <a-card>
       <!-- 企业客户信息表 -->
       <div class="table-section" v-if="analyzeData.faStandardEntities.length">
@@ -193,6 +203,7 @@ import {
   standardNonBankCustomerApi,
   standardNonBankTransApi
 } from "@/views/fund/analysis/user.api";
+import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons-vue";
 interface Props {
   filteredFiles: Array<{value: string, label: string}>;
 }
@@ -260,6 +271,9 @@ const nonBankTransactionPagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100']
 });
 const activeTab = ref('customer'); // 默认激活第一个选项卡
+// 添加全屏状态
+const isFullscreen = ref(false);
+
 
 // 计算属性：检查是否有分析数据
 const hasAnalyzeData = computed(() => {
@@ -358,7 +372,7 @@ const customerColumns = ref([
   { title: '账户类型', dataIndex: 'accountType',  width: 100 },
   { title: '状态', dataIndex: 'status', width: 80 },
   { title: '其他字段', dataIndex: 'otherFields',  width: 120 },
-  { title: '操作', dataIndex: 'operation',  width: 100, fixed: 'right' },
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' },
 ]);
 
 // 交易流水表格列配置
@@ -382,7 +396,7 @@ const transactionColumns = ref([
   { title: '交易状态', dataIndex: 'transactionStatus', width: 100 },
   { title: 'IP地址', dataIndex: 'ipAddress', width: 120 },
   { title: '其他字段', dataIndex: 'otherFields',width: 120 },
-  { title: '操作', dataIndex: 'operation',  width: 100, fixed: 'right' },
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' },
 ]);
 
 const nonBankCustomerColumns = ref([...customerColumns.value]);
@@ -627,6 +641,33 @@ const closeAnalyzeModal = () => {
   analyzeData.faStandardOrders = [];
 };
 
+// 切换全屏方法
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
+
+  const modalElement = document.querySelector('.full-modal .ant-modal');
+  const modalElement2 = document.querySelector('.full-modal .ant-modal .ant-modal-content');
+  console.info('111111111111',modalElement)
+  console.info('isFullscreen.value----->',isFullscreen.value)
+  if (modalElement) {
+    if (isFullscreen.value) {
+      modalElement.style.width = '100vw';
+      modalElement.style.height = '100vh';
+      modalElement2.style.height = '100vh';
+      modalElement.style.top = '0';
+      modalElement.style.left = '0';
+      modalElement.style.maxWidth = '100%';
+    } else {
+      modalElement.style.width = '100%';
+      modalElement.style.height = 'auto';
+      modalElement2.style.height = 'auto';
+      modalElement.style.top = '';
+      modalElement.style.left = '';
+      modalElement.style.maxWidth = '';
+    }
+  }
+};
+
 </script>
 
 <style scoped>
@@ -684,5 +725,35 @@ const closeAnalyzeModal = () => {
 .table-tab :deep(.ant-table-placeholder .ant-table-cell) {
   border: none!important;
 }
+.full-modal .ant-modal {
+  transition: all 0.3s ease;
+}
+
+.full-modal .ant-modal.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+}
+
+.fullscreen-btn {
+  position: absolute !important;
+  right: 44px !important;
+  top: 12px !important;
+  color: #1890ff !important;
+  border: 1px solid #d9d9d9 !important;
+  background: #fff !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+}
+
+.fullscreen-btn:hover {
+  color: #40a9ff !important;
+  border-color: #40a9ff !important;
+  background: #f0f8ff !important;
+}
+
 
 </style>
