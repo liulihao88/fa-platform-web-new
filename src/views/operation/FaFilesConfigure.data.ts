@@ -14,6 +14,11 @@ export const columns: BasicColumn[] = [
     },
   },
   {
+    title: '案件名称',
+    dataIndex: 'caseName',
+    width: 200,
+  },
+  {
     title: '源文件',
     dataIndex: 'sourceFile',
     width: 200,
@@ -28,6 +33,9 @@ export const columns: BasicColumn[] = [
     title: '状态',
     dataIndex: 'status',
     width: 100,
+    customRender: ({ text }) => {
+      return render.renderDict(text, 'fa_file_process_status');
+    },
   },
   {
     title: '所属机构',

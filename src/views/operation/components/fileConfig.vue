@@ -91,9 +91,9 @@
         <template v-if="!isEditMode">
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item label="标准数据" name="standardData">
+              <a-form-item label="标准数据" name="metaData">
                 <a-input
-                    v-model:value="formData.standardData"
+                    v-model:value="formData.metaData"
                     placeholder="请输入标准数据"
                     :disabled="isEditMode"
                 />
@@ -237,7 +237,7 @@ interface RecordItem {
   updateBy: string;
   deleteStatus: string;
   deleteTime: string;
-  standardData?: string;
+  metaData?: string;
 }
 
 interface Pagination {
@@ -268,7 +268,7 @@ interface FormData {
   ifToUnify: number;
   ifToUse: number;
   alias: string;
-  standardData: string;
+  metaData: string;
 }
 
 // 搜索表单
@@ -306,11 +306,11 @@ const formData = reactive<FormData>({
   ifToUnify: 0,
   ifToUse: 0,
   alias: '',
-  standardData: ''
+  metaData: ''
 });
 
 const formRules = {
-  standardData: [{ required: true, message: '请输入标准数据', trigger: 'blur' }],
+  metaData: [{ required: true, message: '请输入标准数据', trigger: 'blur' }],
   dataType: [{ required: true, message: '请选择数据类型', trigger: 'change' }],
   dataNameEng: [{ required: true, message: '请输入字段名称', trigger: 'blur' }],
   alias: [{ required: true, message: '请输入别名', trigger: 'blur' }]
@@ -323,7 +323,7 @@ const columns = ref([
   },
   {
     title: '标准数据',
-    dataIndex: 'standardData',
+    dataIndex: 'metaData',
   },
   {
     title: '数据类型',
@@ -449,7 +449,7 @@ const handleSearch = () => {
 
 // 重置
 const handleReset = () => {
-  searchForm.standardData = '';
+  searchForm.metaData = '';
   searchForm.alias = '';
   pagination.current = 1;
   fetchDataList();
@@ -475,7 +475,7 @@ const handleAdd = () => {
     ifToUnify: 0,
     ifToUse: 0,
     alias: '',
-    standardData: ''
+    metaData: ''
   });
 };
 
@@ -499,7 +499,7 @@ const handleEdit = (record: RecordItem) => {
     ifToUnify: record.ifToUnify,
     ifToUse: record.ifToUse,
     alias: record.alias,
-    standardData: record.standardData
+    metaData: record.metaData
   });
 };
 

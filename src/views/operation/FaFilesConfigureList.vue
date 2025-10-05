@@ -4,16 +4,10 @@
     <div class="jeecg-basic-table-form-container">
       <a-form ref="formRef" @keyup.enter.native="searchQuery" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-row :gutter="24">
-          <a-col :lg="6">
+          <a-col :lg="8">
             <a-form-item name="metaData">
-              <template #label><span title="标准数据">标准数据</span></template>
-              <a-input placeholder="请输入标准数据" v-model:value="queryParam.metaData" allow-clear ></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="6">
-            <a-form-item name="alias">
-              <template #label><span title="别名">别名</span></template>
-              <a-input placeholder="请输入别名" v-model:value="queryParam.alias" allow-clear ></a-input>
+              <template #label><span title="案件名称">案件名称</span></template>
+              <a-input placeholder="请输入案件名称" v-model:value="queryParam.caseName" allow-clear ></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
@@ -21,10 +15,6 @@
               <a-col :lg="6">
                 <a-button type="primary" preIcon="ant-design:search-outlined" @click="searchQuery">查询</a-button>
                 <a-button type="primary" preIcon="ant-design:reload-outlined" @click="searchReset" style="margin-left: 8px">重置</a-button>
-                <a @click="toggleSearchStatus = !toggleSearchStatus" style="margin-left: 8px">
-                  {{ toggleSearchStatus ? '收起' : '展开' }}
-                  <Icon :icon="toggleSearchStatus ? 'ant-design:up-outlined' : 'ant-design:down-outlined'" />
-                </a>
               </a-col>
             </span>
           </a-col>
@@ -33,27 +23,6 @@
     </div>
     <!--引用表格-->
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
-      <!--插槽:table标题-->
-      <template #tableTitle>
-        <a-button type="primary" v-auth="'casefiles:fa_files_configure:add'"  @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
-        <a-button  type="primary" v-auth="'casefiles:fa_files_configure:exportXls'" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
-        <j-upload-button  type="primary" v-auth="'casefiles:fa_files_configure:importExcel'"  preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
-        <a-dropdown v-if="selectedRowKeys.length > 0">
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="1" @click="batchHandleDelete">
-                <Icon icon="ant-design:delete-outlined"></Icon>
-                删除
-              </a-menu-item>
-            </a-menu>
-          </template>
-          <a-button v-auth="'casefiles:fa_files_configure:deleteBatch'">批量操作
-            <Icon icon="mdi:chevron-down"></Icon>
-          </a-button>
-        </a-dropdown>
-        <!-- 高级查询 -->
-        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
-      </template>
       <!--操作栏-->
       <template #action="{ record }">
         <TableAction :actions="getTableAction(record)"/>
@@ -86,7 +55,7 @@
   //注册table数据
   const { prefixCls, tableContext, onExportXls, onImportXls } = useListPage({
     tableProps: {
-      title: '资金文件配置',
+      title: '',
       api: list,
       columns,
       canResize:true,
