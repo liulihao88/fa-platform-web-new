@@ -212,7 +212,7 @@
                             :pagination="bankCustomerPagination"
                             size="small"
                             bordered
-                            :scroll="{ x: 1500 }"
+                            :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleBankCustomerTableChange"
                         />
@@ -226,7 +226,7 @@
                             :pagination="bankTransactionPagination"
                             size="small"
                             bordered
-                            :scroll="{ x: 1500 }"
+                            :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleBankTransactionTableChange"
                             style="margin-bottom: 16px;"
@@ -241,7 +241,7 @@
                             :pagination="nonBankCustomerPagination"
                             size="small"
                             bordered
-                            :scroll="{ x: 1500 }"
+                            :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleNonBankCustomerTableChange"
                             style="margin-bottom: 16px;"
@@ -255,7 +255,7 @@
                             :data-source="activeSheetData.notBankTransactions"
                             :pagination="nonBankTransactionPagination"
                             size="small"
-                            :scroll="{ x: 1500 }"
+                            :scroll="{ x: 1500, y: 500 }"
                             bordered
                             :loading="tableLoading"
                             @change="handleNonBankTransactionTableChange"
@@ -602,51 +602,126 @@ const activeSheetData = ref({
 
 // 表格列定义
 const bankCustomerColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber'},
-  { title: '归属机构', dataIndex: 'belongOrg'},
-  { title: '客户种类', dataIndex: 'customerType'},
-  { title: '客户名称', dataIndex: 'customerName'},
-  { title: '证件种类', dataIndex: 'idType'},
-  { title: '证件号码', dataIndex: 'idNumber'},
-  { title: '营业执照', dataIndex: 'businessLicense'},
-  { title: '法人姓名', dataIndex: 'legalPerson'},
-  { title: '是否商户', dataIndex: 'isMerchant'},
-  { title: '商户号', dataIndex: 'merchantNumber'},
-  { title: '终端号', dataIndex: 'terminalNumber'},
-  { title: '结算银行', dataIndex: 'settlementBank'},
-  { title: '结算账号', dataIndex: 'settlementAccount'},
-  { title: '币种', dataIndex: 'currency'},
-  { title: '账户类型', dataIndex: 'accountType'},
-  { title: '状态', dataIndex: 'status'},
-  { title: '其他字段', dataIndex: 'otherFields'}
+  { title: '行号', dataIndex: 'rowNum', width: 100},
+  { title: '归属银行', dataIndex: 'orgCd', width: 100},
+  { title: '客户号', dataIndex: 'customerId', width: 100},
+  { title: '客户种类', dataIndex: 'customerType', width: 100},
+  { title: '客户名称', dataIndex: 'customerName', width: 100},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
+  { title: '证件种类', dataIndex: 'idType', width: 100},
+  { title: '证件号码', dataIndex: 'idNum', width: 100},
+  { title: '币种', dataIndex: 'currNo', width: 100},
+  { title: '账号', dataIndex: 'accountNum', width: 100},
+  { title: '卡号', dataIndex: 'cardNum', width: 100},
+  { title: '状态', dataIndex: 'customerStatus', width: 100},
+  { title: '开户日期', dataIndex: 'openDate', width: 100},
+  { title: '余额', dataIndex: 'balence', width: 100},
+  { title: '账户类型', dataIndex: 'accountType', width: 100},
+  { title: '其他字段', dataIndex: 'otherFields', width: 100},
+  { title: '备注', dataIndex: 'comment', width: 100}
 ]);
 
 const bankTransactionColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber'},
-  { title: '发起行', dataIndex: 'issuingBank'},
-  { title: '户名', dataIndex: 'accountName'},
-  { title: '账号', dataIndex: 'accountNumber'},
-  { title: '卡号', dataIndex: 'cardNumber'},
-  { title: '流水号', dataIndex: 'serialNumber'},
-  { title: '交易渠道', dataIndex: 'transactionChannel'},
-  { title: '币种', dataIndex: 'currency'},
-  { title: '交易方向', dataIndex: 'transactionDirection',},
-  { title: '交易金额', dataIndex: 'transactionAmount'},
-  { title: '交易种类', dataIndex: 'transactionType'},
-  { title: '交易余额', dataIndex: 'transactionBalance' },
-  { title: '业务日期', dataIndex: 'businessDate'},
-  { title: '交易时间', dataIndex: 'transactionTime' },
-  { title: '对方开户银行', dataIndex: 'counterpartyBank' },
-  { title: '对方户名', dataIndex: 'counterpartyName'},
-  { title: '对方账号', dataIndex: 'counterpartyAccount' },
-  { title: '卡号', dataIndex: 'counterpartyCardNumber' },
-  { title: '交易状态', dataIndex: 'transactionStatus' },
-  { title: 'IP地址', dataIndex: 'ipAddress' },
-  { title: '其他字段', dataIndex: 'otherFields' }
+  { title: '行号', dataIndex: 'rowNum', width: 100},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100},
+  { title: '账号', dataIndex: 'accountNum', width: 100},
+  { title: '卡号', dataIndex: 'cardNum', width: 100},
+  { title: '流水号', dataIndex: 'transNo', width: 100},
+  { title: '交易渠道', dataIndex: 'channel', width: 100},
+  { title: '币种', dataIndex: 'currNo', width: 100},
+  { title: '交易方向', dataIndex: 'transWay', width: 100},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100},
+  { title: '余额', dataIndex: 'balence', width: 100},
+  { title: '交易种类', dataIndex: 'transType', width: 100},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100},
+  { title: '交易时间', dataIndex: 'transTime', width: 100},
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100},
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100},
+  { title: '交易状态', dataIndex: 'status', width: 100},
+  { title: '对方机构', dataIndex: 'counterOrgName', width: 100},
+  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100},
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100},
+  { title: '对方户名', dataIndex: 'counterName', width: 100},
+  { title: '附件字段', dataIndex: 'addiCols', width: 100},
+  { title: '户名', dataIndex: 'customerName', width: 100},
+  { title: '备注', dataIndex: 'comment', width: 100},
+  { title: '客户种类', dataIndex: 'customerType', width: 100},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
+  { title: '证件种类', dataIndex: 'idType', width: 100},
+  { title: '证件号码', dataIndex: 'idNum', width: 100},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100}
 ]);
 
-const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
-const nonBankTransactionColumns = ref([...bankTransactionColumns.value]);
+// 表格列定义
+const nonBankCustomerColumns = ref([
+  { title: '行号', dataIndex: 'rowNum', width: 100},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100},
+  { title: '客户号', dataIndex: 'customerId', width: 100},
+  { title: '客户种类', dataIndex: 'customerType', width: 100},
+  { title: '客户名称', dataIndex: 'customerName', width: 100},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
+  { title: '证件种类', dataIndex: 'idType', width: 100},
+  { title: '证件号码', dataIndex: 'idNum', width: 100},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100},
+  { title: '是否商户', dataIndex: 'isMerchant', width: 100},
+  { title: '商户号', dataIndex: 'merchantId', width: 100},
+  { title: '终端号', dataIndex: 'portId', width: 100},
+  { title: '结算银行', dataIndex: 'settlementOrg', width: 100},
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100},
+  { title: '币种', dataIndex: 'currNo', width: 100},
+  { title: '状态', dataIndex: 'customerStatus', width: 100},
+  { title: '账户类型', dataIndex: 'accountType', width: 100},
+  { title: '其他字段', dataIndex: 'otherFields', width: 100},
+  { title: '开户日期', dataIndex: 'openDate', width: 100},
+  { title: '备注', dataIndex: 'comment', width: 100},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100}
+]);
+
+
+const nonBankTransactionColumns = ref([
+  { title: '行号', dataIndex: 'rowNum', width: 100},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100},
+  { title: '商户号', dataIndex: 'merchantId', width: 100},
+  { title: '终端号', dataIndex: 'portId', width: 100},
+  { title: '订单号', dataIndex: 'orderNo', width: 100},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100},
+  { title: '商品名称', dataIndex: 'productName', width: 100},
+  { title: '流水号', dataIndex: 'transNo', width: 100},
+  { title: '币种', dataIndex: 'currNo', width: 100},
+  { title: '交易方向', dataIndex: 'transWay', width: 100},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100},
+  { title: '交易种类', dataIndex: 'transType', width: 100},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100},
+  { title: '交易时间', dataIndex: 'transTime', width: 100},
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100},
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100},
+  { title: '交易状态', dataIndex: 'status', width: 100},
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100},
+  { title: '户名', dataIndex: 'customerName', width: 100},
+  { title: '交易卡号', dataIndex: 'cardNum', width: 100},
+  { title: '卡类型', dataIndex: 'cardType', width: 100},
+  { title: '附件字段', dataIndex: 'addi_cols', width: 100},
+  { title: '创建日期', dataIndex: 'createTime', width: 100},
+  { title: '客户号', dataIndex: 'customerId', width: 100},
+  { title: '备注', dataIndex: 'comment', width: 100},
+  { title: '客户种类', dataIndex: 'customerType', width: 100},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
+  { title: '证件种类', dataIndex: 'idType', width: 100},
+  { title: '证件号码', dataIndex: 'idNum', width: 100},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100},
+  { title: '结算行', dataIndex: 'settlementOrg', width: 100},
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100}
+]);
+
+
+//const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
+//const nonBankTransactionColumns = ref([...bankTransactionColumns.value]);
 
 let currentFile = reactive({
   fileName: '',
