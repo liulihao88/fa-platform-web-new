@@ -237,7 +237,6 @@ interface RecordItem {
   updateBy: string;
   deleteStatus: string;
   deleteTime: string;
-  metaData?: string;
 }
 
 interface Pagination {
@@ -268,7 +267,6 @@ interface FormData {
   ifToUnify: number;
   ifToUse: number;
   alias: string;
-  metaData: string;
 }
 
 // 搜索表单
@@ -305,8 +303,7 @@ const formData = reactive<FormData>({
   dataNameEng: '',
   ifToUnify: 0,
   ifToUse: 0,
-  alias: '',
-  metaData: ''
+  alias: ''
 });
 
 const formRules = {
@@ -474,8 +471,7 @@ const handleAdd = () => {
     dataNameEng: '',
     ifToUnify: 0,
     ifToUse: 0,
-    alias: '',
-    metaData: ''
+    alias: ''
   });
 };
 
@@ -498,8 +494,7 @@ const handleEdit = (record: RecordItem) => {
     dataNameEng: record.dataNameEng,
     ifToUnify: record.ifToUnify,
     ifToUse: record.ifToUse,
-    alias: record.alias,
-    metaData: record.metaData
+    alias: record.alias
   });
 };
 
