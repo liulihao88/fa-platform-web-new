@@ -618,7 +618,7 @@ const bankCustomerColumns = ref([
   { title: '开户日期', dataIndex: 'openDate', width: 100},
   { title: '余额', dataIndex: 'balence', width: 100},
   { title: '账户类型', dataIndex: 'accountType', width: 100},
-  { title: '其他字段', dataIndex: 'otherFields', width: 100},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100},
   { title: '备注', dataIndex: 'comment', width: 100}
 ]);
 
@@ -644,7 +644,7 @@ const bankTransactionColumns = ref([
   { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100},
   { title: '对方账号', dataIndex: 'counterAccountNo', width: 100},
   { title: '对方户名', dataIndex: 'counterName', width: 100},
-  { title: '附件字段', dataIndex: 'addiCols', width: 100},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100},
   { title: '户名', dataIndex: 'customerName', width: 100},
   { title: '备注', dataIndex: 'comment', width: 100},
   { title: '客户种类', dataIndex: 'customerType', width: 100},
@@ -675,7 +675,7 @@ const nonBankCustomerColumns = ref([
   { title: '币种', dataIndex: 'currNo', width: 100},
   { title: '状态', dataIndex: 'customerStatus', width: 100},
   { title: '账户类型', dataIndex: 'accountType', width: 100},
-  { title: '其他字段', dataIndex: 'otherFields', width: 100},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100},
   { title: '开户日期', dataIndex: 'openDate', width: 100},
   { title: '备注', dataIndex: 'comment', width: 100},
   { title: '商户名称', dataIndex: 'merchantName', width: 100}
@@ -705,7 +705,7 @@ const nonBankTransactionColumns = ref([
   { title: '户名', dataIndex: 'customerName', width: 100},
   { title: '交易卡号', dataIndex: 'cardNum', width: 100},
   { title: '卡类型', dataIndex: 'cardType', width: 100},
-  { title: '附件字段', dataIndex: 'addi_cols', width: 100},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100},
   { title: '创建日期', dataIndex: 'createTime', width: 100},
   { title: '客户号', dataIndex: 'customerId', width: 100},
   { title: '备注', dataIndex: 'comment', width: 100},
