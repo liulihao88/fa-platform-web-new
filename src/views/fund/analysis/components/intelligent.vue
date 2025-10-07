@@ -32,20 +32,20 @@
               </div>
               <div class="condition-cell">
                 <JSearchSelect
+                    dict="fa_trans_query_col"
                     :getPopupContainer="retBodyContainer"
                     style="width: 100%"
                     @change="(value) => updateItem(item.id, { field: value })"
-                    dict="fa_trans_query_rule"
                     v-model:value="item.field"
                     placeholder="选择字段">
                 </JSearchSelect>
               </div>
               <div class="condition-cell">
                 <JSearchSelect
-                    dict="fa_trans_query_col"
                     :getPopupContainer="retBodyContainer"
                     style="width: 100%"
                     @change="(value) => updateItem(item.id, { condition: value })"
+                    dict="fa_trans_query_rule"
                     v-model:value="item.condition"
                     placeholder="选择逻辑">
                 </JSearchSelect>
@@ -53,7 +53,7 @@
               <div class="condition-cell">
                 <!-- 输入框 -->
                 <a-input
-                    v-if="getFieldComponentType(item.condition) === 'input'"
+                    v-if="getFieldComponentType(item.field) === 'input'"
                     v-model:value="item.value"
                     placeholder="输入值"
                     allowClear
@@ -61,7 +61,7 @@
                 />
                 <!-- 日期选择器 -->
                 <a-date-picker
-                    v-else-if="getFieldComponentType(item.condition) === 'date'"
+                    v-else-if="getFieldComponentType(item.field) === 'date'"
                     v-model:value="item.value"
                     style="width: 100%"
                     placeholder="选择日期"
@@ -71,7 +71,7 @@
                 />
                 <!-- 日期时间选择器 -->
                 <a-date-picker
-                    v-else-if="getFieldComponentType(item.condition) === 'datetime'"
+                    v-else-if="getFieldComponentType(item.field) === 'datetime'"
                     v-model:value="item.value"
                     showTime
                     style="width: 100%"
@@ -82,9 +82,9 @@
                 />
                 <!-- 下拉选择器 -->
                 <a-select
-                    v-else-if="getFieldComponentType(item.condition) === 'select'"
+                    v-else-if="getFieldComponentType(item.field) === 'select'"
                     v-model:value="item.value"
-                    :options="getSelectOptions(item.condition)"
+                    :options="getSelectOptions(item.field)"
                     placeholder="请选择"
                     style="width: 100%"
                     allowClear
@@ -126,7 +126,7 @@
                     </div>
                     <div class="condition-cell">
                       <JSearchSelect
-                          dict="fa_trans_query_rule"
+                          dict="fa_trans_query_col"
                           :getPopupContainer="retBodyContainer"
                           v-model:value="subItem.field"
                           placeholder="选择字段"
@@ -134,11 +134,10 @@
                           allowClear
                           @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { field: value })"
                       />
-
                     </div>
                     <div class="condition-cell">
                       <JSearchSelect
-                          dict="fa_trans_query_col"
+                          dict="fa_trans_query_rule"
                           :getPopupContainer="retBodyContainer"
                           v-model:value="subItem.condition"
                           placeholder="选择逻辑"
@@ -146,11 +145,12 @@
                           allowClear
                           @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { condition: value })"
                       />
+
                     </div>
                     <div class="condition-cell">
                       <!-- 输入框 -->
                       <a-input
-                          v-if="getFieldComponentType(subItem.condition) === 'input'"
+                          v-if="getFieldComponentType(subItem.field) === 'input'"
                           v-model:value="subItem.value"
                           placeholder="输入值"
                           allowClear
@@ -158,7 +158,7 @@
                       />
                       <!-- 日期选择器 -->
                       <a-date-picker
-                          v-else-if="getFieldComponentType(subItem.condition) === 'date'"
+                          v-else-if="getFieldComponentType(subItem.field) === 'date'"
                           v-model:value="subItem.value"
                           style="width: 100%"
                           placeholder="选择日期"
@@ -168,7 +168,7 @@
                       />
                       <!-- 日期时间选择器 -->
                       <a-date-picker
-                          v-else-if="getFieldComponentType(subItem.condition) === 'datetime'"
+                          v-else-if="getFieldComponentType(subItem.field) === 'datetime'"
                           v-model:value="subItem.value"
                           showTime
                           style="width: 100%"
@@ -179,9 +179,9 @@
                       />
                       <!-- 下拉选择器 -->
                       <a-select
-                          v-else-if="getFieldComponentType(subItem.condition) === 'select'"
+                          v-else-if="getFieldComponentType(subItem.field) === 'select'"
                           v-model:value="subItem.value"
-                          :options="getSelectOptions(subItem.condition)"
+                          :options="getSelectOptions(subItem.field)"
                           placeholder="请选择"
                           style="width: 100%"
                           allowClear
@@ -223,7 +223,7 @@
                           </div>
                           <div class="condition-cell">
                             <JSearchSelect
-                                dict="fa_trans_query_rule"
+                                dict="fa_trans_query_col"
                                 :getPopupContainer="retBodyContainer"
                                 v-model:value="subItem3.field"
                                 placeholder="选择字段"
@@ -234,7 +234,7 @@
                           </div>
                           <div class="condition-cell">
                             <JSearchSelect
-                                dict="fa_trans_query_col"
+                                dict="fa_trans_query_rule"
                                 :getPopupContainer="retBodyContainer"
                                 v-model:value="subItem3.condition"
                                 placeholder="选择逻辑"
@@ -242,11 +242,12 @@
                                 allowClear
                                 @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { condition: value })"
                             />
+
                           </div>
                           <div class="condition-cell">
                             <!-- 输入框 -->
                             <a-input
-                                v-if="getFieldComponentType(subItem3.condition) === 'input'"
+                                v-if="getFieldComponentType(subItem3.field) === 'input'"
                                 v-model:value="subItem3.value"
                                 placeholder="输入值"
                                 allowClear
@@ -254,7 +255,7 @@
                             />
                             <!-- 日期选择器 -->
                             <a-date-picker
-                                v-else-if="getFieldComponentType(subItem3.condition) === 'date'"
+                                v-else-if="getFieldComponentType(subItem3.field) === 'date'"
                                 v-model:value="subItem3.value"
                                 style="width: 100%"
                                 placeholder="选择日期"
@@ -264,7 +265,7 @@
                             />
                             <!-- 日期时间选择器 -->
                             <a-date-picker
-                                v-else-if="getFieldComponentType(subItem3.condition) === 'datetime'"
+                                v-else-if="getFieldComponentType(subItem3.field) === 'datetime'"
                                 v-model:value="subItem3.value"
                                 showTime
                                 style="width: 100%"
@@ -275,9 +276,9 @@
                             />
                             <!-- 下拉选择器 -->
                             <a-select
-                                v-else-if="getFieldComponentType(subItem3.condition) === 'select'"
+                                v-else-if="getFieldComponentType(subItem3.field) === 'select'"
                                 v-model:value="subItem3.value"
-                                :options="getSelectOptions(subItem3.condition)"
+                                :options="getSelectOptions(subItem3.field)"
                                 placeholder="请选择"
                                 style="width: 100%"
                                 allowClear
@@ -319,7 +320,7 @@
                                 </div>
                                 <div class="condition-cell">
                                   <JSearchSelect
-                                      dict="fa_trans_query_rule"
+                                      dict="fa_trans_query_col"
                                       :getPopupContainer="retBodyContainer"
                                       v-model:value="subItem4.field"
                                       placeholder="选择字段"
@@ -330,7 +331,7 @@
                                 </div>
                                 <div class="condition-cell">
                                   <JSearchSelect
-                                      dict="fa_trans_query_col"
+                                      dict="fa_trans_query_rule"
                                       :getPopupContainer="retBodyContainer"
                                       v-model:value="subItem4.condition"
                                       placeholder="选择逻辑"
@@ -338,11 +339,12 @@
                                       allowClear
                                       @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { condition: value })"
                                   />
+
                                 </div>
                                 <div class="condition-cell">
                                   <!-- 输入框 -->
                                   <a-input
-                                      v-if="getFieldComponentType(subItem4.condition) === 'input'"
+                                      v-if="getFieldComponentType(subItem4.field) === 'input'"
                                       v-model:value="subItem4.value"
                                       placeholder="输入值"
                                       allowClear
@@ -350,7 +352,7 @@
                                   />
                                   <!-- 日期选择器 -->
                                   <a-date-picker
-                                      v-else-if="getFieldComponentType(subItem4.condition) === 'date'"
+                                      v-else-if="getFieldComponentType(subItem4.field) === 'date'"
                                       v-model:value="subItem4.value"
                                       style="width: 100%"
                                       placeholder="选择日期"
@@ -360,7 +362,7 @@
                                   />
                                   <!-- 日期时间选择器 -->
                                   <a-date-picker
-                                      v-else-if="getFieldComponentType(subItem4.condition) === 'datetime'"
+                                      v-else-if="getFieldComponentType(subItem4.field) === 'datetime'"
                                       v-model:value="subItem4.value"
                                       showTime
                                       style="width: 100%"
@@ -371,9 +373,9 @@
                                   />
                                   <!-- 下拉选择器 -->
                                   <a-select
-                                      v-else-if="getFieldComponentType(subItem4.condition) === 'select'"
+                                      v-else-if="getFieldComponentType(subItem4.field) === 'select'"
                                       v-model:value="subItem4.value"
-                                      :options="getSelectOptions(subItem4.condition)"
+                                      :options="getSelectOptions(subItem4.field)"
                                       placeholder="请选择"
                                       style="width: 100%"
                                       allowClear
@@ -415,7 +417,7 @@
                                       </div>
                                       <div class="condition-cell">
                                         <JSearchSelect
-                                            dict="fa_trans_query_rule"
+                                            dict="fa_trans_query_col"
                                             :getPopupContainer="retBodyContainer"
                                             v-model:value="subItem5.field"
                                             placeholder="选择字段"
@@ -426,7 +428,7 @@
                                       </div>
                                       <div class="condition-cell">
                                         <JSearchSelect
-                                            dict="fa_trans_query_col"
+                                            dict="fa_trans_query_rule"
                                             :getPopupContainer="retBodyContainer"
                                             v-model:value="subItem5.condition"
                                             placeholder="选择逻辑"
@@ -434,11 +436,12 @@
                                             allowClear
                                             @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { condition: value })"
                                         />
+
                                       </div>
                                       <div class="condition-cell">
                                         <!-- 输入框 -->
                                         <a-input
-                                            v-if="getFieldComponentType(subItem5.condition) === 'input'"
+                                            v-if="getFieldComponentType(subItem5.field) === 'input'"
                                             v-model:value="subItem5.value"
                                             placeholder="输入值"
                                             allowClear
@@ -446,7 +449,7 @@
                                         />
                                         <!-- 日期选择器 -->
                                         <a-date-picker
-                                            v-else-if="getFieldComponentType(subItem5.condition) === 'date'"
+                                            v-else-if="getFieldComponentType(subItem5.field) === 'date'"
                                             v-model:value="subItem5.value"
                                             style="width: 100%"
                                             placeholder="选择日期"
@@ -456,7 +459,7 @@
                                         />
                                         <!-- 日期时间选择器 -->
                                         <a-date-picker
-                                            v-else-if="getFieldComponentType(subItem5.condition) === 'datetime'"
+                                            v-else-if="getFieldComponentType(subItem5.field) === 'datetime'"
                                             v-model:value="subItem5.value"
                                             showTime
                                             style="width: 100%"
@@ -467,9 +470,9 @@
                                         />
                                         <!-- 下拉选择器 -->
                                         <a-select
-                                            v-else-if="getFieldComponentType(subItem5.condition) === 'select'"
+                                            v-else-if="getFieldComponentType(subItem5.field) === 'select'"
                                             v-model:value="subItem5.value"
-                                            :options="getSelectOptions(subItem5.condition)"
+                                            :options="getSelectOptions(subItem5.field)"
                                             placeholder="请选择"
                                             style="width: 100%"
                                             allowClear
@@ -806,7 +809,7 @@ const dataSource = ref([]);
 // 动态查询组件相关逻辑
 // 关系枚举
 const relationOptions = [
-  { label: '与', value: 'and' },
+  { label: '且', value: 'and' },
   { label: '或', value: 'or' },
 ];
 
@@ -883,8 +886,9 @@ const selectOptions = {
 };
 
 // 判断字段类型
+// 判断字段类型 - 修复：根据字段名而不是逻辑运算符判断组件类型
 const getFieldComponentType = (field: string) => {
-  console.info('2222222222222222------>',field)
+  console.info('字段类型判断------>', field);
   switch (field) {
     case 'biz_date':
       return 'date'; // 日期选择器
@@ -1076,16 +1080,10 @@ const updateItem = (itemId: string, updates: Partial<ConditionItem>) => {
     for (const item of items) {
       if (item.id === itemId) {
         // 如果字段改变
-        if (updates.field !== undefined) {
-          if (updates.field !== item.field) {
-            // 字段改变，重置逻辑运算符和值
-            updates.value = '';
-            updates.condition = '';
-          }
-          // 如果字段被清空，也清空逻辑运算符
-          if (!updates.field && item.condition) {
-            updates.condition = '';
-          }
+        if (updates.field !== undefined && updates.field !== item.field) {
+          // 字段改变，重置逻辑运算符和值
+          updates.condition = '';
+          updates.value = '';
         }
         Object.assign(item, updates);
         return true;
@@ -1104,6 +1102,7 @@ const updateItem = (itemId: string, updates: Partial<ConditionItem>) => {
 };
 
 // 同样修改 updateSubItem 方法
+// 同样修改 updateSubItem 方法
 const updateSubItem = (parentId: string, groupIndex: number, itemId: string, updates: Partial<ConditionItem>) => {
   const findAndUpdateSubItem = (items: ConditionItem[]): boolean => {
     for (const item of items) {
@@ -1114,16 +1113,10 @@ const updateSubItem = (parentId: string, groupIndex: number, itemId: string, upd
             const currentItem = item.groups[groupIndex].items[subItemIndex];
 
             // 如果字段改变
-            if (updates.field !== undefined) {
-              if (updates.field !== currentItem.field) {
-                // 字段改变，重置逻辑运算符和值
-                updates.value = '';
-                updates.condition = '';
-              }
-              // 如果字段被清空，也清空逻辑运算符
-              if (!updates.field && currentItem.condition) {
-                updates.condition = '';
-              }
+            if (updates.field !== undefined && updates.field !== currentItem.field) {
+              // 字段改变，重置逻辑运算符和值
+              updates.condition = '';
+              updates.value = '';
             }
 
             Object.assign(currentItem, updates);
@@ -1144,13 +1137,13 @@ const updateSubItem = (parentId: string, groupIndex: number, itemId: string, upd
   findAndUpdateSubItem(rootGroups.value.items);
 };
 
-// 删除条件
+// 删除条件 - 确保第一级至少保留一个条件
 const removeCondition = (conditionId: string) => {
   const findAndRemove = (items: ConditionItem[]): boolean => {
     for (let i = 0; i < items.length; i++) {
       if (items[i].id === conditionId) {
-        // 检查是否是唯一的条件
-        if (items.length === 1 && rootGroups.value.items && rootGroups.value.items.length === 1) {
+        // 检查是否是第一级的唯一条件
+        if (items === rootGroups.value.items && items.length === 1) {
           message.warning('至少需要保留一个查询条件');
           return true;
         }
@@ -1185,6 +1178,7 @@ const resetConditions = () => {
 
 // 保存筛选条件 - 确保数据结构正确
 const saveFilterCondition = () => {
+
   if (!conditionName.value.trim()) {
     message.error('请输入筛选条件名称');
     return;
@@ -1197,6 +1191,7 @@ const saveFilterCondition = () => {
 
   // 校验条件完整性
   const validateGroup = (group: ConditionGroup): boolean => {
+    console.info('888888888888888888',group)
     if (!group.items || group.items.length === 0) {
       return false;
     }
@@ -1228,8 +1223,8 @@ const saveFilterCondition = () => {
       items: group.items.map(item => ({
         id: item.id,
         // 注意：这里要交换字段和逻辑运算符的映射
-        condition: item.field, // 字段保存到 condition
-        field: item.condition, // 逻辑运算符保存到 field
+        condition: item.condition,
+        field: item.field,
         value: item.value,
         groups: (item.groups || []).map(subGroup => processGroupForSave(subGroup))
       }))
@@ -1237,12 +1232,16 @@ const saveFilterCondition = () => {
   };
 
   const saveData = processGroupForSave(rootGroups.value);
-
+  console.info('条件1111111111111111--------->',saveData)
+  const grouptootData = {
+    grouproot: saveData
+  }
+  console.info('222222222222222222222--------->',grouptootData)
   const params = {
     caseId: query.caseId,
     name: conditionName.value,
     queryType: 'trans',
-    conditionJson: JSON.stringify([saveData]) // 包装成数组
+    conditionJson: JSON.stringify(grouptootData) // 包装成数组
   };
 
   console.log('保存的数据:', params);
@@ -1266,8 +1265,8 @@ const switchSavedCondition = (conditionId: string) => {
       const parsedConditions = JSON.parse(condition.conditions);
       console.log('解析的条件数据:', parsedConditions);
 
-      if (parsedConditions && Array.isArray(parsedConditions) && parsedConditions.length > 0) {
-        const savedGroup = parsedConditions[0];
+      if (parsedConditions) {
+        const savedGroup = parsedConditions.grouproot;
 
         // 递归处理条件数据，修复字段和逻辑运算符的映射
         const processConditionGroup = (group: any): ConditionGroup => {
@@ -1276,8 +1275,8 @@ const switchSavedCondition = (conditionId: string) => {
             items: (group.items || []).map((item: any) => ({
               id: item.id || generateId(),
               // 修复：交换 condition 和 field 的映射
-              condition: item.field || '', // 原数据中的 field 对应逻辑运算符
-              field: item.condition || '', // 原数据中的 condition 对应字段
+              condition: item.condition || '',
+              field: item.field || '',
               value: item.value || '',
               groups: (item.groups || []).map((subGroup: any) => processConditionGroup(subGroup))
             }))
@@ -1339,7 +1338,7 @@ const fetchIntelligentList = async () => {
     const params = {
       caseId: query.caseId,
       ids: selectedRowKeys.value,
-      conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+      conditionJson: JSON.stringify({grouproot:rootGroups.value}),
       pageNo: pagination.current,
       pageSize: pagination.pageSize
     };
@@ -1393,7 +1392,7 @@ const exportCurrentPage = async () => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };
@@ -1409,7 +1408,7 @@ const exportMarkedData = async () => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };
@@ -1425,7 +1424,7 @@ const showArchiveModal = async() => {
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
-    conditionJson: JSON.stringify([rootGroups.value]), // 包装成数组
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize
   };
