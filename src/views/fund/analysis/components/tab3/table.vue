@@ -47,7 +47,7 @@
       <a-card>
         <a-spin :spinning="tableLoading">
           <!-- Tab选项卡 -->
-          <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+          <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
             <a-tab-pane key="customer" tab="客户信息">
               <a-table
                   :columns="customerColumns"
@@ -60,7 +60,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'01')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'01')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -78,7 +78,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'02')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'02')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -96,7 +96,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'03')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'03')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -114,7 +114,7 @@
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
-                    <a @click="getAnalyzeResult(record,'04')">查看详情</a>
+                    <a @click="getAnalyzeResult(record,'04')">查看标准数据</a>
                   </template>
                 </template>
               </a-table>
@@ -128,12 +128,22 @@
   <!-- 修改后的分析结果弹框 -->
   <a-modal
       v-model:visible="analyzeModalVisible"
-      title="数据解析详情"
+      title="标准数据"
       width="90%"
       style="top: 20px;"
+      wrap-class-name="full-modal"
       :footer="null"
       @cancel="closeAnalyzeModal"
   >
+    <a-button
+        type="text"
+        @click="toggleFullscreen"
+        class="fullscreen-btn"
+    >
+      <FullscreenOutlined v-if="!isFullscreen" />
+      <FullscreenExitOutlined v-else />
+    </a-button>
+
     <a-card>
       <!-- 企业客户信息表 -->
       <div class="table-section" v-if="analyzeData.faStandardEntities.length">
@@ -193,6 +203,7 @@ import {
   standardNonBankCustomerApi,
   standardNonBankTransApi
 } from "@/views/fund/analysis/user.api";
+import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons-vue";
 interface Props {
   filteredFiles: Array<{value: string, label: string}>;
 }
@@ -260,6 +271,9 @@ const nonBankTransactionPagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100']
 });
 const activeTab = ref('customer'); // 默认激活第一个选项卡
+// 添加全屏状态
+const isFullscreen = ref(false);
+
 
 // 计算属性：检查是否有分析数据
 const hasAnalyzeData = computed(() => {
@@ -342,51 +356,130 @@ const orderInfoColumns = ref([
 
 // 客户信息表格列配置
 const customerColumns = ref([
-  { title: '归属机构', dataIndex: 'affiliatedOrg', width: 100 },
-  { title: '客户种类', dataIndex: 'customerType',  width: 100 },
-  { title: '客户名称', dataIndex: 'customerName', width: 120 },
-  { title: '证件种类', dataIndex: 'idType',  width: 100 },
-  { title: '证件号码', dataIndex: 'idNumber',  width: 150 },
-  { title: '营业执照', dataIndex: 'businessLicense', width: 120 },
-  { title: '法人姓名', dataIndex: 'legalPersonName',  width: 100 },
-  { title: '是否商户', dataIndex: 'isMerchant',  width: 80 },
-  { title: '商户号', dataIndex: 'customerNumber',  width: 100 },
-  { title: '终端号', dataIndex: 'terminalNumber',  width: 80 },
-  { title: '结算银行', dataIndex: 'settlementBank',  width: 150 },
-  { title: '结算账号', dataIndex: 'settlementAccount', width: 150 },
-  { title: '币种', dataIndex: 'currency',  width: 80 },
-  { title: '账户类型', dataIndex: 'accountType',  width: 100 },
-  { title: '状态', dataIndex: 'status', width: 80 },
-  { title: '其他字段', dataIndex: 'otherFields',  width: 120 },
-  { title: '操作', dataIndex: 'operation',  width: 100, fixed: 'right' },
+  { title: '行号', dataIndex: 'rowNum', width: 100},
+  { title: '归属银行', dataIndex: 'orgCd', width: 100},
+  { title: '客户号', dataIndex: 'customerId', width: 100},
+  { title: '客户种类', dataIndex: 'customerType', width: 100},
+  { title: '客户名称', dataIndex: 'customerName', width: 100},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
+  { title: '证件种类', dataIndex: 'idType', width: 100},
+  { title: '证件号码', dataIndex: 'idNum', width: 100},
+  { title: '币种', dataIndex: 'currNo', width: 100},
+  { title: '账号', dataIndex: 'accountNum', width: 100},
+  { title: '卡号', dataIndex: 'cardNum', width: 100},
+  { title: '状态', dataIndex: 'customerStatus', width: 100},
+  { title: '开户日期', dataIndex: 'openDate', width: 100},
+  { title: '余额', dataIndex: 'balence', width: 100},
+  { title: '账户类型', dataIndex: 'accountType', width: 100},
+  { title: '其他字段', dataIndex: 'otherFields', width: 100},
+  { title: '备注', dataIndex: 'comment', width: 100},
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' }
 ]);
 
 // 交易流水表格列配置
 const transactionColumns = ref([
-  { title: '发起行', dataIndex: 'initiatingBank', width: 100 },
-  { title: '户名', dataIndex: 'accountName',  width: 120 },
-  { title: '账号', dataIndex: 'accountNumber',  width: 150 },
-  { title: '卡号', dataIndex: 'cardNumber',  width: 150 },
-  { title: '流水号', dataIndex: 'serialNumber', width: 120 },
-  { title: '交易渠道', dataIndex: 'channel',  width: 100 },
-  { title: '币种', dataIndex: 'currency', width: 80 },
-  { title: '交易方向', dataIndex: 'transactionDirection',  width: 100 },
-  { title: '交易金额', dataIndex: 'transactionAmount',  width: 120 },
-  { title: '交易种类', dataIndex: 'transactionType',  width: 100 },
-  { title: '交易余额', dataIndex: 'transactionBalance',  width: 120 },
-  { title: '业务日期', dataIndex: 'businessDate', width: 120 },
-  { title: '交易时间', dataIndex: 'transactionTime', width: 120 },
-  { title: '对方开户银行', dataIndex: 'oppositeBank',  width: 150 },
-  { title: '对方户名', dataIndex: 'oppositeAccountName', width: 120 },
-  { title: '对方账号/卡号', dataIndex: 'oppositeAccountNumber',  width: 150 },
-  { title: '交易状态', dataIndex: 'transactionStatus', width: 100 },
-  { title: 'IP地址', dataIndex: 'ipAddress', width: 120 },
-  { title: '其他字段', dataIndex: 'otherFields',width: 120 },
-  { title: '操作', dataIndex: 'operation',  width: 100, fixed: 'right' },
+  { title: '行号', dataIndex: 'rowNum', width: 100 },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100 },
+  { title: '账号', dataIndex: 'accountNum', width: 100 },
+  { title: '卡号', dataIndex: 'cardNum', width: 100 },
+  { title: '流水号', dataIndex: 'transNo', width: 100 },
+  { title: '交易渠道', dataIndex: 'channel', width: 100 },
+  { title: '币种', dataIndex: 'currNo', width: 100 },
+  { title: '交易方向', dataIndex: 'transWay', width: 100 },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100 },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100 },
+  { title: '余额', dataIndex: 'balence', width: 100 },
+  { title: '交易种类', dataIndex: 'transType', width: 100 },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100 },
+  { title: '交易时间', dataIndex: 'transTime', width: 100 },
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100 },
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100 },
+  { title: '交易状态', dataIndex: 'status', width: 100 },
+  { title: '对方机构', dataIndex: 'counterOrgName', width: 100 },
+  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100 },
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100 },
+  { title: '对方户名', dataIndex: 'counterName', width: 100 },
+  { title: '附件字段', dataIndex: 'addiCols', width: 100 },
+  { title: '户名', dataIndex: 'customerName', width: 100 },
+  { title: '备注', dataIndex: 'comment', width: 100 },
+  { title: '客户种类', dataIndex: 'customerType', width: 100 },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100 },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100 },
+  { title: '证件种类', dataIndex: 'idType', width: 100 },
+  { title: '证件号码', dataIndex: 'idNum', width: 100 },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100 },
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' },
 ]);
 
-const nonBankCustomerColumns = ref([...customerColumns.value]);
-const nonBankTransactionColumns = ref([...transactionColumns.value]);
+//const nonBankCustomerColumns = ref([...customerColumns.value]);
+//const nonBankTransactionColumns = ref([...transactionColumns.value]);
+
+// 表格列定义
+const nonBankCustomerColumns = ref([
+  { title: '行号', dataIndex: 'rowNum', width: 100 },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100 },
+  { title: '客户号', dataIndex: 'customerId', width: 100 },
+  { title: '客户种类', dataIndex: 'customerType', width: 100 },
+  { title: '客户名称', dataIndex: 'customerName', width: 100 },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100 },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100 },
+  { title: '证件种类', dataIndex: 'idType', width: 100 },
+  { title: '证件号码', dataIndex: 'idNum', width: 100 },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100 },
+  { title: '是否商户', dataIndex: 'isMerchant', width: 100 },
+  { title: '商户号', dataIndex: 'merchantId', width: 100 },
+  { title: '终端号', dataIndex: 'portId', width: 100 },
+  { title: '结算银行', dataIndex: 'settlementOrg', width: 100 },
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100 },
+  { title: '币种', dataIndex: 'currNo', width: 100 },
+  { title: '状态', dataIndex: 'customerStatus', width: 100 },
+  { title: '账户类型', dataIndex: 'accountType', width: 100 },
+  { title: '其他字段', dataIndex: 'otherFields', width: 100 },
+  { title: '开户日期', dataIndex: 'openDate', width: 100 },
+  { title: '备注', dataIndex: 'comment', width: 100 },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100 },
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' },
+]);
+
+
+const nonBankTransactionColumns = ref([
+  { title: '行号', dataIndex: 'rowNum', width: 100 },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100 },
+  { title: '商户号', dataIndex: 'merchantId', width: 100 },
+  { title: '终端号', dataIndex: 'portId', width: 100 },
+  { title: '订单号', dataIndex: 'orderNo', width: 100 },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100 },
+  { title: '商品名称', dataIndex: 'productName', width: 100 },
+  { title: '流水号', dataIndex: 'transNo', width: 100 },
+  { title: '币种', dataIndex: 'currNo', width: 100 },
+  { title: '交易方向', dataIndex: 'transWay', width: 100 },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100 },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100 },
+  { title: '交易种类', dataIndex: 'transType', width: 100 },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100 },
+  { title: '交易时间', dataIndex: 'transTime', width: 100 },
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100 },
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100 },
+  { title: '交易状态', dataIndex: 'status', width: 100 },
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100 },
+  { title: '户名', dataIndex: 'customerName', width: 100 },
+  { title: '交易卡号', dataIndex: 'cardNum', width: 100 },
+  { title: '卡类型', dataIndex: 'cardType', width: 100 },
+  { title: '附件字段', dataIndex: 'addi_cols', width: 100 },
+  { title: '创建日期', dataIndex: 'createTime', width: 100 },
+  { title: '客户号', dataIndex: 'customerId', width: 100 },
+  { title: '备注', dataIndex: 'comment', width: 100 },
+  { title: '客户种类', dataIndex: 'customerType', width: 100 },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100 },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100 },
+  { title: '证件种类', dataIndex: 'idType', width: 100 },
+  { title: '证件号码', dataIndex: 'idNum', width: 100 },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100 },
+  { title: '结算行', dataIndex: 'settlementOrg', width: 100 },
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100 },
+  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' },
+]);
 
 onMounted(() => {
  // fetchStandardFileList()
@@ -627,6 +720,33 @@ const closeAnalyzeModal = () => {
   analyzeData.faStandardOrders = [];
 };
 
+// 切换全屏方法
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value;
+
+  const modalElement = document.querySelector('.full-modal .ant-modal');
+  const modalElement2 = document.querySelector('.full-modal .ant-modal .ant-modal-content');
+  console.info('111111111111',modalElement)
+  console.info('isFullscreen.value----->',isFullscreen.value)
+  if (modalElement) {
+    if (isFullscreen.value) {
+      modalElement.style.width = '100vw';
+      modalElement.style.height = '100vh';
+      modalElement2.style.height = '100vh';
+      modalElement.style.top = '0';
+      modalElement.style.left = '0';
+      modalElement.style.maxWidth = '100%';
+    } else {
+      modalElement.style.width = '100%';
+      modalElement.style.height = 'auto';
+      modalElement2.style.height = 'auto';
+      modalElement.style.top = '';
+      modalElement.style.left = '';
+      modalElement.style.maxWidth = '';
+    }
+  }
+};
+
 </script>
 
 <style scoped>
@@ -638,7 +758,7 @@ const closeAnalyzeModal = () => {
   border-radius: 6px;
   padding: 10px;
   background: #fff;
-  height: 100%;
+  height: 600px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
@@ -677,4 +797,42 @@ const closeAnalyzeModal = () => {
   align-items: center;
   height: 200px;
 }
+
+.table-tab :deep(.ant-table-body) {
+  height: 462px;
+}
+.table-tab :deep(.ant-table-placeholder .ant-table-cell) {
+  border: none!important;
+}
+.full-modal .ant-modal {
+  transition: all 0.3s ease;
+}
+
+.full-modal .ant-modal.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+}
+
+.fullscreen-btn {
+  position: absolute !important;
+  right: 44px !important;
+  top: 12px !important;
+  color: #1890ff !important;
+  border: 1px solid #d9d9d9 !important;
+  background: #fff !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  height: auto !important;
+}
+
+.fullscreen-btn:hover {
+  color: #40a9ff !important;
+  border-color: #40a9ff !important;
+  background: #f0f8ff !important;
+}
+
+
 </style>
