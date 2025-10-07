@@ -28,6 +28,10 @@ export const updatePersonRelationApi = (params) => defHttp.post({ url: '/fa/case
 export const getInvolvedRelationApi = (params) => defHttp.post({ url: '/fa/caseInvolved/relationList', params });
 export const getInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInvolved/involvedPersonList', params });
 export const getAnalyzesultApi = (params) => defHttp.post({ url: '/fa/caseStandardData/getParseDataList', params });
+export const getParseStandardEntityApi = (params) => defHttp.post({ url: '/fa/caseStandardData/getParseStandardEntityList', params });
+export const getParseStandardTransApi = (params) => defHttp.post({ url: '/fa/caseStandardData/getParseStandardTransList', params });
+export const getParseStandardOrderApi = (params) => defHttp.post({ url: '/fa/caseStandardData/getParseStandardOrderList', params });
+
 
 export const updateInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInvolved/saveOrUpdateInvolvedRelation', params });
 export const saveEditBankApi = (params) => defHttp.post({ url: '/fa/casefile/updateOrg', params });

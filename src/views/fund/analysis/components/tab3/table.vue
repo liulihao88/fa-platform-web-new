@@ -145,8 +145,49 @@
     </a-button>
 
     <a-card>
+      <a-spin :spinning="tableLoading">
+        <!-- Tab选项卡 -->
+        <a-tabs v-model:activeKey="parseActiveTab" class="table-tab" @change="handleParseTabChange">
+          <a-tab-pane key="parseEntity" tab="企业客户信息">
+            <a-table
+              :columns="parseEntityColumns"
+              :data-source="parseEntityData"
+              :pagination="parseEntityPagination"
+              bordered
+              size="small"
+              :scroll="{ x: 1500, y: 500 }"
+              @change="handleParseEntityTableChange"
+            >
+            </a-table>
+          </a-tab-pane>
+          <a-tab-pane key="parseTrans" tab="交易流水">
+            <a-table
+              :columns="parseTransColumns"
+              :data-source="parseTransData"
+              :pagination="parseTransPagination"
+              bordered
+              size="small"
+              :scroll="{ x: 1500, y: 500 }"
+              @change="handleParseTransTableChange"
+            >
+            </a-table>
+          </a-tab-pane>
+          <a-tab-pane key="parseOrder" tab="订单信息">
+            <a-table
+              :columns="parseOrderColumns"
+              :data-source="parseOrderData"
+              :pagination="parseOrderPagination"
+              bordered
+              size="small"
+              :scroll="{ x: 1500, y: 500 }"
+              @change="handleParseOrderTableChange"
+            >
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
+      </a-spin>
       <!-- 企业客户信息表 -->
-      <div class="table-section" v-if="analyzeData.faStandardEntities.length">
+      <!--<div class="table-section" v-if="analyzeData.faStandardEntities.length">
         <div class="table-title">企业客户信息</div>
         <a-table
             :columns="enterpriseCustomerColumns"
@@ -157,9 +198,9 @@
             :scroll="{ x: 1500, y: 400 }"
         />
       </div>
-
+-->
       <!-- 交易流水表 -->
-      <div class="table-section" v-if="analyzeData.faStandardTrans.length">
+      <!--<div class="table-section" v-if="analyzeData.faStandardTrans.length">
         <div class="table-title">交易流水</div>
         <a-table
             :columns="transactionFlowColumns"
@@ -169,10 +210,10 @@
             :pagination="false"
             :scroll="{ x: 1800, y: 400 }"
         />
-      </div>
+      </div>-->
 
       <!-- 订单表 -->
-      <div class="table-section" v-if="analyzeData.faStandardOrders.length">
+      <!--<div class="table-section" v-if="analyzeData.faStandardOrders.length">
         <div class="table-title">订单信息</div>
         <a-table
             :columns="orderInfoColumns"
@@ -182,11 +223,11 @@
             :pagination="false"
             :scroll="{ x: 1200, y: 400 }"
         />
-      </div>
+      </div>-->
 
-      <div v-if="!hasAnalyzeData" class="no-data-container">
+     <!-- <div v-if="!hasAnalyzeData" class="no-data-container">
         <a-empty description="暂无解析数据" />
-      </div>
+      </div>-->
     </a-card>
   </a-modal>
 </template>
@@ -195,13 +236,16 @@
 import {ref, reactive, onMounted, computed, defineProps} from 'vue';
 import { useRoute } from "vue-router";
 import {
-  getAnalyzesultApi,
+  // getAnalyzesultApi,
   standardFileListApi,
   standardSheetListApi,
   standardCustomerApi,
   standardTransApi,
   standardNonBankCustomerApi,
-  standardNonBankTransApi
+  standardNonBankTransApi,
+  getParseStandardEntityApi,
+  getParseStandardTransApi,
+  getParseStandardOrderApi
 } from "@/views/fund/analysis/user.api";
 import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons-vue";
 interface Props {
@@ -223,13 +267,23 @@ const transactionData = ref([]);
 const notBankCustomersData = ref([]);
 const notBankTransactionsData = ref([]);
 
+const parseEntityData = ref([]);
+const parseTransData = ref([]);
+const parseOrderData = ref([]);
+
+const parseDataParams = reactive({
+  caseId: '',
+  dataType: '',
+  dataId: ''
+});
+
 // 分析结果弹框相关状态
 const analyzeModalVisible = ref(false);
-const analyzeData = reactive({
-  faStandardEntities: [],
-  faStandardTrans: [],
-  faStandardOrders: []
-});
+// const analyzeData = reactive({
+//   faStandardEntities: [],
+//   faStandardTrans: [],
+//   faStandardOrders: []
+// });
 // 分页配置
 const customerPagination = reactive({
   current: 1,
@@ -276,11 +330,11 @@ const isFullscreen = ref(false);
 
 
 // 计算属性：检查是否有分析数据
-const hasAnalyzeData = computed(() => {
-  return analyzeData.faStandardEntities.length > 0 ||
-      analyzeData.faStandardTrans.length > 0 ||
-      analyzeData.faStandardOrders.length > 0;
-});
+// const hasAnalyzeData = computed(() => {
+//   return analyzeData.faStandardEntities.length > 0 ||
+//       analyzeData.faStandardTrans.length > 0 ||
+//       analyzeData.faStandardOrders.length > 0;
+// });
 
 // 计算属性：检查当前激活的选项卡是否有数据
 const hasTableData = computed(() => {
@@ -298,31 +352,137 @@ const hasTableData = computed(() => {
   }
 });
 
+// 计算属性：检查当前激活的选项卡是否有数据
+const hasParseTableData = computed(() => {
+  switch (parseActiveTab.value) {
+    case 'parseEntity':
+      return parseEntityData.value.length > 0;
+    case 'parseTrans':
+      return parseTransData.value.length > 0;
+    case 'parseOrder':
+      return parseOrderData.value.length > 0;
+    default:
+      return false;
+  }
+});
+
+
+// 客户信息分页配置
+const parseEntityPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+// 交易信息分页配置
+const parseTransPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+// 交易信息分页配置
+const parseOrderPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+const parseActiveTab = ref('parseEntity'); // 默认激活第一个选项卡
+
+// 选项卡切换处理
+const handleParseTabChange = (key) => {
+  // 重置目标选项卡的分页参数
+  switch (key) {
+    case 'parseEntity':
+      parseEntityPagination.current = 1;
+      break;
+    case 'parseTrans':
+      parseTransPagination.current = 1;
+      break;
+    case 'parseOrder':
+      parseOrderPagination.current = 1;
+      break;
+  }
+
+  // 如果当前选项卡没有数据，则加载数据
+  if (!hasParseTableData.value) {
+    loadParseTabData(key);
+  }
+};
+
 // 企业客户信息表格列配置
-const enterpriseCustomerColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber', width: 80 },
+// const enterpriseCustomerColumns = ref([
+//   { title: '行号', dataIndex: 'rowNumber', width: 80 },
+//   { title: '归属机构', dataIndex: 'orgCd', width: 120 },
+//   { title: '客户种类', dataIndex: 'customerType', width: 100 },
+//   { title: '客户名称', dataIndex: 'customerName', width: 120 },
+//   { title: '证件种类', dataIndex: 'idType', width: 100 },
+//   { title: '证件号码', dataIndex: 'idNum', width: 150 },
+//   { title: '营业执照', dataIndex: 'enterpriseLicenseNum', width: 120 },
+//   { title: '法人姓名', dataIndex: 'enterpriseLegalPersonName', width: 100 },
+//   { title: '是否商户', dataIndex: 'isMerchant', width: 80 },
+//   { title: '商户号', dataIndex: 'merchantNumber', width: 100 },
+//   { title: '终端号', dataIndex: 'terminalNumber', width: 80 },
+//   { title: '结算银行', dataIndex: 'settlementBank', width: 150 },
+//   { title: '结算账号', dataIndex: 'settlementAccount', width: 150 },
+//   { title: '币种', dataIndex: 'currency', width: 80 },
+//   { title: '账户类型', dataIndex: 'accountType', width: 100 },
+//   { title: '状态', dataIndex: 'status', width: 80 },
+//   { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+// ]);
+
+const parseEntityColumns = ref([
   { title: '归属机构', dataIndex: 'orgCd', width: 120 },
   { title: '客户种类', dataIndex: 'customerType', width: 100 },
+  { title: '客户号', dataIndex: 'customerCd', width: 100 },
   { title: '客户名称', dataIndex: 'customerName', width: 120 },
   { title: '证件种类', dataIndex: 'idType', width: 100 },
   { title: '证件号码', dataIndex: 'idNum', width: 150 },
   { title: '营业执照', dataIndex: 'enterpriseLicenseNum', width: 120 },
-  { title: '法人姓名', dataIndex: 'enterpriseLegalPersonName', width: 100 },
-  { title: '是否商户', dataIndex: 'isMerchant', width: 80 },
-  { title: '商户号', dataIndex: 'merchantNumber', width: 100 },
-  { title: '终端号', dataIndex: 'terminalNumber', width: 80 },
-  { title: '结算银行', dataIndex: 'settlementBank', width: 150 },
-  { title: '结算账号', dataIndex: 'settlementAccount', width: 150 },
-  { title: '币种', dataIndex: 'currency', width: 80 },
-  { title: '账户类型', dataIndex: 'accountType', width: 100 },
-  { title: '状态', dataIndex: 'status', width: 80 },
-  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+  { title: '法人姓名', dataIndex: 'enterpriseLegalPersonName', width: 100 }
 ]);
 
+
+
 // 交易流水表格列配置
-const transactionFlowColumns = ref([
-  { title: '行号', dataIndex: 'rowNumber', width: 80 },
-  { title: '发起行', dataIndex: 'deptCaseCode', width: 120 },
+// const transactionFlowColumns = ref([
+//   { title: '行号', dataIndex: 'rowNumber', width: 80 },
+//   { title: '发起行', dataIndex: 'deptCaseCode', width: 120 },
+//   { title: '户名', dataIndex: 'customerName', width: 120 },
+//   { title: '账号', dataIndex: 'transAccountNo', width: 150 },
+//   { title: '卡号', dataIndex: 'relAccountNo', width: 150 },
+//   { title: '流水号', dataIndex: 'transNo', width: 120 },
+//   { title: '交易渠道', dataIndex: 'channel', width: 100 },
+//   { title: '币种', dataIndex: 'currNo', width: 80 },
+//   { title: '交易方向', dataIndex: 'transWay', width: 100 },
+//   { title: '交易金额', dataIndex: 'transAmt', width: 120 },
+//   { title: '交易种类', dataIndex: 'transType', width: 100 },
+//   { title: '交易余额', dataIndex: 'transactionBalance', width: 120 },
+//   { title: '业务日期', dataIndex: 'bizDate', width: 120 },
+//   { title: '交易时间', dataIndex: 'transTime', width: 120 },
+//   { title: '对方开户银行', dataIndex: 'counterOrgName', width: 150 },
+//   { title: '对方户名', dataIndex: 'counterName', width: 120 },
+//   { title: '对方账号', dataIndex: 'counterAccountNo', width: 150 },
+//   { title: '交易状态', dataIndex: 'status', width: 100 },
+//   { title: 'IP地址', dataIndex: 'ipAddress', width: 120 },
+//   { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+// ]);
+
+const parseTransColumns = ref([
+  { title: '发起行', dataIndex: 'orgCd', width: 120 },
   { title: '户名', dataIndex: 'customerName', width: 120 },
   { title: '账号', dataIndex: 'transAccountNo', width: 150 },
   { title: '卡号', dataIndex: 'relAccountNo', width: 150 },
@@ -331,27 +491,30 @@ const transactionFlowColumns = ref([
   { title: '币种', dataIndex: 'currNo', width: 80 },
   { title: '交易方向', dataIndex: 'transWay', width: 100 },
   { title: '交易金额', dataIndex: 'transAmt', width: 120 },
-  { title: '交易种类', dataIndex: 'transType', width: 100 },
-  { title: '交易余额', dataIndex: 'transactionBalance', width: 120 },
+  { title: '交易种类', dataIndex: 'transType', width: 100 }, ,
   { title: '业务日期', dataIndex: 'bizDate', width: 120 },
   { title: '交易时间', dataIndex: 'transTime', width: 120 },
-  { title: '对方开户银行', dataIndex: 'counterOrgName', width: 150 },
+  { title: '对方开户银行', dataIndex: 'counterOrgCd', width: 150 },
   { title: '对方户名', dataIndex: 'counterName', width: 120 },
   { title: '对方账号', dataIndex: 'counterAccountNo', width: 150 },
-  { title: '交易状态', dataIndex: 'status', width: 100 },
-  { title: 'IP地址', dataIndex: 'ipAddress', width: 120 },
-  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+  { title: '交易状态', dataIndex: 'status', width: 100 }
 ]);
 
 // 订单信息表格列配置
-const orderInfoColumns = ref([
-  { title: '发起机构', dataIndex: 'issuingOrg', width: 120 },
+// const orderInfoColumns = ref([
+//   { title: '发起机构', dataIndex: 'issuingOrg', width: 120 },
+//   { title: '订单号', dataIndex: 'orderNo', width: 150 },
+//   { title: '流水号', dataIndex: 'transNo', width: 150 },
+//   { title: '商品名称', dataIndex: 'productorName', width: 200 },
+//   { title: '客户名称', dataIndex: 'customerName', width: 120 },
+//   { title: '账号', dataIndex: 'transAccountNo', width: 150 },
+//   { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+// ]);
+
+const parseOrderColumns = ref([
   { title: '订单号', dataIndex: 'orderNo', width: 150 },
   { title: '流水号', dataIndex: 'transNo', width: 150 },
-  { title: '商品名称', dataIndex: 'productorName', width: 200 },
-  { title: '客户名称', dataIndex: 'customerName', width: 120 },
-  { title: '账号', dataIndex: 'transAccountNo', width: 150 },
-  { title: '其他字段', dataIndex: 'otherFields', width: 120 }
+  { title: '商品名称', dataIndex: 'productorName', width: 200 }
 ]);
 
 // 客户信息表格列配置
@@ -652,6 +815,94 @@ const loadTabData = async (tabKey) => {
 };
 
 
+// 表格分页变化处理
+const handleParseEntityTableChange = (pagination) => {
+  parseEntityPagination.current = pagination.current;
+  parseEntityPagination.pageSize = pagination.pageSize;
+  loadParseTabData('parseEntity');
+};
+
+// 表格分页变化处理
+const handleParseTransTableChange = (pagination) => {
+  parseTransPagination.current = pagination.current;
+  parseTransPagination.pageSize = pagination.pageSize;
+  loadParseTabData('parseTrans');
+};
+
+// 表格分页变化处理
+const handleParseOrderTableChange = (pagination) => {
+  parseOrderPagination.current = pagination.current;
+  parseOrderPagination.pageSize = pagination.pageSize;
+  loadParseTabData('parseOrder');
+};
+
+// 加载选项卡数据
+const loadParseTabData = async (tabKey) => {
+
+
+  try {
+    tableLoading.value = true;
+
+    let pageNo, pageSize,caseId,dataType,dataId, params;
+    caseId = parseDataParams.caseId;
+    dataType = parseDataParams.dataType;
+    dataId = parseDataParams.dataId;
+    if (!dataId || !dataId) return;
+
+    switch (tabKey) {
+      case 'parseEntity':
+        pageNo = parseEntityPagination.current;
+        pageSize = parseEntityPagination.pageSize;
+        params = {
+          caseId,
+          dataType,
+          dataId,
+          pageNo,
+          pageSize
+        };
+        const parseEntityResponse = await getParseStandardEntityApi(params);
+        parseEntityData.value = parseEntityResponse.records || [];
+        parseEntityPagination.total = parseEntityResponse.total || parseEntityResponse.records?.length || 0;
+        break;
+
+      case 'parseTrans':
+        pageNo = parseTransPagination.current;
+        pageSize = parseTransPagination.pageSize;
+        params = {
+          caseId,
+          dataType,
+          dataId,
+          pageNo,
+          pageSize
+        };
+        const parseTransResponse = await getParseStandardTransApi(params);
+        parseTransData.value = parseTransResponse.records || [];
+        parseTransPagination.total = parseTransResponse.total || parseTransResponse.records?.length || 0;
+        break;
+
+      case 'parseOrder':
+        pageNo = parseOrderPagination.current;
+        pageSize = parseOrderPagination.pageSize;
+        params = {
+          caseId,
+          dataType,
+          dataId,
+          pageNo,
+          pageSize
+        };
+        const parseOrderResponse = await getParseStandardOrderApi(params);
+        parseOrderData.value = parseOrderResponse.records || [];
+        parseOrderPagination.total = parseOrderResponse.total || parseOrderResponse.records?.length || 0;
+        break;
+    }
+  } catch (error) {
+    console.error(`加载${tabKey}数据失败:`, error);
+  } finally {
+    tableLoading.value = false;
+  }
+};
+
+
 // 选择Sheet页
 const selectSheet = async(sheet) => {
   try {
@@ -684,19 +935,12 @@ const selectSheet = async(sheet) => {
 // 查看解析详情接口
 const getAnalyzeResult = async(record,dataType) => {
   try {
-    const params = {
-      caseId: query.caseId,
-      dataType,
-      dataId: record.id
-    };
 
-    const response = await getAnalyzesultApi(params);
-    const {faStandardEntities,faStandardTrans,faStandardOrders} = response
+    parseDataParams.caseId = query.caseId;
+    parseDataParams.dataType = dataType;
+    parseDataParams.dataId = record.id;
 
-    // 根据接口返回的数据结构，映射到三个表格
-    analyzeData.faStandardEntities = faStandardEntities ||  [];
-    analyzeData.faStandardTrans = faStandardTrans || [];
-    analyzeData.faStandardOrders = faStandardOrders || [];
+    loadParseTabData("parseEntity");
 
     // 显示弹框
     analyzeModalVisible.value = true;
@@ -704,9 +948,9 @@ const getAnalyzeResult = async(record,dataType) => {
   } catch (error) {
     console.error('获取分析结果失败:', error);
     // 清空数据
-    analyzeData.faStandardEntities = [];
-    analyzeData.faStandardTrans = [];
-    analyzeData.faStandardOrders = [];
+    parseEntityData.value = [];
+    parseTransData.value = [];
+    parseOrderData.value = [];
     analyzeModalVisible.value = true;
   }
 };
@@ -715,9 +959,9 @@ const getAnalyzeResult = async(record,dataType) => {
 const closeAnalyzeModal = () => {
   analyzeModalVisible.value = false;
   // 清空数据
-  analyzeData.faStandardEntities = [];
-  analyzeData.faStandardTrans = [];
-  analyzeData.faStandardOrders = [];
+  parseEntityData.value = [];
+  parseTransData.value = [];
+  parseOrderData.value = [];
 };
 
 // 切换全屏方法
@@ -725,21 +969,21 @@ const toggleFullscreen = () => {
   isFullscreen.value = !isFullscreen.value;
 
   const modalElement = document.querySelector('.full-modal .ant-modal');
-  const modalElement2 = document.querySelector('.full-modal .ant-modal .ant-modal-content');
+  // const modalElement2 = document.querySelector('.full-modal .ant-modal .ant-modal-content');
   console.info('111111111111',modalElement)
   console.info('isFullscreen.value----->',isFullscreen.value)
   if (modalElement) {
     if (isFullscreen.value) {
       modalElement.style.width = '100vw';
       modalElement.style.height = '100vh';
-      modalElement2.style.height = '100vh';
+      // modalElement2.style.height = '100vh';
       modalElement.style.top = '0';
       modalElement.style.left = '0';
       modalElement.style.maxWidth = '100%';
     } else {
       modalElement.style.width = '100%';
       modalElement.style.height = 'auto';
-      modalElement2.style.height = 'auto';
+      // modalElement2.style.height = 'auto';
       modalElement.style.top = '';
       modalElement.style.left = '';
       modalElement.style.maxWidth = '';
