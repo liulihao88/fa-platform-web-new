@@ -116,7 +116,21 @@ import {ref, onMounted, reactive} from 'vue';
   const fetchCaseInfo = async () => {
     caseDetailApi({caseId: query.caseId}).then((res)=>{
       console.info('111111111111111',res)
-      currentStep.value = Number(res.fileProcessStatus)
+      if(res.fileProcessStatus == '001'){
+        currentStep.value = 1;
+      }else if(res.fileProcessStatus == '002'){
+        currentStep.value = 2;
+      }else if(res.fileProcessStatus == '010'){
+        currentStep.value = 3;
+      }else if(res.fileProcessStatus == '003'){
+        currentStep.value = 4;
+      }else if(res.fileProcessStatus == '004'){
+        currentStep.value = 5;
+      }else{
+        currentStep.value = 0;
+      }
+
+
       caseInfo.value = res;
       // currentStep.value = mockResponse.data.currentStep;
     })
