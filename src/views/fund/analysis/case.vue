@@ -116,11 +116,13 @@ import {ref, onMounted, reactive} from 'vue';
   const fetchCaseInfo = async () => {
     caseDetailApi({caseId: query.caseId}).then((res)=>{
       console.info('111111111111111',res)
-      if(res.fileProcessStatus == '001'){
+      if(res.fileProcessStatus == '000'){
+        currentStep.value = 0;
+      }else if(res.fileProcessStatus == '001'){
         currentStep.value = 1;
-      }else if(res.fileProcessStatus == '002'){
-        currentStep.value = 2;
       }else if(res.fileProcessStatus == '010'){
+        currentStep.value = 2;
+      }else if(res.fileProcessStatus == '002'){
         currentStep.value = 3;
       }else if(res.fileProcessStatus == '003'){
         currentStep.value = 4;
