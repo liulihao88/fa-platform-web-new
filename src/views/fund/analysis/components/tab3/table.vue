@@ -126,7 +126,7 @@
   </a-row>
 
   <!-- 修改后的分析结果弹框 -->
-  <a-modal
+  <BasicModal
       v-model:visible="analyzeModalVisible"
       title="标准数据"
       width="90%"
@@ -135,14 +135,6 @@
       :footer="null"
       @cancel="closeAnalyzeModal"
   >
-    <a-button
-        type="text"
-        @click="toggleFullscreen"
-        class="fullscreen-btn"
-    >
-      <FullscreenOutlined v-if="!isFullscreen" />
-      <FullscreenExitOutlined v-else />
-    </a-button>
 
     <a-card>
       <a-spin :spinning="tableLoading">
@@ -229,7 +221,7 @@
         <a-empty description="暂无解析数据" />
       </div>-->
     </a-card>
-  </a-modal>
+  </BasicModal>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -248,6 +240,7 @@ import {
   getParseStandardOrderApi
 } from "@/views/fund/analysis/user.api";
 import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons-vue";
+import {BasicModal, useModalInner} from '/@/components/Modal';
 interface Props {
   filteredFiles: Array<{value: string, label: string}>;
 }
@@ -325,8 +318,6 @@ const nonBankTransactionPagination = reactive({
   pageSizeOptions: ['10', '20', '50', '100']
 });
 const activeTab = ref('customer'); // 默认激活第一个选项卡
-// 添加全屏状态
-const isFullscreen = ref(false);
 
 
 // 计算属性：检查是否有分析数据
@@ -962,33 +953,6 @@ const closeAnalyzeModal = () => {
   parseEntityData.value = [];
   parseTransData.value = [];
   parseOrderData.value = [];
-};
-
-// 切换全屏方法
-const toggleFullscreen = () => {
-  isFullscreen.value = !isFullscreen.value;
-
-  const modalElement = document.querySelector('.full-modal .ant-modal');
-  // const modalElement2 = document.querySelector('.full-modal .ant-modal .ant-modal-content');
-  console.info('111111111111',modalElement)
-  console.info('isFullscreen.value----->',isFullscreen.value)
-  if (modalElement) {
-    if (isFullscreen.value) {
-      modalElement.style.width = '100vw';
-      modalElement.style.height = '100vh';
-      // modalElement2.style.height = '100vh';
-      modalElement.style.top = '0';
-      modalElement.style.left = '0';
-      modalElement.style.maxWidth = '100%';
-    } else {
-      modalElement.style.width = '100%';
-      modalElement.style.height = 'auto';
-      // modalElement2.style.height = 'auto';
-      modalElement.style.top = '';
-      modalElement.style.left = '';
-      modalElement.style.maxWidth = '';
-    }
-  }
 };
 
 </script>

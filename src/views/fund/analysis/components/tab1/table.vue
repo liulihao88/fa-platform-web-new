@@ -101,24 +101,16 @@
     </template>
   </a-table>
   <!-- 编辑文件的Modal弹框 -->
-  <a-modal
+  <BasicModal
       v-model:visible="editModalVisible"
       title="文件转换详情"
-      :footer="null"
       width="100%"
       wrap-class-name="full-modal"
       @ok="closeEditModal"
       @cancel="closeEditModal"
+      :footer="null"
   >
     <div>
-      <a-button
-          type="text"
-          @click="toggleFullscreen"
-          class="fullscreen-btn"
-      >
-        <FullscreenOutlined v-if="!isFullscreen" />
-        <FullscreenExitOutlined v-else />
-      </a-button>
       <a-card>
         <a-row :gutter="16">
           <a-col span="10">
@@ -273,10 +265,10 @@
       </a-card>
     </div>
 
-  </a-modal>
+  </BasicModal>
 
   <!-- 上传文件的Modal弹框 -->
-  <a-modal
+  <BasicModal
       v-model:visible="uploadModalVisible"
       title="上传文件"
       width="800px"
@@ -351,9 +343,9 @@
       </a-card>
 
     </div>
-  </a-modal>
+  </BasicModal>
   <!-- 在模板部分添加新的Modal -->
-  <a-modal
+  <BasicModal
       v-model:visible="convertModalVisible"
       title="文件转换确认"
       width="90%"
@@ -437,7 +429,7 @@
         </a-col>
       </a-row>
     </a-card>
-  </a-modal>
+  </BasicModal>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -468,6 +460,7 @@ import {
 //ts语法
 import { useRoute } from 'vue-router';
 import {useRouter} from "vue-router";
+import {BasicModal, useModalInner} from '/@/components/Modal';
 const router = useRouter();
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
@@ -881,29 +874,7 @@ const onFileListUpload = (data) => {
 
   })
 };
-// 切换全屏方法
-const toggleFullscreen = () => {
 
-  isFullscreen.value = !isFullscreen.value;
-  const modalElement = document.querySelector('.full-modal .ant-modal');
-
-  if (modalElement) {
-    if (isFullscreen.value) {
-      modalElement.style.width = '100vw';
-      modalElement.style.height = '100vh';
-      modalElement.style.top = '0';
-      modalElement.style.left = '0';
-      modalElement.style.maxWidth = '100%';
-    } else {
-      modalElement.style.width = '100%';
-      modalElement.style.height = 'auto';
-      modalElement.style.top = '';
-      modalElement.style.left = '';
-      modalElement.style.maxWidth = '';
-    }
-  }
-
-};
 // 搜索处理
 const onSearch = () => {
   searchLoading.value = true;
