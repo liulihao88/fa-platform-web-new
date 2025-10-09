@@ -110,8 +110,8 @@ export const searchFormSchema: FormSchema[] = [
       field: 'processDate',
       component: 'DatePicker',
       componentProps: {
-         showTime:true,
-         valueFormat: 'YYYY-MM-DD HH:mm:ss'
+         showTime:false,
+         valueFormat: 'YYYY-MM-DD'
        },
       //colProps: {span: 6},
  	},
@@ -138,8 +138,8 @@ export const formSchema: FormSchema[] = [
     field: 'processDate',
     component: 'DatePicker',
     componentProps: {
-      showTime:true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss'
+      showTime:false,
+      valueFormat: 'YYYY-MM-DD'
     },
   },
 	// TODO 主键隐藏字段，目前写死为ID

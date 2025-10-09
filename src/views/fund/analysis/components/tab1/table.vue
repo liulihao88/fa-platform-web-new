@@ -146,18 +146,20 @@
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
                   <!-- CSV预览 - 仿Excel表格样式 -->
                   <div class="csv-preview">
-                    <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
-                      <thead>
-                      <tr>
-                        <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
-                        <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
-                      </tr>
-                      </tbody>
-                    </table>
+                    <div class="csv-table-container">
+                      <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
+                        <thead>
+                        <tr>
+                          <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
+                          <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </a-col>
 
@@ -254,7 +256,6 @@
                             :columns="nonBankTransactionColumns"
                             :data-source="activeSheetData.notBankTransactions"
                             :pagination="nonBankTransactionPagination"
-                            size="small"
                             :scroll="{ x: 1500, y: 500 }"
                             bordered
                             :loading="tableLoading"
@@ -1188,10 +1189,14 @@ const cleanupUrl = () => {
 }
 // 解析CSV数据
 const parseCSV = (csvText) => {
-
+  // 处理可能存在的BOM标记
+  if (typeof csvText === 'string' && csvText.charCodeAt(0) === 0xFEFF) {
+    csvText = csvText.slice(1);
+  }
+  
   const lines = csvText.split('\n');
   const result = [];
-  console.info('lines',lines)
+  console.info('lines', lines)
   lines.forEach(line => {
     if (line.trim() !== '') {
       // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
@@ -1202,19 +1207,39 @@ const parseCSV = (csvText) => {
       result.push(cells);
     }
   });
-  console.info('result',result)
+  console.info('result', result)
   return result;
 };
 // 预览文件excel或者pdf或者csv文件
 const previewFile = (record)=>{
-  const  responseType = currentFileType.value === 'csv'?'text':'arraybuffer'
+  const  responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer'
   getFileStreamByFileId({fileId:record.id},responseType).then((response)=>{
     console.info('文件类型',currentFileType.value)
     if (currentFileType.value === 'csv') {
-      // CSV文件以文本形式获取
+      // CSV文件以arraybuffer形式获取，然后转换为文本
       console.info('文件内容',response)
-      csvContent.value = response.data
-      csvData.value = parseCSV(response.data)
+      
+      // 尝试多种编码方式解码
+      let csvText = '';
+      const encodings = ['utf-8', 'gbk', 'gb2312'];
+      for (let encoding of encodings) {
+        try {
+          const decoder = new TextDecoder(encoding, { fatal: true });
+          csvText = decoder.decode(response.data);
+          console.log(`成功使用 ${encoding} 编码解码文件`);
+          break;
+        } catch (e) {
+          console.log(`使用 ${encoding} 编码解码失败`);
+        }
+      }
+      
+      // 处理可能存在的BOM标记
+      if (csvText.charCodeAt(0) === 0xFEFF) {
+        csvText = csvText.slice(1);
+      }
+      
+      csvContent.value = csvText;
+      csvData.value = parseCSV(csvText);
     } else {
       // 其他文件类型以arrayBuffer形式获取
       cleanupUrl() // 清理之前的URL
@@ -1491,6 +1516,11 @@ const onExcelError = (error) => {
   overflow: auto;
 }
 
+.csv-table-container {
+  max-height: 600px;
+  overflow: auto;
+}
+
 .csv-table {
   width: 100%;
   border-collapse: collapse;
@@ -1500,6 +1530,9 @@ const onExcelError = (error) => {
     background-color: #f5f5f5;
     font-weight: bold;
     text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   th, td {
