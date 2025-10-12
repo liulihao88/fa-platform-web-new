@@ -2,16 +2,16 @@
   <a-row :gutter="20" class="mt2">
     <!-- 左侧文件列表 -->
     <a-col :span="4">
-      <div class="search-box">
-        <a-input-search
+      <h3>文件列表</h3>
+      <div class="file-list">
+        <div class="search-box">
+          <a-input-search
             v-model:value="searchText"
             placeholder="搜索文件名称"
             @search="handleSearch"
             enter-button
-        />
-      </div>
-      <h3>文件列表</h3>
-      <div class="file-list">
+          />
+        </div>
         <a-spin :spinning="fileLoading">
           <div
               v-for="file in props.filteredFiles"
@@ -27,7 +27,7 @@
 
     <!-- 中间Sheet列表 -->
     <a-col :span="3">
-      <h3 class="mt13">文件页码</h3>
+      <h3>文件页码</h3>
       <div class="sheet-list">
         <a-spin :spinning="sheetLoading">
           <div
@@ -43,8 +43,8 @@
     </a-col>
     <!-- 右侧数据表格 -->
     <a-col :span="17">
-      <h3 class="mt13">转换数据</h3>
-      <a-card>
+      <h3>转换数据</h3>
+      <div class="sheet-list">
         <a-spin :spinning="tableLoading">
           <!-- Tab选项卡 -->
           <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
@@ -141,7 +141,7 @@
             </a-tab-pane>
           </a-tabs>
         </a-spin>
-      </a-card>
+      </div>
     </a-col>
   </a-row>
 
@@ -1122,7 +1122,7 @@ const [registerParseOrderTable] = useTable({
   border-radius: 6px;
   padding: 10px;
   background: #fff;
-  height: 600px;
+  height: 100%;
   overflow-y: auto;
 }
 .file-item, .sheet-item {

@@ -2,7 +2,7 @@
   <a-card title="资金文件配置" class="m2">
     <!-- 搜索区域 -->
     <a-form :model="searchForm" class="search-form">
-      <a-row :gutter="16">
+      <a-row :gutter="24">
         <a-col :span="8">
           <a-form-item
               label="标准数据"
@@ -18,13 +18,11 @@
             <a-input v-model:value="searchForm.alias" placeholder="请输入别名" />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row gutter="16">
-        <a-col :span="24">
+        <a-col :span="8">
           <a-form-item>
             <a-button type="primary" @click="handleSearch">查询</a-button>
             <a-button class="ml2" @click="handleReset">重置</a-button>
-            <a-button type="primary" class="ml2" @click="handleAdd">添加</a-button>
+
           </a-form-item>
         </a-col>
       </a-row>
@@ -47,6 +45,10 @@
         :minHeight="300"
         @register="registerTable"
     >
+      <!--插槽:table标题-->
+      <template #tableTitle>
+        <a-button type="primary" class="ml2" @click="handleAdd">添加</a-button>
+      </template>
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'index'">
           {{ (pagination.current - 1) * pagination.pageSize + index + 1 }}

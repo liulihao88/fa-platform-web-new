@@ -1,12 +1,4 @@
 <template>
-  <a-card>
-    <a-row gutter="16">
-      <a-col :span="24" class="search-buttons">
-        <a-button type="primary" class="ml2" @click="exportPageData">导出数据</a-button>
-        <a-button class="ml2" type="primary" @click="exportSelectedPageData">导出选择数据</a-button>
-      </a-col>
-    </a-row>
-  </a-card>
   <BasicTable
       :columns="columns"
       :dataSource="repeatedFileList"
@@ -21,6 +13,11 @@
       :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab4-repeated-files' }"
       @register="registerTable"
   >
+    <!--插槽:table标题-->
+    <template #tableTitle>
+      <a-button type="primary" class="ml2" @click="exportPageData">导出数据</a-button>
+      <a-button class="ml2" type="primary" @click="exportSelectedPageData">导出选择数据</a-button>
+    </template>
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'file1Name'">
         <div class="file-name">{{ record.file1.file1Name }}</div>

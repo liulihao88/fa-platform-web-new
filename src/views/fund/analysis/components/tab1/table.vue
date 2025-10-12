@@ -1,6 +1,7 @@
-<template>
+﻿<template>
+  <div>
   <!-- 搜索卡片 -->
-  <a-card class="m2">
+  <a-card>
     <a-form
         ref="formRef"
         class="search-form"
@@ -12,7 +13,7 @@
       <a-row gutter="16">
         <a-col :span="24">
           <a-row :gutter="24">
-            <a-col :span="8">
+            <a-col :span="6">
               <a-form-item
                   name="folder"
                   label="文件夹"
@@ -22,7 +23,7 @@
                 <a-input v-model:value="formState.folder" placeholder="请输入文件夹名称" />
               </a-form-item>
             </a-col>
-            <a-col :span="8">
+            <a-col :span="6">
               <a-form-item
                   name="fileName"
                   label="文件名称"
@@ -32,7 +33,7 @@
                 <a-input v-model:value="formState.fileName" placeholder="请输入文件名称"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="8">
+            <a-col :span="6">
               <a-form-item
                   name="fileStatus"
                   label="状态"
@@ -50,27 +51,22 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :span="6">
+              <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
+              <a-button class="ml2" @click="resetSearch">重置</a-button>
+            </a-col>
           </a-row>
-        </a-col>
-      </a-row>
-      <a-row gutter="16">
-        <a-col :span="24" class="search-buttons">
-          <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
-          <a-button class="ml2" @click="resetSearch">重置</a-button>
-          <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
-          <a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>
         </a-col>
       </a-row>
     </a-form>
   </a-card>
-
+  <div>
   <!-- 表格部分 -->
-  <BasicTable 
-    class="m2" 
+  <BasicTable
     :columns="columns" 
     :dataSource="dataSource" 
     :loading="tableLoading"
-    :scroll="{ x: 1500 }"
+    :scroll="{ x: 1500,y:500 }"
     :pagination="false"
     :bordered="true"
     size="small"
@@ -79,9 +75,13 @@
     :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
     :showActionColumn="true"
     :canResize="true"
-    :minHeight="300"
     @register="registerTable"
   >
+    <!--插槽:table标题-->
+    <template #tableTitle>
+      <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
+      <a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>
+    </template>
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
@@ -108,20 +108,21 @@
       </template>
     </template>
   </BasicTable>
-
+  </div>
+  </div>
   <!-- 编辑文件的Modal弹框 -->
   <BasicModal
       v-model:visible="editModalVisible"
       title="文件转换详情"
       width="100%"
-      useWrapper="true"
+      :useWrapper="true"
       wrap-class-name="full-modal"
       @ok="closeEditModal"
       @cancel="closeEditModal"
       :footer="null"
   >
     <div>
-      <a-card>
+      <a-card style="height: 100%">
         <div class="panel-controls">
           <a-button 
             type="primary" 
@@ -156,7 +157,7 @@
                 <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
               </a-row>
               <a-row>
-                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 600px" >
+                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 640px" >
                   <VueOfficeExcel
                       :src="fileStreamInfo"
                       :options="vueExcelOptions"
@@ -168,7 +169,7 @@
                   <VueOfficePdf
                       :src="fileStreamInfo"
                       @rendered="onExcelRendered"
-                      style="height: 600px;width: 100%"
+                      style="height: 640px;width: 100%"
                       @error="onExcelError"
                   />
                 </a-col>
@@ -223,7 +224,7 @@
               </a-row>
 
               <!-- Sheet列表区域 -->
-              <a-row style="margin-bottom: 16px;">
+              <a-row style="margin-bottom: 16px;height: 640px">
                 <a-col :span="4">
                   <div class="sheet-list">
                     <h3>文件页码</h3>
@@ -238,8 +239,8 @@
                   </div>
                 </a-col>
                 <a-col :span="20">
-                  <a-card class="table-card">
-                    <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+                  <a-card class="table-card" style="height: 640px">
+                    <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
                         <BasicTable
@@ -254,7 +255,7 @@
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
                             :canResize="true"
-                            :minHeight="300"
+                            :rowClassName="getRowClassName"
                             @register="registerBankCustomerTable"
                         >
                           <template #bodyCell="{ column, record }">
@@ -280,7 +281,7 @@
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-transaction-table' }"
                             :canResize="true"
-                            :minHeight="300"
+                            :rowClassName="getRowClassName"
                             @register="registerBankTransactionTable"
                         >
                           <template #bodyCell="{ column, record }">
@@ -302,7 +303,7 @@
                             :loading="tableLoading"
                             @change="handleNonBankCustomerTableChange"
                             style="margin-bottom: 16px;"
-                            :minHeight="300"
+                            :rowClassName="getRowClassName"
                             :canColDrag="true"
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
@@ -326,11 +327,11 @@
                             :bordered="true"
                             :loading="tableLoading"
                             @change="handleNonBankTransactionTableChange"
-                            :minHeight="300"
                             :canColDrag="true"
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
                             :canResize="true"
+                            :rowClassName="getRowClassName"
                             @register="registerNonBankTransactionTable"
                         >
                           <template #bodyCell="{ column, record }">
@@ -435,7 +436,7 @@
       v-model:visible="convertModalVisible"
       title="文件转换确认"
       width="90%"
-      useWrapper="true"
+      :useWrapper="true"
       :maskClosable="false"
       :footer="null"
       wrap-class-name="full-modal"
@@ -1480,7 +1481,6 @@ const previewFile = (record)=>{
   })
 }
 
-
 // 关闭编辑Modal
 const closeEditModal = () => {
   editModalVisible.value = false;
@@ -1682,24 +1682,14 @@ const onSplitterResize = (panes) => {
   }
 };
 
+// 在脚本部分添加新方法
+const getRowClassName = (record) => {
+  return record.cleanRule ? 'blue-row' : '';
+};
+
 </script>
 
 <style scoped>
-.search-form :deep(label) {
-  width: 100%;
-}
-
-.search-form :deep(.ant-form-item-control) {
-  width: 100%;
-}
-
-.search-form :deep(.ant-input) {
-  width: 100%;
-}
-
-.search-form :deep(.ant-select) {
-  width: 100%;
-}
 
 .panel-controls {
   margin-bottom: 16px;
@@ -1780,7 +1770,7 @@ const onSplitterResize = (panes) => {
 }
 
 .csv-table-container {
-  max-height: 600px;
+  max-height: 640px;
   overflow: auto;
 }
 
@@ -1816,12 +1806,6 @@ const onSplitterResize = (panes) => {
   max-height: 500px;
   overflow-y: auto;
 }
-.table-card :deep(.ant-table-content) {
-  height: 412px;
-}
-.table-card :deep(.ant-table-placeholder .ant-table-cell) {
-  border: none!important;
-}
 .file-item {
   padding: 12px;
   border: 1px solid #e8e8e8;
@@ -1841,33 +1825,15 @@ const onSplitterResize = (panes) => {
   background-color: #e6f7ff;
   border-color: #1890ff;
 }
-.full-modal .ant-modal {
-  transition: all 0.3s ease;
+
+.table-tab :deep(.ant-table-body) {
+  height: 400px;
+}
+.table-tab :deep(.ant-table-placeholder .ant-table-cell) {
+  border: none!important;
 }
 
-.full-modal .ant-modal.is-fullscreen {
-  width: 100vw !important;
-  height: 100vh !important;
-  top: 0 !important;
-  left: 0 !important;
-  max-width: 100% !important;
-}
-
-.fullscreen-btn {
-  position: absolute !important;
-  right: 44px !important;
-  top: 12px !important;
-  color: #1890ff !important;
-  border: 1px solid #d9d9d9 !important;
-  background: #fff !important;
-  border-radius: 4px !important;
-  padding: 4px 8px !important;
-  height: auto !important;
-}
-
-.fullscreen-btn:hover {
-  color: #40a9ff !important;
-  border-color: #40a9ff !important;
-  background: #f0f8ff !important;
+ :deep(.blue-row) {
+  background-color: #e6f7ff !important;
 }
 </style>
