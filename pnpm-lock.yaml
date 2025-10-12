@@ -149,6 +149,9 @@ importers:
       sortablejs:
         specifier: ^1.15.6
         version: 1.15.6
+      splitpanes:
+        specifier: ^4.0.4
+        version: 4.0.4(vue@3.5.20(typescript@4.9.5))
       swagger-ui-dist:
         specifier: ^5.21.0
         version: 5.28.0
@@ -5539,6 +5542,11 @@ packages:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
     engines: {node: '>= 10.x'}
 
+  splitpanes@4.0.4:
+    resolution: {integrity: sha512-RbysugZhjbCw5fgplvk3hOXr41stahQDtZhHVkhnnJI6H4wlGDhM2kIpbehy7v92duy9GnMa8zIhHigIV1TWtg==}
+    peerDependencies:
+      vue: ^3.2.0
+
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
@@ -6216,6 +6224,9 @@ packages:
     resolution: {integrity: sha512-ogAF3P97NPm8fJsE4by9dwSYtDwXIY1nFY9T6DyQnGHd1E2Da94w9JIolpe42LJGIl0DwOHBi8TcRPlPGwbTtw==}
     peerDependencies:
       vue: ^3.2.0
+
+  vue-splitpane@1.0.6:
+    resolution: {integrity: sha512-6sneVSEeF1VsCD025HP93nRxwzYhv3rotCeYi2Ah1FmGxwtfqbCZEIzaHGberdGNCpMlEzGD/1OIE1kK5QukLA==}
 
   vue-template-compiler@2.7.16:
     resolution: {integrity: sha512-AYbUWAJHLGGQM7+cNTELw+KsOG9nl2CnSv467WobS5Cv9uk3wFcnr1Etsz2sEIHEZvw1U+o9mRlEO6QbZvUPGQ==}
@@ -12191,6 +12202,10 @@ snapshots:
       readable-stream: 3.6.2
 
   split2@4.2.0: {}
+
+  splitpanes@4.0.4(vue@3.5.20(typescript@4.9.5)):
+    dependencies:
+      vue: 3.5.20(typescript@4.9.5)
 
   sprintf-js@1.0.3: {}
 

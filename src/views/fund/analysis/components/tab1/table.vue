@@ -121,9 +121,36 @@
   >
     <div>
       <a-card>
-        <a-row :gutter="16">
-          <a-col span="10">
-            <a-card title="源文件视图" size="small">
+        <div class="panel-controls">
+          <a-button 
+            type="primary" 
+            size="small" 
+            @click="toggleLeftPanel"
+            :icon="leftPanelVisible ? '<-' : '->'"
+          >
+            {{ leftPanelVisible ? '隐藏源文件视图' : '显示源文件视图' }}
+          </a-button>
+          <a-button 
+            type="primary" 
+            size="small" 
+            @click="toggleRightPanel"
+            :icon="rightPanelVisible ? '->' : '<-'"
+            class="ml2"
+          >
+            {{ rightPanelVisible ? '隐藏转换结果' : '显示转换结果' }}
+          </a-button>
+        </div>
+        <splitpanes 
+          class="default-theme" 
+          :push-other-panes="false"
+          @resize="onSplitterResize"
+        >
+          <pane 
+            v-if="leftPanelVisible" 
+            :size="leftPanelSize" 
+            min-size="20"
+          >
+            <a-card title="源文件视图" size="small" style="height: 100%">
               <a-row>
                 <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
               </a-row>
@@ -166,9 +193,14 @@
 
               </a-row>
             </a-card>
-          </a-col>
-          <a-col span="14">
-            <a-card title="转换结果" size="small">
+          </pane>
+          
+          <pane 
+            v-if="rightPanelVisible" 
+            :size="rightPanelSize" 
+            min-size="30"
+          >
+            <a-card title="转换结果" size="small" style="height: 100%">
               <!-- 文件归属银行选择区域 -->
               <a-row style="margin-bottom: 16px;">
                 <a-col :span="4">
@@ -313,8 +345,8 @@
                 </a-col>
               </a-row>
             </a-card>
-          </a-col>
-        </a-row>
+          </pane>
+        </splitpanes>
       </a-card>
     </div>
 
@@ -515,6 +547,8 @@ import { useRoute } from 'vue-router';
 import {useRouter} from "vue-router";
 import {BasicModal, useModalInner} from '/@/components/Modal';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
+import { Splitpanes, Pane } from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 const router = useRouter();
 interface ConvertFileItem {
@@ -1614,6 +1648,38 @@ const getTableAction = (record) => {
   ];
 };
 
+// 添加面板控制相关状态
+const leftPanelVisible = ref(true);
+const rightPanelVisible = ref(true);
+const leftPanelSize = ref(40);
+const rightPanelSize = ref(60);
+
+// 切换左侧面板显示/隐藏
+const toggleLeftPanel = () => {
+  leftPanelVisible.value = !leftPanelVisible.value;
+  // 如果右侧面板可见，调整其大小以占据全部空间
+  if (rightPanelVisible.value) {
+    rightPanelSize.value = leftPanelVisible.value ? 60 : 100;
+  }
+};
+
+// 切换右侧面板显示/隐藏
+const toggleRightPanel = () => {
+  rightPanelVisible.value = !rightPanelVisible.value;
+  // 如果左侧面板可见，调整其大小以占据全部空间
+  if (leftPanelVisible.value) {
+    leftPanelSize.value = rightPanelVisible.value ? 40 : 100;
+  }
+};
+
+// 处理分割面板大小调整
+const onSplitterResize = (panes) => {
+  if (panes.length >= 2) {
+    leftPanelSize.value = panes[0].size;
+    rightPanelSize.value = panes[1].size;
+  }
+};
+
 </script>
 
 <style scoped>
@@ -1633,6 +1699,9 @@ const getTableAction = (record) => {
   width: 100%;
 }
 
+.panel-controls {
+  margin-bottom: 16px;
+}
 
 /* 自定义上传拖拽区域样式 */
 .custom-upload-dragger :deep{

@@ -70,6 +70,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "showdown": "^2.1.0",
     "sortablejs": "^1.15.6",
+    "splitpanes": "^4.0.4",
     "swagger-ui-dist": "^5.21.0",
     "tinymce": "6.6.2",
     "vditor": "^3.10.8",
