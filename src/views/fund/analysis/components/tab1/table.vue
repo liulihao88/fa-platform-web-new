@@ -269,6 +269,7 @@
                             :loading="tableLoading"
                             @change="handleNonBankCustomerTableChange"
                             style="margin-bottom: 16px;"
+                            :minHeight="300"
                             :canColDrag="true"
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
@@ -292,6 +293,7 @@
                             :bordered="true"
                             :loading="tableLoading"
                             @change="handleNonBankTransactionTableChange"
+                            :minHeight="300"
                             :canColDrag="true"
                             :showTableSetting="true"
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
@@ -710,7 +712,8 @@ const bankCustomerColumns = ref([
   { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
 const bankTransactionColumns = ref([
@@ -743,7 +746,8 @@ const bankTransactionColumns = ref([
   { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
   { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true}
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
 // 表格列定义
@@ -769,7 +773,8 @@ const nonBankCustomerColumns = ref([
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
   { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true}
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
 
@@ -807,7 +812,8 @@ const nonBankTransactionColumns = ref([
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
   { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true},
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true}
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
 
