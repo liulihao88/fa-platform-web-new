@@ -1,4 +1,4 @@
-﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card>
@@ -151,7 +151,7 @@
           <pane 
             v-if="leftPanelVisible" 
             :size="leftPanelSize" 
-            min-size="20"
+            :min-size="leftPanelVisible ? 0.1 : 0"
           >
             <a-card title="源文件视图" size="small" style="height: 100%">
               <a-row>
@@ -201,7 +201,7 @@
           <pane 
             v-if="rightPanelVisible" 
             :size="rightPanelSize" 
-            min-size="30"
+            :min-size="rightPanelVisible ? 0.1 : 0"
           >
             <a-card title="转换结果" size="small" style="height: 100%">
               <!-- 文件归属银行选择区域 -->
@@ -523,7 +523,7 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed } from 'vue';
+import { ref,reactive, onMounted, defineProps,computed,nextTick } from 'vue';
 import { message, Modal} from 'ant-design-vue';
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
@@ -1420,8 +1420,17 @@ const editFile = async (record) => {
     await selectSheet(filePages[0]);
   }
 
-  // 显示Modal
-  editModalVisible.value = true;
+
+
+  nextTick(() => {
+    // 先显示模态框
+    editModalVisible.value = true;
+    // 在模态框显示后再重置分隔条到居中位置
+    setTimeout(() => {
+      resetSplitPanelsToCenter();
+    }, 100);
+  });
+
 };
 // 清理创建的对象URL
 const cleanupUrl = () => {
@@ -1655,33 +1664,104 @@ const getTableAction = (record) => {
 // 添加面板控制相关状态
 const leftPanelVisible = ref(true);
 const rightPanelVisible = ref(true);
-const leftPanelSize = ref(40);
-const rightPanelSize = ref(60);
+const leftPanelSize = ref(50);
+const rightPanelSize = ref(50);
+
+// 保存面板大小用于恢复
+const lastLeftPanelSize = ref(50);
+const lastRightPanelSize = ref(50);
 
 // 切换左侧面板显示/隐藏
 const toggleLeftPanel = () => {
   leftPanelVisible.value = !leftPanelVisible.value;
-  // 如果右侧面板可见，调整其大小以占据全部空间
-  if (rightPanelVisible.value) {
-    rightPanelSize.value = leftPanelVisible.value ? 60 : 100;
+  
+  if (leftPanelVisible.value) {
+    // 恢复左侧面板
+    leftPanelSize.value = lastLeftPanelSize.value;
+    if (!rightPanelVisible.value) {
+      rightPanelVisible.value = true;
+    }
+    rightPanelSize.value = 100 - leftPanelSize.value;
+  } else {
+    // 隐藏左侧面板
+    lastLeftPanelSize.value = leftPanelSize.value;
+    rightPanelSize.value = 100;
   }
 };
 
 // 切换右侧面板显示/隐藏
 const toggleRightPanel = () => {
   rightPanelVisible.value = !rightPanelVisible.value;
-  // 如果左侧面板可见，调整其大小以占据全部空间
-  if (leftPanelVisible.value) {
-    leftPanelSize.value = rightPanelVisible.value ? 40 : 100;
+  
+  if (rightPanelVisible.value) {
+    // 恢复右侧面板
+    rightPanelSize.value = lastRightPanelSize.value;
+    if (!leftPanelVisible.value) {
+      leftPanelVisible.value = true;
+    }
+    leftPanelSize.value = 100 - rightPanelSize.value;
+  } else {
+    // 隐藏右侧面板
+    lastRightPanelSize.value = rightPanelSize.value;
+    leftPanelSize.value = 100;
   }
 };
 
 // 处理分割面板大小调整
 const onSplitterResize = (panes) => {
   if (panes.length >= 2) {
+    // 检查左侧面板是否应该隐藏（拖拽到最左侧）
+    if (panes[0].size <= 0.1 && leftPanelVisible.value) {
+      leftPanelVisible.value = false;
+      // 保存当前大小以便恢复
+      lastLeftPanelSize.value = leftPanelSize.value;
+      rightPanelSize.value = 100;
+      return;
+    }
+    
+    // 检查右侧面板是否应该隐藏（拖拽到最右侧）
+    if (panes[1].size <= 0.1 && rightPanelVisible.value) {
+      rightPanelVisible.value = false;
+      // 保存当前大小以便恢复
+      lastRightPanelSize.value = rightPanelSize.value;
+      leftPanelSize.value = 100;
+      return;
+    }
+    
+    // 如果左侧面板之前被隐藏，现在变大了，应该重新显示
+    if (!leftPanelVisible.value && panes[0].size > 0.1) {
+      leftPanelVisible.value = true;
+      leftPanelSize.value = lastLeftPanelSize.value;
+      rightPanelSize.value = 100 - leftPanelSize.value;
+      return;
+    }
+    
+    // 如果右侧面板之前被隐藏，现在变大了，应该重新显示
+    if (!rightPanelVisible.value && panes[1].size > 0.1) {
+      rightPanelVisible.value = true;
+      rightPanelSize.value = lastRightPanelSize.value;
+      leftPanelSize.value = 100 - rightPanelSize.value;
+      return;
+    }
+    
+    // 更新面板大小
     leftPanelSize.value = panes[0].size;
     rightPanelSize.value = panes[1].size;
   }
+};
+
+// 重置分隔条到居中位置
+const resetSplitPanelsToCenter = () => {
+  // 设置面板大小为居中
+  leftPanelSize.value = 50;
+  rightPanelSize.value = 50;
+  
+  // 保存当前大小以便后续使用
+  lastLeftPanelSize.value = 50;
+  lastRightPanelSize.value = 50;
+  // 显示两个面板
+  leftPanelVisible.value = true;
+  rightPanelVisible.value = true;
 };
 
 // 在脚本部分添加新方法
@@ -1838,4 +1918,32 @@ const getRowClassName = (record) => {
  :deep(.blue-row) {
   background-color: #e6f7ff !important;
 }
+
+  :deep(.splitpanes__splitter) {
+    background-color: #e8e8e8;
+    position: relative;
+  }
+  
+  :deep(.splitpanes__splitter):before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #1890ff;
+    transition: all 0.3s ease;
+  }
+  
+  :deep(.splitpanes--vertical > .splitpanes__splitter):before {
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    margin-left: -2px;
+  }
+  
+  :deep(.splitpanes__splitter:hover):before {
+    background-color: #40a9ff;
+    width: 6px;
+    margin-left: -3px;
+  }
 </style>
