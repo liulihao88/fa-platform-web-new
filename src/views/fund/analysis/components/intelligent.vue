@@ -606,6 +606,9 @@
       <template v-else-if="column.key === 'transAmt'">
         {{ record.transAmt?.toLocaleString() }}
       </template>
+      <template v-else-if="column.key === 'operation'">
+        <a-button type="link" @click="showDetailModal(record)">查看原信息</a-button>
+      </template>
     </template>
   </BasicTable>
 
@@ -630,6 +633,94 @@
         </a-row>
       </div>
     </a-card>
+  </BasicModal>
+
+  <!-- 查看原信息Modal -->
+  <BasicModal
+    v-model:visible="detailModalVisible"
+    title="查看原信息"
+    width="1200px"
+    useWrapper="true"
+    :footer="null"
+    @cancel="closeDetailModal"
+  >
+    <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
+      <!-- 银行客户信息 -->
+      <a-tab-pane key="bankCustomer" tab="银行客户信息">
+        <BasicTable
+          :columns="bankCustomerColumns"
+          :dataSource="bankCustomerDataSource"
+          :loading="bankCustomerLoading"
+          :pagination="bankCustomerPagination"
+          bordered
+          size="small"
+          :scroll="{ x: 1500, y: 400 }"
+          @change="handleBankCustomerTableChange"
+          :canColDrag="true"
+          :showTableSetting="true"
+          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
+          :canResize="true"
+          :minHeight="300"
+        />
+      </a-tab-pane>
+
+      <!-- 银行交易流水 -->
+      <a-tab-pane key="bankTransaction" tab="银行交易流水">
+        <BasicTable
+          :columns="bankTransactionColumns"
+          :dataSource="bankTransactionDataSource"
+          :loading="bankTransactionLoading"
+          :pagination="bankTransactionPagination"
+          bordered
+          size="small"
+          :scroll="{ x: 1500, y: 400 }"
+          @change="handleBankTransactionTableChange"
+          :canColDrag="true"
+          :showTableSetting="true"
+          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
+          :canResize="true"
+          :minHeight="300"
+        />
+      </a-tab-pane>
+
+      <!-- 非银行客户信息 -->
+      <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
+        <BasicTable
+          :columns="nonBankCustomerColumns"
+          :dataSource="nonBankCustomerDataSource"
+          :loading="nonBankCustomerLoading"
+          :pagination="nonBankCustomerPagination"
+          bordered
+          size="small"
+          :scroll="{ x: 1500, y: 400 }"
+          @change="handleNonBankCustomerTableChange"
+          :canColDrag="true"
+          :showTableSetting="true"
+          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
+          :canResize="true"
+          :minHeight="300"
+        />
+      </a-tab-pane>
+
+      <!-- 非银行交易流水 -->
+      <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
+        <BasicTable
+          :columns="nonBankTransactionColumns"
+          :dataSource="nonBankTransactionDataSource"
+          :loading="nonBankTransactionLoading"
+          :pagination="nonBankTransactionPagination"
+          bordered
+          size="small"
+          :scroll="{ x: 1500, y: 400 }"
+          @change="handleNonBankTransactionTableChange"
+          :canColDrag="true"
+          :showTableSetting="true"
+          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
+          :canResize="true"
+          :minHeight="300"
+        />
+      </a-tab-pane>
+    </a-tabs>
   </BasicModal>
 </template>
 
@@ -656,6 +747,11 @@ import {
   fileContextInfo,
   searchConditionListApi,
   saveQueryConditionApi,
+  // 添加查看原信息相关API
+  standardCustomerApi,
+  standardTransApi,
+  standardNonBankCustomerApi,
+  standardNonBankTransApi
 } from './../user.api'
 
 // ts语法
@@ -671,6 +767,63 @@ const router = useRouter();
 const { query } = useRoute();
 const archiveModalVisible = ref(false);
 const archiveModalPreviewData = ref('');
+
+// 查看原信息相关状态
+const detailModalVisible = ref(false);
+const activeTab = ref('bankCustomer');
+const currentRecord = ref<any>(null);
+
+// 银行客户信息表格状态
+const bankCustomerDataSource = ref([]);
+const bankCustomerLoading = ref(false);
+const bankCustomerPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number) => `共 ${total} 条记录`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+// 银行交易流水表格状态
+const bankTransactionDataSource = ref([]);
+const bankTransactionLoading = ref(false);
+const bankTransactionPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number) => `共 ${total} 条记录`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+// 非银行客户信息表格状态
+const nonBankCustomerDataSource = ref([]);
+const nonBankCustomerLoading = ref(false);
+const nonBankCustomerPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number) => `共 ${total} 条记录`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
+// 非银行交易流水表格状态
+const nonBankTransactionDataSource = ref([]);
+const nonBankTransactionLoading = ref(false);
+const nonBankTransactionPagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number) => `共 ${total} 条记录`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 行选择配置 - 增加全选功能
 const rowSelection = computed(() => {
@@ -825,6 +978,137 @@ const columns = [
     align: 'center' as const,
     resizable: true
   },
+  {
+    title: '操作',
+    key: 'operation',
+    align: 'center' as const,
+    width: 100,
+    fixed: 'right' as const
+  }
+];
+
+// 银行客户信息列配置
+const bankCustomerColumns = [
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '归属银行', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true },
+  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+];
+
+// 银行交易流列配置
+const bankTransactionColumns = [
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
+  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true },
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true },
+  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true },
+  { title: '对方机构', dataIndex: 'counterOrgName', width: 100, resizable: true },
+  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100, resizable: true },
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true },
+  { title: '对方户名', dataIndex: 'counterName', width: 100, resizable: true },
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+];
+
+// 非银行客户信息列配置
+const nonBankCustomerColumns = [
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '是否商户', dataIndex: 'isMerchant', width: 100, resizable: true },
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true },
+  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
+  { title: '结算银行', dataIndex: 'settlementOrg', width: 100, resizable: true },
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true },
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
+  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+];
+
+// 非银行交易流列配置
+const nonBankTransactionColumns = [
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true },
+  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
+  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
+  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true },
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true },
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true },
+  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true },
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true },
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '交易卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '卡类型', dataIndex: 'cardType', width: 100, resizable: true },
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
+  { title: '创建日期', dataIndex: 'createTime', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true },
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
+  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
 const dataSource = ref([]);
@@ -1491,6 +1775,218 @@ const sendArchive = () => {
   } else {
     message.error('复制失败！');
   }
+};
+
+// 显示查看原信息弹窗
+const showDetailModal = (record) => {
+  currentRecord.value = record;
+  detailModalVisible.value = true;
+  // 默认加载第一个页签数据
+  loadTabData('bankCustomer');
+};
+
+// 关闭查看原信息弹窗
+const closeDetailModal = () => {
+  detailModalVisible.value = false;
+  // 重置所有分页
+  resetAllPagination();
+  // 清空所有数据
+  bankCustomerDataSource.value = [];
+  bankTransactionDataSource.value = [];
+  nonBankCustomerDataSource.value = [];
+  nonBankTransactionDataSource.value = [];
+};
+
+// 重置所有分页参数
+const resetAllPagination = () => {
+  bankCustomerPagination.current = 1;
+  bankCustomerPagination.total = 0;
+  bankTransactionPagination.current = 1;
+  bankTransactionPagination.total = 0;
+  nonBankCustomerPagination.current = 1;
+  nonBankCustomerPagination.total = 0;
+  nonBankTransactionPagination.current = 1;
+  nonBankTransactionPagination.total = 0;
+};
+
+// 选项卡切换处理
+const handleTabChange = (key) => {
+  loadTabData(key);
+};
+
+// 加载选项卡数据
+const loadTabData = async (tabKey) => {
+  if (!currentRecord.value) return;
+
+  try {
+    let response;
+    const params: any = {
+      filePageId: currentRecord.value.caseFilePageId,
+      pageNo: 1,
+      pageSize: 10
+    };
+
+    switch (tabKey) {
+      case 'bankCustomer':
+        // 银行客户信息需要客户号查询条件
+        if (!currentRecord.value.customerName) {
+          message.warning('客户号为空，数据不完整');
+          return;
+        }
+        params.customerCd = currentRecord.value.customerName;
+        bankCustomerLoading.value = true;
+        response = await standardCustomerApi(params);
+        bankCustomerDataSource.value = response.records || [];
+        bankCustomerPagination.total = response.total || 0;
+        break;
+
+      case 'bankTransaction':
+        // 银行交易流水需要交易账号查询条件
+        if (!currentRecord.value.transAccountNo) {
+          message.warning('交易账号为空，数据不完整');
+          return;
+        }
+        params.transAccoutNo = currentRecord.value.transAccountNo;
+        bankTransactionLoading.value = true;
+        response = await standardTransApi(params);
+        bankTransactionDataSource.value = response.records || [];
+        bankTransactionPagination.total = response.total || 0;
+        break;
+
+      case 'nonBankCustomer':
+        // 非银行客户信息需要客户号查询条件
+        if (!currentRecord.value.customerName) {
+          message.warning('客户号为空，数据不完整');
+          return;
+        }
+        params.customerCd = currentRecord.value.customerName;
+        nonBankCustomerLoading.value = true;
+        response = await standardNonBankCustomerApi(params);
+        nonBankCustomerDataSource.value = response.records || [];
+        nonBankCustomerPagination.total = response.total || 0;
+        break;
+
+      case 'nonBankTransaction':
+        // 非银行交易流水需要交易账号查询条件
+        if (!currentRecord.value.transAccountNo) {
+          message.warning('交易账号为空，数据不完整');
+          return;
+        }
+        params.transAccoutNo = currentRecord.value.transAccountNo;
+        nonBankTransactionLoading.value = true;
+        response = await standardNonBankTransApi(params);
+        nonBankTransactionDataSource.value = response.records || [];
+        nonBankTransactionPagination.total = response.total || 0;
+        break;
+    }
+  } catch (error) {
+    console.error(`加载${tabKey}数据失败:`, error);
+    message.error(`加载数据失败`);
+  } finally {
+    // 根据tabKey关闭对应的loading状态
+    switch (tabKey) {
+      case 'bankCustomer':
+        bankCustomerLoading.value = false;
+        break;
+      case 'bankTransaction':
+        bankTransactionLoading.value = false;
+        break;
+      case 'nonBankCustomer':
+        nonBankCustomerLoading.value = false;
+        break;
+      case 'nonBankTransaction':
+        nonBankTransactionLoading.value = false;
+        break;
+    }
+  }
+};
+
+// 银行客户信息表格分页变化处理
+const handleBankCustomerTableChange = (pagination) => {
+  bankCustomerPagination.current = pagination.current;
+  bankCustomerPagination.pageSize = pagination.pageSize;
+  
+  // 重新加载数据
+  const params = {
+    caseId: query.caseId,
+    customerCd: currentRecord.value?.customerName,
+    pageNo: bankCustomerPagination.current,
+    pageSize: bankCustomerPagination.pageSize
+  };
+  
+  standardCustomerApi(params).then(response => {
+    bankCustomerDataSource.value = response.records || [];
+    bankCustomerPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载银行客户信息失败:', error);
+    message.error('加载数据失败');
+  });
+};
+
+// 银行交易流水分页变化处理
+const handleBankTransactionTableChange = (pagination) => {
+  bankTransactionPagination.current = pagination.current;
+  bankTransactionPagination.pageSize = pagination.pageSize;
+  
+  // 重新加载数据
+  const params = {
+    caseId: query.caseId,
+    transAccoutNo: currentRecord.value?.transAccountNo,
+    pageNo: bankTransactionPagination.current,
+    pageSize: bankTransactionPagination.pageSize
+  };
+  
+  standardTransApi(params).then(response => {
+    bankTransactionDataSource.value = response.records || [];
+    bankTransactionPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载银行交易流水失败:', error);
+    message.error('加载数据失败');
+  });
+};
+
+// 非银行客户信息表格分页变化处理
+const handleNonBankCustomerTableChange = (pagination) => {
+  nonBankCustomerPagination.current = pagination.current;
+  nonBankCustomerPagination.pageSize = pagination.pageSize;
+  
+  // 重新加载数据
+  const params = {
+    caseId: query.caseId,
+    customerCd: currentRecord.value?.customerName,
+    pageNo: nonBankCustomerPagination.current,
+    pageSize: nonBankCustomerPagination.pageSize
+  };
+  
+  standardNonBankCustomerApi(params).then(response => {
+    nonBankCustomerDataSource.value = response.records || [];
+    nonBankCustomerPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载非银行客户信息失败:', error);
+    message.error('加载数据失败');
+  });
+};
+
+// 非银行交易流水分页变化处理
+const handleNonBankTransactionTableChange = (pagination) => {
+  nonBankTransactionPagination.current = pagination.current;
+  nonBankTransactionPagination.pageSize = pagination.pageSize;
+  
+  // 重新加载数据
+  const params = {
+    caseId: query.caseId,
+    transAccoutNo: currentRecord.value?.transAccountNo,
+    pageNo: nonBankTransactionPagination.current,
+    pageSize: nonBankTransactionPagination.pageSize
+  };
+  
+  standardNonBankTransApi(params).then(response => {
+    nonBankTransactionDataSource.value = response.records || [];
+    nonBankTransactionPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载非银行交易流水失败:', error);
+    message.error('加载数据失败');
+  });
 };
 
 // 页面初始化
