@@ -119,6 +119,7 @@
       wrap-class-name="full-modal"
       @ok="closeEditModal"
       @cancel="closeEditModal"
+      :defaultFullscreen="true"
       :footer="null"
   >
     <div>
@@ -439,6 +440,7 @@
       :useWrapper="true"
       :maskClosable="false"
       :footer="null"
+      :defaultFullscreen="true"
       wrap-class-name="full-modal"
   >
     <a-card>
