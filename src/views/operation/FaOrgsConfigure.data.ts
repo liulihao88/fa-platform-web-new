@@ -8,36 +8,43 @@ export const columns: BasicColumn[] = [
    {
     title: '机构编码',
     align:"center",
+    resizable: true,
     dataIndex: 'orgCd'
    },
    {
     title: '名称',
     align:"center",
+    resizable: true,
     dataIndex: 'orgName'
    },
    {
     title: '简称',
     align:"center",
+    resizable: true,
     dataIndex: 'names'
    },
    {
     title: '别名',
     align:"center",
+    resizable: true,
     dataIndex: 'alias'
    },
    {
     title: '注释',
     align:"center",
+    resizable: true,
     dataIndex: 'commonts'
    },
    {
     title: '种类',
     align:"center",
+    resizable: true,
     dataIndex: 'orgType'
    },
    {
     title: '启用标志',
     align:"center",
+    resizable: true,
     dataIndex: 'ifToUse'
    },
 ];

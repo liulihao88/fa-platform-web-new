@@ -31,15 +31,21 @@
     </a-form>
 
     <!-- 表格部分 -->
-    <a-table
+    <BasicTable 
         class="m2"
         :columns="columns"
-        :data-source="dataSource"
+        :dataSource="dataSource"
         :loading="tableLoading"
         :pagination="pagination"
         bordered
         size="small"
         @change="handleTableChange"
+        :canColDrag="true"
+        :showTableSetting="true"
+        :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'file-config-table' }"
+        :canResize="true"
+        :minHeight="300"
+        @register="registerTable"
     >
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'index'">
@@ -72,7 +78,7 @@
           </div>
         </template>
       </template>
-    </a-table>
+    </BasicTable>
 
     <!-- 添加/修改抽屉 -->
     <a-drawer
@@ -215,6 +221,8 @@ import { message, Modal } from 'ant-design-vue';
 import type { FormInstance } from 'ant-design-vue';
 import { configFileListApi, updateConfigFileApi, addConfigFileApi } from '../FaFilesConfigure.api';
 import {useRoute} from "vue-router";
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
+
 const {query} = useRoute();
 
 
@@ -313,52 +321,82 @@ const formRules = {
   alias: [{ required: true, message: '请输入别名', trigger: 'blur' }]
 };
 
-const columns = ref([
+const columns = [
   {
     title: '序号',
     key: 'index',
+    resizable: true,
   },
   {
     title: '标准数据',
     dataIndex: 'metaData',
+    resizable: true,
   },
   {
     title: '数据类型',
     dataIndex: 'dataType',
+    resizable: true,
   },
   {
     title: '特定类型',
     dataIndex: 'isSpecialModel',
+    resizable: true,
   },
   {
     title: '特定银行',
     dataIndex: 'isSpecialOrg',
+    resizable: true,
   },
   {
     title: '特定文件',
     dataIndex: 'isSpecialFile',
+    resizable: true,
   },
   {
     title: '字段名称',
     dataIndex: 'dataNameEng',
+    resizable: true,
   },
   {
     title: '启用标志',
     dataIndex: 'ifToUse',
+    resizable: true,
   },
   {
     title: '别名',
     dataIndex: 'alias',
     width: 250,
+    resizable: true,
   },
   {
     title: '操作',
     key: 'operation',
     fixed: 'right',
+    resizable: true,
   }
-]);
+];
 
 const dataSource = ref<RecordItem[]>([]);
+
+const [registerTable] = useTable({
+  columns,
+  dataSource,
+  loading: tableLoading,
+  pagination,
+  bordered: true,
+  size: 'small',
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'file-config-table'
+  }
+});
 
 // 页面初始化时调用接口
 onMounted(() => {
@@ -556,45 +594,3 @@ const handleSubmit = async () => {
   }
 };
 </script>
-
-<style scoped>
-.search-form {
-  margin-bottom: 16px;
-  padding: 16px;
-  background: #fafafa;
-  border-radius: 4px;
-}
-
-.ml1 {
-  margin-left: 8px;
-}
-
-.ml2 {
-  margin-left: 16px;
-}
-
-.mr2 {
-  margin-right: 16px;
-}
-
-.m2 {
-  margin: 16px 0;
-}
-
-.table-operations {
-  display: flex;
-  gap: 8px;
-}
-
-.drawer-footer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid #e9e9e9;
-  padding: 10px 16px;
-  background: #fff;
-  text-align: right;
-  z-index: 1;
-}
-</style>

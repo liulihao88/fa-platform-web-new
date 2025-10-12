@@ -65,41 +65,50 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <a-table
-      class="m2"
-      :columns="columns"
-      :data-source="dataSource"
-      :scroll="{ x: 1500 }"
-      :loading="tableLoading"
-      bordered
-      size="small"
+  <BasicTable 
+    class="m2" 
+    :columns="columns" 
+    :dataSource="dataSource" 
+    :loading="tableLoading"
+    :scroll="{ x: 1500 }"
+    :pagination="false"
+    :bordered="true"
+    size="small"
+    :canColDrag="true"
+    :showTableSetting="true"
+    :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
+    :showActionColumn="true"
+    :canResize="true"
+    :minHeight="300"
+    @register="registerTable"
   >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
       </template>
-      <template v-if="column.dataIndex === 'status'">
+      <template v-else-if="column.dataIndex === 'status'">
         <a-tag :color="getStatusColor(record.status)">
           {{ getStatusText(record.status) }}
         </a-tag>
       </template>
-      <template v-if="column.dataIndex === 'organization'">
+      <template v-else-if="column.dataIndex === 'organization'">
         {{ record.organization || '--' }}
       </template>
-      <template v-if="column.dataIndex === 'returnInfo'">
+      <template v-else-if="column.dataIndex === 'returnInfo'">
         {{ record.returnInfo || '--' }}
       </template>
-      <template v-if="column.dataIndex === 'successTime'">
+      <template v-else-if="column.dataIndex === 'successTime'">
         {{ record.successTime || '--' }}
       </template>
-      <template v-if="column.key === 'operation'">
+      <template v-else-if="column.key === 'operation'">
         <div class="table-operations">
           <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
       </template>
     </template>
-  </a-table>
+  </BasicTable>
+
   <!-- 编辑文件的Modal弹框 -->
   <BasicModal
       v-model:visible="editModalVisible"
@@ -200,59 +209,101 @@
                     <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
-                        <a-table
+                        <BasicTable
                             :columns="bankCustomerColumns"
-                            :data-source="activeSheetData.bankCustomers"
                             :pagination="bankCustomerPagination"
                             size="small"
-                            bordered
+                            :bordered="true"
                             :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleBankCustomerTableChange"
-                        />
+                            :canColDrag="true"
+                            :showTableSetting="true"
+                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
+                            :canResize="true"
+                            :minHeight="300"
+                            @register="registerBankCustomerTable"
+                        >
+                          <template #bodyCell="{ column, record }">
+                            <template v-if="column.key === 'action'">
+                              <TableAction :actions="getTableAction(record)" />
+                            </template>
+                          </template>
+                        </BasicTable>
                       </a-tab-pane>
 
                       <!-- 银行交易流水表格 -->
                       <a-tab-pane key="bankTransaction" tab="银行交易流水">
-                        <a-table
+                        <BasicTable
                             :columns="bankTransactionColumns"
-                            :data-source="activeSheetData.bankTransactions"
                             :pagination="bankTransactionPagination"
                             size="small"
-                            bordered
+                            :bordered="true"
                             :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleBankTransactionTableChange"
                             style="margin-bottom: 16px;"
-                        />
+                            :canColDrag="true"
+                            :showTableSetting="true"
+                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-transaction-table' }"
+                            :canResize="true"
+                            :minHeight="300"
+                            @register="registerBankTransactionTable"
+                        >
+                          <template #bodyCell="{ column, record }">
+                            <template v-if="column.key === 'action'">
+                              <TableAction :actions="getTableAction(record)" />
+                            </template>
+                          </template>
+                        </BasicTable>
                       </a-tab-pane>
 
                       <!-- 非银行客户信息表格 -->
                       <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
-                        <a-table
+                        <BasicTable
                             :columns="nonBankCustomerColumns"
-                            :data-source="activeSheetData.notBankCustomers"
                             :pagination="nonBankCustomerPagination"
                             size="small"
-                            bordered
+                            :bordered="true"
                             :scroll="{ x: 1500, y: 500 }"
                             :loading="tableLoading"
                             @change="handleNonBankCustomerTableChange"
                             style="margin-bottom: 16px;"
-                        />
+                            :canColDrag="true"
+                            :showTableSetting="true"
+                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
+                            :canResize="true"
+                            @register="registerNonBankCustomerTable"
+                        >
+                          <template #bodyCell="{ column, record }">
+                            <template v-if="column.key === 'action'">
+                              <TableAction :actions="getTableAction(record)" />
+                            </template>
+                          </template>
+                        </BasicTable>
                       </a-tab-pane>
 
                       <!-- 非银行交易流水表格 -->
                       <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
-                        <a-table
+                        <BasicTable
                             :columns="nonBankTransactionColumns"
-                            :data-source="activeSheetData.notBankTransactions"
                             :pagination="nonBankTransactionPagination"
                             :scroll="{ x: 1500, y: 500 }"
-                            bordered
+                            :bordered="true"
                             :loading="tableLoading"
                             @change="handleNonBankTransactionTableChange"
-                        />
+                            :canColDrag="true"
+                            :showTableSetting="true"
+                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
+                            :canResize="true"
+                            @register="registerNonBankTransactionTable"
+                        >
+                          <template #bodyCell="{ column, record }">
+                            <template v-if="column.key === 'action'">
+                              <TableAction :actions="getTableAction(record)" />
+                            </template>
+                          </template>
+                        </BasicTable>
                       </a-tab-pane>
                     </a-tabs>
                   </a-card>
@@ -461,10 +512,19 @@ import {
 import { useRoute } from 'vue-router';
 import {useRouter} from "vue-router";
 import {BasicModal, useModalInner} from '/@/components/Modal';
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
+
 const router = useRouter();
+interface ConvertFileItem {
+  id: string;
+  fileName: string;
+  value: string;
+  label: string;
+}
+
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
-  filteredFiles: Array<{value: string, label: string}>;
+  filteredFiles: ConvertFileItem[];
 }
 // CSV表头
 const csvHeaders = computed(() => {
@@ -558,15 +618,39 @@ const fileStreamInfo = ref<any>();
 const supportedTypes = ['pdf', 'csv', 'xls', 'xlsm', 'xlsx']
 const currentFileType = ref('');
 const csvContent = ref('')
-const csvData = ref([])
+const csvData = ref<any[]>([]);
+
+// 解析CSV数据
+const parseCSV = (csvText: string): any[][] => {
+  // 处理可能存在的BOM标记
+  if (typeof csvText === 'string' && csvText.charCodeAt(0) === 0xFEFF) {
+    csvText = csvText.slice(1);
+  }
+  
+  const lines = csvText.split('\n');
+  const result: any[][] = [];
+  console.info('lines', lines)
+  lines.forEach(line => {
+    if (line.trim() !== '') {
+      // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
+      const cells = line.split(',').map(cell => {
+        // 去除可能存在的引号
+        return cell.trim().replace(/^"(.*)"$/, '$1');
+      });
+      result.push(cells);
+    }
+  });
+  console.info('result', result)
+  return result;
+};
 const vueExcelOptions =ref({
   transformImage:true,
   xls:true
 })
-const currentRecord = ref(null);
+const currentRecord = ref<any>(null);
 const convertModalVisible = ref(false);
-const convertFileList = ref([]);
-const selectedConvertFile = ref(null);
+const convertFileList = ref<ConvertFileItem[]>([]);
+const selectedConvertFile = ref<ConvertFileItem | null>(null);
 const convertFormRef = ref();
 const convertFormState = ref({
   fileName: '', // 保留原文件名
@@ -587,7 +671,20 @@ const convertFormState = ref({
 const bankEfit = ref(false);
 const selectedBank = ref('');
 const activeSheet = ref('');
-const activeSheetData = ref({
+interface SheetData {
+  pageId: string;
+  pageName: string;
+
+}
+
+interface ActiveSheetData {
+  bankCustomers: any[];
+  bankTransactions: any[];
+  notBankCustomers: any[];
+  notBankTransactions: any[];
+}
+
+const activeSheetData = ref<ActiveSheetData>({
   bankCustomers:[],
   bankTransactions:[],
   notBankCustomers:[],
@@ -596,128 +693,138 @@ const activeSheetData = ref({
 
 // 表格列定义
 const bankCustomerColumns = ref([
-  { title: '行号', dataIndex: 'rowNum', width: 100},
-  { title: '归属银行', dataIndex: 'orgCd', width: 100},
-  { title: '客户号', dataIndex: 'customerId', width: 100},
-  { title: '客户种类', dataIndex: 'customerType', width: 100},
-  { title: '客户名称', dataIndex: 'customerName', width: 100},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
-  { title: '证件种类', dataIndex: 'idType', width: 100},
-  { title: '证件号码', dataIndex: 'idNum', width: 100},
-  { title: '币种', dataIndex: 'currNo', width: 100},
-  { title: '账号', dataIndex: 'accountNum', width: 100},
-  { title: '卡号', dataIndex: 'cardNum', width: 100},
-  { title: '状态', dataIndex: 'customerStatus', width: 100},
-  { title: '开户日期', dataIndex: 'openDate', width: 100},
-  { title: '余额', dataIndex: 'balence', width: 100},
-  { title: '账户类型', dataIndex: 'accountType', width: 100},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100},
-  { title: '备注', dataIndex: 'comment', width: 100}
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '归属银行', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true},
+  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ]);
 
 const bankTransactionColumns = ref([
-  { title: '行号', dataIndex: 'rowNum', width: 100},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100},
-  { title: '账号', dataIndex: 'accountNum', width: 100},
-  { title: '卡号', dataIndex: 'cardNum', width: 100},
-  { title: '流水号', dataIndex: 'transNo', width: 100},
-  { title: '交易渠道', dataIndex: 'channel', width: 100},
-  { title: '币种', dataIndex: 'currNo', width: 100},
-  { title: '交易方向', dataIndex: 'transWay', width: 100},
-  { title: '交易金额', dataIndex: 'transAmt', width: 100},
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100},
-  { title: '余额', dataIndex: 'balence', width: 100},
-  { title: '交易种类', dataIndex: 'transType', width: 100},
-  { title: '业务日期', dataIndex: 'bizDate', width: 100},
-  { title: '交易时间', dataIndex: 'transTime', width: 100},
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100},
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100},
-  { title: '交易状态', dataIndex: 'status', width: 100},
-  { title: '对方机构', dataIndex: 'counterOrgName', width: 100},
-  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100},
-  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100},
-  { title: '对方户名', dataIndex: 'counterName', width: 100},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100},
-  { title: '户名', dataIndex: 'customerName', width: 100},
-  { title: '备注', dataIndex: 'comment', width: 100},
-  { title: '客户种类', dataIndex: 'customerType', width: 100},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
-  { title: '证件种类', dataIndex: 'idType', width: 100},
-  { title: '证件号码', dataIndex: 'idNum', width: 100},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100}
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
+  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true},
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true},
+  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true},
+  { title: '对方机构', dataIndex: 'counterOrgName', width: 100, resizable: true},
+  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100, resizable: true},
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true},
+  { title: '对方户名', dataIndex: 'counterName', width: 100, resizable: true},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true}
 ]);
 
 // 表格列定义
 const nonBankCustomerColumns = ref([
-  { title: '行号', dataIndex: 'rowNum', width: 100},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100},
-  { title: '客户号', dataIndex: 'customerId', width: 100},
-  { title: '客户种类', dataIndex: 'customerType', width: 100},
-  { title: '客户名称', dataIndex: 'customerName', width: 100},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
-  { title: '证件种类', dataIndex: 'idType', width: 100},
-  { title: '证件号码', dataIndex: 'idNum', width: 100},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100},
-  { title: '是否商户', dataIndex: 'isMerchant', width: 100},
-  { title: '商户号', dataIndex: 'merchantId', width: 100},
-  { title: '终端号', dataIndex: 'portId', width: 100},
-  { title: '结算银行', dataIndex: 'settlementOrg', width: 100},
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100},
-  { title: '币种', dataIndex: 'currNo', width: 100},
-  { title: '状态', dataIndex: 'customerStatus', width: 100},
-  { title: '账户类型', dataIndex: 'accountType', width: 100},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100},
-  { title: '开户日期', dataIndex: 'openDate', width: 100},
-  { title: '备注', dataIndex: 'comment', width: 100},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100}
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '是否商户', dataIndex: 'isMerchant', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '结算银行', dataIndex: 'settlementOrg', width: 100, resizable: true},
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true},
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
+  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true}
 ]);
 
 
 const nonBankTransactionColumns = ref([
-  { title: '行号', dataIndex: 'rowNum', width: 100},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100},
-  { title: '商户号', dataIndex: 'merchantId', width: 100},
-  { title: '终端号', dataIndex: 'portId', width: 100},
-  { title: '订单号', dataIndex: 'orderNo', width: 100},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100},
-  { title: '商品名称', dataIndex: 'productName', width: 100},
-  { title: '流水号', dataIndex: 'transNo', width: 100},
-  { title: '币种', dataIndex: 'currNo', width: 100},
-  { title: '交易方向', dataIndex: 'transWay', width: 100},
-  { title: '交易金额', dataIndex: 'transAmt', width: 100},
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100},
-  { title: '交易种类', dataIndex: 'transType', width: 100},
-  { title: '业务日期', dataIndex: 'bizDate', width: 100},
-  { title: '交易时间', dataIndex: 'transTime', width: 100},
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100},
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100},
-  { title: '交易状态', dataIndex: 'status', width: 100},
-  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100},
-  { title: '户名', dataIndex: 'customerName', width: 100},
-  { title: '交易卡号', dataIndex: 'cardNum', width: 100},
-  { title: '卡类型', dataIndex: 'cardType', width: 100},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100},
-  { title: '创建日期', dataIndex: 'createTime', width: 100},
-  { title: '客户号', dataIndex: 'customerId', width: 100},
-  { title: '备注', dataIndex: 'comment', width: 100},
-  { title: '客户种类', dataIndex: 'customerType', width: 100},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100},
-  { title: '证件种类', dataIndex: 'idType', width: 100},
-  { title: '证件号码', dataIndex: 'idNum', width: 100},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100},
-  { title: '结算行', dataIndex: 'settlementOrg', width: 100},
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100}
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true},
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
+  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true},
+  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true},
+  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true},
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '交易卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '卡类型', dataIndex: 'cardType', width: 100, resizable: true},
+  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
+  { title: '创建日期', dataIndex: 'createTime', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true},
+  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true}
 ]);
 
 
 //const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
 //const nonBankTransactionColumns = ref([...bankTransactionColumns.value]);
 
-let currentFile = reactive({
+interface CurrentFile {
+  id?: string;
+  fileName: string;
+  fileAddress: string;
+  filePages: SheetData[];
+  organization: string;
+  organizationCode: string;
+
+}
+
+let currentFile = reactive<CurrentFile>({
   fileName: '',
   fileAddress: '',
   filePages: [],
@@ -726,62 +833,179 @@ let currentFile = reactive({
 });
 // 上传Modal相关状态
 const uploadModalVisible = ref(false);
-const fileList = ref([]);
+const fileList = ref<any[]>([]);
 const uploading = ref(false);
 const tableLoading = ref(false);
 const searchLoading = ref(false);
-
 
 const columns = ref([
   {
     title: '序号',
     key: 'index',
+    dataIndex: 'index',
     width: 80,
+    resizable: true
   },
   {
     title: '源文件',
     dataIndex: 'sourceFile',
     width: 200,
+    resizable: true
   },
   {
     title: '文件夹',
     dataIndex: 'folder',
     key: 'folder',
     width: 150,
+    resizable: true
   },
   {
     title: '状态',
     dataIndex: 'status',
     width: 100,
+    resizable: true
   },
   {
     title: '所属机构',
     dataIndex: 'organization',
     width: 80,
+    resizable: true
   },
   {
     title: '返回信息',
     dataIndex: 'returnInfo',
     width: 150,
+    resizable: true
   },
   {
     title: '上传时间',
     dataIndex: 'uploadTime',
     width: 150,
+    resizable: true
   },
   {
     title: '成功时间',
     dataIndex: 'successTime',
     width: 150,
+    resizable: true
   },
   {
     title: '操作',
     key: 'operation',
-    fixed: 'right',
+    dataIndex: 'operation',
+    fixed: 'right' as const,
     width: 180,
+    ifShow: true, // 确保操作列始终显示
+    resizable: true
   }
 ]);
-const dataSource = ref([])
+const dataSource = ref([]);
+
+const [registerTable] = useTable({
+  columns: columns.value,
+  dataSource: dataSource,
+  loading: tableLoading,
+  pagination: false,
+  bordered: true,
+  size: 'small',
+  scroll: { x: 1500 },
+  canColDrag: true,
+  showTableSetting: true,
+  showActionColumn: true,
+  canResize: true,
+  // 添加最小高度确保表格在全屏时正确显示
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-main-table'
+  }
+});
+
+const [registerBankCustomerTable] = useTable({
+  columns: bankCustomerColumns.value,
+  dataSource: computed(() => activeSheetData.value.bankCustomers),
+  loading: tableLoading,
+  pagination: bankCustomerPagination,
+  bordered: true,
+  size: 'small',
+  scroll: { x: 1500, y: 500 },
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-bank-customer-table'
+  }
+});
+
+const [registerBankTransactionTable] = useTable({
+  columns: bankTransactionColumns.value,
+  dataSource: computed(() => activeSheetData.value.bankTransactions),
+  loading: tableLoading,
+  pagination: bankTransactionPagination,
+  bordered: true,
+  size: 'small',
+  scroll: { x: 1500, y: 500 },
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-bank-transaction-table'
+  }
+});
+
+const [registerNonBankCustomerTable] = useTable({
+  columns: nonBankCustomerColumns.value,
+  dataSource: computed(() => activeSheetData.value.notBankCustomers),
+  loading: tableLoading,
+  pagination: nonBankCustomerPagination,
+  bordered: true,
+  size: 'small',
+  scroll: { x: 1500, y: 500 },
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-non-bank-customer-table'
+  }
+});
+
+const [registerNonBankTransactionTable] = useTable({
+  columns: nonBankTransactionColumns.value,
+  dataSource: computed(() => activeSheetData.value.notBankTransactions),
+  loading: tableLoading,
+  pagination: nonBankTransactionPagination,
+  bordered: true,
+  scroll: { x: 1500, y: 500 },
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-non-bank-transaction-table'
+  }
+});
 
 // 页面初始化时调用接口
 onMounted(() => {
@@ -830,8 +1054,9 @@ const fetchFileList = async () => {
     };
 
     const response = await caseFileListApi(params);
-    dataSource.value = response;
+    dataSource.value = response || [];
   } catch (error) {
+    dataSource.value = [];
   } finally {
     tableLoading.value = false;
     searchLoading.value = false;
@@ -1126,10 +1351,11 @@ const editFile = async (record) => {
   if (supportedTypes.includes(currentFileType.value)) {
     previewFile(record)
   } else {
-    message.error(`不支持的文件类型: ${fileType.value}`)
+    message.error(`不支持的文件类型: ${fileType}`)
+    return; // 如果文件类型不支持，直接返回，不显示Modal
   }
 
-  currentFile = convertInfo || {};
+  Object.assign(currentFile, convertInfo || {});
   if(convertInfo.organizationCode){
     selectedBank.value = convertInfo.organizationCode
   }
@@ -1158,29 +1384,7 @@ const cleanupUrl = () => {
     fileStreamInfo.value = ''
   }
 }
-// 解析CSV数据
-const parseCSV = (csvText) => {
-  // 处理可能存在的BOM标记
-  if (typeof csvText === 'string' && csvText.charCodeAt(0) === 0xFEFF) {
-    csvText = csvText.slice(1);
-  }
-  
-  const lines = csvText.split('\n');
-  const result = [];
-  console.info('lines', lines)
-  lines.forEach(line => {
-    if (line.trim() !== '') {
-      // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
-      const cells = line.split(',').map(cell => {
-        // 去除可能存在的引号
-        return cell.trim().replace(/^"(.*)"$/, '$1');
-      });
-      result.push(cells);
-    }
-  });
-  console.info('result', result)
-  return result;
-};
+
 // 预览文件excel或者pdf或者csv文件
 const previewFile = (record)=>{
   const  responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer'
@@ -1240,7 +1444,7 @@ const closeEditModal = () => {
   editModalVisible.value = false;
   isFullscreen.value = false;
   // 重置Modal样式
-  const modalElement = document.querySelector('.full-modal .ant-modal');
+  const modalElement = document.querySelector('.full-modal .ant-modal') as HTMLElement | null;
   if (modalElement) {
     modalElement.style.width = '100%';
     modalElement.style.height = 'auto';
@@ -1311,14 +1515,14 @@ const handleConvertConfirm = async () => {
   try {
     const {dataOrg} = convertFormState.value
     const params = {
-      fileId: selectedConvertFile.value.id,
+      fileId: selectedConvertFile.value?.id,
       caseId: query.caseId,
       organizationCode:dataOrg
     };
 
     // 修改文件所属机构
     await updateFileOrg(params);
-    getFileConvertInfo(selectedConvertFile.value.id)
+    getFileConvertInfo(selectedConvertFile.value?.id)
 /*    // 关闭模态框并刷新列表
     convertModalVisible.value = false;
     fetchFileList();*/
@@ -1392,6 +1596,17 @@ const onExcelError = (error) => {
   console.error('Excel渲染错误:', error);
 };
 
+// 新增：获取表格数据的方法
+const getTableAction = (record) => {
+  return [
+    {
+      label: '操作',
+      onClick: () => {
+        // 可以在这里添加具体的操作
+      },
+    },
+  ];
+};
 
 </script>
 

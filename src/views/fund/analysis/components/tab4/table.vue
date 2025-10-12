@@ -7,15 +7,19 @@
       </a-col>
     </a-row>
   </a-card>
-  <a-table
+  <BasicTable
       :columns="columns"
-      :data-source="repeatedFileList"
+      :dataSource="repeatedFileList"
       :pagination="false"
       bordered
       size="small"
       :loading="tableLoading"
-      :row-selection="rowSelection"
+      :rowSelection="rowSelection"
       rowKey="id"
+      :canResize="true"
+      :showTableSetting="true"
+      :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab4-repeated-files' }"
+      @register="registerTable"
   >
     <template #bodyCell="{ column, record }">
       <template v-if="column.key === 'file1Name'">
@@ -44,7 +48,7 @@
         <div class="other-info">{{ record.file2.file2OtherInfo }}</div>
       </template>
     </template>
-  </a-table>
+  </BasicTable>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -54,11 +58,35 @@ import { useMethods } from '/@/hooks/system/useMethods';
 const { handleExportXls } = useMethods();
 import { useRoute } from "vue-router";
 import {exportDataApi, repeatFileTableApi} from "@/views/fund/analysis/user.api";
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
 
 const { query } = useRoute();
 
+interface File1 {
+  file1Name: string;
+  file1Amount: string;
+  file1OtherInfo: string;
+  file1LineNumber: string;
+  [key: string]: any;
+}
+
+interface File2 {
+  file2Name: string;
+  file2Amount: string;
+  file2OtherInfo: string;
+  file2LineNumber: string;
+  [key: string]: any;
+}
+
+interface RepeatedFileItem {
+  id: string;
+  file1: File1;
+  file2: File2;
+  [key: string]: any;
+}
+
 const tableLoading = ref(false);
-const repeatedFileList = reactive([]);
+const repeatedFileList = ref<RepeatedFileItem[]>([]);
 const selectedRowKeys = ref<string[]>([]);
 
 const columns = [
@@ -69,25 +97,29 @@ const columns = [
             title: '文件名称',
             dataIndex: 'file1Name',
             key: 'file1Name',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '行号',
             dataIndex: 'file1LineNumber',
             key: 'file1LineNumber',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '发生金额',
             dataIndex: 'file1Amount',
             key: 'file1Amount',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '其他信息',
             dataIndex: 'file1OtherInfo',
             key: 'file1OtherInfo',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           }
         ]
       },
@@ -98,29 +130,51 @@ const columns = [
             title: '文件名称',
             dataIndex: 'file2Name',
             key: 'file2Name',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '行号',
             dataIndex: 'file2LineNumber',
             key: 'file2LineNumber',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '发生金额',
             dataIndex: 'file2Amount',
             key: 'file2Amount',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           },
           {
             title: '其他信息',
             dataIndex: 'file2OtherInfo',
             key: 'file2OtherInfo',
-            className: 'sub-column'
+            className: 'sub-column',
+            resizable: true
           }
         ]
       }
 ];
+
+const [registerTable] = useTable({
+  columns: columns,
+  dataSource: repeatedFileList.value,
+  loading: tableLoading,
+  pagination: false,
+  bordered: true,
+  size: 'small',
+  canResize: true,
+  showTableSetting: true,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-tab4-repeated-files'
+  }
+});
 
 // 配置行选择器
 const rowSelection = computed(() => {
@@ -134,7 +188,7 @@ const rowSelection = computed(() => {
         key: 'all',
         text: '选择全部',
         onSelect: () => {
-          selectedRowKeys.value = repeatedFileList.map(item => item.id);
+          selectedRowKeys.value = repeatedFileList.value.map(item => item.id);
         },
       },
       {
@@ -160,7 +214,7 @@ const fetchRepeatedFileList = async () => {
       caseId: query.caseId,
     };
     const response = await repeatFileTableApi(params);
-    Object.assign(repeatedFileList, response||[]);
+    repeatedFileList.value = response || [];
   } catch (error) {
   } finally {
     tableLoading.value = false;

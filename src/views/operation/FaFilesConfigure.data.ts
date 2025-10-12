@@ -9,6 +9,7 @@ export const columns: BasicColumn[] = [
     title: '序号',
     key: 'index',
     width: 80,
+    resizable: true,
     customRender: ({ record,index }) => {
       return index+1
     },
@@ -17,22 +18,26 @@ export const columns: BasicColumn[] = [
     title: '案件名称',
     dataIndex: 'caseName',
     width: 200,
+    resizable: true,
   },
   {
     title: '源文件',
     dataIndex: 'sourceFile',
     width: 200,
+    resizable: true,
   },
   {
     title: '文件夹',
     dataIndex: 'folder',
     key: 'folder',
     width: 150,
+    resizable: true,
   },
   {
     title: '状态',
     dataIndex: 'status',
     width: 100,
+    resizable: true,
     customRender: ({ text }) => {
       return render.renderDict(text, 'fa_file_process_status');
     },
@@ -41,6 +46,7 @@ export const columns: BasicColumn[] = [
     title: '所属机构',
     dataIndex: 'organization',
     width: 80,
+    resizable: true,
     customRender: ({ record }) => {
       return record.organization || '--'
     },
@@ -49,6 +55,7 @@ export const columns: BasicColumn[] = [
     title: '返回信息',
     dataIndex: 'returnInfo',
     width: 150,
+    resizable: true,
     customRender: ({ record }) => {
       return record.returnInfo || '--'
     },
@@ -57,11 +64,13 @@ export const columns: BasicColumn[] = [
     title: '上传时间',
     dataIndex: 'uploadTime',
     width: 150,
+    resizable: true,
   },
   {
     title: '成功时间',
     dataIndex: 'successTime',
     width: 150,
+    resizable: true,
     customRender: ({ record }) => {
       return record.successTime || '--'
     },

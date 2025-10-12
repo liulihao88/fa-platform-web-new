@@ -12,15 +12,21 @@
     </a-row>
 
     <!-- 表格部分 -->
-    <a-table
+    <BasicTable 
         class="m2"
         :columns="columns"
-        :data-source="dataSource"
+        :dataSource="dataSource"
         :loading="tableLoading"
         :pagination="pagination"
         bordered
         size="small"
         @change="handleTableChange"
+        :canColDrag="true"
+        :showTableSetting="true"
+        :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'error-handler-table' }"
+        :canResize="true"
+        :minHeight="300"
+        @register="registerTable"
     >
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'index'">
@@ -45,7 +51,7 @@
           </div>
         </template>
       </template>
-    </a-table>
+    </BasicTable>
   </a-card>
 </template>
 
@@ -54,6 +60,7 @@ import { ref, reactive, onMounted, defineProps } from 'vue';
 import { message, Modal } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
 import { errorHandlerListApi, errorHandlerConfirmApi,fileDetailApi } from '../FaFilesConfigure.api';
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
 
 interface Props {
   fileProcessOptions: Array<{ value: string; label: string }>;
@@ -88,6 +95,11 @@ interface Pagination {
   pageSizeOptions: string[];
 }
 
+interface FileInfo {
+  caseName: string;
+  fileName: string;
+}
+
 const props = defineProps<Props>();
 const { query } = useRoute();
 const router = useRouter();
@@ -105,50 +117,78 @@ const pagination = reactive<Pagination>({
 
 const tableLoading = ref(false);
 const searchLoading = ref(false);
-const fileInfo = ref({
-  caseName:'',
-  fileName:''
+const fileInfo = ref<FileInfo>({
+  caseName: '',
+  fileName: ''
 });
-const columns = ref([
+
+const columns = [
   {
     title: '序号',
     key: 'index',
     width: 80,
+    resizable: true,
   },
   {
     title: '错误种类',
     dataIndex: 'errorType',
     width: 120,
+    resizable: true,
   },
   {
     title: '错误内容',
     dataIndex: 'errorContent',
     width: 200,
+    resizable: true,
   },
   {
     title: '处理状态',
     dataIndex: 'ifProcessed',
     width: 100,
+    resizable: true,
   },
   {
     title: '处理时间',
     dataIndex: 'procDate',
     width: 150,
+    resizable: true,
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     width: 150,
+    resizable: true,
   },
   {
     title: '操作',
     key: 'operation',
-    fixed: 'right',
+    fixed: 'right' as const,
     width: 180,
+    resizable: true,
   }
-]);
+];
 
 const dataSource = ref<ErrorRecord[]>([]);
+
+const [registerTable] = useTable({
+  columns,
+  dataSource,
+  loading: tableLoading,
+  pagination,
+  bordered: true,
+  size: 'small',
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'error-handler-table'
+  }
+});
 
 // 页面初始化时调用接口
 onMounted(() => {
@@ -166,9 +206,15 @@ const fetchErrorFileInfo = async () => {
     const response = await fileDetailApi(params);
 
     if (response) {
-      fileInfo.value = response||{}
+      fileInfo.value = response || {
+        caseName: '',
+        fileName: ''
+      };
     } else {
-      fileInfo.value ={}
+      fileInfo.value = {
+        caseName: '',
+        fileName: ''
+      };
     }
   } catch (error) {
 
@@ -274,26 +320,3 @@ const handleProcess = (record: ErrorRecord) => {
   router.push({ path: '/operation/configfile', query: {errorId:record.id} })
 };
 </script>
-
-<style scoped>
-.search-buttons {
-  margin-bottom: 16px;
-}
-
-.ml1 {
-  margin-left: 8px;
-}
-
-.ml2 {
-  margin-left: 16px;
-}
-
-.m2 {
-  margin: 16px 0;
-}
-
-.table-operations {
-  display: flex;
-  gap: 8px;
-}
-</style>

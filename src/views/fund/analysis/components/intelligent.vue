@@ -581,17 +581,23 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <a-table
-      class="m2"
-      :columns="columns"
-      :data-source="dataSource"
-      :scroll="{ x: 2000 }"
+  <BasicTable 
+      class="m2" 
+      :columns="columns" 
+      :dataSource="dataSource" 
       :loading="tableLoading"
+      :scroll="{ x: 2000 }"
       :row-selection="rowSelection"
       :pagination="pagination"
       bordered
       @change="handleTableChange"
       rowKey="id"
+      :canColDrag="true"
+      :showTableSetting="true"
+      :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-intelligent-table' }"
+      :canResize="true"
+      :minHeight="300"
+      @register="registerTable"
   >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
@@ -601,10 +607,10 @@
         {{ record.transAmt?.toLocaleString() }}
       </template>
     </template>
-  </a-table>
+  </BasicTable>
 
   <!-- 卷宗信息预览Modal -->
-  <a-modal
+  <BasicModal
       v-model:visible="archiveModalVisible"
       title="卷宗信息预览"
       width="1200px"
@@ -624,7 +630,7 @@
         </a-row>
       </div>
     </a-card>
-  </a-modal>
+  </BasicModal>
 </template>
 
 <script lang="ts" name="intelligent" setup>
@@ -658,6 +664,8 @@ import { useRouter } from "vue-router";
 import {useMethods} from "@/hooks/system/useMethods";
 import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
 import { copyTextToClipboard } from '@/hooks/web/useCopyToClipboard';
+import {BasicModal, useModalInner} from '/@/components/Modal';
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
 const { handleExportXls } = useMethods();
 const router = useRouter();
 const { query } = useRoute();
@@ -668,9 +676,9 @@ const archiveModalPreviewData = ref('');
 const rowSelection = computed(() => {
   return {
     selectedRowKeys: selectedRowKeys.value,
-    onChange: (selectedKeys: string[], selectedRows: any[]) => {
-      selectedRowKeys.value = selectedKeys;
-      selectedRows.value = selectedRows;
+    onChange: (selectedKeys: (string | number)[], selectedRows: any[]) => {
+      selectedRowKeys.value = selectedKeys as string[];
+      selectedRowsData.value = selectedRows;
     },
     onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
       if (selected) {
@@ -692,7 +700,7 @@ const searchLoading = ref(false);
 
 // 选中的行数据
 const selectedRowKeys = ref<string[]>([]);
-const selectedRows = ref<any[]>([]);
+const selectedRowsData = ref<any[]>([]);
 // 新增状态管理
 const saveMode = ref(false);
 const conditionName = ref('');
@@ -711,100 +719,137 @@ const pagination = reactive({
 });
 
 // 表格列配置
-const columns = ref([
+const columns = [
   {
     title: '发起行',
     dataIndex: 'orgCd',
     key: 'orgCd',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '户名',
     dataIndex: 'customerName',
     key: 'customerName',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '账号/卡号',
     dataIndex: 'transAccountNo',
     key: 'transAccountNo',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '流水号',
     dataIndex: 'transNo',
     key: 'transNo',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '交易渠道',
     dataIndex: 'channel',
     key: 'channel',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '币种',
     dataIndex: 'currNo',
     key: 'currNo',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '交易方向',
     dataIndex: 'transWay',
     key: 'transWay',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '交易金额',
     dataIndex: 'transAmt',
     key: 'transAmt',
-    align: 'right'
+    align: 'right' as const,
+    resizable: true
   },
   {
     title: '交易种类',
     dataIndex: 'transType',
     key: 'transType',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '业务日期',
     dataIndex: 'bizDate',
     key: 'bizDate',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '交易时间',
     dataIndex: 'transTime',
     key: 'transTime',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
   {
     title: '对方开户银行',
     dataIndex: 'counterOrgName',
     key: 'counterOrgName',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '对方户名',
     dataIndex: 'counterName',
     key: 'counterName',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '对方账号/卡号',
     dataIndex: 'counterAccountNo',
     key: 'counterAccountNo',
-    ellipsis: true
+    ellipsis: true,
+    resizable: true
   },
   {
     title: '交易状态',
     dataIndex: 'status',
     key: 'status',
-    align: 'center'
+    align: 'center' as const,
+    resizable: true
   },
-]);
+];
 
 const dataSource = ref([]);
+
+const [registerTable] = useTable({
+  columns,
+  dataSource,
+  loading: tableLoading,
+  pagination,
+  bordered: true,
+  size: 'small',
+  scroll: { x: 2000 },
+  rowSelection,
+  canColDrag: true,
+  showTableSetting: true,
+  canResize: true,
+  minHeight: 300,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-intelligent-table'
+  }
+});
 
 // 动态查询组件相关逻辑
 // 关系枚举
@@ -978,7 +1023,7 @@ const addSameLevelCondition = (parentId: string | null, level: number) => {
               items: []
             }];
           }
-          if (item.groups.length > 0) {
+          if (item.groups && item.groups.length > 0) {
             const lastGroup = item.groups[item.groups.length - 1];
             if (lastGroup.items.length >= 10) {
               message.warning('最多只能添加10个同级条件');
@@ -1150,8 +1195,9 @@ const removeCondition = (conditionId: string) => {
         items.splice(i, 1);
         return true;
       }
-      if (items[i].groups && items[i].groups.length > 0) {
-        for (const group of items[i].groups) {
+      // 添加类型检查以避免"对象可能为未定义"的错误
+      if (items[i].groups && items[i].groups!.length > 0) {
+        for (const group of items[i].groups!) {
           const found = findAndRemove(group.items);
           if (found) return true;
         }
@@ -1160,7 +1206,9 @@ const removeCondition = (conditionId: string) => {
     return false;
   };
 
-  findAndRemove(rootGroups.value.items || []);
+  if (rootGroups.value.items) {
+    findAndRemove(rootGroups.value.items);
+  }
 };
 
 // 重置条件
@@ -1168,6 +1216,7 @@ const resetConditions = () => {
   rootGroups.value = {
     operate: 'and',
     items: [{
+      id: generateId(),
       condition: '',
       field: '',
       value: '',
@@ -1382,7 +1431,7 @@ const resetSearch = () => {
     formRef.value.resetFields();
   }
   selectedRowKeys.value = [];
-  selectedRows.value = [];
+  selectedRowsData.value = [];
   pagination.current = 1;
   fetchIntelligentList();
 };
@@ -1456,213 +1505,213 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.m2 {
-  margin: 16px 0;
-}
+  .m2 {
+    margin: 16px 0;
+  }
 
-/* 动态查询组件样式 */
-.dynamic-query {
-  width: 100%;
-}
+  /* 动态查询组件样式 */
+  .dynamic-query {
+    width: 100%;
+  }
 
-.query-actions {
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+  .query-actions {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-.add-root-btn {
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  border: none;
-  border-radius: 6px;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
-}
+  .add-root-btn {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(24, 144, 255, 0.2);
+  }
 
-.add-root-btn:hover {
-  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
-  transform: translateY(-1px);
-}
+  .add-root-btn:hover {
+    box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
+    transform: translateY(-1px);
+  }
 
-.action-btn {
-  border-radius: 6px;
-  font-weight: 500;
-}
+  .action-btn {
+    border-radius: 6px;
+    font-weight: 500;
+  }
 
-.search-btn {
-  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
-  border: none;
-  box-shadow: 0 2px 4px rgba(82, 196, 26, 0.2);
-}
+  .search-btn {
+    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+    border: none;
+    box-shadow: 0 2px 4px rgba(82, 196, 26, 0.2);
+  }
 
-.search-btn:hover {
-  box-shadow: 0 4px 8px rgba(82, 196, 26, 0.3);
-  transform: translateY(-1px);
-}
+  .search-btn:hover {
+    box-shadow: 0 4px 8px rgba(82, 196, 26, 0.3);
+    transform: translateY(-1px);
+  }
 
-.conditions-container {
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
+  .conditions-container {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
 
-.conditions-header {
-  display: flex;
-  background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
-  border-bottom: 1px solid #e8e8e8;
-  font-weight: 600;
-}
+  .conditions-header {
+    display: flex;
+    background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+    border-bottom: 1px solid #e8e8e8;
+    font-weight: 600;
+  }
 
-.header-item {
-  flex: 1;
-  padding: 12px 16px;
-  text-align: center;
-  border-right: 1px solid #e8e8e8;
-  color: #262626;
-}
+  .header-item {
+    flex: 1;
+    padding: 12px 16px;
+    text-align: center;
+    border-right: 1px solid #e8e8e8;
+    color: #262626;
+  }
 
-.header-item:last-child {
-  border-right: none;
-  flex: 1.2;
-}
+  .header-item:last-child {
+    border-right: none;
+    flex: 1.2;
+  }
 
-.conditions-body {
-  background-color: #fff;
-}
+  .conditions-body {
+    background-color: #fff;
+  }
 
-.empty-state {
-  padding: 40px 0;
-  text-align: center;
-}
+  .empty-state {
+    padding: 40px 0;
+    text-align: center;
+  }
 
-.condition-group {
-  border-bottom: 1px solid #f0f0f0;
-}
+  .condition-group {
+    border-bottom: 1px solid #f0f0f0;
+  }
 
-.condition-group:last-child {
-  border-bottom: none;
-}
+  .condition-group:last-child {
+    border-bottom: none;
+  }
 
-.condition-row {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  transition: background-color 0.2s;
-}
+  .condition-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    transition: background-color 0.2s;
+  }
 
-.condition-row:hover {
-  background-color: #fafafa;
-}
+  .condition-row:hover {
+    background-color: #fafafa;
+  }
 
-.condition-cell {
-  flex: 1;
-  padding: 0 8px;
-  border-right: 1px solid #f0f0f0;
-}
+  .condition-cell {
+    flex: 1;
+    padding: 0 8px;
+    border-right: 1px solid #f0f0f0;
+  }
 
-.condition-cell:last-child {
-  border-right: none;
-  flex: 1.2;
-}
+  .condition-cell:last-child {
+    border-right: none;
+    flex: 1.2;
+  }
 
-.level-cell {
-  flex: 0.5;
-  text-align: center;
-  font-weight: 500;
-}
+  .level-cell {
+    flex: 0.5;
+    text-align: center;
+    font-weight: 500;
+  }
 
-.level-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
-  border-radius: 4px;
-  font-size: 12px;
-  color: #595959;
-  border: 1px solid #d9d9d9;
-}
+  .level-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #595959;
+    border: 1px solid #d9d9d9;
+  }
 
-.actions-cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
+  .actions-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
 
-.add-same-btn, .add-sub-btn, .add-condition-btn {
-  color: #1890ff;
-  font-size: 12px;
-  padding: 0 4px;
-  height: auto;
-}
+  .add-same-btn, .add-sub-btn, .add-condition-btn {
+    color: #1890ff;
+    font-size: 12px;
+    padding: 0 4px;
+    height: auto;
+  }
 
-.add-same-btn:hover, .add-sub-btn:hover, .add-condition-btn:hover {
-  color: #40a9ff;
-  background: rgba(24, 144, 255, 0.05);
-}
+  .add-same-btn:hover, .add-sub-btn:hover, .add-condition-btn:hover {
+    color: #40a9ff;
+    background: rgba(24, 144, 255, 0.05);
+  }
 
-.delete-btn {
-  font-size: 12px;
-  padding: 0 4px;
-  height: auto;
-}
+  .delete-btn {
+    font-size: 12px;
+    padding: 0 4px;
+    height: auto;
+  }
 
-.delete-btn:hover {
-  background: rgba(255, 77, 79, 0.05);
-}
+  .delete-btn:hover {
+    background: rgba(255, 77, 79, 0.05);
+  }
 
-/* 子组样式 */
-.sub-group-wrapper {
-  margin-left: 32px;
-  border-left: 2px solid #e8f4fd;
-  padding-left: 12px;
-  position: relative;
-}
+  /* 子组样式 */
+  .sub-group-wrapper {
+    margin-left: 32px;
+    border-left: 2px solid #e8f4fd;
+    padding-left: 12px;
+    position: relative;
+  }
 
-.sub-group-wrapper::before {
-  content: '';
-  position: absolute;
-  left: -2px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(to bottom, #e8f4fd, #bae7ff);
-}
+  .sub-group-wrapper::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #e8f4fd, #bae7ff);
+  }
 
-/* 确保子组中的按钮样式正确应用 */
-.sub-group-wrapper .add-same-btn,
-.sub-group-wrapper .add-sub-btn,
-.sub-group-wrapper .delete-btn {
-  color: #1890ff;
-  font-size: 12px;
-  padding: 0 4px;
-  height: auto;
-}
+  /* 确保子组中的按钮样式正确应用 */
+  .sub-group-wrapper .add-same-btn,
+  .sub-group-wrapper .add-sub-btn,
+  .sub-group-wrapper .delete-btn {
+    color: #1890ff;
+    font-size: 12px;
+    padding: 0 4px;
+    height: auto;
+  }
 
-.sub-group-wrapper .add-same-btn:hover,
-.sub-group-wrapper .add-sub-btn:hover {
-  color: #40a9ff;
-  background: rgba(24, 144, 255, 0.05);
-}
+  .sub-group-wrapper .add-same-btn:hover,
+  .sub-group-wrapper .add-sub-btn:hover {
+    color: #40a9ff;
+    background: rgba(24, 144, 255, 0.05);
+  }
 
-.sub-group-wrapper .delete-btn:hover {
-  background: rgba(255, 77, 79, 0.05);
-}
+  .sub-group-wrapper .delete-btn:hover {
+    background: rgba(255, 77, 79, 0.05);
+  }
 
-/* 新增样式 */
-.save-condition-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-right: 12px;
-}
+  /* 新增样式 */
+  .save-condition-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+  }
 
-.condition-item-wrapper {
-  border-bottom: 1px solid #f5f5f5;
-}
+  .condition-item-wrapper {
+    border-bottom: 1px solid #f5f5f5;
+  }
 
-.condition-item-wrapper:last-child {
-  border-bottom: none;
-}
+  .condition-item-wrapper:last-child {
+    border-bottom: none;
+  }
 </style>

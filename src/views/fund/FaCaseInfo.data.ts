@@ -6,11 +6,13 @@ export const columns: BasicColumn[] = [
    {
     title: '案件名称',
     align:"center",
-    dataIndex: 'caseCode'
+    dataIndex: 'caseCode',
+     resizable: true
    },
    {
     title: '案由',
     align:"center",
+    resizable: true,
     dataIndex: 'caseReason',
        customRender: ({ text }) => {
            return text ||'--'
@@ -19,6 +21,7 @@ export const columns: BasicColumn[] = [
    {
     title: '部门受案号',
     align:"center",
+    resizable: true,
     dataIndex: 'deptCaseCode',
        customRender: ({ text }) => {
            return text ||'--'
@@ -27,6 +30,7 @@ export const columns: BasicColumn[] = [
   {
     title: '受理时间',
     align:"center",
+    resizable: true,
     dataIndex: 'processDate',
       customRender: ({ text }) => {
           return text ||'--'
@@ -35,6 +39,7 @@ export const columns: BasicColumn[] = [
   {
     title: '文件处理状态',
     align:"center",
+    resizable: true,
     dataIndex: 'processStatus',
     customRender: ({ text }) => {
       return render.renderDict(text, 'fa_case_process_status');
@@ -43,6 +48,7 @@ export const columns: BasicColumn[] = [
    {
     title: '文件数量',
     align:"center",
+    resizable: true,
     dataIndex: 'fileNum',
     customRender: ({ text }) => {
       return text ||'0'
@@ -51,6 +57,7 @@ export const columns: BasicColumn[] = [
    {
     title: '文件导入次数',
     align:"center",
+    resizable: true,
     dataIndex: 'fileImportNum',
        customRender: ({ text }) => {
            return text ||'0'
@@ -59,6 +66,7 @@ export const columns: BasicColumn[] = [
    {
     title: '导入笔数',
     align:"center",
+    resizable: true,
     dataIndex: 'importDataNum',
        customRender: ({ text }) => {
            return text ||'0'
@@ -67,6 +75,7 @@ export const columns: BasicColumn[] = [
    {
     title: '去重笔数',
     align:"center",
+    resizable: true,
     dataIndex: 'repeatDataNum',
        customRender: ({ text }) => {
            return text ||'0'

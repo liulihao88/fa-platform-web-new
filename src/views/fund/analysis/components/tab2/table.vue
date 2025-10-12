@@ -32,7 +32,17 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <a-table :columns="columns" :data-source="dataSource" :loading="tableLoading" bordered size="small">
+  <BasicTable 
+    :columns="columns" 
+    :dataSource="dataSource" 
+    :loading="tableLoading" 
+    bordered 
+    size="small"
+    :canResize="true"
+    :showTableSetting="true"
+    :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-involved-person' }"
+    @register="registerTable"
+  >
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
@@ -55,10 +65,10 @@
         </div>
       </template>
     </template>
-  </a-table>
+  </BasicTable>
 
   <!-- 调整关系弹窗 -->
-  <a-modal v-model:visible="adjustModalVisible" title="调整关系" @ok="handleAdjustOk" :confirm-loading="adjustConfirmLoading">
+  <BasicModal v-model:visible="adjustModalVisible" title="调整关系" @ok="handleAdjustOk" :confirm-loading="adjustConfirmLoading">
     <a-form :model="adjustFormState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-form-item label="关系" required>
         <a-select v-model:value="adjustFormState.involvedKind" placeholder="请选择关系">
@@ -72,14 +82,25 @@
         </a-select>
       </a-form-item>
     </a-form>
-  </a-modal>
+  </BasicModal>
 
   <!-- 查看详情弹窗 -->
-  <a-modal v-model:visible="detailModalVisible" title="涉案人关系" width="800px" :footer="null">
+  <BasicModal v-model:visible="detailModalVisible" title="涉案人关系" width="800px" :footer="null">
     <a-card>
       <h3>涉案人【{{ currentRecord.involvedName }}】相关方关系：</h3>
       <a-button type="primary" class="add-btn" @click="addNewRelation">新增关系</a-button>
-      <a-table :columns="detailColumns" :data-source="detailData" bordered size="small" class="relation-table" :pagination="false">
+      <BasicTable 
+        :columns="detailColumns" 
+        :dataSource="detailData" 
+        bordered 
+        size="small" 
+        class="relation-table" 
+        :pagination="false"
+        :canResize="true"
+        :showTableSetting="true"
+        :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-relation-detail' }"
+        @register="registerDetailTable"
+      >
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'index'">
             {{ index + 1 }}
@@ -140,9 +161,9 @@
             </template>
           </template>
         </template>
-      </a-table>
+      </BasicTable>
     </a-card>
-  </a-modal>
+  </BasicModal>
 
   <!-- 企业详情抽屉 -->
   <a-drawer
@@ -223,12 +244,59 @@ import {
   updateInvolvedPersonApi,
   getCompanyOrPersonDetailApi
 } from "@/views/fund/analysis/user.api";
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
+import {BasicModal, useModalInner} from '/@/components/Modal';
 
 const { query } = useRoute();
 const formState = reactive({
   involvedKind: undefined,
   involvedName: ''
 });
+
+interface InvolvedPerson {
+  id: string;
+  involvedName: string;
+  involvedKind: number;
+  relationCount: number;
+  [key: string]: any;
+}
+
+interface DetailRecord {
+  id: string;
+  relation: number;
+  relatedPersonCode: string;
+  editing: boolean;
+  originalData: any;
+  key: string;
+  index: number;
+  [key: string]: any;
+}
+
+interface RelatedPerson {
+  id: string;
+  customerName: string;
+  [key: string]: any;
+}
+
+interface CompanyDetail {
+  enterpriseLicenseNum: string;
+  enterpriseLegalPersonName: string;
+  idType: string;
+  idNum: string;
+  teleNum: string;
+  relationPersons: any[];
+  accounts: any[];
+  [key: string]: any;
+}
+
+interface PersonDetail {
+  idType: string;
+  idNum: string;
+  teleNum: string;
+  relationPersons: any[];
+  [key: string]: any;
+}
+
 interface Props {
   involvedRelateOptions: Array<{value: string, label: string}>;
   involvedKindOptions: Array<{value: string, label: string}>;
@@ -242,7 +310,8 @@ const searchLoading = ref(false);
 const adjustModalVisible = ref(false);
 const adjustConfirmLoading = ref(false);
 
-const relatedPersonList = ref([]);
+const relatedPersonList = ref<RelatedPerson[]>([]);
+const detailData = ref<DetailRecord[]>([]);
 
 const adjustFormState = reactive({
   id: "",
@@ -253,42 +322,51 @@ const adjustFormState = reactive({
 
 // 查看详情弹窗相关状态
 const detailModalVisible = ref(false);
-const currentRecord = reactive({});
-const detailData = ref([]);
+const currentRecord = reactive<InvolvedPerson>({
+  id: '',
+  involvedName: '',
+  involvedKind: 0,
+  relationCount: 0
+});
 // 添加详情抽屉相关状态
 const companyDrawerVisible = ref(false);
 const personDrawerVisible = ref(false);
-const currentCompanyDetail = ref(null);
-const currentPersonDetail = ref(null);
+const currentCompanyDetail = ref<CompanyDetail | null>(null);
+const currentPersonDetail = ref<PersonDetail | null>(null);
 
 const detailColumns = ref([
   {
     title: '序号',
     key: 'index',
     width: 100,
+    resizable: true
   },
   {
     title: '相关方',
     dataIndex: 'involvedName',
     key: 'involvedName',
     width: 200,
+    resizable: true
   },
   {
     title: '关系',
     dataIndex: 'relation',
     key: 'relation',
     width: 150,
+    resizable: true
   },
   {
     title: '相关方',
     dataIndex: 'relatedPersonCode',
     key: 'relatedPersonCode',
     width: 200,
+    resizable: true
   },
   {
     title: '操作',
     key: 'operation',
     width: 150,
+    resizable: true
   }
 ]);
 
@@ -297,31 +375,70 @@ const columns = ref([
     title: '序号',
     key: 'index',
     width: 80,
+    resizable: true
   },
   {
     title: '涉案人种类',
     dataIndex: 'involvedKind',
     width: 120,
+    resizable: true
   },
   {
     title: '涉案人',
     dataIndex: 'involvedName',
     width: 200,
+    resizable: true
   },
   {
     title: '关系数量',
     dataIndex: 'relationCount',
     key: 'relationCount',
     width: 100,
+    resizable: true
   },
   {
     title: '操作',
     key: 'operation',
     width: 200,
+    resizable: true
   }
 ]);
 
 const dataSource = ref([]);
+
+const [registerTable] = useTable({
+  columns: columns.value,
+  dataSource: dataSource,
+  loading: tableLoading,
+  bordered: true,
+  size: 'small',
+  canResize: true,
+  showTableSetting: true,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-tab2-involved-person'
+  }
+});
+
+const [registerDetailTable] = useTable({
+  columns: detailColumns.value,
+  dataSource: detailData,
+  bordered: true,
+  size: 'small',
+  pagination: false,
+  canResize: true,
+  showTableSetting: true,
+  tableSetting: { 
+    redo: true, 
+    size: true, 
+    setting: true, 
+    fullScreen: true,
+    cacheKey: 'fund-analysis-tab2-relation-detail'
+  }
+});
 
 // 页面初始化时调用接口
 onMounted(() => {
@@ -497,12 +614,13 @@ const deleteRelation = async (record) => {
 };
 
 const addNewRelation = () => {
-  const newRecord = {
+  const newRecord: DetailRecord = {
+    id: `temp-${Date.now()}`,
     key: `temp-${Date.now()}`,
     index: detailData.value.length + 1,
     involvedName: '',
-    relatedPersonCode: undefined,
-    relation: undefined,
+    relatedPersonCode: '',
+    relation: 0,
     editing: true,
     originalData: null
   };

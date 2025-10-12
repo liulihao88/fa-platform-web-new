@@ -191,8 +191,12 @@
       "@vue-office/pdf"
     ],
     "onlyBuiltDependencies": [
+      "@scarf/scarf",
       "@vue-office/excel",
-      "@vue-office/pdf"
+      "@vue-office/pdf",
+      "core-js",
+      "esbuild",
+      "vue-demi"
     ]
   }
 }
