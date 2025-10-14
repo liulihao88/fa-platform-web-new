@@ -365,7 +365,10 @@
       :footer="null"
   >
     <div>
-      <div class="ml4" style="color:red">注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
+      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
+      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上传文件要求：</div>
+      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持RAR，ZIP压缩包</div>
+      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、同一个银行的文件同一个文件夹，文件夹以银行名称命名</div>
       <a-card>
         <a-upload-dragger
             :fileList="fileList"

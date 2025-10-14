@@ -54,14 +54,10 @@
           {{ (pagination.current - 1) * pagination.pageSize + index + 1 }}
         </template>
         <template v-if="column.dataIndex === 'regionFld'">
-          <a-tag :color="getRegionColor(record.regionFld)">
-            {{ getRegionText(record.regionFld) }}
-          </a-tag>
+            {{ record.regionFld }}
         </template>
         <template v-if="column.dataIndex === 'dataFlag'">
-          <a-tag :color="getDataFlagColor(record.dataFlag)">
-            {{ getDataFlagText(record.dataFlag) }}
-          </a-tag>
+            {{ record.dataFlag }}
         </template>
         <template v-if="column.dataIndex === 'ifToUnify'">
           <a-tag :color="record.ifToUnify === 1 ? 'green' : 'red'">
@@ -335,8 +331,24 @@ const columns = [
     resizable: true,
   },
   {
+    title: '别名',
+    dataIndex: 'alias',
+    width: 250,
+    resizable: true,
+  },
+  {
+    title: '数据类别',
+    dataIndex: 'regionFld',
+    resizable: true,
+  },
+  {
     title: '数据类型',
     dataIndex: 'dataType',
+    resizable: true,
+  },
+  {
+    title: '标志位',
+    dataIndex: 'dataFlag',
     resizable: true,
   },
   {
@@ -362,12 +374,6 @@ const columns = [
   {
     title: '启用标志',
     dataIndex: 'ifToUse',
-    resizable: true,
-  },
-  {
-    title: '别名',
-    dataIndex: 'alias',
-    width: 250,
     resizable: true,
   },
   {
