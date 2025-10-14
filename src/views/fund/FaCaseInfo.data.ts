@@ -4,13 +4,13 @@ import { render } from '/@/utils/common/renderUtils';
 //列表数据
 export const columns: BasicColumn[] = [
    {
-    title: '案件名称',
+    title: '上传名称',
     align:"center",
     dataIndex: 'caseCode',
      resizable: true
    },
    {
-    title: '案由',
+    title: '上传说明',
     align:"center",
     resizable: true,
     dataIndex: 'caseReason',
@@ -19,7 +19,7 @@ export const columns: BasicColumn[] = [
        },
    },
    {
-    title: '部门受案号',
+    title: '自编码',
     align:"center",
     resizable: true,
     dataIndex: 'deptCaseCode',
@@ -86,25 +86,25 @@ export const columns: BasicColumn[] = [
 //查询数据
 export const searchFormSchema: FormSchema[] = [
 	{
-      label: "案件名称",
+      label: "上传名称",
       field: 'caseCode',
       component: 'Input',
       //colProps: {span: 6},
  	},
 	{
-      label: "案由",
+      label: "上传说明",
       field: 'caseReason',
       component: 'Input',
       //colProps: {span: 6},
  	},
 	{
-      label: "部门受案号",
+      label: "自编码",
       field: 'deptCaseCode',
       component: 'Input',
       //colProps: {span: 6},
  	},
 	{
-      label: "案件处理状态",
+      label: "上传处理状态",
       field: 'processStatus',
       component: 'JDictSelectTag',
       componentProps: {
@@ -128,17 +128,17 @@ export const searchFormSchema: FormSchema[] = [
 //表单数据
 export const formSchema: FormSchema[] = [
   {
-    label: '案件名称',
+    label: '上传名称',
     field: 'caseCode',
     component: 'Input',
   },
   {
-    label: '案由',
+    label: '上传说明',
     field: 'caseReason',
     component: 'Input',
   },
   {
-    label: '部门受案号',
+    label: '自编码',
     field: 'deptCaseCode',
     component: 'Input',
   },
@@ -162,11 +162,11 @@ export const formSchema: FormSchema[] = [
 
 // 高级查询数据
 export const superQuerySchema = {
-  caseCode: {title: '案件名称',order: 0,view: 'text', type: 'string',},
-  caseReason: {title: '案由',order: 1,view: 'text', type: 'string',},
-  deptCaseCode: {title: '部门受案号',order: 2,view: 'text', type: 'string',},
+  caseCode: {title: '上传名称',order: 0,view: 'text', type: 'string',},
+  caseReason: {title: '上传说明',order: 1,view: 'text', type: 'string',},
+  deptCaseCode: {title: '自编码',order: 2,view: 'text', type: 'string',},
   processDate: {title: '受理时间',order: 8,view: 'datetime', type: 'string',},
-  processStatus: {title: '案件处理状态',order: 4,view: 'text', type: 'string',},
+  processStatus: {title: '上传处理状态',order: 4,view: 'text', type: 'string',},
   fileNum: {title: '文件数量',order: 3,view: 'number', type: 'number',},
   fileImportNum: {title: '文件导入次数',order: 5,view: 'number', type: 'number',},
   importDataNum: {title: '导入笔数',order: 6,view: 'number', type: 'number',},

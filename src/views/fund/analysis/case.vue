@@ -6,15 +6,15 @@
           <!--<h2>{{ caseInfo.caseName }}</h2>-->
           <a-row :gutter="16" class="case-info">
             <a-col :xs="24" :sm="8">
-              <span class="info-label">案件名称:</span>
+              <span class="info-label">上传名称:</span>
               <span class="info-value"><b>{{ caseInfo.caseName }}</b></span>
             </a-col>
             <a-col :xs="24" :sm="8">
-              <span class="info-label">部门受案号:</span>
+              <span class="info-label">自编码:</span>
               <span class="info-value">{{ caseInfo.departmentCaseNumber }}</span>
             </a-col>
             <a-col :xs="24" :sm="8">
-              <span class="info-label">受理日期:</span>
+              <span class="info-label">上传时间:</span>
               <span class="info-value">{{ caseInfo.acceptTime }}</span>
             </a-col>
           </a-row>
@@ -112,7 +112,7 @@ import {ref, onMounted, reactive} from 'vue';
     } catch (error) {
     }
   }
-  // 模拟从服务端获取案件信息的函数
+  // 模拟从服务端获取上传信息的函数
   const fetchCaseInfo = async () => {
     caseDetailApi({caseId: query.caseId}).then((res)=>{
       console.info('111111111111111',res)

@@ -62,7 +62,7 @@ const [registerModal, {openModal}] = useModal();
 //注册table数据
 const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
   tableProps:{
-    title: '案件管理',
+    title: '上传管理',
     api: list,
     columns,
     canResize:true,
@@ -95,7 +95,7 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     },
   },
   exportConfig: {
-    name:"案件管理",
+    name:"上传管理",
     url: getExportUrl,
     params: queryParam,
   },

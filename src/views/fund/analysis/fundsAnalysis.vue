@@ -3,13 +3,13 @@
     <a-card class="case-body">
       <a-row>
         <a-col span="6">
-          案件名称：{{caseInfo.caseName}}
+          上传名称：{{caseInfo.caseName}}
         </a-col>
         <a-col span="6">
-          部门受案号: {{caseInfo.departmentCaseNumber}}
+          自编码: {{caseInfo.departmentCaseNumber}}
         </a-col>
         <a-col span="6">
-          受理日期：{{caseInfo.acceptTime}}
+          上传时间：{{caseInfo.acceptTime}}
         </a-col>
       </a-row>
     </a-card>
@@ -43,7 +43,7 @@ onMounted(() => {
 });
 
 
-// 模拟从服务端获取案件信息的函数
+// 模拟从服务端获取上传信息的函数
 const fetchCaseInfo = async () => {
   caseDetailApi({caseId: query.caseId}).then((res)=>{
       caseInfo.value = res;
