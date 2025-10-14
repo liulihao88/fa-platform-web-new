@@ -1829,11 +1829,11 @@ const loadTabData = async (tabKey) => {
     switch (tabKey) {
       case 'bankCustomer':
         // 银行客户信息需要客户号查询条件
-        if (!currentRecord.value.customerName) {
+        if (!currentRecord.value.customerCd) {
           message.warning('客户号为空，数据不完整');
           return;
         }
-        params.customerCd = currentRecord.value.customerName;
+        params.customerCd = currentRecord.value.customerCd;
         bankCustomerLoading.value = true;
         response = await standardCustomerApi(params);
         bankCustomerDataSource.value = response.records || [];
@@ -1855,11 +1855,11 @@ const loadTabData = async (tabKey) => {
 
       case 'nonBankCustomer':
         // 非银行客户信息需要客户号查询条件
-        if (!currentRecord.value.customerName) {
+        if (!currentRecord.value.customerCd) {
           message.warning('客户号为空，数据不完整');
           return;
         }
-        params.customerCd = currentRecord.value.customerName;
+        params.customerCd = currentRecord.value.customerCd;
         nonBankCustomerLoading.value = true;
         response = await standardNonBankCustomerApi(params);
         nonBankCustomerDataSource.value = response.records || [];
