@@ -45,7 +45,7 @@ export const standardNonBankCustomerApi = (params) => defHttp.post({ url: '/fa/c
 export const standardNonBankTransApi = (params) => defHttp.post({ url: '/fa/caseStandardData/nonBankTransPageList', params });
 
 
-export const repeatFileTableApi = (params) => defHttp.post({ url: '/fa/caseDuplicateData/list', params });
+export const repeatFileTableApi = (params) => defHttp.get({ url: '/fa/caseDuplicateData/list', params });
 export const getCompanyOrPersonDetailApi = (params) => defHttp.post({ url: '/fa/caseInvolved/detail', params });
 export const uploadFileApi = (params, isReturnResponse) => {
     return defHttp.uploadFile({ url: '/fa/casefile/upload' }, params, { isReturnResponse });
