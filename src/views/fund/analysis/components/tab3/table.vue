@@ -1,7 +1,7 @@
 <template>
-  <a-row :gutter="20" class="mt2">
+  <a-row :gutter="24" class="mt2">
     <!-- 左侧文件列表 -->
-    <a-col :span="4">
+    <a-col :span="5">
       <h3>文件列表</h3>
       <div class="file-list">
         <div class="search-box">
@@ -12,9 +12,28 @@
             enter-button
           />
         </div>
+        <div class="pagination-controls">
+          <a-button 
+            :disabled="filePagination.current === 1" 
+            @click="prevPage"
+            size="small"
+          >
+            上一页
+          </a-button>
+          <span class="page-info">
+            第 {{ filePagination.current }} 页，共 {{ filePagination.totalPage }} 页
+          </span>
+          <a-button 
+            :disabled="filePagination.current === filePagination.totalPage" 
+            @click="nextPage"
+            size="small"
+          >
+            下一页
+          </a-button>
+        </div>
         <a-spin :spinning="fileLoading">
           <div
-              v-for="file in props.filteredFiles"
+              v-for="file in filteredFiles"
               :key="file.id"
               :class="['file-item', { active: selectedFileId === file.id }]"
               @click="selectFile(file)"
@@ -42,7 +61,7 @@
       </div>
     </a-col>
     <!-- 右侧数据表格 -->
-    <a-col :span="17">
+    <a-col :span="16">
       <h3>转换数据</h3>
       <div class="sheet-list">
         <a-spin :spinning="tableLoading">
@@ -265,6 +284,7 @@ import { useRoute } from "vue-router";
 import {
   // getAnalyzesultApi,
   standardFileListApi,
+  standardFilePageListApi,
   standardSheetListApi,
   standardCustomerApi,
   standardTransApi,
@@ -309,6 +329,7 @@ const customerData = ref([]);
 const transactionData = ref([]);
 const notBankCustomersData = ref([]);
 const notBankTransactionsData = ref([]);
+const filteredFiles = ref<FileItem[]>([]);
 
 const parseEntityData = ref([]);
 const parseTransData = ref([]);
@@ -327,6 +348,15 @@ const analyzeModalVisible = ref(false);
 //   faStandardTrans: [],
 //   faStandardOrders: []
 // });
+
+// 文件分页配置
+const filePagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  totalPage: 0
+});
+
 // 分页配置
 const customerPagination = reactive({
   current: 1,
@@ -660,7 +690,7 @@ const nonBankTransactionColumns = ref([
 ]);
 
 onMounted(() => {
- // fetchStandardFileList()
+  fetchStandardFileList();
 });
 
 // 获取标准数据查看列表
@@ -669,11 +699,17 @@ const fetchStandardFileList = async () => {
     fileLoading.value = true;
     const params = {
       caseId: query.caseId as string,
-      fileName: searchText.value,
+      fileName: searchText.value || null,
+      pageNo: filePagination.current,
+      pageSize: filePagination.pageSize
     };
-    const response = await standardFileListApi(params);
+    const response = await standardFilePageListApi(params);
+    filteredFiles.value = response.records || [];
+    filePagination.total = response.total || 0;
+    filePagination.totalPage = Math.ceil(filePagination.total / filePagination.pageSize) || 0;
 
   } catch (error) {
+    console.error('获取文件列表失败:', error);
   } finally {
     fileLoading.value = false;
     searchLoading.value = false;
@@ -682,7 +718,24 @@ const fetchStandardFileList = async () => {
 
 // 搜索处理
 const handleSearch = () => {
-  fetchStandardFileList()
+  filePagination.current = 1;
+  fetchStandardFileList();
+};
+
+// 上一页
+const prevPage = () => {
+  if (filePagination.current > 1) {
+    filePagination.current--;
+    fetchStandardFileList();
+  }
+};
+
+// 下一页
+const nextPage = () => {
+  if (filePagination.current < filePagination.totalPage) {
+    filePagination.current++;
+    fetchStandardFileList();
+  }
 };
 
 // 选择文件
@@ -1115,8 +1168,23 @@ const [registerParseOrderTable] = useTable({
 
 <style scoped>
 .search-box {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.pagination-controls .page-info {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
 .file-list, .sheet-list {
   border: 1px solid #e8e8e8;
   border-radius: 6px;
@@ -1125,22 +1193,27 @@ const [registerParseOrderTable] = useTable({
   height: 100%;
   overflow-y: auto;
 }
+
 .file-item, .sheet-item {
   padding: 10px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 .file-item:hover, .sheet-item:hover {
   background-color: #f0f7ff;
 }
+
 .file-item.active, .sheet-item.active {
   background-color: #e6f7ff;
   border-right: 3px solid #1890ff;
 }
+
 .table-section {
   margin-bottom: 24px;
 }
+
 .table-title {
   font-size: 16px;
   font-weight: 600;
@@ -1149,12 +1222,14 @@ const [registerParseOrderTable] = useTable({
   padding-left: 8px;
   border-left: 4px solid #1890ff;
 }
+
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 200px;
 }
+
 .no-data-container {
   display: flex;
   justify-content: center;
@@ -1165,9 +1240,11 @@ const [registerParseOrderTable] = useTable({
 .table-tab :deep(.ant-table-body) {
   height: 462px;
 }
+
 .table-tab :deep(.ant-table-placeholder .ant-table-cell) {
   border: none!important;
 }
+
 .full-modal .ant-modal {
   transition: all 0.3s ease;
 }

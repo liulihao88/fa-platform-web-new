@@ -82,7 +82,7 @@ import {ref, onMounted, reactive} from 'vue';
     if(query.caseId){
       fetchCaseInfo();
     }
-    fetchStandardFileList()
+    //fetchStandardFileList()
     getCommonDictionary('fa_case_process_status').then((res:[])=>{
       stepOptions.value = res
     })

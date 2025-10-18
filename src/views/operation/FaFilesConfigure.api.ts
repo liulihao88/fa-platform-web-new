@@ -1,6 +1,6 @@
 import { defHttp } from '/@/utils/http/axios';
 
-export const list = (params) => defHttp.post({ url:'/fa/casefile/getCaseNameFileList', params });
+export const list = (params) => defHttp.get({ url:'/fa/casefile/getCaseNameFilePageList', params });
 export const fileDetailApi = (params) => defHttp.post({ url:'/fa/casefile/getCaseNameFileById', params });
 
 export const errorHandlerListApi = (params) => defHttp.get({ url:'/fa/faErrorMessage/list', params });

@@ -696,6 +696,10 @@ const getRelatedPersonText = (id) => {
   width: 100%;
 }
 
+.search-card :deep(.ant-card-body){
+  padding-bottom: 0px !important;
+}
+
 .ml1 {
   margin-left: 8px;
 }

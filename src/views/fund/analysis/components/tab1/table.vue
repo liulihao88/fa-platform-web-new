@@ -1,7 +1,7 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
-  <a-card>
+  <a-card class="search-form-card">
     <a-form
         ref="formRef"
         class="search-form"
@@ -64,10 +64,10 @@
   <!-- 表格部分 -->
   <BasicTable
     :columns="columns" 
-    :dataSource="dataSource" 
+    :dataSource="dataSource"
+    :pagination="pagination"
     :loading="tableLoading"
     :scroll="{ x: 1500,y:500 }"
-    :pagination="false"
     :bordered="true"
     size="small"
     :canColDrag="true"
@@ -75,6 +75,7 @@
     :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
     :showActionColumn="true"
     :canResize="true"
+    @change="handleTableChange"
     @register="registerTable"
   >
     <!--插槽:table标题-->
@@ -435,7 +436,7 @@
 
     </div>
   </BasicModal>
-  <!-- 在模板部分添加新的Modal -->
+  <!-- 在模板部分修改文件转换确认的Modal -->
   <BasicModal
       v-model:visible="convertModalVisible"
       title="文件转换确认"
@@ -449,8 +450,27 @@
     <a-card>
       <a-row :gutter="16">
         <!-- 左侧文件列表 -->
-        <a-col span="8">
+        <a-col span="6">
           <a-card title="文件列表" size="small">
+            <div class="pagination-controls">
+              <a-button 
+                :disabled="filePagination.current === 1" 
+                @click="prevPage"
+                size="small"
+              >
+                上一页
+              </a-button>
+              <span class="page-info">
+                第 {{ filePagination.current }} 页，共 {{ filePagination.totalPage }} 页
+              </span>
+              <a-button 
+                :disabled="filePagination.current === filePagination.totalPage" 
+                @click="nextPage"
+                size="small"
+              >
+                下一页
+              </a-button>
+            </div>
             <div class="file-list-container">
               <div
                   v-for="file in convertFileList"
@@ -548,7 +568,9 @@ import {
   standardCustomerApi,
   standardTransApi,
   standardNonBankCustomerApi,
-  standardNonBankTransApi
+  standardNonBankTransApi,
+  caseFilePageListApi,
+  standardFilePageListApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -568,8 +590,16 @@ interface ConvertFileItem {
 
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
-  filteredFiles: ConvertFileItem[];
 }
+
+// 添加文件分页配置
+const filePagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  totalPage: 0
+});
+
 // CSV表头
 const csvHeaders = computed(() => {
   if (csvData.value.length > 0) {
@@ -888,13 +918,6 @@ const searchLoading = ref(false);
 
 const columns = ref([
   {
-    title: '序号',
-    key: 'index',
-    dataIndex: 'index',
-    width: 80,
-    resizable: true
-  },
-  {
     title: '源文件',
     dataIndex: 'sourceFile',
     width: 200,
@@ -949,11 +972,22 @@ const columns = ref([
 ]);
 const dataSource = ref([]);
 
+// 添加分页配置
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+  pageSizeOptions: ['10', '20', '50', '100']
+});
+
 const [registerTable] = useTable({
   columns: columns.value,
   dataSource: dataSource,
   loading: tableLoading,
-  pagination: false,
+  pagination: pagination,
   bordered: true,
   size: 'small',
   scroll: { x: 1500 },
@@ -1057,8 +1091,8 @@ const [registerNonBankTransactionTable] = useTable({
 
 // 页面初始化时调用接口
 onMounted(() => {
+  pagination.current = 1;
   fetchFileList();
-  convertFileList.value = props.filteredFiles
 });
 
 // 修改后的方法
@@ -1098,19 +1132,30 @@ const fetchFileList = async () => {
       caseId: query.caseId,
       folder: formState.folder,
       fileName: formState.fileName,
-      fileStatus: formState.fileStatus
+      fileStatus: formState.fileStatus,
+      pageNo: pagination.current,
+      pageSize: pagination.pageSize
     };
 
-    const response = await caseFileListApi(params);
-    dataSource.value = response || [];
+    const response = await caseFilePageListApi(params);
+    dataSource.value = response.records || [];
+    pagination.total = response.total || 0;
   } catch (error) {
+    console.error('获取文件列表失败:', error);
     dataSource.value = [];
+    pagination.total = 0;
   } finally {
     tableLoading.value = false;
     searchLoading.value = false;
   }
 };
 
+// 添加表格分页变化处理方法
+const handleTableChange = (pag) => {
+  pagination.current = pag.current;
+  pagination.pageSize = pag.pageSize;
+  fetchFileList();
+};
 
 // 修改onFileListUpload方法
 const onFileListUpload = (data) => {
@@ -1151,12 +1196,14 @@ const onFileListUpload = (data) => {
 // 搜索处理
 const onSearch = () => {
   searchLoading.value = true;
+  pagination.current = 1;
   fetchFileList();
 };
 
 // 重置搜索
 const resetSearch = () => {
   formRef.value.resetFields();
+  pagination.current = 1;
   fetchFileList()
 };
 
@@ -1528,6 +1575,8 @@ const closeEditModal = () => {
 const confirmFileConvert = async () => {
   try {
     resetConvertForm();
+    // 获取分页文件列表
+    await fetchConvertFileList();
     // 默认选择第一个文件
     if(convertFileList.value && convertFileList.value.length){
       selectedConvertFile.value = convertFileList.value[0];
@@ -1537,6 +1586,42 @@ const confirmFileConvert = async () => {
     convertModalVisible.value = true;
   } catch (error) {
     message.error('获取文件列表失败');
+  }
+};
+
+// 添加获取转换文件列表的方法（分页）
+const fetchConvertFileList = async () => {
+  try {
+    const params = {
+      caseId: query.caseId,
+      pageNo: filePagination.current,
+      pageSize: filePagination.pageSize
+    };
+    const response = await standardFilePageListApi(params);
+    convertFileList.value = response.records || [];
+    filePagination.total = response.total || 0;
+    filePagination.totalPage = Math.ceil(filePagination.total / filePagination.pageSize) || 0;
+  } catch (error) {
+    console.error('获取文件列表失败:', error);
+    convertFileList.value = [];
+    filePagination.total = 0;
+    filePagination.totalPage = 0;
+  }
+};
+
+// 上一页
+const prevPage = () => {
+  if (filePagination.current > 1) {
+    filePagination.current--;
+    fetchConvertFileList();
+  }
+};
+
+// 下一页
+const nextPage = () => {
+  if (filePagination.current < filePagination.totalPage) {
+    filePagination.current++;
+    fetchConvertFileList();
   }
 };
 
@@ -1776,6 +1861,12 @@ const getRowClassName = (record) => {
 
 <style scoped>
 
+.search-form-card :deep{
+  .ant-card-body :deep{
+    padding-bottom: 0px !important;
+  }
+}
+
 .panel-controls {
   margin-bottom: 16px;
 }
@@ -1828,6 +1919,7 @@ const getRowClassName = (record) => {
   padding: 10px;
   background: #fff;
   height: 100%;
+  max-height: 640px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
@@ -1887,8 +1979,23 @@ const getRowClassName = (record) => {
     background-color: #f0f0f0;
   }
 }
+
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.pagination-controls .page-info {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
 .file-list-container {
-  max-height: 500px;
+  /*max-height: 600px;*/
   overflow-y: auto;
 }
 .file-item {
