@@ -1780,6 +1780,7 @@ const sendArchive = () => {
 // 显示查看原信息弹窗
 const showDetailModal = (record) => {
   currentRecord.value = record;
+  activeTab.value = 'bankCustomer';
   detailModalVisible.value = true;
   // 默认加载第一个页签数据
   loadTabData('bankCustomer');
@@ -1821,6 +1822,7 @@ const loadTabData = async (tabKey) => {
   try {
     let response;
     const params: any = {
+      caseId: query.caseId,
       filePageId: currentRecord.value.caseFilePageId,
       pageNo: 1,
       pageSize: 10
@@ -1847,6 +1849,7 @@ const loadTabData = async (tabKey) => {
           return;
         }
         params.transAccoutNo = currentRecord.value.transAccountNo;
+        params.transNo = currentRecord.value.transNo;
         bankTransactionLoading.value = true;
         response = await standardTransApi(params);
         bankTransactionDataSource.value = response.records || [];
@@ -1873,6 +1876,7 @@ const loadTabData = async (tabKey) => {
           return;
         }
         params.transAccoutNo = currentRecord.value.transAccountNo;
+        params.transNo = currentRecord.value.transNo;
         nonBankTransactionLoading.value = true;
         response = await standardNonBankTransApi(params);
         nonBankTransactionDataSource.value = response.records || [];
@@ -1909,6 +1913,7 @@ const handleBankCustomerTableChange = (pagination) => {
   // 重新加载数据
   const params = {
     caseId: query.caseId,
+    filePageId: currentRecord.value.caseFilePageId,
     customerCd: currentRecord.value?.customerName,
     pageNo: bankCustomerPagination.current,
     pageSize: bankCustomerPagination.pageSize
@@ -1931,7 +1936,9 @@ const handleBankTransactionTableChange = (pagination) => {
   // 重新加载数据
   const params = {
     caseId: query.caseId,
+    filePageId: currentRecord.value.caseFilePageId,
     transAccoutNo: currentRecord.value?.transAccountNo,
+    transNo: currentRecord.value?.transNo,
     pageNo: bankTransactionPagination.current,
     pageSize: bankTransactionPagination.pageSize
   };
@@ -1953,6 +1960,7 @@ const handleNonBankCustomerTableChange = (pagination) => {
   // 重新加载数据
   const params = {
     caseId: query.caseId,
+    filePageId: currentRecord.value.caseFilePageId,
     customerCd: currentRecord.value?.customerName,
     pageNo: nonBankCustomerPagination.current,
     pageSize: nonBankCustomerPagination.pageSize
@@ -1975,7 +1983,9 @@ const handleNonBankTransactionTableChange = (pagination) => {
   // 重新加载数据
   const params = {
     caseId: query.caseId,
+    filePageId: currentRecord.value.caseFilePageId,
     transAccoutNo: currentRecord.value?.transAccountNo,
+    transNo: currentRecord.value?.transNo,
     pageNo: nonBankTransactionPagination.current,
     pageSize: nonBankTransactionPagination.pageSize
   };
