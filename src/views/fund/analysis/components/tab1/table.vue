@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -646,7 +646,7 @@
                     </template>
                     
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
-                      <div v-if="record.type === 'newMetaData'">
+                      <div v-if="record.type === 'newMetaData'" class="config-select-cell">
                         <JSearchSelect
                           :dictOptions="titleConfigOptions"
                           v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
@@ -654,7 +654,6 @@
                           allow-clear
                           style="width: 100%"
                           :disabled="isCurrentSheetConfigured"
-                          
                         />
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
@@ -2260,6 +2259,9 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
       // 设置默认激活的标签页
       if (titleConfigData.value.result.length > 0) {
         titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
+      }else{
+        //如果没有获取到数据，使用模拟数据
+        //mockData();
       }
     } else {
       // 如果没有获取到数据，清空现有数据
@@ -2274,6 +2276,220 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   } finally {
     // 结束加载，设置加载状态为false
     titleConfigLoading.value = false;
+  }
+};
+
+const mockData = () => {
+  // mockData
+  titleConfigData.value = {
+    result: [
+      {
+        dataBlockNum: 1,
+        dataBlockStucts: [
+          {
+            faFileParameter: {
+              id: "1",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "1",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta1",
+              titleColName: "titleCol1",
+              oriMetaData: "",
+            },
+            datas: ["1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3"]
+          },
+          {
+            faFileParameter: {
+              id: "2",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "3",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "4",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          },
+          {
+            faFileParameter: {
+              id: "5",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "1",
+              colSequence: "2",
+              dataRowNum: "1",
+              dataType: "type1",
+              newMetaData: "newMeta2",
+              titleColName: "titleCol2",
+              oriMetaData: "oriMeta2",
+            },
+            datas: ["a", "b", "c"]
+          }
+        ]
+      },
+      {
+        dataBlockNum: 2,
+        dataBlockStucts: [
+          {
+            faFileParameter: {
+              id: "3",
+              caseId: "case1",
+              caseFileId: "file1",
+              caseFilePageId: "page1",
+              dataBlock: "2",
+              colSequence: "1",
+              dataRowNum: "1",
+              dataType: "type2",
+              newMetaData: "newMeta3",
+              titleColName: "titleCol3",
+              oriMetaData: "oriMeta3",
+            },
+            datas: ["x", "y", "z"]
+          }
+        ]
+      }
+    ]
+  };
+  // 设置默认激活的标签页
+  if (titleConfigData.value.result.length > 0) {
+    titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
   }
 };
 
@@ -2323,12 +2539,11 @@ const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
   // 构造表格列
   const columns: any[] = [];
   
-  // 添加配置列（固定列）
+  // 添加配置列（固定列）,fixed: 'left'
   columns.push({
     title: '配置',
     dataIndex: 'config',
-    width: 80,
-    fixed: 'left'
+    width: 80
   });
   
   // 添加数据列
@@ -2570,6 +2785,57 @@ const ASelectOption = Select.Option;
 /* 隐藏标题配置表格的表头（只针对标题配置模态框中的表格） */
 .titleConfigClass .table-tab :deep(.ant-table-thead) {
   display: none;
+}
+
+/* 固定标题配置表格的前两行（配置行和原标题行） */
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n+2)) {
+  position: sticky;
+  top: 0;
+  background-color: #fafafa;
+  z-index: 100;
+  font-weight: bold;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n+3)) {
+  position: sticky;
+  top: 0;
+  background-color: #fafafa;
+  z-index: 100;
+  font-weight: bold;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(2)) {
+  top: 0px; /* 精确计算第一行高度 */
+}
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(3)) {
+  top: 56px; /* 精确计算第一行高度 */
+}
+/* 为数据行添加顶部边框，使其与固定行更好区分 */
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(n+3)) {
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 增加下拉框容器的z-index以确保不会被遮挡 */
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:first-child) {
+  z-index: 102 !important;
+}
+
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(2)) {
+  z-index: 101 !important;
+}
+
+/* 确保下拉选择框展开时不会被其他元素遮挡 */
+.titleConfigClass .table-tab :deep(.ant-select) {
+  position: relative;
+  z-index: 103;
+}
+
+/* 为配置列的单元格添加特殊样式 */
+.config-select-cell {
+  position: relative;
+  z-index: 104;
 }
 
  :deep(.blue-row) {
