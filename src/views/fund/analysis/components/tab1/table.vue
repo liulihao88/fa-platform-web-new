@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -615,24 +615,27 @@
                 <a-table
                   :data-source="getTitleConfigTableData(dataBlock.dataBlockStucts)"
                   :pagination="false"
-                  :scroll="{ y: 400 }"
+                  :scroll="{ y: 400, x: 'max-content' }"
                   size="small"
                   bordered
+                  table-layout="fixed"
+                  :loading="titleConfigLoading"
                 >
                   <a-table-column 
                     title="配置"
                     data-index="config"
-                    :width="150"
+                    :width="80"
+                    :fixed="'left'"
                   >
                     <template #default="{ record }">
                       <div v-if="record.type === 'newMetaData'">
-                        配置列（newMetaData）
+                        配置列
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
-                        原标题（titleColName）
+                        原标题
                       </div>
                       <div v-else-if="record.type === 'datas'">
-                        范例数据（datas）
+                        {{ record.dataIndex !== undefined ? (record.dataIndex + 1) : '' }}
                       </div>
                     </template>
                   </a-table-column>
@@ -642,6 +645,8 @@
                     :key="colIndex"
                     :title="`列${colIndex + 1}`"
                     :data-index="`col${colIndex}`"
+                    :width="180"
+                    :min-width="180"
                   >
                     <template #default="{ record }">
                       <div v-if="record.type === 'newMetaData'">
@@ -653,22 +658,6 @@
                           style="width: 100%"
                           :disabled="isCurrentSheetConfigured"
                         />
-                        <!--<ASelect
-                          v-model:value="struct.faFileParameter.newMetaData" 
-                          size="small"
-                          show-search
-                          placeholder="请选择配置项"
-                          style="width: 100%"
-                          :disabled="isCurrentSheetConfigured"
-                        >
-                          <ASelectOption 
-                            v-for="option in titleConfigOptions" 
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.label }}
-                          </ASelectOption>
-                        </ASelect>-->
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
                         <span :style="{ color: struct.faFileParameter.oriMetaData ? 'inherit' : 'red' }">
@@ -1223,6 +1212,9 @@ const titleConfigData = ref<{
 }>({
   result: []
 });
+
+// 添加标题配置加载状态
+const titleConfigLoading = ref(false);
 
 // 所属银行/支付公司下拉框是否禁用
 const isOrganizationSelectDisabled = ref(false);
@@ -2237,6 +2229,9 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   activeTitleConfigSheet.value = sheet.pageId;
   
   try {
+    // 开始加载，设置加载状态为true
+    titleConfigLoading.value = true;
+    
     // 获取文件配置选项
     const configResponse = await getFileConfigApi({orgCode: orgCode});
     console.log('文件配置选项:', configResponse); // 调试日志
@@ -2256,8 +2251,6 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
 
     console.log('处理后的选项:', titleConfigOptions.value); // 调试日志
     console.log('处理后的选项长度:', titleConfigOptions.value.length); // 调试日志
-
-
 
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
@@ -2294,7 +2287,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
                     titleColName: "titleCol1",
                     oriMetaData: "oriMeta1",
                   },
-                  datas: ["1", "2", "3"]
+                  datas: ["1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3"]
                 },
                 {
                   faFileParameter: {
@@ -2331,6 +2324,102 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
                 {
                   faFileParameter: {
                     id: "4",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
                     caseId: "case1",
                     caseFileId: "file1",
                     caseFilePageId: "page1",
@@ -2400,6 +2489,9 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   } catch (error) {
     console.error('获取标题配置数据失败:', error);
     message.error('获取标题配置数据失败');
+  } finally {
+    // 结束加载，设置加载状态为false
+    titleConfigLoading.value = false;
   }
 };
 
