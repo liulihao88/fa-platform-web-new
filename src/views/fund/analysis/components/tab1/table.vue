@@ -2261,6 +2261,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
         titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
       }else{
         //如果没有获取到数据，使用模拟数据
+        message.error('未查询到配置数据');
         //mockData();
       }
     } else {
