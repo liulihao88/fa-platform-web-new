@@ -586,7 +586,7 @@
       <!-- 下方：左侧文件页码信息，右侧标题配置列表 -->
       <a-row :gutter="16" style="height: calc(100% - 120px);">
         <!-- 左侧：文件页码信息 -->
-        <a-col :span="6">
+        <a-col :span="4">
           <a-card title="文件页码" size="small" style="height: 100%">
             <div class="sheet-list">
               <div
@@ -603,7 +603,7 @@
         </a-col>
 
         <!-- 右侧：标题配置列表 -->
-        <a-col :span="18">
+        <a-col :span="20">
           <a-card title="标题配置" size="small" style="height: 100%" class="titleConfigClass">
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
