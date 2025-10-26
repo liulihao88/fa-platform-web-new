@@ -3,6 +3,7 @@ import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
 import { getWeekMonthQuarterYear } from '/@/utils';
+import { h } from 'vue';
 //列表数据
 export const columns: BasicColumn[] = [
   {
@@ -41,6 +42,35 @@ export const columns: BasicColumn[] = [
     customRender: ({ text }) => {
       return render.renderDict(text, 'fa_file_process_status');
     },
+  },
+  {
+    title: '处理进度',
+    dataIndex: 'status',
+    width: 150,
+    resizable: true,
+    customRender: ({ text }) => {
+      // 进度条显示规则
+      const progressMap = {
+        '000': 0,
+        '002': 0,
+        '003': 25,
+        '100': 50,
+        '101': 75,
+        '102': 100
+      };
+
+      const percent = progressMap[text] || 0;
+
+      return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
+        h('div', {
+          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
+        }, [
+          h('div', {
+            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+          }, `${percent}%`)
+        ])
+      ]);
+    }
   },
   {
     title: '所属机构',

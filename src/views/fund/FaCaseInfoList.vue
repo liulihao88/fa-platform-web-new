@@ -28,7 +28,9 @@
         <TableAction  :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" :divider="true"/>
       </template>
       <!--字段回显插槽-->
-      <template v-slot:bodyCell="{ column, record, index, text }">
+      <template v-slot:bodyCell="{ column, text }">
+        <div v-if="column.dataIndex === 'errorFileNum' && Number(text) > 0" style="background-color: red;">{{ text }}</div>
+        <div v-else-if="column.dataIndex === 'repeatDataNum' && Number(text) > 0" style="background-color: red;">{{ text }}</div>
       </template>
     </BasicTable>
     <!-- 表单区域 -->

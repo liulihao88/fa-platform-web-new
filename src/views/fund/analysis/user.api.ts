@@ -81,3 +81,14 @@ export const searchConditionListApi = (params) => defHttp.post({ url: '/fa/faQue
 export const saveQueryConditionApi = (params) => defHttp.post({ url: '/fa/faQueryRecord/add', params });
 // 文件文本预览
 export const fileContextInfo = (params) => defHttp.post({ url: '/fa/caseStandardData/generateTransText', params });
+// 标题配置查询
+export const getFileConfigApi = (params) => defHttp.post({ url: '/fa/casefile/getFileConfig', params });
+// 标题配置数据查询
+export const fileConfigDataApi = (params) => defHttp.post({ url: '/fa/casefile/fileConfigData', params });
+// 标题配置修改
+export const updateFileConfigApi = (params) => defHttp.post({ url: '/fa/casefile/updateFileConfig', params });
+
+// 查询机构所有配置信息
+export const getOrgListApi = (params) => defHttp.get({ url: '/fa/faOrgsConfigure/getOrgList', params });
+// 通过文件id查询文件属性信息
+export const queryFilePropertyByFileIdApi = (params) => defHttp.post({ url: '/fa/casefile/queryFilePropertyByFileId', params });

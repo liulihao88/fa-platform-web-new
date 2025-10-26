@@ -1,6 +1,8 @@
 import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { render } from '/@/utils/common/renderUtils';
+import { h } from 'vue';
+
 //列表数据
 export const columns: BasicColumn[] = [
    {
@@ -45,6 +47,35 @@ export const columns: BasicColumn[] = [
       return render.renderDict(text, 'fa_case_process_status');
     },
   },
+  {
+    title: '处理进度',
+    align:"center",
+    resizable: true,
+    dataIndex: 'processStatus',
+    customRender: ({ text }) => {
+      // 进度条显示规则
+      const progressMap = {
+        '000': 0,
+        '001': 20,
+        '010': 40,
+        '002': 60,
+        '003': 80,
+        '004': 100
+      };
+      
+      const percent = progressMap[text] || 0;
+      
+      return h('div', { style: 'display: flex; align-items: center;' }, [
+        h('div', { 
+          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
+        }, [
+          h('div', {
+            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+          }, `${percent}%`)
+        ])
+      ]);
+    }
+  },
    {
     title: '文件数量',
     align:"center",
@@ -54,11 +85,20 @@ export const columns: BasicColumn[] = [
       return text ||'0'
     },
    },
+    {
+      title: '成功数量',
+      align:"center",
+      resizable: true,
+      dataIndex: 'succFileNum',
+      customRender: ({ text }) => {
+        return text ||'0'
+      },
+    },
    {
-    title: '文件导入次数',
+    title: '失败数量',
     align:"center",
     resizable: true,
-    dataIndex: 'fileImportNum',
+    dataIndex: 'errorFileNum',
        customRender: ({ text }) => {
            return text ||'0'
        },

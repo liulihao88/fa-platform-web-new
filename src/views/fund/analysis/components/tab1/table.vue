@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -81,17 +81,13 @@
     <!--插槽:table标题-->
     <template #tableTitle>
       <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
-      <a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>
+      <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
     </template>
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ index + 1 }}
       </template>
-      <template v-else-if="column.dataIndex === 'status'">
-        <a-tag :color="getStatusColor(record.status)">
-          {{ getStatusText(record.status) }}
-        </a-tag>
-      </template>
+     
       <template v-else-if="column.dataIndex === 'organization'">
         {{ record.organization || '--' }}
       </template>
@@ -103,6 +99,7 @@
       </template>
       <template v-else-if="column.key === 'operation'">
         <div class="table-operations">
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="showTitleConfigModal(record)">标题配置</a-button>
           <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
@@ -206,39 +203,39 @@
           >
             <a-card title="转换结果" size="small" style="height: 100%">
               <!-- 文件归属银行选择区域 -->
-              <a-row style="margin-bottom: 16px;">
+              <!--<a-row style="margin-bottom: 16px;">
                 <a-col :span="4">
                   <span style="line-height: 32px;">文件归属银行：</span>
                 </a-col>
                 <a-col :span="6">
                   <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="文件归属银行"  allow-clear ></JSearchSelect>
                 </a-col>
-                <!--              <a-col :span="4">
+                &lt;!&ndash;              <a-col :span="4">
                                 <template v-if="bankEfit">
                                   <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
                                   <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
                                 </template>
                                 <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
-                              </a-col>-->
+                              </a-col>&ndash;&gt;
                 <a-col :span="4">
                   <a-button size="middle" type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
                 </a-col>
-              </a-row>
+              </a-row>-->
 
               <!-- Sheet列表区域 -->
               <a-row style="margin-bottom: 16px;height: 640px">
                 <a-col :span="4">
                   <div class="sheet-list">
-                    <h3>文件页码</h3>
-                    <div
-                        v-for="sheet in currentFile.filePages"
-                        :key="sheet.pageId"
-                        :class="['file-item', { active: activeSheet === sheet.pageId }]"
-                        @click="selectSheet(sheet)"
-                    >
-                      {{ sheet.pageName }}
-                    </div>
+                  <h3>文件页码</h3>
+                  <div
+                    v-for="sheet in currentFile.filePages"
+                    :key="sheet.pageId"
+                    :class="['file-item', { active: activeSheet === sheet.pageId }]"
+                    @click="selectSheet(sheet)"
+                  >
+                    {{ sheet.pageName }}
                   </div>
+                </div>
                 </a-col>
                 <a-col :span="20">
                   <a-card class="table-card" style="height: 640px">
@@ -543,11 +540,164 @@
       </a-row>
     </a-card>
   </BasicModal>
+
+  <!-- 标题配置Modal -->
+  <BasicModal
+    v-model:visible="titleConfigModalVisible"
+    :title="`标题配置 - ${currentTitleConfigFile?.fileName || ''}`"
+    width="90%"
+    :useWrapper="true"
+    :maskClosable="false"
+    :footer="null"
+    :defaultFullscreen="true"
+    wrap-class-name="full-modal"
+  >
+    <a-card style="height: 100%">
+      <!-- 上方：文件名称、文件夹信息 -->
+      <a-row :gutter="16" style="margin-bottom: 16px;">
+        <a-col :span="24">
+          <a-card title="文件信息" size="small">
+            <a-row :gutter="16">
+              <a-col :span="8">
+                <div><strong>文件名称：</strong>{{ currentTitleConfigFile?.folder || '-' }}{{ currentTitleConfigFile?.sourceFile || currentTitleConfigFile?.fileName || '-' }}</div>
+              </a-col>
+<!--              <a-col :span="8">-->
+<!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
+<!--              </a-col>-->
+              <a-col :span="16">
+                <div>
+                  <strong>所属银行/支付公司：</strong>
+                  <JSearchSelect
+                    :dictOptions="orgListOptions"
+                    v-model:value="currentTitleConfigFile.organizationCode"
+                    placeholder="请选择所属银行/支付公司"
+                    allow-clear
+                    style="width: 60%"
+                    :disabled="isOrganizationSelectDisabled"
+                    @change="onOrganizationChange"
+                  />
+                </div>
+              </a-col>
+            </a-row>
+          </a-card>
+        </a-col>
+      </a-row>
+
+      <!-- 下方：左侧文件页码信息，右侧标题配置列表 -->
+      <a-row :gutter="16" style="height: calc(100% - 120px);">
+        <!-- 左侧：文件页码信息 -->
+        <a-col :span="6">
+          <a-card title="文件页码" size="small" style="height: 100%">
+            <div class="sheet-list">
+              <div
+                v-for="sheet in currentTitleConfigFile?.filePages"
+                :key="sheet.pageId"
+                :class="['file-item', { active: activeTitleConfigSheet === sheet.pageId }]"
+                @click="selectTitleConfigSheet(sheet)"
+              >
+                <span>{{ sheet.pageName }}</span>
+                <span v-if="sheet.configureStatus === '1'" class="configured-tag">已配置</span>
+              </div>
+            </div>
+          </a-card>
+        </a-col>
+
+        <!-- 右侧：标题配置列表 -->
+        <a-col :span="18">
+          <a-card title="标题配置" size="small" style="height: 100%">
+            <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
+              <a-tab-pane 
+                v-for="(dataBlock, index) in titleConfigData.result" 
+                :key="`dataBlock${dataBlock.dataBlockNum}`" 
+                :tab="`数据块${dataBlock.dataBlockNum}`"
+              >
+                <!-- 构造表格数据 -->
+                <a-table
+                  :data-source="getTitleConfigTableData(dataBlock.dataBlockStucts)"
+                  :pagination="false"
+                  :scroll="{ y: 400 }"
+                  size="small"
+                  bordered
+                >
+                  <a-table-column 
+                    title="配置"
+                    data-index="config"
+                    :width="150"
+                  >
+                    <template #default="{ record }">
+                      <div v-if="record.type === 'newMetaData'">
+                        配置列（newMetaData）
+                      </div>
+                      <div v-else-if="record.type === 'titleColName'">
+                        原标题（titleColName）
+                      </div>
+                      <div v-else-if="record.type === 'datas'">
+                        范例数据（datas）
+                      </div>
+                    </template>
+                  </a-table-column>
+                  
+                  <a-table-column 
+                    v-for="(struct, colIndex) in dataBlock.dataBlockStucts"
+                    :key="colIndex"
+                    :title="`列${colIndex + 1}`"
+                    :data-index="`col${colIndex}`"
+                  >
+                    <template #default="{ record }">
+                      <div v-if="record.type === 'newMetaData'">
+                        <JSearchSelect
+                          :dictOptions="titleConfigOptions"
+                          v-model:value="struct.faFileParameter.newMetaData"
+                          placeholder="请选择配置项"
+                          allow-clear
+                          style="width: 100%"
+                          :disabled="isCurrentSheetConfigured"
+                        />
+                        <!--<ASelect
+                          v-model:value="struct.faFileParameter.newMetaData" 
+                          size="small"
+                          show-search
+                          placeholder="请选择配置项"
+                          style="width: 100%"
+                          :disabled="isCurrentSheetConfigured"
+                        >
+                          <ASelectOption 
+                            v-for="option in titleConfigOptions" 
+                            :key="option.value"
+                            :value="option.value"
+                          >
+                            {{ option.label }}
+                          </ASelectOption>
+                        </ASelect>-->
+                      </div>
+                      <div v-else-if="record.type === 'titleColName'">
+                        <span :style="{ color: struct.faFileParameter.oriMetaData ? 'inherit' : 'red' }">
+                          {{ struct.faFileParameter.titleColName }}
+                        </span>
+                      </div>
+                      <div v-else-if="record.type === 'datas'">
+                        {{ record.datas[colIndex] }}
+                      </div>
+                    </template>
+                  </a-table-column>
+                </a-table>
+                
+                <div style="margin-top: 16px; text-align: right;">
+                  <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
+                </div>
+              </a-tab-pane>
+            </a-tabs>
+          </a-card>
+        </a-col>
+      </a-row>
+    </a-card>
+  </BasicModal>
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed,nextTick } from 'vue';
-import { message, Modal} from 'ant-design-vue';
+import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
+import { render } from '/@/utils/common/renderUtils';
+import { message, Modal, Select } from 'ant-design-vue';
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
 import VueOfficePdf from '@vue-office/pdf'
@@ -570,7 +720,12 @@ import {
   standardNonBankCustomerApi,
   standardNonBankTransApi,
   caseFilePageListApi,
-  standardFilePageListApi
+  standardFilePageListApi,
+  getFileConfigApi,
+  updateFileConfigApi,
+  getOrgListApi,
+  fileConfigDataApi,
+  queryFilePropertyByFileIdApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -629,6 +784,19 @@ const hasTableData = computed(() => {
     default:
       return false;
   }
+});
+
+// 计算属性：检查当前选中的页码是否已配置
+const isCurrentSheetConfigured = computed(() => {
+  if (!activeTitleConfigSheet.value || !currentTitleConfigFile.value?.filePages) {
+    return false;
+  }
+  
+  const currentSheet = currentTitleConfigFile.value.filePages.find(
+    sheet => sheet.pageId === activeTitleConfigSheet.value
+  );
+  
+  return currentSheet?.configureStatus === '1';
 });
 const props = defineProps<Props>();
 const formRef = ref();
@@ -934,7 +1102,39 @@ const columns = ref([
     title: '状态',
     dataIndex: 'status',
     width: 100,
-    resizable: true
+    resizable: true,
+    customRender: ({ text }) => {
+      return render.renderDict(text, 'fa_file_process_status');
+    },
+  },
+  {
+    title: '处理进度',
+    dataIndex: 'status',
+    width: 150,
+    resizable: true,
+    customRender: ({ text }) => {
+      // 进度条显示规则
+      const progressMap = {
+        '000': 0,
+        '002': 0,
+        '003': 25,
+        '100': 50,
+        '101': 75,
+        '102': 100
+      };
+      
+      const percent = progressMap[text] || 0;
+      
+      return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
+        h('div', { 
+          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
+        }, [
+          h('div', {
+            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+          }, `${percent}%`)
+        ])
+      ]);
+    }
   },
   {
     title: '所属机构',
@@ -982,6 +1182,57 @@ const pagination = reactive({
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
 });
+
+interface FaFileParameter {
+  id: string;
+  caseId: string;
+  caseFileId: string;
+  caseFilePageId: string;
+  dataBlock: string;
+  colSequence: string;
+  dataRowNum: string;
+  dataType: string;
+  newMetaData: string;
+  titleColName: string;
+  oriMetaData: string;
+}
+
+interface DataBlockStruct {
+  faFileParameter: FaFileParameter;
+  datas: string[];
+}
+
+interface DataBlock {
+  dataBlockNum: number;
+  dataBlockStucts: DataBlockStruct[];
+}
+
+// 添加配置选项类型
+interface FileConfigOption {
+  value: string;
+  text: string;
+}
+
+// 标题配置相关状态
+const titleConfigModalVisible = ref(false);
+const currentTitleConfigFile = ref<any>(null);
+const activeTitleConfigSheet = ref('');
+const titleConfigActiveTab = ref('dataBlock1');
+const titleConfigData = ref<{
+  result: DataBlock[];
+}>({
+  result: []
+});
+
+// 所属银行/支付公司下拉框是否禁用
+const isOrganizationSelectDisabled = ref(false);
+
+// 保存按钮是否禁用（防止重复提交）
+const isSaveButtonDisabled = ref(false);
+
+// 添加下拉选项状态
+const titleConfigOptions = ref<FileConfigOption[]>([]);
+const orgListOptions = ref<{value: string, text: string}[]>([]);
 
 const [registerTable] = useTable({
   columns: columns.value,
@@ -1609,6 +1860,55 @@ const fetchConvertFileList = async () => {
   }
 };
 
+const saveTitleConfig = async () => {
+  try {
+    // 设置按钮为禁用状态，防止重复提交
+    isSaveButtonDisabled.value = true;
+    
+    // 校验是否选择了所属银行/支付公司
+    if (!currentTitleConfigFile.value.organizationCode) {
+      message.warning('请先选择所属银行/支付公司');
+      isSaveButtonDisabled.value = false;
+      return;
+    }
+    // 准备请求参数
+    const params = {
+      faFileParameters: titleConfigData.value.result.flatMap(dataBlock => 
+        dataBlock.dataBlockStucts.map(struct => struct.faFileParameter)
+      ),
+      orgCode: currentTitleConfigFile.value.organizationCode,
+      pageId: activeTitleConfigSheet.value
+    };
+    
+    // 调用API保存配置
+    await updateFileConfigApi(params);
+    message.success('标题配置已保存');
+    
+    // 保存成功后，刷新模态窗口重新加载
+    // 重新加载所属银行/支付公司下拉框和页码列表数据
+    await showTitleConfigModal(currentTitleConfigFile.value);
+    
+    // 如果之前有选中的页码，则重新加载该页码的数据
+    if (activeTitleConfigSheet.value) {
+      // 查找当前选中的页码对象
+      const currentSheet = currentTitleConfigFile.value.filePages?.find(
+        sheet => sheet.pageId === activeTitleConfigSheet.value
+      );
+      
+      // 如果找到了页码对象，则重新加载数据
+      if (currentSheet) {
+        await selectTitleConfigSheet(currentSheet);
+      }
+    }
+  } catch (error) {
+    console.error('保存标题配置失败:', error);
+    message.error('保存标题配置失败');
+  } finally {
+    // 无论成功或失败，都取消按钮的禁用状态
+    isSaveButtonDisabled.value = false;
+  }
+};
+
 // 上一页
 const prevPage = () => {
   if (filePagination.current > 1) {
@@ -1857,6 +2157,319 @@ const getRowClassName = (record) => {
   return record.cleanRule ? 'blue-row' : '';
 };
 
+// 标题配置相关方法
+const showTitleConfigModal = async (record) => {
+  currentTitleConfigFile.value = record;
+  titleConfigModalVisible.value = true;
+  
+  // 重置激活的页码
+  activeTitleConfigSheet.value = '';
+  // 清空现有数据
+  titleConfigData.value = {
+    result: []
+  };
+
+  //清空标题配置
+  titleConfigOptions.value = [];
+  try {
+
+    
+    // 获取机构列表选项
+    const orgListResponse = await getOrgListApi({});
+    if (orgListResponse && Array.isArray(orgListResponse)) {
+      orgListOptions.value = orgListResponse.map(item => ({
+        value: item.orgCd,
+        text: item.orgName
+      }));
+    } else {
+      orgListOptions.value = [];
+    }
+    
+    // 获取文件转换结果信息（包含文件页码信息）
+    const fileConvertResult = await getFileConverResultApi({fileId: record.id});
+    
+    // 获取文件属性信息，设置默认的所属银行/支付公司
+    let organizationCode = '';
+    try {
+      const fileProperty = await queryFilePropertyByFileIdApi({fileId: record.id});
+      if (fileProperty && fileProperty.orgCd) {
+        organizationCode = fileProperty.orgCd;
+      }
+      // 根据configFlag判断是否禁用下拉框
+      if (fileProperty && fileProperty.configFlag === true) {
+        isOrganizationSelectDisabled.value = true;
+      } else {
+        isOrganizationSelectDisabled.value = false;
+      }
+    } catch (error) {
+      console.warn('获取文件属性信息失败:', error);
+      isOrganizationSelectDisabled.value = false;
+    }
+    
+    // 更新当前标题配置文件信息，包括文件页码
+    currentTitleConfigFile.value = {
+      ...record,
+      ...fileConvertResult,
+      organizationCode
+    };
+    
+    // 设置默认激活的第一个页码
+    // if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
+    //   activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId;
+    // }
+
+  } catch (error) {
+    console.error('获取标题配置数据失败:', error);
+    message.error('获取标题配置数据失败');
+  }
+};
+
+const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
+  // 使用传入的新orgCode或者当前值
+  const orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
+  
+  // 校验是否选择了所属银行/支付公司
+  if (!orgCode) {
+    message.warning('请先选择所属银行/支付公司');
+    return;
+  }
+  
+  activeTitleConfigSheet.value = sheet.pageId;
+  
+  try {
+    // 获取文件配置选项
+    const configResponse = await getFileConfigApi({orgCode: orgCode});
+    console.log('文件配置选项:', configResponse); // 调试日志
+    console.log('configResponse类型:', typeof configResponse); // 调试日志
+    console.log('configResponse:', configResponse); // 调试日志
+    console.log('configResponse是否为数组:', Array.isArray(configResponse)); // 调试日志
+
+    // 修复数据处理逻辑
+    if (configResponse && Array.isArray(configResponse)) {
+      titleConfigOptions.value = configResponse.map(item => ({
+        value: item,
+        text: item
+      }));
+    } else {
+      titleConfigOptions.value = [];
+    }
+
+    console.log('处理后的选项:', titleConfigOptions.value); // 调试日志
+    console.log('处理后的选项长度:', titleConfigOptions.value.length); // 调试日志
+
+
+
+    // 获取标题配置数据
+    const titleConfigResponse = await fileConfigDataApi({
+      pageId: sheet.pageId,
+      organizationCode: orgCode
+    });
+
+    if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
+      titleConfigData.value = {
+        result: titleConfigResponse
+      };
+
+      // 设置默认激活的标签页
+      if (titleConfigData.value.result.length > 0) {
+        titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
+      }else{
+        //如果没有获取到数据，使用模拟数据
+        titleConfigData.value = {
+          result: [
+            {
+              dataBlockNum: 1,
+              dataBlockStucts: [
+                {
+                  faFileParameter: {
+                    id: "1",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "1",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta1",
+                    titleColName: "titleCol1",
+                    oriMetaData: "oriMeta1",
+                  },
+                  datas: ["1", "2", "3"]
+                },
+                {
+                  faFileParameter: {
+                    id: "2",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "3",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "4",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                },
+                {
+                  faFileParameter: {
+                    id: "5",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "1",
+                    colSequence: "2",
+                    dataRowNum: "1",
+                    dataType: "type1",
+                    newMetaData: "newMeta2",
+                    titleColName: "titleCol2",
+                    oriMetaData: "oriMeta2",
+                  },
+                  datas: ["a", "b", "c"]
+                }
+              ]
+            },
+            {
+              dataBlockNum: 2,
+              dataBlockStucts: [
+                {
+                  faFileParameter: {
+                    id: "3",
+                    caseId: "case1",
+                    caseFileId: "file1",
+                    caseFilePageId: "page1",
+                    dataBlock: "2",
+                    colSequence: "1",
+                    dataRowNum: "1",
+                    dataType: "type2",
+                    newMetaData: "newMeta3",
+                    titleColName: "titleCol3",
+                    oriMetaData: "oriMeta3",
+                  },
+                  datas: ["x", "y", "z"]
+                }
+              ]
+            }
+          ]
+        };
+        // 设置默认激活的标签页
+        if (titleConfigData.value.result.length > 0) {
+          titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
+        }
+      }
+    } else {
+      // 如果没有获取到数据，清空现有数据
+      titleConfigData.value = {
+        result: []
+      };
+      titleConfigActiveTab.value = 'dataBlock1';
+    }
+  } catch (error) {
+    console.error('获取标题配置数据失败:', error);
+    message.error('获取标题配置数据失败');
+  }
+};
+
+// 构造标题配置表格数据
+const getTitleConfigTableData = (dataBlockStucts: DataBlockStruct[]) => {
+  // 获取最大数据行数
+  const maxDataRows = Math.max(...dataBlockStucts.map(struct => struct.datas.length), 0);
+  
+  // 构造表格数据
+  const tableData: Array<{
+    key: string;
+    type: 'newMetaData' | 'titleColName' | 'datas';
+    config?: string;
+    dataIndex?: number;
+    datas?: string[];
+  }> = [];
+  
+  // 添加配置行（newMetaData）
+  tableData.push({
+    key: 'newMetaData',
+    type: 'newMetaData',
+    config: '配置列（newMetaData）'
+  });
+  
+  // 添加原标题行（titleColName）
+  tableData.push({
+    key: 'titleColName',
+    type: 'titleColName',
+    config: '原标题（titleColName）'
+  });
+  
+  // 添加数据行（datas）
+  for (let i = 0; i < maxDataRows; i++) {
+    tableData.push({
+      key: `data-${i}`,
+      type: 'datas',
+      dataIndex: i,
+      datas: dataBlockStucts.map(struct => struct.datas[i] || '')
+    });
+  }
+  
+  return tableData;
+};
+
+const onNewMetaDataChange = (struct, event) => {
+  // 处理newMetaData变更
+  console.log('newMetaData changed:', struct, event);
+};
+
+// 所属银行/支付公司下拉框值变更事件处理
+const onOrganizationChange = (value) => {
+  // 如果已有选中的页码ID，则触发页码的点击事件重新加载标题配置列表数据
+  if (activeTitleConfigSheet.value && currentTitleConfigFile.value) {
+    // 查找当前选中的页码对象
+    const currentSheet = currentTitleConfigFile.value.filePages?.find(
+      sheet => sheet.pageId === activeTitleConfigSheet.value
+    );
+    
+    // 如果找到了页码对象，则重新加载数据
+    if (currentSheet) {
+      // 传递新的organizationCode值给selectTitleConfigSheet方法
+      selectTitleConfigSheet(currentSheet, value);
+    }
+  }
+};
+
+// 注册Select组件
+const ASelect = Select;
+const ASelectOption = Select.Option;
+
 </script>
 
 <style scoped>
@@ -1927,6 +2540,9 @@ const getRowClassName = (record) => {
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
   transition: background-color 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .file-item:hover, .sheet-item:hover {
   background-color: #f0f7ff;
@@ -1934,6 +2550,15 @@ const getRowClassName = (record) => {
 .file-item.active, .sheet-item.active {
   background-color: #e6f7ff;
   border-right: 3px solid #1890ff;
+}
+
+.configured-tag {
+  background-color: #1890ff;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
 :deep(.x-spreadsheet-sheet){
@@ -1998,6 +2623,7 @@ const getRowClassName = (record) => {
   /*max-height: 600px;*/
   overflow-y: auto;
 }
+
 .file-item {
   padding: 12px;
   border: 1px solid #e8e8e8;
