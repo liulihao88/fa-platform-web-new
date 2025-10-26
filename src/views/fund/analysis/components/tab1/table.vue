@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -604,7 +604,7 @@
 
         <!-- 右侧：标题配置列表 -->
         <a-col :span="18">
-          <a-card title="标题配置" size="small" style="height: 100%">
+          <a-card title="标题配置" size="small" style="height: 100%" class="titleConfigClass">
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
                 v-for="(dataBlock, index) in titleConfigData.result" 
@@ -612,22 +612,28 @@
                 :tab="`数据块${dataBlock.dataBlockNum}`"
               >
                 <!-- 构造表格数据 -->
-                <a-table
-                  :data-source="getTitleConfigTableData(dataBlock.dataBlockStucts)"
+                <BasicTable
+                  :columns="getTitleConfigColumns(dataBlock.dataBlockStucts)"
+                  :dataSource="getTitleConfigTableData(dataBlock.dataBlockStucts)"
                   :pagination="false"
-                  :scroll="{ y: 400, x: 'max-content' }"
+                  :scroll="{ y: 500, x: true }"
                   size="small"
-                  bordered
-                  table-layout="fixed"
+                  :bordered="true"
                   :loading="titleConfigLoading"
+                  :canColDrag="true"
+                  :showTableSetting="true"
+                  :tableSetting="{redo: false, size: true, setting: false, fullScreen: true }"
+                  :canResize="true"
+                  :showIndexColumn="false"
+                  :showActionColumn="false"
+                  :rowKey="(record) => record.key"
                 >
-                  <a-table-column 
-                    title="配置"
-                    data-index="config"
-                    :width="80"
-                    :fixed="'left'"
-                  >
-                    <template #default="{ record }">
+                  <template #tableTitle>
+                    <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
+                    <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
+                  </template>
+                  <template #bodyCell="{ column, record }">
+                    <template v-if="column.dataIndex === 'config'">
                       <div v-if="record.type === 'newMetaData'">
                         配置列
                       </div>
@@ -638,42 +644,30 @@
                         {{ record.dataIndex !== undefined ? (record.dataIndex + 1) : '' }}
                       </div>
                     </template>
-                  </a-table-column>
-                  
-                  <a-table-column 
-                    v-for="(struct, colIndex) in dataBlock.dataBlockStucts"
-                    :key="colIndex"
-                    :title="`列${colIndex + 1}`"
-                    :data-index="`col${colIndex}`"
-                    :width="180"
-                    :min-width="180"
-                  >
-                    <template #default="{ record }">
+                    
+                    <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
                       <div v-if="record.type === 'newMetaData'">
                         <JSearchSelect
                           :dictOptions="titleConfigOptions"
-                          v-model:value="struct.faFileParameter.newMetaData"
+                          v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
                           placeholder="请选择配置项"
                           allow-clear
                           style="width: 100%"
                           :disabled="isCurrentSheetConfigured"
+                          
                         />
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
-                        <span :style="{ color: struct.faFileParameter.oriMetaData ? 'inherit' : 'red' }">
-                          {{ struct.faFileParameter.titleColName }}
+                        <span :style="{ color: dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.oriMetaData ? 'inherit' : 'red' }">
+                          {{ dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName }}
                         </span>
                       </div>
                       <div v-else-if="record.type === 'datas'">
-                        {{ record.datas[colIndex] }}
+                        {{ record.datas[parseInt(column.dataIndex.replace('col', ''))] }}
                       </div>
                     </template>
-                  </a-table-column>
-                </a-table>
-                
-                <div style="margin-top: 16px; text-align: right;">
-                  <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
-                </div>
+                  </template>
+                </BasicTable>
               </a-tab-pane>
             </a-tabs>
           </a-card>
@@ -1154,7 +1148,7 @@ const columns = ref([
     key: 'operation',
     dataIndex: 'operation',
     fixed: 'right' as const,
-    width: 180,
+    width: 200,
     ifShow: true, // 确保操作列始终显示
     resizable: true
   }
@@ -2285,7 +2279,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
                     dataType: "type1",
                     newMetaData: "newMeta1",
                     titleColName: "titleCol1",
-                    oriMetaData: "oriMeta1",
+                    oriMetaData: "",
                   },
                   datas: ["1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3"]
                 },
@@ -2536,6 +2530,32 @@ const getTitleConfigTableData = (dataBlockStucts: DataBlockStruct[]) => {
   return tableData;
 };
 
+// 构造标题配置表格列
+const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
+  // 构造表格列
+  const columns: any[] = [];
+  
+  // 添加配置列（固定列）
+  columns.push({
+    title: '配置',
+    dataIndex: 'config',
+    width: 80,
+    fixed: 'left'
+  });
+  
+  // 添加数据列
+  for (let i = 0; i < dataBlockStucts.length; i++) {
+    columns.push({
+      title: `列${i + 1}`,
+      dataIndex: `col${i}`,
+      width: 180,
+      minWidth: 180
+    });
+  }
+  
+  return columns;
+};
+
 const onNewMetaDataChange = (struct, event) => {
   // 处理newMetaData变更
   console.log('newMetaData changed:', struct, event);
@@ -2737,10 +2757,31 @@ const ASelectOption = Select.Option;
 }
 
 .table-tab :deep(.ant-table-body) {
-  height: 400px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 .table-tab :deep(.ant-table-placeholder .ant-table-cell) {
   border: none!important;
+}
+
+/* 标题配置表格中的下拉框样式优化，防止被遮挡 */
+.table-tab :deep(.ant-select-dropdown) {
+  z-index: 1050;
+}
+
+/* 确保表格容器不会截断下拉框 */
+.table-tab :deep(.ant-table-content) {
+  overflow: visible;
+}
+
+/* 确保表格单元格不会截断下拉框 */
+.table-tab :deep(.ant-table-tbody > tr > td) {
+  overflow: visible;
+}
+
+/* 隐藏标题配置表格的表头（只针对标题配置模态框中的表格） */
+.titleConfigClass .table-tab :deep(.ant-table-thead) {
+  display: none;
 }
 
  :deep(.blue-row) {
