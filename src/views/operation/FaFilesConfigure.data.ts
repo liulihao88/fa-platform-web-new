@@ -16,7 +16,7 @@ export const columns: BasicColumn[] = [
     },
   },
   {
-    title: '上传名称',
+    title: '案件名称',
     dataIndex: 'caseName',
     width: 200,
     resizable: true,

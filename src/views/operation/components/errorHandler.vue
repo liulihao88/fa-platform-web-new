@@ -1,7 +1,7 @@
 <template>
   <a-card class="m2" title="错误处理">
     <a-row class="mb4">
-      <a-col span="6">上传名称：{{fileInfo.caseName}}</a-col>
+      <a-col span="6">案件名称：{{fileInfo.caseName}}</a-col>
       <a-col span="16">文件名称：{{fileInfo.fileName}}</a-col>
     </a-row>
     <a-row gutter="16">

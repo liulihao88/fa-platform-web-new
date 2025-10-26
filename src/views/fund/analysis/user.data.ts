@@ -7,17 +7,17 @@ export const columns: BasicColumn[] = [
     resizable: true
   },
   {
-    title: '上传名称',
+    title: '案件名称',
     dataIndex: 'caseName',
     resizable: true
   },
   {
-    title: '上传说明',
+    title: '案由',
     dataIndex: 'caseReason',
     resizable: true
   },
   {
-    title: '自编码',
+    title: '部门受案号',
     dataIndex: 'departmentCaseNumber',
     width: 80,
     resizable: true
@@ -67,19 +67,19 @@ export const columns: BasicColumn[] = [
 
 export const searchFormSchema: FormSchema[] = [
   {
-    label: '上传名称',
+    label: '案件名称',
     field: 'caseName',
     component: 'JInput',
     colProps: { span: 6 },
   },
   {
-    label: '上传说明',
+    label: '案由',
     field: 'caseReason',
     component: 'JInput',
     colProps: { span: 6 },
   },
   {
-    label: '部门受理号',
+    label: '部门受案号',
     field: 'departmentCaseNumber',
     component: 'JInput',
     colProps: { span: 6 },

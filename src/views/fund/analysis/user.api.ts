@@ -1,12 +1,12 @@
 import { defHttp } from '/@/utils/http/axios';
 
-// 上传列表
+// 案件列表
 export const caseListApi = (params) => defHttp.post({ url: '/fa/case/list', params });
 
-// 上传详情
+// 案件详情
 export const caseDetailApi = (params) => defHttp.post({ url: '/fa/faCaseInfo/getCaseInfoById', params });
 
-// 上传文件列表
+// 案件文件列表
 export const caseFileListApi = (params) => defHttp.post({ url: '/fa/casefile/list', params });
 
 // 删除文件

@@ -6,8 +6,8 @@
         <a-row :gutter="24">
           <a-col :lg="8">
             <a-form-item name="metaData">
-              <template #label><span title="上传名称">上传名称</span></template>
-              <a-input placeholder="请输入上传名称" v-model:value="queryParam.caseName" allow-clear ></a-input>
+              <template #label><span title="案件名称">案件名称</span></template>
+              <a-input placeholder="请输入案件名称" v-model:value="queryParam.caseName" allow-clear ></a-input>
             </a-form-item>
           </a-col>
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
