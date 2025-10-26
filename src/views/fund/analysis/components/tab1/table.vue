@@ -2262,7 +2262,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
       pageId: sheet.pageId,
-      organizationCode: orgCode
+      orgCode: orgCode
     });
 
     if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
