@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -256,6 +256,7 @@
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankCustomerTable"
+                            class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.key === 'action'">
@@ -282,6 +283,7 @@
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankTransactionTable"
+                            class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.key === 'action'">
@@ -308,6 +310,7 @@
                             :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
                             :canResize="true"
                             @register="registerNonBankCustomerTable"
+                            class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.key === 'action'">
@@ -332,6 +335,7 @@
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerNonBankTransactionTable"
+                            class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.key === 'action'">
@@ -617,15 +621,15 @@
                   :dataSource="getTitleConfigTableData(dataBlock.dataBlockStucts)"
                   :pagination="false"
                   :scroll="{ y: 500, x: true }"
-                  :minHeight="500"
                   size="small"
                   :bordered="true"
                   :loading="titleConfigLoading"
                   :canColDrag="true"
                   :showTableSetting="true"
                   :tableSetting="{redo: false, size: true, setting: false, fullScreen: true }"
-                  :canResize="true"
+                  :canResize="false"
                   :showIndexColumn="false"
+                  class="title-config-table"
                 >
                   <template #tableTitle>
                     <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
@@ -2838,10 +2842,6 @@ const onOrganizationChange = (value) => {
   border-color: #1890ff;
 }
 
-.table-tab :deep(.ant-table-body) {
-  max-height: 400px;
-  overflow-y: auto;
-}
 .table-tab :deep(.ant-table-placeholder .ant-table-cell) {
   border: none!important;
 }
@@ -2849,16 +2849,6 @@ const onOrganizationChange = (value) => {
 /* 标题配置表格中的下拉框样式优化，防止被遮挡 */
 .table-tab :deep(.ant-select-dropdown) {
   z-index: 1050;
-}
-
-/* 确保表格容器不会截断下拉框 */
-.table-tab :deep(.ant-table-content) {
-  overflow: visible;
-}
-
-/* 确保表格单元格不会截断下拉框 */
-.table-tab :deep(.ant-table-tbody > tr > td) {
-  overflow: visible;
 }
 
 /* 隐藏标题配置表格的表头（只针对标题配置模态框中的表格） */
@@ -2915,6 +2905,15 @@ const onOrganizationChange = (value) => {
 .config-select-cell {
   position: relative;
   z-index: 104;
+}
+
+/* 标题配置表格最小高度 */
+.title-config-table :deep(.ant-table-body) {
+  min-height: 500px;
+}
+
+.file-trans-table :deep(.ant-table-body) {
+  min-height: 400px;
 }
 
  :deep(.blue-row) {
