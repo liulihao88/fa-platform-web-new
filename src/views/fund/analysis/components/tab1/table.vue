@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -647,12 +647,12 @@
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
                       <div v-if="record.type === 'newMetaData'" class="config-select-cell">
                         <JSearchSelect
-                          :dictOptions="titleConfigOptions"
+                          :dictOptions="getFilteredOptions(dataBlock.dataBlockStucts, parseInt(column.dataIndex.replace('col', '')))"
                           v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
                           placeholder="请选择配置项"
                           allow-clear
                           style="width: 100%"
-                          :disabled="isCurrentSheetConfigured"
+                          :disabled="isCurrentSheetConfigured || (dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.oriMetaData?true:false)"
                         />
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
@@ -1118,10 +1118,22 @@ const columns = ref([
     }
   },
   {
-    title: '所属机构',
-    dataIndex: 'organization',
+    title: '配置进度',
+    dataIndex: 'configureProgress',
     width: 80,
-    resizable: true
+    resizable: true,
+    customRender: ({ text }) => {
+      const percent = text || 0;
+      return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
+        h('div', {
+          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
+        }, [
+          h('div', {
+            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+          }, `${percent}%`)
+        ])
+      ]);
+    }
   },
   {
     title: '返回信息',
@@ -1181,6 +1193,7 @@ interface FaFileParameter {
 interface DataBlockStruct {
   faFileParameter: FaFileParameter;
   datas: string[];
+  availableOptions?: FileConfigOption[];
 }
 
 interface DataBlock {
@@ -2202,6 +2215,29 @@ const showTitleConfigModal = async (record) => {
     //   activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId;
     // }
 
+    // 如果之前有选中的页码，则重新加载该页码的数据
+    if (activeTitleConfigSheet.value) {
+      // 查找当前选中的页码对象
+      const currentSheet = currentTitleConfigFile.value.filePages?.find(
+        sheet => sheet.pageId === activeTitleConfigSheet.value
+      );
+
+      // 如果找到了页码对象，则重新加载数据
+      if (currentSheet) {
+        await selectTitleConfigSheet(currentSheet);
+      }
+    }else{
+      if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
+        activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId;
+      }
+      const currentSheet = fileConvertResult.filePages[0];
+
+      // 如果找到了页码对象，则重新加载数据
+      if (currentSheet) {
+        await selectTitleConfigSheet(currentSheet);
+      }
+    }
+
   } catch (error) {
     console.error('获取标题配置数据失败:', error);
     message.error('获取标题配置数据失败');
@@ -2226,10 +2262,6 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     
     // 获取文件配置选项
     const configResponse = await getFileConfigApi({orgCode: orgCode});
-    console.log('文件配置选项:', configResponse); // 调试日志
-    console.log('configResponse类型:', typeof configResponse); // 调试日志
-    console.log('configResponse:', configResponse); // 调试日志
-    console.log('configResponse是否为数组:', Array.isArray(configResponse)); // 调试日志
 
     // 修复数据处理逻辑
     if (configResponse && Array.isArray(configResponse)) {
@@ -2241,9 +2273,6 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
       titleConfigOptions.value = [];
     }
 
-    console.log('处理后的选项:', titleConfigOptions.value); // 调试日志
-    console.log('处理后的选项长度:', titleConfigOptions.value.length); // 调试日志
-
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
       pageId: sheet.pageId,
@@ -2251,8 +2280,26 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     });
 
     if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
+      // 根据oriMetaData字段过滤下拉框选项
       titleConfigData.value = {
-        result: titleConfigResponse
+        result: titleConfigResponse.map(dataBlock => {
+          return {
+            ...dataBlock,
+            dataBlockStucts: dataBlock.dataBlockStucts.map(struct => {
+              return {
+                ...struct,
+                // 保存原始配置选项到结构中，用于过滤
+                availableOptions: configResponse && Array.isArray(configResponse) 
+                  ? configResponse.filter(option => 
+                      !dataBlock.dataBlockStucts.some(s => 
+                        s.faFileParameter.oriMetaData === option
+                      )
+                    ).map(item => ({ value: item, text: item }))
+                  : []
+              };
+            })
+          };
+        })
       };
 
       // 设置默认激活的标签页
@@ -2261,7 +2308,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
       }else{
         //如果没有获取到数据，使用模拟数据
         message.error('未查询到配置数据');
-        //mockData();
+        //mockData(configResponse);
       }
     } else {
       // 如果没有获取到数据，清空现有数据
@@ -2279,10 +2326,9 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   }
 };
 
-const mockData = () => {
+const mockData = (configResponse) => {
   // mockData
-  titleConfigData.value = {
-    result: [
+  const titleConfigResponse = [
       {
         dataBlockNum: 1,
         dataBlockStucts: [
@@ -2314,7 +2360,7 @@ const mockData = () => {
               dataType: "type1",
               newMetaData: "newMeta2",
               titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
+              oriMetaData: "贷方发生额",
             },
             datas: ["a", "b", "c"]
           },
@@ -2479,14 +2525,36 @@ const mockData = () => {
               dataType: "type2",
               newMetaData: "newMeta3",
               titleColName: "titleCol3",
-              oriMetaData: "oriMeta3",
+              oriMetaData: "交易IP地址",
             },
             datas: ["x", "y", "z"]
           }
         ]
       }
-    ]
+    ];
+
+  // 根据oriMetaData字段过滤下拉框选项
+  titleConfigData.value = {
+    result: titleConfigResponse.map(dataBlock => {
+      return {
+        ...dataBlock,
+        dataBlockStucts: dataBlock.dataBlockStucts.map(struct => {
+          return {
+            ...struct,
+            // 保存原始配置选项到结构中，用于过滤
+            availableOptions: configResponse && Array.isArray(configResponse) 
+              ? configResponse.filter(option => 
+                  !dataBlock.dataBlockStucts.some(s => 
+                    s.faFileParameter.oriMetaData === option
+                  )
+                ).map(item => ({ value: item, text: item }))
+              : []
+          };
+        })
+      };
+    })
   };
+
   // 设置默认激活的标签页
   if (titleConfigData.value.result.length > 0) {
     titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
@@ -2532,6 +2600,21 @@ const getTitleConfigTableData = (dataBlockStucts: DataBlockStruct[]) => {
   }
   
   return tableData;
+};
+
+// 获取过滤后的下拉选项
+const getFilteredOptions = (dataBlockStucts: DataBlockStruct[], colIndex: number) => {
+  // 获取当前列的结构
+  const currentStruct = dataBlockStucts[colIndex];
+  if (!currentStruct) return [];
+  
+  // 如果已经计算过可用选项，直接返回
+  if (currentStruct.availableOptions && currentStruct.availableOptions.length > 0) {
+    return currentStruct.availableOptions;
+  }
+  
+  // 否则返回所有选项
+  return titleConfigOptions.value;
 };
 
 // 构造标题配置表格列
@@ -2580,10 +2663,6 @@ const onOrganizationChange = (value) => {
     }
   }
 };
-
-// 注册Select组件
-const ASelect = Select;
-const ASelectOption = Select.Option;
 
 </script>
 
