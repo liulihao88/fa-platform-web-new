@@ -617,6 +617,7 @@
                   :dataSource="getTitleConfigTableData(dataBlock.dataBlockStucts)"
                   :pagination="false"
                   :scroll="{ y: 500, x: true }"
+                  :minHeight="500"
                   size="small"
                   :bordered="true"
                   :loading="titleConfigLoading"
@@ -625,8 +626,6 @@
                   :tableSetting="{redo: false, size: true, setting: false, fullScreen: true }"
                   :canResize="true"
                   :showIndexColumn="false"
-                  :showActionColumn="false"
-                  :rowKey="(record) => record.key"
                 >
                   <template #tableTitle>
                     <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>

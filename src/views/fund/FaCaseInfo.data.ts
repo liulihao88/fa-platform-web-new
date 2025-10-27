@@ -178,7 +178,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
   },
   {
-    label: '受理时间',
+    label: '部门受案号',
     field: 'deptCaseCode',
     component: 'Input',
   },

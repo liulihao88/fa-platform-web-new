@@ -76,27 +76,27 @@ export const formSchema: FormSchema[] = [
     field: 'orgCd',
     component: 'Input',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
   {
     label: '名称',
     field: 'orgName',
     component: 'Input',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
   {
     label: '简称',
     field: 'names',
     component: 'Input',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
   {
     label: '别名',
@@ -108,27 +108,27 @@ export const formSchema: FormSchema[] = [
     field: 'commonts',
     component: 'Input',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
   {
     label: '种类',
     field: 'orgType',
     component: 'InputNumber',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
   {
     label: '启用标志',
     field: 'ifToUse',
     component: 'InputNumber',
     //动态禁用，values代表当前表单的值，返回 true或false
-    dynamicDisabled: ({ values }) => {
-      return values.id != ''&& values.id != undefined;
-    },
+    // dynamicDisabled: ({ values }) => {
+    //   return values.id != ''&& values.id != undefined;
+    // },
   },
 	// TODO 主键隐藏字段，目前写死为ID
 	{

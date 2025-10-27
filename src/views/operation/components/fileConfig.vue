@@ -3,7 +3,7 @@
     <!-- 搜索区域 -->
     <a-form :model="searchForm" class="search-form">
       <a-row :gutter="24">
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item
               label="标准数据"
               :labelCol="{ span: 6 }"
@@ -11,14 +11,21 @@
             <a-input v-model:value="searchForm.metaData" placeholder="请输入标准数据" />
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item label="别名"
                        :labelCol="{ span: 6 }"
                        :wrapperCol="{ span: 18 }">
             <a-input v-model:value="searchForm.alias" placeholder="请输入别名" />
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="6">
+          <a-form-item label="拥有者"
+                       :labelCol="{ span: 6 }"
+                       :wrapperCol="{ span: 18 }">
+            <a-input v-model:value="searchForm.owner" placeholder="请输入拥有者" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
           <a-form-item>
             <a-button type="primary" @click="handleSearch">查询</a-button>
             <a-button class="ml2" @click="handleReset">重置</a-button>
@@ -278,7 +285,8 @@ interface FormData {
 // 搜索表单
 const searchForm = reactive<SearchForm>({
   metaData: '',
-  alias: ''
+  alias: '',
+  owner: ''
 });
 
 // 分页配置
@@ -339,6 +347,11 @@ const columns = [
   {
     title: '数据类别',
     dataIndex: 'regionFld',
+    resizable: true,
+  },
+  {
+    title: '拥有者',
+    dataIndex: 'owner',
     resizable: true,
   },
   {
