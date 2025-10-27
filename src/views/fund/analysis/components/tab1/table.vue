@@ -2639,7 +2639,7 @@ const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
       title: `列${i + 1}`,
       dataIndex: `col${i}`,
       width: 180,
-      minWidth: 180
+      resizable: true
     });
   }
   
@@ -2899,6 +2899,16 @@ const onOrganizationChange = (value) => {
 .titleConfigClass .table-tab :deep(.ant-select) {
   position: relative;
   z-index: 103;
+}
+
+/* 确保表格容器不会截断下拉框 */
+.titleConfigClass .table-tab :deep(.ant-table-content) {
+  overflow: visible;
+}
+
+/* 确保表格单元格不会截断下拉框 */
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr > td) {
+  overflow: visible;
 }
 
 /* 为配置列的单元格添加特殊样式 */
