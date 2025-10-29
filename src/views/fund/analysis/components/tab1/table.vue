@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -99,8 +99,8 @@
       </template>
       <template v-else-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="showTitleConfigModal(record)">标题配置</a-button>
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="editFile(record)">转换查看</a-button>
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">标题配置</a-button>
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleEditFileClick(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
       </template>
@@ -1089,7 +1089,16 @@ const columns = ref([
     width: 100,
     resizable: true,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'fa_file_process_status');
+      // 定义需要显示为红色的状态码
+      const redStatusCodes = ['900', '901', '902', '904', '999'];
+      const displayText = render.renderDict(text, 'fa_file_process_status');
+      
+      // 如果状态码在红色状态码列表中，则显示为红色
+      if (redStatusCodes.includes(text)) {
+        return h('span', { style: 'color: red;' }, displayText);
+      }
+      
+      return displayText;
     },
   },
   {
@@ -1686,6 +1695,29 @@ const getFileConvertInfo =(id)=>{
 
 }
 
+const handleEditFileClick = (record) => {
+  // 定义可打开模态框的状态
+  const validStatuses = [ '101', '102'];
+  // 定义加载中的状态
+  const loadingStatuses = ['000','003', '100', '001', '002', '004', '005'];
+  // 定义错误状态
+  const errorStatuses = ['900', '901', '902', '904', '999'];
+
+  if (validStatuses.includes(record.status)) {
+    // 状态允许打开模态框
+    editFile(record);
+  } else if (loadingStatuses.includes(record.status)) {
+    // 文件正在加载中
+    message.warning('文件数据正在解析中，请稍后');
+  } else if (errorStatuses.includes(record.status)) {
+    // 文件加载错误
+    message.error('文件加载错误，请修改后再运行');
+  } else {
+    // 其他状态默认提示
+    message.warning('当前状态不支持转换查看');
+  }
+};
+
 // 修改editFile方法，在显示Modal后加载数据
 const editFile = async (record) => {
   currentRecord.value = record;
@@ -2156,6 +2188,30 @@ const resetSplitPanelsToCenter = () => {
 // 在脚本部分添加新方法
 const getRowClassName = (record) => {
   return record.cleanRule ? 'blue-row' : '';
+};
+
+// 新增：处理标题配置按钮点击事件
+const handleTitleConfigClick = (record) => {
+  // 定义可打开模态框的状态
+  const validStatuses = ['003', '100', '101', '102'];
+  // 定义加载中的状态
+  const loadingStatuses = ['000', '001', '002', '004', '005'];
+  // 定义错误状态
+  const errorStatuses = ['900', '901', '902', '904', '999'];
+
+  if (validStatuses.includes(record.status)) {
+    // 状态允许打开模态框
+    showTitleConfigModal(record);
+  } else if (loadingStatuses.includes(record.status)) {
+    // 文件正在加载中
+    message.warning('文件正在加载中，请稍后');
+  } else if (errorStatuses.includes(record.status)) {
+    // 文件加载错误
+    message.error('文件加载错误，请修改后再配置');
+  } else {
+    // 其他状态默认提示
+    message.warning('当前状态不支持标题配置');
+  }
 };
 
 // 标题配置相关方法
