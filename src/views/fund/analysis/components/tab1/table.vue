@@ -1259,8 +1259,8 @@ const [registerTable] = useTable({
   // 添加最小高度确保表格在全屏时正确显示
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
-    size: true, 
+    redo: false,
+    size: false,
     setting: true, 
     fullScreen: true,
     cacheKey: 'fund-analysis-main-table'
@@ -1280,7 +1280,7 @@ const [registerBankCustomerTable] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1301,7 +1301,7 @@ const [registerBankTransactionTable] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1322,7 +1322,7 @@ const [registerNonBankCustomerTable] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1342,7 +1342,7 @@ const [registerNonBankTransactionTable] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,

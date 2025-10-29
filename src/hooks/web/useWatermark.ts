@@ -73,7 +73,7 @@ export function useWatermark(appendEl: Ref<HTMLElement | null> = ref(document.bo
     div.style.pointerEvents = 'none';
     div.style.top = '0px';
     div.style.left = '0px';
-    div.style.position = 'absolute';
+    div.style.position = 'fixed';
     div.style.zIndex = '100000';
     const el = unref(appendEl);
     if (!el) return id;

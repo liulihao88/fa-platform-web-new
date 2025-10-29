@@ -1,6 +1,7 @@
 <template>
   <ConfigProvider :theme="appTheme" :locale="getAntdLocale">
     <AppProvider>
+      <Watermark />
       <RouterView />
     </AppProvider>
   </ConfigProvider>
@@ -17,6 +18,7 @@
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { ThemeEnum } from '/@/enums/appEnum';
   import { changeTheme } from '/@/logics/theme/index';
+  import Watermark from '/@/components/Watermark/index.vue';
 
   const appStore = useAppStore();
   // 解决日期时间国际化问题
