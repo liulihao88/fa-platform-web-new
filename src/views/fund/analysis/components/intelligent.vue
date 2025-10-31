@@ -1,6 +1,6 @@
 <template>
   <!-- 标准数据-筛选 -->
-  <a-card class="m2" title='标准数据-筛选'>
+  <a-card class="m2">
     <!-- 动态查询组件 -->
     <div class="dynamic-query">
       <div class="conditions-container">
@@ -558,24 +558,6 @@
             重置条件
           </a-button>
         </div>
-
-        <a-button type="primary" @click="exportCurrentPage">
-          <template #icon><ExportOutlined /></template>
-          导出本页数据
-        </a-button>
-        <a-button
-            type="primary"
-            @click="exportMarkedData"
-            class="ml2"
-            :disabled="selectedRowKeys.length === 0"
-        >
-          <template #icon><FileExcelOutlined /></template>
-          导出选择数据
-        </a-button>
-        <a-button type="primary" @click="showArchiveModal" class="ml2">
-          <template #icon><FileTextOutlined /></template>
-          生成卷宗信息
-        </a-button>
       </div>
     </div>
   </a-card>
@@ -599,6 +581,22 @@
       :minHeight="300"
       @register="registerTable"
   >
+    <!--插槽:table标题-->
+    <template #tableTitle>
+      <a-button type="primary" @click="exportCurrentPage">
+        导出本页数据
+      </a-button>
+      <a-button
+        type="primary"
+        @click="exportMarkedData"
+        :disabled="selectedRowKeys.length === 0"
+      >
+        导出选择数据
+      </a-button>
+      <a-button type="primary" @click="showArchiveModal">
+        生成卷宗信息
+      </a-button>
+    </template>
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
         {{ (pagination.current - 1) * pagination.pageSize + index + 1 }}
@@ -2012,7 +2010,7 @@ onMounted(() => {
 
 <style scoped>
   .m2 {
-    margin: 16px 0;
+    /*margin: 16px 0;*/
   }
 
   /* 动态查询组件样式 */
@@ -2021,7 +2019,7 @@ onMounted(() => {
   }
 
   .query-actions {
-    margin-bottom: 16px;
+    /*margin-bottom: 16px;*/
     display: flex;
     align-items: center;
     gap: 12px;
@@ -2067,12 +2065,12 @@ onMounted(() => {
     display: flex;
     background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
     border-bottom: 1px solid #e8e8e8;
-    font-weight: 600;
+    font-weight: 550;
   }
 
   .header-item {
     flex: 1;
-    padding: 12px 16px;
+    padding: 5px 16px;
     text-align: center;
     border-right: 1px solid #e8e8e8;
     color: #262626;

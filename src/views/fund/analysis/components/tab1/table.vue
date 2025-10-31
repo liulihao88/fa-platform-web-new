@@ -371,7 +371,7 @@
         <div>
           <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
           <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上传文件要求：</div>
-          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持RAR，ZIP压缩包</div>
+          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包</div>
           <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
         </div>
         <div style="text-align: left; white-space: nowrap;">
@@ -2217,11 +2217,11 @@ const getRowClassName = (record) => {
 // 新增：处理标题配置按钮点击事件
 const handleTitleConfigClick = (record) => {
   // 定义可打开模态框的状态
-  const validStatuses = ['003', '100', '101', '102'];
+  const validStatuses = ['003', '100', '101', '904','102'];
   // 定义加载中的状态
   const loadingStatuses = ['000', '001', '002', '004', '005'];
   // 定义错误状态
-  const errorStatuses = ['900', '901', '902', '904', '999'];
+  const errorStatuses = ['900', '901', '902',  '999'];
 
   if (validStatuses.includes(record.status)) {
     // 状态允许打开模态框
