@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -72,7 +72,7 @@
     size="small"
     :canColDrag="true"
     :showTableSetting="true"
-    :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
+    :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
     :showActionColumn="true"
     :canResize="true"
     @change="handleTableChange"
@@ -252,7 +252,7 @@
                             @change="handleBankCustomerTableChange"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
+                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankCustomerTable"
@@ -279,7 +279,7 @@
                             style="margin-bottom: 16px;"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-transaction-table' }"
+                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-transaction-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankTransactionTable"
@@ -307,7 +307,7 @@
                             :rowClassName="getRowClassName"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
+                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
                             :canResize="true"
                             @register="registerNonBankCustomerTable"
                             class="file-trans-table"
@@ -331,7 +331,7 @@
                             @change="handleNonBankTransactionTableChange"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
+                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerNonBankTransactionTable"
@@ -367,16 +367,25 @@
       :footer="null"
   >
     <div>
-      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
-      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上传文件要求：</div>
-      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持RAR，ZIP压缩包</div>
-      <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
+      <div style="display: flex; justify-content: space-between;">
+        <div>
+          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
+          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上传文件要求：</div>
+          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持RAR，ZIP压缩包</div>
+          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
+        </div>
+        <div style="text-align: left; white-space: nowrap;">
+          <a href="javascript:void(0)" @click="onFileNameInstructionClick" style="margin-left: 50px;">文件命名说明</a><br>
+          <a href="javascript:void(0)" @click="onSupportedFileTypesClick" style="margin-left: 50px;">支持的文件格式</a><br>
+          <a href="javascript:void(0)" @click="onUnsupportedFileTypesClick" style="margin-left: 50px;">不支持的文件格式</a>
+        </div>
+      </div>
       <a-card>
         <a-upload-dragger
             :fileList="fileList"
             :multiple="true"
             :customRequest="onFileListUpload"
-            accept=".xls,.xlsx,.csv,.pdf,.rar,.zip"
+            accept=".xls,.xlsx,.csv,.pdf,.zip"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
             class="custom-upload-dragger"
@@ -387,7 +396,7 @@
             </p>
             <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
             <p class="ant-upload-hint">
-              支持扩展名 .xls .xlsx .csv .pdf .rar .zip
+              支持扩展名 .xls .xlsx .csv .pdf .zip
             </p>
           </div>
         </a-upload-dragger>
@@ -677,6 +686,13 @@
       </a-row>
     </a-card>
   </BasicModal>
+
+  <!-- 文件命名说明组件 -->
+  <FileInfo ref="fileInfoRef"></FileInfo>
+  <!-- 支持的文件格式组件 -->
+  <SupportFormat ref="supportFormatRef"></SupportFormat>
+  <!-- 不支持的文件格式组件 -->
+  <UnSupportFormat ref="unSupportFormatRef"></UnSupportFormat>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -719,6 +735,14 @@ import {BasicModal, useModalInner} from '/@/components/Modal';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+
+import FileInfo from "./fileInfo.vue";
+import SupportFormat from "./supportFormat.vue";
+import UnSupportFormat from "./unSupportFormat.vue";
+
+const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
+const supportFormatRef = ref<InstanceType<typeof SupportFormat> | null>(null);
+const unSupportFormatRef = ref<InstanceType<typeof UnSupportFormat> | null>(null);
 
 const router = useRouter();
 interface ConvertFileItem {
@@ -2722,6 +2746,27 @@ const onOrganizationChange = (value) => {
       selectTitleConfigSheet(currentSheet, value);
     }
   }
+};
+
+// 文件命名说明点击事件
+const onFileNameInstructionClick = () => {
+  // TODO: 实现文件命名说明点击逻辑
+  console.log('文件命名说明 clicked');
+  fileInfoRef.value?.open();
+};
+
+// 支持的文件格式点击事件
+const onSupportedFileTypesClick = () => {
+  // TODO: 实现支持的文件格式点击逻辑
+  console.log('支持的文件格式 clicked');
+  supportFormatRef.value?.open();
+};
+
+// 不支持的文件格式点击事件
+const onUnsupportedFileTypesClick = () => {
+  // TODO: 实现不支持的文件格式点击逻辑
+  console.log('不支持的文件格式 clicked');
+  unSupportFormatRef.value?.open();
 };
 
 </script>

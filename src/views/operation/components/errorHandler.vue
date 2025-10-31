@@ -23,7 +23,7 @@
         @change="handleTableChange"
         :canColDrag="true"
         :showTableSetting="true"
-        :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'error-handler-table' }"
+        :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'error-handler-table' }"
         :canResize="true"
         :minHeight="300"
         @register="registerTable"
@@ -182,7 +182,7 @@ const [registerTable] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,

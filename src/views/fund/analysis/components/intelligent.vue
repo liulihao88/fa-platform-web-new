@@ -594,7 +594,7 @@
       rowKey="id"
       :canColDrag="true"
       :showTableSetting="true"
-      :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-intelligent-table' }"
+      :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-intelligent-table' }"
       :canResize="true"
       :minHeight="300"
       @register="registerTable"

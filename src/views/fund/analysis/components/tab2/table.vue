@@ -40,7 +40,7 @@
     size="small"
     :canResize="true"
     :showTableSetting="true"
-    :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-involved-person' }"
+    :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-involved-person' }"
     @register="registerTable"
   >
     <template #bodyCell="{ column, record, index }">
@@ -98,7 +98,7 @@
         :pagination="false"
         :canResize="true"
         :showTableSetting="true"
-        :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-relation-detail' }"
+        :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-relation-detail' }"
         @register="registerDetailTable"
       >
         <template #bodyCell="{ column, record, index }">
@@ -415,7 +415,7 @@ const [registerTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -432,7 +432,7 @@ const [registerDetailTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,

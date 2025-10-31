@@ -79,7 +79,7 @@
                   @change="handleCustomerTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-customer' }"
+                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-customer' }"
                   @register="registerCustomerTable"
               >
                 <template #bodyCell="{ column, record }">
@@ -102,7 +102,7 @@
                   @change="handleTransactionTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-transaction' }"
+                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-transaction' }"
                   @register="registerTransactionTable"
               >
                 <template #bodyCell="{ column, record }">
@@ -125,7 +125,7 @@
                   @change="handleNonBankCustomerTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-customer' }"
+                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-customer' }"
                   @register="registerNonBankCustomerTable"
               >
                 <template #bodyCell="{ column, record }">
@@ -148,7 +148,7 @@
                   @change="handleNonBankTransactionTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-transaction' }"
+                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-transaction' }"
                   @register="registerNonBankTransactionTable"
               >
                 <template #bodyCell="{ column, record }">
@@ -191,7 +191,7 @@
               @change="handleParseEntityTableChange"
               :canResize="true"
               :showTableSetting="true"
-              :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-entity' }"
+              :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-entity' }"
               @register="registerParseEntityTable"
             >
             </BasicTable>
@@ -208,7 +208,7 @@
               @change="handleParseTransTableChange"
               :canResize="true"
               :showTableSetting="true"
-              :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-trans' }"
+              :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-trans' }"
               @register="registerParseTransTable"
             >
             </BasicTable>
@@ -225,7 +225,7 @@
               @change="handleParseOrderTableChange"
               :canResize="true"
               :showTableSetting="true"
-              :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-order' }"
+              :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-parse-order' }"
               @register="registerParseOrderTable"
             >
             </BasicTable>
@@ -1043,7 +1043,7 @@ const [registerCustomerTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1062,7 +1062,7 @@ const [registerTransactionTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1081,7 +1081,7 @@ const [registerNonBankCustomerTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1099,7 +1099,7 @@ const [registerNonBankTransactionTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1118,7 +1118,7 @@ const [registerParseEntityTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1137,7 +1137,7 @@ const [registerParseTransTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
@@ -1156,7 +1156,7 @@ const [registerParseOrderTable] = useTable({
   canResize: true,
   showTableSetting: true,
   tableSetting: { 
-    redo: true, 
+    redo: false,
     size: true, 
     setting: true, 
     fullScreen: true,
