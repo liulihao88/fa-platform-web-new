@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -157,25 +157,52 @@
               </a-row>
               <a-row>
                 <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 640px" >
+                  <div v-if="fileLoading" class="file-loading">
+                    <a-spin size="large" />
+                    <p>文件加载中，请稍候...</p>
+                  </div>
                   <VueOfficeExcel
+                      v-else
                       :src="fileStreamInfo"
                       :options="vueExcelOptions"
                       @rendered="onExcelRendered"
                       @error="onExcelError"
+                      :pagination="true"
+                      :page-size="20"
+                      :min-col-width="100"
+                      :max-col-width="300"
                   />
                 </a-col>
                 <a-col v-if="currentFileType == 'pdf'" span="24">
-                  <VueOfficePdf
-                      :src="fileStreamInfo"
-                      @rendered="onExcelRendered"
-                      style="height: 640px;width: 100%"
-                      @error="onExcelError"
-                  />
+                  <div v-if="fileLoading" class="file-loading">
+                    <a-spin size="large" />
+                    <p>文件加载中，请稍候...</p>
+                  </div>
+                  <div v-else-if="!fileStreamInfo" class="file-loading">
+                    <p>文件内容为空</p>
+                  </div>
+                  <div v-else class="pdf-container">
+                    <VueOfficePdf
+                        :src="fileStreamInfo"
+                        @rendered="onPdfRendered"
+                        style="height: 640px;width: 100%"
+                        @error="onPdfError"
+                        :page-size="10"
+                        :min-page-width="700"
+                    />
+                  </div>
                 </a-col>
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
                   <!-- CSV预览 - 仿Excel表格样式 -->
-                  <div class="csv-preview">
-                    <div class="csv-table-container">
+                  <div v-if="fileLoading" class="file-loading">
+                    <a-spin size="large" />
+                    <p>文件加载中，请稍候...</p>
+                  </div>
+                  <div v-else class="csv-preview">
+                    <div v-if="csvData.length === 0" class="csv-empty">
+                      <p>没有可显示的数据</p>
+                    </div>
+                    <div v-else class="csv-table-container">
                       <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
                         <thead>
                         <tr>
@@ -238,7 +265,7 @@
                 </div>
                 </a-col>
                 <a-col :span="20">
-                  <a-card class="table-card" style="height: 640px">
+                  <a-card class="table-card" style="height: 100%">
                     <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
@@ -918,6 +945,10 @@ const convertFormState = ref({
   customerId:''
 });
 
+// 添加文件加载状态
+const fileLoading = ref(false);
+// 添加文件大小限制（以字节为单位）
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 
 const bankEfit = ref(false);
 const selectedBank = ref('');
@@ -945,7 +976,7 @@ const activeSheetData = ref<ActiveSheetData>({
 // 表格列定义
 const bankCustomerColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属银行', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '归属银行', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
@@ -967,7 +998,7 @@ const bankCustomerColumns = ref([
 
 const bankTransactionColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
   { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
@@ -1002,7 +1033,7 @@ const bankTransactionColumns = ref([
 // 表格列定义
 const nonBankCustomerColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
@@ -1029,7 +1060,7 @@ const nonBankCustomerColumns = ref([
 
 const nonBankTransactionColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
   { title: '终端号', dataIndex: 'portId', width: 100, resizable: true},
   { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
@@ -1744,6 +1775,8 @@ const handleEditFileClick = (record) => {
 
 // 修改editFile方法，在显示Modal后加载数据
 const editFile = async (record) => {
+  // 先显示模态框
+  editModalVisible.value = true;
   currentRecord.value = record;
   // 查询转换基本信息
   const convertInfo = await getFileConverResultApi({fileId:record.id})
@@ -1782,7 +1815,7 @@ const editFile = async (record) => {
 
   nextTick(() => {
     // 先显示模态框
-    editModalVisible.value = true;
+    //editModalVisible.value = true;
     // 在模态框显示后再重置分隔条到居中位置
     setTimeout(() => {
       resetSplitPanelsToCenter();
@@ -1799,8 +1832,46 @@ const cleanupUrl = () => {
 
 // 预览文件excel或者pdf或者csv文件
 const previewFile = (record)=>{
-  const  responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer'
-  getFileStreamByFileId({fileId:record.id},responseType).then((response)=>{
+  const responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer';
+  
+  // 设置加载状态
+  fileLoading.value = true;
+  
+  // 先获取文件信息，检查文件大小
+  getFileInfoItem({fileId:record.id}).then(fileInfo => {
+    const fileSize = fileInfo.fileSize || 0;
+    
+    // 检查文件大小是否超过限制
+    if (fileSize > MAX_FILE_SIZE) {
+      Modal.confirm({
+        title: '文件过大提示',
+        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统建议的3MB限制，预览可能会影响浏览器性能。是否继续预览？`,
+        okText: '继续预览',
+        cancelText: '取消',
+        onOk: () => {
+          // 用户选择继续，执行文件加载
+          loadFileContent(record, responseType);
+        },
+        onCancel: () => {
+          // 用户取消预览
+          fileLoading.value = false;
+          fileStreamInfo.value = '';
+        }
+      });
+    } else {
+      // 文件大小在限制范围内，直接加载
+      loadFileContent(record, responseType);
+    }
+  }).catch(error => {
+    console.error('获取文件信息失败:', error);
+    // 即使无法获取文件大小，也尝试加载文件
+    loadFileContent(record, responseType);
+  });
+}
+
+// 实际加载文件内容的方法
+const loadFileContent = (record, responseType) => {
+  getFileStreamByFileId({fileId:record.id}, responseType).then((response)=>{
     console.info('文件类型',currentFileType.value)
     if (currentFileType.value === 'csv') {
       // CSV文件以arraybuffer形式获取，然后转换为文本
@@ -1825,30 +1896,71 @@ const previewFile = (record)=>{
         csvText = csvText.slice(1);
       }
       
+      // 解析CSV内容并存储
       csvContent.value = csvText;
-      csvData.value = parseCSV(csvText);
+      try {
+        csvData.value = parseCSV(csvText);
+      } catch (e) {
+        console.error('解析CSV失败:', e);
+        csvData.value = [];
+        message.error('CSV文件解析失败');
+      }
+      fileLoading.value = false;
+    } else if (currentFileType.value === 'excel') {
+      // Excel文件以blob形式获取，然后转换为URL
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      fileStreamInfo.value = url;
+      fileLoading.value = false;
+    } else if (currentFileType.value === 'pdf') {
+      // PDF文件以blob形式获取，然后转换为URL
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      fileStreamInfo.value = blob;
+      fileLoading.value = false;
     } else {
-      // 其他文件类型以arrayBuffer形式获取
-      cleanupUrl() // 清理之前的URL
-      // 对于Excel文件，使用arrayBuffer创建blob
-      if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
-        const blob = new Blob([response.data], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
-        fileStreamInfo.value = blob;
-      }
-      // 对于PDF文件，使用arrayBuffer创建blob
-      else if (currentFileType.value === 'pdf') {
-        const blob = new Blob([response.data], {
-          type: 'application/pdf'
-        });
-        fileStreamInfo.value = blob;
-      }
+      // 其他文件类型直接显示
+      const blob = new Blob([response.data], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      fileStreamInfo.value = url;
+      fileLoading.value = false;
     }
-  }).catch(()=>{
-    fileStreamInfo.value = ''
-  })
+  }).catch(error => {
+    console.error('获取文件流失败:', error);
+    fileLoading.value = false;
+    message.error('文件加载失败');
+  });
 }
+
+// Excel渲染事件处理
+const onExcelRendered = () => {
+  console.log('Excel渲染完成');
+  fileLoading.value = false;
+};
+
+const onExcelError = (error) => {
+  console.error('Excel渲染错误:', error);
+  fileLoading.value = false;
+  message.error('Excel文件渲染失败');
+};
+
+// 添加PDF渲染事件处理
+const onPdfRendered = () => {
+  console.log('PDF渲染完成');
+  fileLoading.value = false;
+};
+
+const onPdfError = (error) => {
+  console.error('PDF渲染错误:', error);
+  fileLoading.value = false;
+  message.error('PDF文件渲染失败');
+  
+  // 可以根据错误类型提供更具体的提示
+  if (error?.message?.includes('Invalid PDF')) {
+    message.error('PDF文件格式不正确或已损坏');
+  } else if (error?.message?.includes('Missing PDF')) {
+    message.error('PDF文件内容缺失');
+  }
+};
 
 // 关闭编辑Modal
 const closeEditModal = () => {
@@ -2085,14 +2197,7 @@ const getStatusText = (statusValue) => {
   return option ? option.label : '--';
 };
 
-// Excel渲染事件处理
-const onExcelRendered = () => {
-  console.log('Excel渲染完成');
-};
 
-const onExcelError = (error) => {
-  console.error('Excel渲染错误:', error);
-};
 
 // 新增：获取表格数据的方法
 const getTableAction = (record) => {
@@ -2864,44 +2969,73 @@ const onUnsupportedFileTypesClick = () => {
   width: 100% !important;
 }
 
+.file-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+}
+
+.file-loading p {
+  margin-top: 16px;
+  color: #666;
+}
+
 .csv-preview {
   padding: 20px;
   height: 100%;
   overflow: auto;
+  background-color: #f5f5f5;
 }
 
 .csv-table-container {
-  max-height: 640px;
+  max-height: 600px;
   overflow: auto;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .csv-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+}
 
-  th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    text-align: left;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+.csv-table th {
+  background-color: #fafafa;
+  font-weight: bold;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: 1px solid #e8e8e8;
+  padding: 8px 12px;
+}
 
-  th, td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    white-space: nowrap;
-  }
+.csv-table td {
+  border: 1px solid #e8e8e8;
+  padding: 8px 12px;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
+.csv-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
 
-  tr:hover {
-    background-color: #f0f0f0;
-  }
+.csv-table tr:hover {
+  background-color: #f0f7ff;
+}
+
+.csv-empty {
+  text-align: center;
+  padding: 40px;
+  color: #999;
 }
 
 .pagination-controls {
@@ -3057,5 +3191,86 @@ const onUnsupportedFileTypesClick = () => {
     background-color: #40a9ff;
     width: 6px;
     margin-left: -3px;
+  }
+  
+  .file-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+  }
+  
+  .file-loading p {
+    margin-top: 16px;
+    color: #666;
+  }
+  
+  .csv-preview {
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+    background-color: #f5f5f5;
+  }
+  
+  .pdf-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    height: 100%;
+  }
+  
+  .pdf-container :deep(.vue-office-pdf) {
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  .csv-table-container {
+    max-height: 600px;
+    overflow: auto;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .csv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .csv-table th {
+    background-color: #fafafa;
+    font-weight: bold;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border: 1px solid #e8e8e8;
+    padding: 8px 12px;
+  }
+
+  .csv-table td {
+    border: 1px solid #e8e8e8;
+    padding: 8px 12px;
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .csv-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+
+  .csv-table tr:hover {
+    background-color: #f0f7ff;
+  }
+
+  .csv-empty {
+    text-align: center;
+    padding: 40px;
+    color: #999;
   }
 </style>
