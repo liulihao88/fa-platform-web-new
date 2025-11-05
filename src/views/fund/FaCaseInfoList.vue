@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" name="casefiles-faCaseInfo" setup>
-import {ref, reactive, computed, unref} from 'vue';
+import {ref, reactive, computed, unref, onMounted, onUnmounted} from 'vue';
 import {BasicTable, useTable, TableAction} from '/@/components/Table';
 import {useModal} from '/@/components/Modal';
 import { useListPage } from '/@/hooks/system/useListPage'
@@ -107,7 +107,27 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
   },
 })
 
-const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
+const [registerTable, {reload, setLoading},{ rowSelection, selectedRowKeys }] = tableContext
+
+// 存储定时器引用
+let refreshTimer: any = null;
+
+// 组件挂载时启动定时刷新
+onMounted(() => {
+  refreshTimer = setInterval(() => {
+    // 定时刷新时不显示加载动画
+    reload();
+    setLoading(false);
+  }, 10000); // 每10秒刷新一次
+});
+
+// 组件卸载前清除定时器
+onUnmounted(() => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+});
 
 // 高级查询配置
 const superQueryConfig = reactive(superQuerySchema);

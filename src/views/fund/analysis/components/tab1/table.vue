@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -412,7 +412,7 @@
             :fileList="fileList"
             :multiple="true"
             :customRequest="onFileListUpload"
-            accept=".xls,.xlsx,.csv,.pdf,.zip"
+            accept=".xls,.xlsx,.xlsm,.csv,.pdf,.zip"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
             class="custom-upload-dragger"
@@ -423,7 +423,7 @@
             </p>
             <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
             <p class="ant-upload-hint">
-              支持扩展名 .xls .xlsx .csv .pdf .zip
+              支持扩展名 .xls .xlsx .xlsm .csv .pdf .zip
             </p>
           </div>
         </a-upload-dragger>
@@ -645,6 +645,7 @@
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
           <a-card title="标题配置" size="small" style="height: 100%" class="titleConfigClass">
+            <a-button v-if="isIgnoreTitleConfig" type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
                 v-for="(dataBlock, index) in titleConfigData.result" 
@@ -681,7 +682,7 @@
                   </template>
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'config'">
-                      <div v-if="record.type === 'newMetaData'">
+                        <div v-if="record.type === 'newMetaData'">
                         配置列
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
@@ -732,7 +733,7 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
+import { ref,reactive, onMounted, defineProps,computed,nextTick, h, onUnmounted } from 'vue';
 import { render } from '/@/utils/common/renderUtils';
 import { message, Modal, Select } from 'ant-design-vue';
 //引入VueOfficeExcel组件
@@ -1002,6 +1003,7 @@ const bankCustomerColumns = ref([
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1036,6 +1038,7 @@ const bankTransactionColumns = ref([
   { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1063,6 +1066,7 @@ const nonBankCustomerColumns = ref([
   { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1102,6 +1106,7 @@ const nonBankTransactionColumns = ref([
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
   { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true},
   { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1415,10 +1420,26 @@ const [registerNonBankTransactionTable] = useTable({
   }
 });
 
+// 添加定时器引用
+const fileListRefreshTimer = ref<number | null>(null);
+
 // 页面初始化时调用接口
 onMounted(() => {
   pagination.current = 1;
   fetchFileList();
+  
+  // 设置定时刷新，每10秒刷新一次文件列表
+  fileListRefreshTimer.value = window.setInterval(() => {
+    fetchFileList(true);
+  }, 10000);
+});
+
+// 组件卸载时清除定时器
+onUnmounted(() => {
+  if (fileListRefreshTimer.value) {
+    clearInterval(fileListRefreshTimer.value);
+    fileListRefreshTimer.value = null;
+  }
 });
 
 // 修改后的方法
@@ -1450,9 +1471,12 @@ const checkFilesNames=(record)=> {
 }
 
 // 获取文件列表
-const fetchFileList = async () => {
+const fetchFileList = async (isAutoRefresh = false) => {
   try {
-    tableLoading.value = true;
+    // 如果是自动刷新，则不显示loading效果
+    if (!isAutoRefresh) {
+      tableLoading.value = true;
+    }
 
     const params = {
       caseId: query.caseId,
@@ -1471,8 +1495,11 @@ const fetchFileList = async () => {
     dataSource.value = [];
     pagination.total = 0;
   } finally {
-    tableLoading.value = false;
-    searchLoading.value = false;
+    // 如果是自动刷新，则不显示loading效果
+    if (!isAutoRefresh) {
+      tableLoading.value = false;
+      searchLoading.value = false;
+    }
   }
 };
 
@@ -2063,7 +2090,9 @@ const saveTitleConfig = async () => {
     await updateFileConfigApi(params);
     message.success('标题配置已保存');
     
-    // 保存成功后，刷新模态窗口重新加载
+    // 保存成功后，刷新文件列表数据
+    fetchFileList();
+    
     // 重新加载所属银行/支付公司下拉框和页码列表数据
     await showTitleConfigModal(currentTitleConfigFile.value);
     
@@ -2443,6 +2472,9 @@ const showTitleConfigModal = async (record) => {
   }
 };
 
+// 添加全屏状态
+const isIgnoreTitleConfig = ref(false);
+
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
   const orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
@@ -2458,6 +2490,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   try {
     // 开始加载，设置加载状态为true
     titleConfigLoading.value = true;
+    isIgnoreTitleConfig.value = false;
     
     // 获取文件配置选项
     const configResponse = await getFileConfigApi({orgCode: orgCode});
@@ -2510,9 +2543,11 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
       }else{
         //如果没有获取到数据，使用模拟数据
         message.error('未查询到配置数据');
+        isIgnoreTitleConfig.value = true;
       }
     } else {
       // 如果没有获取到数据，清空现有数据
+      isIgnoreTitleConfig.value = true;
       titleConfigData.value = {
         result: []
       };

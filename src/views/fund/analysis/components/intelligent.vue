@@ -988,7 +988,7 @@ const columns = [
 // 银行客户信息列配置
 const bankCustomerColumns = [
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属银行', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '归属银行', dataIndex: 'orgName', width: 100, resizable: true },
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
@@ -1005,13 +1005,14 @@ const bankCustomerColumns = [
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
 // 银行交易流列配置
 const bankTransactionColumns = [
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
   { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
   { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
@@ -1040,13 +1041,14 @@ const bankTransactionColumns = [
   { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
 // 非银行客户信息列配置
 const nonBankCustomerColumns = [
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
@@ -1067,13 +1069,14 @@ const nonBankCustomerColumns = [
   { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
 // 非银行交易流列配置
 const nonBankTransactionColumns = [
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
   { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true },
   { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
   { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true },
@@ -1106,6 +1109,7 @@ const nonBankTransactionColumns = [
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
   { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true },
   { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
