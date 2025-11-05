@@ -1,6 +1,6 @@
 <template>
   <span :class="`${prefixCls}__extra-redo`" @click="handleRedo">
-    <SvgIcon name="reload-01"></SvgIcon>
+    <SvgIcon name="reload-01" size="20"></SvgIcon>
   </span>
 </template>
 <script lang="ts">
