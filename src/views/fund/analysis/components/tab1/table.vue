@@ -20,7 +20,7 @@
               <a-col :span="6">
                 <a-form-item name="fileStatus" label="状态" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18 }">
                   <a-select v-model:value="formState.fileStatus" placeholder="请选择状态">
-                    <a-select-option v-for="item in props.fileProcessOptions" :key="item.value" :value="item.value">
+                    <a-select-option v-for="item in filterStatusOptions" :key="item.value" :value="item.value">
                       {{ item.label }}
                     </a-select-option>
                   </a-select>
@@ -517,7 +517,7 @@
   <!-- 标题配置Modal -->
   <BasicModal
     v-model:visible="titleConfigModalVisible"
-    :title="`标题配置 - ${currentTitleConfigFile?.fileName || ''}`"
+    :title="`字段映射 - ${currentTitleConfigFile?.fileName || ''}`"
     width="90%"
     :useWrapper="true"
     :maskClosable="false"
@@ -548,6 +548,7 @@
                     v-model:value="currentTitleConfigFile.organizationCode"
                     placeholder="请选择所属银行/支付公司"
                     allow-clear
+                    notFoundContent="无此银行，请联系运维添加"
                     style="width: 60%"
                     :disabled="isOrganizationSelectDisabled"
                     @change="onOrganizationChange"
@@ -580,7 +581,7 @@
 
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
-          <a-card title="标题配置" size="small" style="height: 100%" class="titleConfigClass">
+          <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane
                 v-for="(dataBlock, index) in titleConfigData.result"
@@ -609,8 +610,8 @@
                   </template>
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'config'">
-                      <div v-if="record.type === 'newMetaData'">配置列</div>
-                      <div v-else-if="record.type === 'titleColName'">原标题</div>
+                      <div v-if="record.type === 'newMetaData'">标准字段</div>
+                      <div v-else-if="record.type === 'titleColName'">原字段</div>
                       <div v-else-if="record.type === 'datas'">
                         {{ record.dataIndex !== undefined ? record.dataIndex + 1 : '' }}
                       </div>
@@ -703,9 +704,17 @@
 
   import FileInfo from './fileInfo.vue';
 
+
   const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
 
   const emits = defineEmits(['timerUpdate']);
+
+  const statusMap:any = {
+    '900': ['900', '901', '902', '904'],
+    '001': ['002', '100', '101'],
+    '003': ['003'],
+    '102': ['102'],
+  }
 
   const router = useRouter();
   interface ConvertFileItem {
@@ -742,6 +751,59 @@
     }
     return [];
   });
+
+  /**
+   * 下拉菜单	查询状态	
+转换失败	900 解压失败	
+	901 格式不支持	
+	902 入库异常	
+	904 转换异常	
+	9字开头	
+自动运行中	001	待验证
+	002	待入库
+	100	配置完成
+	101	解析完成
+待配置	003	入库完成
+已完成	102	合并完成
+   */
+
+  const filterStatusOptions = computed(()=>{
+    if(!props.fileProcessOptions || props.fileProcessOptions.length === 0){
+      return []
+    }
+    let resultOptions:any = [];
+    props.fileProcessOptions.forEach(v=>{
+      if(statusMap['900'].includes(v.value)){
+        if(!resultOptions.some(option => option.value === '900')){
+          resultOptions.push({
+            label: '转换失败',
+            value: '900',
+          })
+        }
+      }
+      if(statusMap['001'].includes(v.value)){
+         if(!resultOptions.some(option => option.value === '001')){
+          resultOptions.push({
+            label: '自动运行中',
+            value: '001',
+          })
+         }
+      }
+      if(['003'].includes(v.value)){
+          resultOptions.push({
+            label: '待配置',
+            value: '003',
+          })
+      }
+      if(['102'].includes(v.value)){
+          resultOptions.push({
+            label: '已完成',
+            value: '102',
+          })
+      }
+    })
+    return resultOptions
+  })
   // 新增计算属性：检查当前激活的选项卡是否有数据
   const hasTableData = computed(() => {
     switch (activeTab.value) {
@@ -1391,7 +1453,7 @@
         caseId: query.caseId,
         folder: formState.folder,
         fileName: formState.fileName,
-        fileStatus: formState.fileStatus,
+        fileStatus: formState.fileStatus ? statusMap[formState.fileStatus] : [],
         pageNo: pagination.current,
         pageSize: pagination.pageSize,
       };
@@ -1527,6 +1589,7 @@
     }
     uploading.value = false;
     uploadModalVisible.value = false;
+    message.info("文件开始处理，请稍候！")
     fileList.value = [];
 
     // 刷新文件列表

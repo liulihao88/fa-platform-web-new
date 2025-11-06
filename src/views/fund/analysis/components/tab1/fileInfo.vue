@@ -6,6 +6,7 @@ import { BasicModal } from '/@/components/Modal';
 import support1Image from '@/assets/images/filedesc/support1.png';
 import support2Image from '@/assets/images/filedesc/support2.png';
 import support3Image from '@/assets/images/filedesc/support3.png';
+import support4Image from '@/assets/images/filedesc/support4.png';
 import unSupport1Image from '@/assets/images/filedesc/unSupport1.png';
 import unSupport2Image from '@/assets/images/filedesc/unSupport2.png';
 
@@ -38,22 +39,24 @@ defineExpose({
           <div class="title-1">EXCEL文件： xls xlsx csv xlsm 结尾的文件</div>
           <div class="title-1">ZIP 文件： 可以把多个文件或者目录压缩成一个文件一次上传</div>
           <g-title title="二丶支持的格式"></g-title>
-          <div class="title-2">1) 横向表格</div>
+          <div class="title-1">1) 横向表格</div>
           <Image :src="support1Image" />
-          <div  class="title-2">2) 纵向表格</div>
+          <div  class="title-1">2) 纵向表格</div>
           <Image :src="support2Image" />
-          <div  class="title-2">3) 横表+纵表 任意组合</div>
+          <div  class="title-1">3) 横表+纵表 任意组合</div>
           <Image :src="support3Image" />
         </a-col>
         <a-col :span="12" class="r">
            <g-title title="三丶不支持的文件种类"></g-title>
-           <div  class="title-2">1) 图片， PDF文件如果内容是图片，则不能识别</div>
-           <div  class="title-2">2) 表格的表头错行  或者没有表格，只有文字</div>
-           <div  class="title-2">3) 文件没有表格，只有文字</div>
+           <div  class="title-1">图片：PDF文件如果内容是图片，则不能识别</div>
+           <div  class="title-1">表格的表头错行  或者没有表格，则不能识别</div>
+           <div  class="title-1">文件没有表格，只有文字，则不能识别</div>
            <div  class="title-1">1) 没有表格</div>
-            <Image :src="unSupport1Image" />
-           <div  class="title-1">2) 表格的表头行错行, 或者没有表格头</div>
-            <Image :src="unSupport2Image" />
+           <Image :src="unSupport2Image" />
+           <div  class="title-1">2) 表格错行</div>
+           <Image :src="unSupport1Image" />
+           <div  class="title-1">3) 只有文字</div>
+           <Image :src="support4Image" />
         </a-col>
       </a-row>
     </BasicModal>
