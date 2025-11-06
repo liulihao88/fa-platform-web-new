@@ -667,7 +667,7 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-  import { ref, reactive, onMounted, defineProps, computed, nextTick, h } from 'vue';
+  import { ref, reactive, onMounted, defineProps, computed, nextTick, h, watch } from 'vue';
   import { render } from '/@/utils/common/renderUtils';
   import { message, Modal, Select } from 'ant-design-vue';
   //引入VueOfficeExcel组件
@@ -715,6 +715,8 @@
   const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
   const supportFormatRef = ref<InstanceType<typeof SupportFormat> | null>(null);
   const unSupportFormatRef = ref<InstanceType<typeof UnSupportFormat> | null>(null);
+
+  const emits = defineEmits(['timerUpdate']);
 
   const router = useRouter();
   interface ConvertFileItem {
@@ -1417,8 +1419,10 @@
       searchLoading.value = false;
     }
   };
-  const { start } = useTimer(fetchFileList, 1500);
-  start();
+  const { restart, stop } = useTimer(()=>{
+    fetchFileList()
+    emits('timerUpdate')
+  }, 1500);
 
   // 添加表格分页变化处理方法
   const handleTableChange = (pag) => {
@@ -2812,6 +2816,11 @@
     console.log('不支持的文件格式 clicked');
     unSupportFormatRef.value?.open();
   };
+
+defineExpose({
+  restart,
+  stop,
+});
 </script>
 
 <style scoped>
