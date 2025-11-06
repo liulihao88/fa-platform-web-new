@@ -99,7 +99,7 @@
       </template>
       <template v-else-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">标题配置</a-button>
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">字段映射</a-button>
           <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleEditFileClick(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
@@ -584,7 +584,7 @@
   <!-- 标题配置Modal -->
   <BasicModal
     v-model:visible="titleConfigModalVisible"
-    :title="`标题配置 - ${currentTitleConfigFile?.fileName || ''}`"
+    :title="`字段映射 - ${currentTitleConfigFile?.fileName || ''}`"
     width="90%"
     :useWrapper="true"
     :maskClosable="false"
@@ -644,7 +644,7 @@
 
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
-          <a-card title="标题配置" size="small" style="height: 100%" class="titleConfigClass">
+          <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
             <a-button v-if="isIgnoreTitleConfig" type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
@@ -654,7 +654,7 @@
               >
                 <div style="display: flex; justify-content: space-between;">
                   <div>
-                    <div class="ml4" ><span>未映射的标题配置：</span><span style="color:red">{{dataBlock.noMappingTitle}}</span></div>
+                    <div class="ml4" ><span>未映射的字段：</span><span style="color:red">{{dataBlock.noMappingTitle}}</span></div>
                   </div>
                   <div style="text-align: right; white-space: nowrap;">
                     下表数据为示例数据，不是全部数据
@@ -2088,7 +2088,7 @@ const saveTitleConfig = async () => {
     
     // 调用API保存配置
     await updateFileConfigApi(params);
-    message.success('标题配置已保存');
+    message.success('字段映射已保存');
     
     // 保存成功后，刷新文件列表数据
     fetchFileList();
@@ -2542,8 +2542,9 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
         titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
       }else{
         //如果没有获取到数据，使用模拟数据
-        message.error('未查询到配置数据');
+        // message.error('未查询到配置数据');
         isIgnoreTitleConfig.value = true;
+        // titleConfigActiveTab.value = null;
       }
     } else {
       // 如果没有获取到数据，清空现有数据
