@@ -121,7 +121,7 @@
       :footer="null"
   >
     <div>
-      <a-card style="height: 100%">
+      <a-card style="height: 850px">
         <div class="panel-controls">
           <a-button 
             type="primary" 
@@ -151,7 +151,7 @@
             :size="leftPanelSize" 
             :min-size="leftPanelVisible ? 0.1 : 0"
           >
-            <a-card title="源文件视图" size="small" style="height: 100%">
+            <a-card title="源文件视图" size="small" style="height: 850px">
               <a-row>
                 <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
               </a-row>
@@ -228,7 +228,7 @@
             :size="rightPanelSize" 
             :min-size="rightPanelVisible ? 0.1 : 0"
           >
-            <a-card title="转换结果" size="small" style="height: 100%">
+            <a-card title="转换结果" size="small" style="height: 850px">
               <!-- 文件归属银行选择区域 -->
               <!--<a-row style="margin-bottom: 16px;">
                 <a-col :span="4">
@@ -250,7 +250,7 @@
               </a-row>-->
 
               <!-- Sheet列表区域 -->
-              <a-row style="margin-bottom: 16px;height: 640px">
+              <a-row style="margin-bottom: 16px;height: 850px">
                 <a-col :span="4">
                   <div class="sheet-list">
                   <h3>文件页码</h3>
@@ -265,7 +265,7 @@
                 </div>
                 </a-col>
                 <a-col :span="20">
-                  <a-card class="table-card" style="height: 100%">
+                  <a-card class="table-card" style="height: 800px">
                     <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
@@ -2781,7 +2781,7 @@ const onUnsupportedFileTypesClick = () => {
   padding: 10px;
   background: #fff;
   height: 100%;
-  max-height: 640px;
+  max-height: 800px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
