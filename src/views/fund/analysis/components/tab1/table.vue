@@ -700,7 +700,7 @@
                           v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
                           placeholder="请选择配置项"
                           allow-clear
-                          style="width: 100%"
+                          style="width: 150px"
                           :disabled="isCurrentSheetConfigured"
                           @change="(value) => handleTitleConfigChange(value, dataBlock, column, record)"
                         />
@@ -2636,7 +2636,7 @@ const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
     columns.push({
       title: `列${i + 1}`,
       dataIndex: `col${i}`,
-      width: 180,
+      width: 120,
       resizable: true
     });
   }
