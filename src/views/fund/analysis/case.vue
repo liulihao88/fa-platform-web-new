@@ -15,7 +15,7 @@
             </a-col>
             <a-col :xs="24" :sm="8">
               <span class="info-label">受理日期:</span>
-              <span class="info-value">{{ caseInfo.acceptTime }}</span>
+              <span class="info-value">{{ formattedAcceptTime }}</span>
             </a-col>
           </a-row>
         </div>
@@ -32,9 +32,7 @@
     <div class="case-tabs">
       <a-tabs v-model:activeKey="activeKey">
         <a-tab-pane key="1" tab="上传文件">
-          <tab1
-              :filteredFiles="filteredFiles"
-              :fileProcessOptions="fileProcessOptions"></tab1>
+           <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref"></tab1>
         </a-tab-pane>
         <a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2
@@ -57,10 +55,11 @@
 </template>
 
 <script lang="ts" name="system-user" setup>
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed, watch} from 'vue';
   import { useRoute } from 'vue-router';
   import { caseDetailApi,standardFileListApi } from './user.api'
   import { getCommonDictionary } from '/@/utils/index';
+  import dayjs from 'dayjs';
   import tab1 from './components/tab1/table.vue'
   import tab2 from './components/tab2/table.vue'
   import tab3 from './components/tab3/table.vue'
@@ -76,41 +75,20 @@ import {ref, onMounted, reactive} from 'vue';
   const idCardTypeOptions = ref([]);
   const filteredFiles = reactive([])
   const currentStep = ref(0);
+  const tab1Ref = ref(null);
 
-  // 页面初始化时调用接口
-  onMounted(() => {
-    if(query.caseId){
+  const fetechStepOptions = ()=>{
+    if (query.caseId) {
       fetchCaseInfo();
     }
-    //fetchStandardFileList()
-    getCommonDictionary('fa_case_process_status').then((res:[])=>{
-      stepOptions.value = res
-    })
-    getCommonDictionary('fa_file_process_status').then((res:[])=>{
-      fileProcessOptions.value = res
-    })
-    getCommonDictionary('fa_involved_person_relation').then((res:[])=>{
-      involvedRelateOptions.value = res
-    })
-    getCommonDictionary('fa_involved_person_type').then((res:[])=>{
-      involvedKindOptions.value = res
-    })
+  }
 
-    getCommonDictionary('fa_id_type').then((res:[])=>{
-      idCardTypeOptions.value = res
-    })
-  });
-  // 获取标准数据查看列表
-  const fetchStandardFileList = async () => {
-    try {
-      const params = {
-        caseId: query.caseId,
-       // fileName: searchText.value,
-      };
-      const response = await standardFileListApi(params);
-      Object.assign(filteredFiles, response||[]);
-    } catch (error) {
-    }
+
+
+
+
+  const timerUpdate = ()=>{
+    fetechStepOptions()
   }
   // 模拟从服务端获取案件信息的函数
   const fetchCaseInfo = async () => {
@@ -137,6 +115,40 @@ import {ref, onMounted, reactive} from 'vue';
       // currentStep.value = mockResponse.data.currentStep;
     })
   };
+
+  const formattedAcceptTime = computed(() => {
+    return caseInfo.value.acceptTime ? dayjs(caseInfo.value.acceptTime).format('YYYY-MM-DD') : '';
+  });
+
+    // 页面初始化时调用接口
+  onMounted(() => {
+    fetechStepOptions()
+    //fetchStandardFileList()
+    getCommonDictionary('fa_case_process_status').then((res:[])=>{
+      stepOptions.value = res
+    })
+    getCommonDictionary('fa_file_process_status').then((res:[])=>{
+      fileProcessOptions.value = res
+    })
+    getCommonDictionary('fa_involved_person_relation').then((res:[])=>{
+      involvedRelateOptions.value = res
+    })
+    getCommonDictionary('fa_involved_person_type').then((res:[])=>{
+      involvedKindOptions.value = res
+    })
+
+    getCommonDictionary('fa_id_type').then((res:[])=>{
+      idCardTypeOptions.value = res
+    })
+  });
+
+  watch(activeKey, (val)=>{
+  if(val == '1'){
+    tab1Ref.value?.restart()
+  }else{
+    tab1Ref.value?.stop()
+  }
+  })
 </script>
 
 <style scoped>

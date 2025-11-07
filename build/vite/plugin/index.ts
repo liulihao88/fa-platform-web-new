@@ -22,6 +22,9 @@ import { configQiankunMicroPlugin } from './qiankunMicro';
 // import OptimizationPersist from 'vite-plugin-optimize-persist';
 // import PkgConfig from 'vite-plugin-package-config';
 
+// 新增code-inspector-plugin插件
+import { codeInspectorPlugin } from 'code-inspector-plugin';
+
 /**
  *
  * @param viteEnv
@@ -41,6 +44,9 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
     // @ts-ignore
     VitePluginCertificate({
       source: 'coding',
+    }),
+    codeInspectorPlugin({
+      bundler: 'vite',
     }),
   ];
 
@@ -67,7 +73,7 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
   // 【JEECG作为乾坤子应用】注册乾坤子应用模式插件
   if (isQiankunMicro) {
     // vite-plugin-qiankun
-    vitePlugins.push(...configQiankunMicroPlugin(viteEnv))
+    vitePlugins.push(...configQiankunMicroPlugin(viteEnv));
   }
 
   // // electron plugin
@@ -78,10 +84,8 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
 
   // The following plugins only work in the production environment
   if (isBuild) {
-    
     // rollup-plugin-gzip
     vitePlugins.push(configCompressPlugin(VITE_BUILD_COMPRESS, VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE));
-
   }
 
   // //vite-plugin-theme【预编译加载插件，解决vite首次打开界面加载慢问题】

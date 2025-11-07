@@ -7,14 +7,15 @@ module.exports = {
   singleQuote: true, // 使用单引号
   quoteProps: 'as-needed',
   bracketSpacing: true,
-  trailingComma: 'es5',
+  trailingComma: 'all',
   jsxBracketSameLine: false,
   jsxSingleQuote: false,
   arrowParens: 'always',
   insertPragma: false,
   requirePragma: false,
   proseWrap: 'never',
-  htmlWhitespaceSensitivity: 'strict',
+  htmlWhitespaceSensitivity: 'ignore',
   endOfLine: 'auto', // 自动处理换行符（LF/CRLF）
   rangeStart: 0,
+  bracketSpacing: true,
 };

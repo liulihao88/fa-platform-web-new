@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -42,7 +42,7 @@
               >
                 <a-select v-model:value="formState.fileStatus" placeholder="请选择状态">
                   <a-select-option
-                      v-for="item in props.fileProcessOptions"
+                      v-for="item in filterStatusOptions"
                       :key="item.value"
                       :value="item.value"
                   >
@@ -394,17 +394,18 @@
       :footer="null"
   >
     <div>
-      <div style="display: flex; justify-content: space-between;">
+       <div style="display: flex; justify-content: space-between">
         <div>
-          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
-          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上传文件要求：</div>
-          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包</div>
-          <div class="ml4" style="color:red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
+          <div class="ml4" style="color: red">
+            注：
+          </div>
+          
+          <div class="ml4" style="color: red">1、如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
+          <div class="ml4" style="color: red">2、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包</div>
+          <div class="ml4" style="color: red">3、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
         </div>
-        <div style="text-align: left; white-space: nowrap;">
-          <a href="javascript:void(0)" @click="onFileNameInstructionClick" style="margin-left: 50px;">文件命名说明</a><br>
-          <a href="javascript:void(0)" @click="onSupportedFileTypesClick" style="margin-left: 50px;">支持的文件格式</a><br>
-          <a href="javascript:void(0)" @click="onUnsupportedFileTypesClick" style="margin-left: 50px;">不支持的文件格式</a>
+        <div style="text-align: left; white-space: nowrap">
+          <a href="javascript:void(0)" @click="onFileNameInstructionClick" style="margin-left: 50px">上传文件格式说明</a>
         </div>
       </div>
       <a-card>
@@ -612,6 +613,7 @@
                     v-model:value="currentTitleConfigFile.organizationCode"
                     placeholder="请选择所属银行/支付公司"
                     allow-clear
+                    notFoundContent="无此银行，请联系运维添加"
                     style="width: 60%"
                     :disabled="isOrganizationSelectDisabled"
                     @change="onOrganizationChange"
@@ -686,7 +688,7 @@
                         配置列
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
-                        原标题
+                        原字段
                       </div>
                       <div v-else-if="record.type === 'datas'">
                         {{ record.dataIndex !== undefined ? (record.dataIndex + 1) : '' }}
@@ -726,10 +728,6 @@
 
   <!-- 文件命名说明组件 -->
   <FileInfo ref="fileInfoRef"></FileInfo>
-  <!-- 支持的文件格式组件 -->
-  <SupportFormat ref="supportFormatRef"></SupportFormat>
-  <!-- 不支持的文件格式组件 -->
-  <UnSupportFormat ref="unSupportFormatRef"></UnSupportFormat>
 </template>
 
 <script lang="ts" name="tab1" setup>
@@ -772,14 +770,21 @@ import {BasicModal, useModalInner} from '/@/components/Modal';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { useTimer } from '@/hooks/core/useTimer';
 
 import FileInfo from "./fileInfo.vue";
-import SupportFormat from "./supportFormat.vue";
-import UnSupportFormat from "./unSupportFormat.vue";
 
 const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
-const supportFormatRef = ref<InstanceType<typeof SupportFormat> | null>(null);
-const unSupportFormatRef = ref<InstanceType<typeof UnSupportFormat> | null>(null);
+
+
+const emits = defineEmits(['timerUpdate']);
+
+const statusMap:any = {
+  '900': ['900', '901', '902', '904'],
+  '001': ['002', '100', '101'],
+  '003': ['003'],
+  '102': ['102'],
+}
 
 const router = useRouter();
 interface ConvertFileItem {
@@ -816,6 +821,59 @@ const csvRows = computed(() => {
   }
   return [];
 });
+
+/**
+   * 下拉菜单	查询状态	
+转换失败	900 解压失败	
+	901 格式不支持	
+	902 入库异常	
+	904 转换异常	
+	9字开头	
+自动运行中	001	待验证
+	002	待入库
+	100	配置完成
+	101	解析完成
+待配置	003	入库完成
+已完成	102	合并完成
+   */
+
+const filterStatusOptions = computed(()=>{
+  if(!props.fileProcessOptions || props.fileProcessOptions.length === 0){
+    return []
+  }
+  let resultOptions:any = [];
+  props.fileProcessOptions.forEach(v=>{
+    if(statusMap['900'].includes(v.value)){
+      if(!resultOptions.some(option => option.value === '900')){
+        resultOptions.push({
+          label: '转换失败',
+          value: '900',
+        })
+      }
+    }
+    if(statusMap['001'].includes(v.value)){
+        if(!resultOptions.some(option => option.value === '001')){
+        resultOptions.push({
+          label: '自动运行中',
+          value: '001',
+        })
+        }
+    }
+    if(['003'].includes(v.value)){
+        resultOptions.push({
+          label: '待配置',
+          value: '003',
+        })
+    }
+    if(['102'].includes(v.value)){
+        resultOptions.push({
+          label: '已完成',
+          value: '102',
+        })
+    }
+  })
+  return resultOptions
+})
 // 新增计算属性：检查当前激活的选项卡是否有数据
 const hasTableData = computed(() => {
   switch (activeTab.value) {
@@ -1421,26 +1479,14 @@ const [registerNonBankTransactionTable] = useTable({
 });
 
 // 添加定时器引用
-const fileListRefreshTimer = ref<number | null>(null);
 
 // 页面初始化时调用接口
 onMounted(() => {
   pagination.current = 1;
-  fetchFileList();
-  
-  // 设置定时刷新，每10秒刷新一次文件列表
-  fileListRefreshTimer.value = window.setInterval(() => {
-    fetchFileList(true);
-  }, 10000);
+  // fetchFileList();
 });
 
 // 组件卸载时清除定时器
-onUnmounted(() => {
-  if (fileListRefreshTimer.value) {
-    clearInterval(fileListRefreshTimer.value);
-    fileListRefreshTimer.value = null;
-  }
-});
 
 // 修改后的方法
 const handleConvertConfirmFromEdit = () => {
@@ -1482,7 +1528,7 @@ const fetchFileList = async (isAutoRefresh = false) => {
       caseId: query.caseId,
       folder: formState.folder,
       fileName: formState.fileName,
-      fileStatus: formState.fileStatus,
+      fileStatus: formState.fileStatus ? statusMap[formState.fileStatus] : [],
       pageNo: pagination.current,
       pageSize: pagination.pageSize
     };
@@ -1502,6 +1548,11 @@ const fetchFileList = async (isAutoRefresh = false) => {
     }
   }
 };
+
+const { restart, stop } = useTimer(()=>{
+  fetchFileList(true)
+  emits('timerUpdate')
+}, 15000);
 
 // 添加表格分页变化处理方法
 const handleTableChange = (pag) => {
@@ -1616,6 +1667,7 @@ const handleUpload = async () => {
   }
   uploading.value = false;
   uploadModalVisible.value = false;
+  message.info("文件开始处理，请稍候！")
   fileList.value = [];
 
   // 刷新文件列表
@@ -2204,7 +2256,6 @@ const deleteFile = async (record) => {
     okType: 'danger',
     cancelText: '取消',
     onOk() {
-
       deleteFileListApi({fileId:record.id}).then(()=>{
         fetchFileList();
       })
@@ -2705,19 +2756,10 @@ const onFileNameInstructionClick = () => {
   fileInfoRef.value?.open();
 };
 
-// 支持的文件格式点击事件
-const onSupportedFileTypesClick = () => {
-  // TODO: 实现支持的文件格式点击逻辑
-  console.log('支持的文件格式 clicked');
-  supportFormatRef.value?.open();
-};
-
-// 不支持的文件格式点击事件
-const onUnsupportedFileTypesClick = () => {
-  // TODO: 实现不支持的文件格式点击逻辑
-  console.log('不支持的文件格式 clicked');
-  unSupportFormatRef.value?.open();
-};
+defineExpose({
+  restart,
+  stop,
+});
 
 </script>
 

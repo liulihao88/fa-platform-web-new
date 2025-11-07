@@ -33,16 +33,15 @@
     :getPopupContainer="getParentContainer"
     :placeholder="placeholder"
     :filterOption="filterOption"
-    :notFoundContent="loading ? undefined : null"
     :dropdownAlign="{overflow: {adjustY: adjustY }}"
     @change="handleChange"
     :mode="multiple?'multiple':''"
     @select="handleSelect"
     @deselect="handleDeSelect"
   >
-    <template #notFoundContent>
-      <a-spin v-if="loading" size="small" />
-    </template>
+    <!-- <template #notFoundContent>
+      <a-spin size="small" />
+    </template> -->
     <a-select-option v-for="d in options" :key="d?.value" :value="d?.value">{{ d?.text }}</a-select-option>
   </a-select>
 </template>
