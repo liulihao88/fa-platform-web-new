@@ -1,4 +1,4 @@
-﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -99,7 +99,7 @@
       </template>
       <template v-else-if="column.key === 'operation'">
         <div class="table-operations">
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">标题配置</a-button>
+          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">字段映射</a-button>
           <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleEditFileClick(record)">转换查看</a-button>
           <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
         </div>
@@ -121,7 +121,7 @@
       :footer="null"
   >
     <div>
-      <a-card style="height: 100%">
+      <a-card style="height: 850px">
         <div class="panel-controls">
           <a-button 
             type="primary" 
@@ -151,7 +151,7 @@
             :size="leftPanelSize" 
             :min-size="leftPanelVisible ? 0.1 : 0"
           >
-            <a-card title="源文件视图" size="small" style="height: 100%">
+            <a-card title="源文件视图" size="small" style="height: 850px">
               <a-row>
                 <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
               </a-row>
@@ -228,7 +228,7 @@
             :size="rightPanelSize" 
             :min-size="rightPanelVisible ? 0.1 : 0"
           >
-            <a-card title="转换结果" size="small" style="height: 100%">
+            <a-card title="转换结果" size="small" style="height: 850px">
               <!-- 文件归属银行选择区域 -->
               <!--<a-row style="margin-bottom: 16px;">
                 <a-col :span="4">
@@ -250,7 +250,7 @@
               </a-row>-->
 
               <!-- Sheet列表区域 -->
-              <a-row style="margin-bottom: 16px;height: 640px">
+              <a-row style="margin-bottom: 16px;height: 850px">
                 <a-col :span="4">
                   <div class="sheet-list">
                   <h3>文件页码</h3>
@@ -265,7 +265,7 @@
                 </div>
                 </a-col>
                 <a-col :span="20">
-                  <a-card class="table-card" style="height: 100%">
+                  <a-card class="table-card" style="height: 800px">
                     <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
@@ -413,7 +413,7 @@
             :fileList="fileList"
             :multiple="true"
             :customRequest="onFileListUpload"
-            accept=".xls,.xlsx,.csv,.pdf,.zip"
+            accept=".xls,.xlsx,.xlsm,.csv,.pdf,.zip"
             :beforeUpload="beforeUpload"
             @remove="handleRemove"
             class="custom-upload-dragger"
@@ -424,7 +424,7 @@
             </p>
             <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
             <p class="ant-upload-hint">
-              支持扩展名 .xls .xlsx .csv .pdf .zip
+              支持扩展名 .xls .xlsx .xlsm .csv .pdf .zip
             </p>
           </div>
         </a-upload-dragger>
@@ -647,12 +647,21 @@
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
           <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
+            <a-button v-if="isIgnoreTitleConfig" type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
                 v-for="(dataBlock, index) in titleConfigData.result" 
                 :key="`dataBlock${dataBlock.dataBlockNum}`" 
                 :tab="`数据块${dataBlock.dataBlockNum}`"
               >
+                <div style="display: flex; justify-content: space-between;">
+                  <div>
+                    <div class="ml4" ><span>未映射的字段：</span><span style="color:red">{{dataBlock.noMappingTitle}}</span></div>
+                  </div>
+                  <div style="text-align: right; white-space: nowrap;">
+                    下表数据为示例数据，不是全部数据
+                  </div>
+                </div>
                 <!-- 构造表格数据 -->
                 <BasicTable
                   :columns="getTitleConfigColumns(dataBlock.dataBlockStucts)"
@@ -675,8 +684,8 @@
                   </template>
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'config'">
-                      <div v-if="record.type === 'newMetaData'">
-                        标准字段
+                        <div v-if="record.type === 'newMetaData'">
+                        配置列
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
                         原字段
@@ -689,12 +698,13 @@
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
                       <div v-if="record.type === 'newMetaData'" class="config-select-cell">
                         <JSearchSelect
-                          :dictOptions="getFilteredOptions(dataBlock.dataBlockStucts, parseInt(column.dataIndex.replace('col', '')))"
+                          :dictOptions="titleConfigOptions"
                           v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
                           placeholder="请选择配置项"
                           allow-clear
-                          style="width: 100%"
-                          :disabled="isCurrentSheetConfigured || (dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.oriMetaData?true:false)"
+                          style="width: 150px"
+                          :disabled="isCurrentSheetConfigured"
+                          @change="(value) => handleTitleConfigChange(value, dataBlock, column, record)"
                         />
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
@@ -721,7 +731,7 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
+import { ref,reactive, onMounted, defineProps,computed,nextTick, h, onUnmounted } from 'vue';
 import { render } from '/@/utils/common/renderUtils';
 import { message, Modal, Select } from 'ant-design-vue';
 //引入VueOfficeExcel组件
@@ -1051,6 +1061,7 @@ const bankCustomerColumns = ref([
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1085,6 +1096,7 @@ const bankTransactionColumns = ref([
   { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1112,6 +1124,7 @@ const nonBankCustomerColumns = ref([
   { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1151,6 +1164,7 @@ const nonBankTransactionColumns = ref([
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
   { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true},
   { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
 ]);
 
@@ -1325,6 +1339,7 @@ interface DataBlockStruct {
 interface DataBlock {
   dataBlockNum: number;
   dataBlockStucts: DataBlockStruct[];
+  noMappingTitle: string;
 }
 
 // 添加配置选项类型
@@ -1463,11 +1478,15 @@ const [registerNonBankTransactionTable] = useTable({
   }
 });
 
+// 添加定时器引用
+
 // 页面初始化时调用接口
 onMounted(() => {
   pagination.current = 1;
-  fetchFileList();
+  // fetchFileList();
 });
+
+// 组件卸载时清除定时器
 
 // 修改后的方法
 const handleConvertConfirmFromEdit = () => {
@@ -1498,9 +1517,10 @@ const checkFilesNames=(record)=> {
 }
 
 // 获取文件列表
-const fetchFileList = async (type='') => {
+const fetchFileList = async (isAutoRefresh = false) => {
   try {
-    if(type !== 'update'){
+    // 如果是自动刷新，则不显示loading效果
+    if (!isAutoRefresh) {
       tableLoading.value = true;
     }
 
@@ -1521,13 +1541,16 @@ const fetchFileList = async (type='') => {
     dataSource.value = [];
     pagination.total = 0;
   } finally {
-    tableLoading.value = false;
-    searchLoading.value = false;
+    // 如果是自动刷新，则不显示loading效果
+    if (!isAutoRefresh) {
+      tableLoading.value = false;
+      searchLoading.value = false;
+    }
   }
 };
 
 const { restart, stop } = useTimer(()=>{
-  fetchFileList('update')
+  fetchFileList(true)
   emits('timerUpdate')
 }, 15000);
 
@@ -2117,9 +2140,11 @@ const saveTitleConfig = async () => {
     
     // 调用API保存配置
     await updateFileConfigApi(params);
-    message.success('标题配置已保存');
+    message.success('字段映射已保存');
     
-    // 保存成功后，刷新模态窗口重新加载
+    // 保存成功后，刷新文件列表数据
+    fetchFileList();
+    
     // 重新加载所属银行/支付公司下拉框和页码列表数据
     await showTitleConfigModal(currentTitleConfigFile.value);
     
@@ -2231,7 +2256,6 @@ const deleteFile = async (record) => {
     okType: 'danger',
     cancelText: '取消',
     onOk() {
-
       deleteFileListApi({fileId:record.id}).then(()=>{
         fetchFileList();
       })
@@ -2499,6 +2523,9 @@ const showTitleConfigModal = async (record) => {
   }
 };
 
+// 添加全屏状态
+const isIgnoreTitleConfig = ref(false);
+
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
   const orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
@@ -2514,6 +2541,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   try {
     // 开始加载，设置加载状态为true
     titleConfigLoading.value = true;
+    isIgnoreTitleConfig.value = false;
     
     // 获取文件配置选项
     const configResponse = await getFileConfigApi({orgCode: orgCode});
@@ -2535,38 +2563,43 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     });
 
     if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
-      // 根据oriMetaData字段过滤下拉框选项
       titleConfigData.value = {
-        result: titleConfigResponse.map(dataBlock => {
-          return {
-            ...dataBlock,
-            dataBlockStucts: dataBlock.dataBlockStucts.map(struct => {
-              return {
-                ...struct,
-                // 保存原始配置选项到结构中，用于过滤
-                availableOptions: configResponse && Array.isArray(configResponse) 
-                  ? configResponse.filter(option => 
-                      !dataBlock.dataBlockStucts.some(s => 
-                        s.faFileParameter.oriMetaData === option
-                      )
-                    ).map(item => ({ value: item, text: item }))
-                  : []
-              };
-            })
-          };
-        })
+        result: titleConfigResponse
       };
+      // 根据oriMetaData字段过滤下拉框选项 暂时去掉字段过滤
+      // titleConfigData.value = {
+      //   result: titleConfigResponse.map(dataBlock => {
+      //     return {
+      //       ...dataBlock,
+      //       dataBlockStucts: dataBlock.dataBlockStucts.map(struct => {
+      //         return {
+      //           ...struct,
+      //           // 保存原始配置选项到结构中，用于过滤
+      //           availableOptions: configResponse && Array.isArray(configResponse)
+      //             ? configResponse.filter(option =>
+      //                 !dataBlock.dataBlockStucts.some(s =>
+      //                   s.faFileParameter.oriMetaData === option
+      //                 )
+      //               ).map(item => ({ value: item, text: item }))
+      //             : []
+      //         };
+      //       })
+      //     };
+      //   })
+      // };
 
       // 设置默认激活的标签页
       if (titleConfigData.value.result.length > 0) {
         titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
       }else{
         //如果没有获取到数据，使用模拟数据
-        message.error('未查询到配置数据');
-        //mockData(configResponse);
+        // message.error('未查询到配置数据');
+        isIgnoreTitleConfig.value = true;
+        // titleConfigActiveTab.value = null;
       }
     } else {
       // 如果没有获取到数据，清空现有数据
+      isIgnoreTitleConfig.value = true;
       titleConfigData.value = {
         result: []
       };
@@ -2578,241 +2611,6 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   } finally {
     // 结束加载，设置加载状态为false
     titleConfigLoading.value = false;
-  }
-};
-
-const mockData = (configResponse) => {
-  // mockData
-  const titleConfigResponse = [
-      {
-        dataBlockNum: 1,
-        dataBlockStucts: [
-          {
-            faFileParameter: {
-              id: "1",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "1",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta1",
-              titleColName: "titleCol1",
-              oriMetaData: "",
-            },
-            datas: ["1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3","1", "2", "3"]
-          },
-          {
-            faFileParameter: {
-              id: "2",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "贷方发生额",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "3",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "4",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          },
-          {
-            faFileParameter: {
-              id: "5",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "1",
-              colSequence: "2",
-              dataRowNum: "1",
-              dataType: "type1",
-              newMetaData: "newMeta2",
-              titleColName: "titleCol2",
-              oriMetaData: "oriMeta2",
-            },
-            datas: ["a", "b", "c"]
-          }
-        ]
-      },
-      {
-        dataBlockNum: 2,
-        dataBlockStucts: [
-          {
-            faFileParameter: {
-              id: "3",
-              caseId: "case1",
-              caseFileId: "file1",
-              caseFilePageId: "page1",
-              dataBlock: "2",
-              colSequence: "1",
-              dataRowNum: "1",
-              dataType: "type2",
-              newMetaData: "newMeta3",
-              titleColName: "titleCol3",
-              oriMetaData: "交易IP地址",
-            },
-            datas: ["x", "y", "z"]
-          }
-        ]
-      }
-    ];
-
-  // 根据oriMetaData字段过滤下拉框选项
-  titleConfigData.value = {
-    result: titleConfigResponse.map(dataBlock => {
-      return {
-        ...dataBlock,
-        dataBlockStucts: dataBlock.dataBlockStucts.map(struct => {
-          return {
-            ...struct,
-            // 保存原始配置选项到结构中，用于过滤
-            availableOptions: configResponse && Array.isArray(configResponse) 
-              ? configResponse.filter(option => 
-                  !dataBlock.dataBlockStucts.some(s => 
-                    s.faFileParameter.oriMetaData === option
-                  )
-                ).map(item => ({ value: item, text: item }))
-              : []
-          };
-        })
-      };
-    })
-  };
-
-  // 设置默认激活的标签页
-  if (titleConfigData.value.result.length > 0) {
-    titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
   }
 };
 
@@ -2889,7 +2687,7 @@ const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
     columns.push({
       title: `列${i + 1}`,
       dataIndex: `col${i}`,
-      width: 180,
+      width: 120,
       resizable: true
     });
   }
@@ -2900,6 +2698,38 @@ const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
 const onNewMetaDataChange = (struct, event) => {
   // 处理newMetaData变更
   console.log('newMetaData changed:', struct, event);
+};
+
+// 添加处理标题配置变化的函数
+const handleTitleConfigChange = (value, dataBlock, column, record) => {
+  // 获取列索引
+  const colIndex = parseInt(column.dataIndex.replace('col', ''));
+  
+  // 获取当前列的oriMetaData
+  const oriMetaData = dataBlock.dataBlockStucts[colIndex].faFileParameter.oriMetaData;
+  
+  // 获取标题列名称
+  const titleColName = dataBlock.dataBlockStucts[colIndex].faFileParameter.titleColName;
+  
+  // 如果oriMetaData为空
+  if (!oriMetaData) {
+    // 重新组装未映射的标题配置
+    if (value) {
+      // 当选择了非空值时，从未映射标题中移除当前标题列名称
+      const noMappingTitles = dataBlock.noMappingTitle.split(',');
+      const updatedNoMappingTitles = noMappingTitles.filter(title => title.trim() !== titleColName.trim());
+      dataBlock.noMappingTitle = updatedNoMappingTitles.join(',');
+    } else {
+      // 当选择了空值时，将标题列名称重新加回到未映射标题中
+      const noMappingTitles = dataBlock.noMappingTitle.split(',');
+      // 检查是否已经存在，避免重复添加
+      if (!noMappingTitles.includes(titleColName)) {
+        noMappingTitles.push(titleColName);
+        dataBlock.noMappingTitle = noMappingTitles.join(',');
+      }
+    }
+
+  }
 };
 
 // 所属银行/支付公司下拉框值变更事件处理
@@ -2993,7 +2823,7 @@ defineExpose({
   padding: 10px;
   background: #fff;
   height: 100%;
-  max-height: 640px;
+  max-height: 800px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
@@ -3168,10 +2998,10 @@ defineExpose({
 }
 
 .titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(2)) {
-  top: 0px; /* 精确计算第一行高度 */
+  top: 0px; /* 精确计算第二行高度 */
 }
 .titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(3)) {
-  top: 56px; /* 精确计算第一行高度 */
+  top: 48px; /* 精确计算第三行高度 */
 }
 /* 为数据行添加顶部边框，使其与固定行更好区分 */
 .titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(n+3)) {

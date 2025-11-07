@@ -38,7 +38,7 @@
               :class="['file-item', { active: selectedFileId === file.id }]"
               @click="selectFile(file)"
           >
-            {{ file.fileName? file.fileName : file.filePath }}
+            {{ file.fileOriginName? file.fileOriginName : file.fileName }}
           </div>
         </a-spin>
       </div>
@@ -496,7 +496,7 @@ const handleParseTabChange = (key) => {
 
 // 企业客户信息表格列配置
 const parseEntityColumns = ref([
-  { title: '归属机构', dataIndex: 'orgCd', width: 120, resizable: true },
+  { title: '归属机构', dataIndex: 'orgName', width: 120, resizable: true },
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
   { title: '客户号', dataIndex: 'customerCd', width: 100, resizable: true },
   { title: '客户名称', dataIndex: 'customerName', width: 120, resizable: true },
@@ -533,7 +533,7 @@ const parseEntityColumns = ref([
 // ]);
 
 const parseTransColumns = ref([
-  { title: '发起行', dataIndex: 'orgCd', width: 120, resizable: true },
+  { title: '发起行', dataIndex: 'orgName', width: 120, resizable: true },
   { title: '户名', dataIndex: 'customerName', width: 120, resizable: true },
   { title: '账号', dataIndex: 'transAccountNo', width: 150, resizable: true },
   { title: '卡号', dataIndex: 'relAccountNo', width: 150, resizable: true },
@@ -548,6 +548,7 @@ const parseTransColumns = ref([
   { title: '对方开户银行', dataIndex: 'counterOrgCd', width: 150, resizable: true },
   { title: '对方户名', dataIndex: 'counterName', width: 120, resizable: true },
   { title: '对方账号', dataIndex: 'counterAccountNo', width: 150, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '交易状态', dataIndex: 'status', width: 100 , resizable: true}
 ]);
 
@@ -561,7 +562,7 @@ const parseOrderColumns = ref([
 // 客户信息表格列配置
 const customerColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属银行', dataIndex: 'orgCd', width: 100, resizable: true},
+  { title: '归属银行', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
@@ -578,6 +579,7 @@ const customerColumns = ref([
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
   { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true},
   { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
 ]);
@@ -585,7 +587,7 @@ const customerColumns = ref([
 // 交易流水表格列配置
 const transactionColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100 , resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100, resizable: true },
+  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
   { title: '账号', dataIndex: 'accountNum', width: 100 , resizable: true},
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
   { title: '流水号', dataIndex: 'transNo', width: 100 , resizable: true},
@@ -614,6 +616,7 @@ const transactionColumns = ref([
   { title: '证件种类', dataIndex: 'idType', width: 100 , resizable: true},
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true},
   { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
 ]);
@@ -624,7 +627,7 @@ const transactionColumns = ref([
 // 表格列定义
 const nonBankCustomerColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100 , resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100 , resizable: true},
+  { title: '归属机构', dataIndex: 'orgName', width: 100 , resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
   { title: '客户名称', dataIndex: 'customerName', width: 100 , resizable: true},
@@ -645,6 +648,7 @@ const nonBankCustomerColumns = ref([
   { title: '开户日期', dataIndex: 'openDate', width: 100 , resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100 , resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100 , resizable: true},
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true},
   { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
 ]);
@@ -652,7 +656,7 @@ const nonBankCustomerColumns = ref([
 
 const nonBankTransactionColumns = ref([
   { title: '行号', dataIndex: 'rowNum', width: 100 , resizable: true},
-  { title: '归属机构', dataIndex: 'orgCd', width: 100 , resizable: true},
+  { title: '归属机构', dataIndex: 'orgName', width: 100 , resizable: true},
   { title: '商户号', dataIndex: 'merchantId', width: 100 , resizable: true},
   { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
   { title: '订单号', dataIndex: 'orderNo', width: 100 , resizable: true},
@@ -685,6 +689,7 @@ const nonBankTransactionColumns = ref([
   { title: '手机号码', dataIndex: 'teleNum', width: 100 , resizable: true},
   { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true },
   { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
+  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true},
   { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
 ]);
