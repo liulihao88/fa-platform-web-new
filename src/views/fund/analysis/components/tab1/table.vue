@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -2437,6 +2437,8 @@ const handleTitleConfigClick = (record) => {
 const showTitleConfigModal = async (record) => {
   currentTitleConfigFile.value = record;
   titleConfigModalVisible.value = true;
+
+
   
   // 重置激活的页码
   activeTitleConfigSheet.value = '';
@@ -2488,6 +2490,13 @@ const showTitleConfigModal = async (record) => {
       ...fileConvertResult,
       organizationCode
     };
+
+    let configAllComplete = currentTitleConfigFile.value.filePages.every(v=>{
+      return v.configureStatus == '1'
+    })
+    if(configAllComplete){
+      message.info('该文件已经配置完成，系统开始自动解析');
+    }
     
     // 设置默认激活的第一个页码
     // if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
