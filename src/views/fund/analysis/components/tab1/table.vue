@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -151,7 +151,7 @@
             :size="leftPanelSize" 
             :min-size="leftPanelVisible ? 0.1 : 0"
           >
-            <a-card title="源文件视图" size="small" style="height: 850px">
+            <a-card title="源文件视图" size="small" style="height: 750px">
               <a-row>
                 <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
               </a-row>
@@ -228,10 +228,10 @@
             :size="rightPanelSize" 
             :min-size="rightPanelVisible ? 0.1 : 0"
           >
-            <a-card title="转换结果" size="small" style="height: 850px">
+            <a-card title="转换结果" size="small" style="height: 750px">
 
               <!-- Sheet列表区域 -->
-              <a-row style="margin-bottom: 16px;height: 850px">
+              <a-row style="margin-bottom: 16px;height: 700px">
                 <a-col :span="4">
                   <div class="sheet-list">
                   <h3>文件页码</h3>
@@ -246,7 +246,7 @@
                 </div>
                 </a-col>
                 <a-col :span="20">
-                  <a-card class="table-card" style="height: 800px">
+                  <a-card class="table-card" style="height: 700px">
                     <a-tabs v-model:activeKey="activeTab" class="table-tab" @change="handleTabChange">
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
@@ -333,6 +333,7 @@
                         <BasicTable
                             :columns="nonBankTransactionColumns"
                             :pagination="nonBankTransactionPagination"
+                            size="small"
                             :scroll="{ x: 1500, y: 500 }"
                             :bordered="true"
                             :loading="tableLoading"
@@ -605,15 +606,14 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed,nextTick, h, onUnmounted } from 'vue';
+import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
 import { render } from '/@/utils/common/renderUtils';
-import { message, Modal, Select } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
 import VueOfficePdf from '@vue-office/pdf'
 //引入相关样式
 import '@vue-office/excel/lib/index.css'
-import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons-vue';
 import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
 import {
   caseFileListApi,
@@ -623,7 +623,6 @@ import {
   getFileStreamByFileId,
   getFileInfoItem,
   saveEditBankApi,
-  updateFileOrg,
   getFileConfirmInfo,
   standardCustomerApi,
   standardTransApi,
@@ -640,7 +639,7 @@ import {
 //ts语法
 import { useRoute } from 'vue-router';
 import {useRouter} from "vue-router";
-import {BasicModal, useModalInner} from '/@/components/Modal';
+import {BasicModal} from '/@/components/Modal';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
