@@ -229,25 +229,6 @@
             :min-size="rightPanelVisible ? 0.1 : 0"
           >
             <a-card title="转换结果" size="small" style="height: 850px">
-              <!-- 文件归属银行选择区域 -->
-              <!--<a-row style="margin-bottom: 16px;">
-                <a-col :span="4">
-                  <span style="line-height: 32px;">文件归属银行：</span>
-                </a-col>
-                <a-col :span="6">
-                  <JSearchSelect :disabled="!bankEfit" dict="fa_orgs_configure,org_name,org_cd" v-model:value="selectedBank" placeholder="文件归属银行"  allow-clear ></JSearchSelect>
-                </a-col>
-                &lt;!&ndash;              <a-col :span="4">
-                                <template v-if="bankEfit">
-                                  <a-button  type="primary" @click="confirmBank" style="margin-left: 8px;">确认</a-button>
-                                  <a-button  type="default" @click="cancelBank" style="margin-left: 8px;">取消</a-button>
-                                </template>
-                                <a-button v-else type="primary" @click="doBankEdit" style="margin-left: 8px;">修改</a-button>
-                              </a-col>&ndash;&gt;
-                <a-col :span="4">
-                  <a-button size="middle" type="primary" @click="handleConvertConfirmFromEdit">确认</a-button>
-                </a-col>
-              </a-row>-->
 
               <!-- Sheet列表区域 -->
               <a-row style="margin-bottom: 16px;height: 850px">
@@ -473,113 +454,6 @@
       </a-card>
 
     </div>
-  </BasicModal>
-  <!-- 在模板部分修改文件转换确认的Modal -->
-  <BasicModal
-      v-model:visible="convertModalVisible"
-      title="文件转换确认"
-      width="90%"
-      :useWrapper="true"
-      :maskClosable="false"
-      :footer="null"
-      :defaultFullscreen="true"
-      wrap-class-name="full-modal"
-  >
-    <a-card>
-      <a-row :gutter="16">
-        <!-- 左侧文件列表 -->
-        <a-col span="6">
-          <a-card title="文件列表" size="small">
-            <div class="pagination-controls">
-              <a-button 
-                :disabled="filePagination.current === 1" 
-                @click="prevPage"
-                size="small"
-              >
-                上一页
-              </a-button>
-              <span class="page-info">
-                第 {{ filePagination.current }} 页，共 {{ filePagination.totalPage }} 页
-              </span>
-              <a-button 
-                :disabled="filePagination.current === filePagination.totalPage" 
-                @click="nextPage"
-                size="small"
-              >
-                下一页
-              </a-button>
-            </div>
-            <div class="file-list-container">
-              <div
-                  v-for="file in convertFileList"
-                  :key="file.id"
-                  :class="['file-item', { active: selectedConvertFile?.id === file.id }]"
-                  @click="selectConvertFile(file)"
-              >
-                {{ file.fileName }}
-              </div>
-            </div>
-          </a-card>
-        </a-col>
-
-        <!-- 右侧表单 -->
-        <a-col span="16">
-          <a-card title="转换信息" size="small">
-            <a-form
-                ref="convertFormRef"
-                :model="convertFormState"
-                :label-col="{ span: 8 }"
-                :wrapper-col="{ span: 14 }"
-            >
-              <a-form-item label="文件名称">
-                <span>{{ convertFormState?.fileName || '-' }}</span>
-              </a-form-item>
-              <a-form-item label="客户号">
-                <span>{{ convertFormState?.customerId || '-' }}</span>
-              </a-form-item>
-              <a-form-item label="客户名称">
-                <span>{{ convertFormState?.customerName || '-' }}</span>
-              </a-form-item>
-              <a-form-item label="所属银行">
-                <span>{{ convertFormState?.orgName || '-' }}</span>
-              </a-form-item>
-              <a-form-item labelWrap="true" label="上述银行是否正确，需要重新指定">
-<!--                <a-select v-model:value="convertFormState.inVertical" placeholder="请选择">
-                  <a-select-option value="1">是</a-select-option>
-                  <a-select-option value="0">否</a-select-option>
-                </a-select>-->
-                <JSearchSelect dict="fa_orgs_configure,org_name,org_cd" v-model:value="convertFormState.dataOrg" placeholder="请选择"  allow-clear ></JSearchSelect>
-              </a-form-item>
-              <a-row>
-                <a-col style="color:red" span="16" offset="8">请确定所属银行和嫌疑人姓名，如果不对，请修改正确后确认</a-col>
-              </a-row>
-              <a-form-item label="判断银行依据">
-                <span>{{ convertFormState?.orgNameFrom || '-' }}</span>
-              </a-form-item>
-
-              <a-form-item label="所属目录">
-                <span>{{ convertFormState?.folderName || '-' }}</span>
-              </a-form-item>
-
-              <a-form-item label="数据中的机构">
-                <span>{{ convertFormState?.orgName || '-' }}</span>
-              </a-form-item>
-
-              <a-form-item label="数据中的卡号">
-                <span>{{ convertFormState?.dataCardNum || '-' }}</span>
-              </a-form-item>
-              <a-form-item label="确认状态">
-                <span>{{ convertFormState.status == '1' ||convertFormState.status == '01'?'已确认':'未确认' }}</span>
-              </a-form-item>
-            </a-form>
-
-            <div style="text-align: right; margin-top: 16px;">
-              <a-button type="primary" @click="handleConvertConfirm" style="margin-left: 8px;">确认</a-button>
-            </div>
-          </a-card>
-        </a-col>
-      </a-row>
-    </a-card>
   </BasicModal>
 
   <!-- 标题配置Modal -->
@@ -1486,25 +1360,6 @@ onMounted(() => {
   fetchFileList();
 });
 
-// 组件卸载时清除定时器
-
-// 修改后的方法
-const handleConvertConfirmFromEdit = () => {
-  if (!currentRecord.value) {
-    message.warning('没有可转换的文件');
-    return;
-  }
-
-  // 默认选择当前文件
-  selectedConvertFile.value = convertFileList.value[0];
-
-  // 加载表单数据
-  getFileConvertInfo(currentRecord.value.id);
-
-  // 切换Modal
-  editModalVisible.value = false;
-  convertModalVisible.value = true;
-};
 
 // 不展示压缩文件后缀的文件
 const checkFilesNames=(record)=> {
@@ -2210,42 +2065,6 @@ const resetConvertForm = () => {
     customerId:''
   }
 };
-
-// 修改文件所属机构
-const handleConvertConfirm = async () => {
-  try {
-    const {dataOrg} = convertFormState.value
-    const params = {
-      fileId: selectedConvertFile.value?.id,
-      caseId: query.caseId,
-      organizationCode:dataOrg
-    };
-
-    // 修改文件所属机构
-    await updateFileOrg(params);
-    getFileConvertInfo(selectedConvertFile.value?.id)
-/*    // 关闭模态框并刷新列表
-    convertModalVisible.value = false;
-    fetchFileList();*/
-  } catch (error) {
-  }
-};
-
-// 确认文件转换
-/*const confirmFileConvert = async () => {
-  Modal.confirm({
-    title: '确认转换文件吗',
-    content: `确定要转换所有文件吗？`,
-    okText: '确认',
-    cancelText: '取消',
-    onOk() {
-      convertFileListApi({caseId:query.caseId,}).then(()=>{
-        fetchFileList();
-      })
-    }
-  });
-};*/
-
 
 // 删除文件
 const deleteFile = async (record) => {
