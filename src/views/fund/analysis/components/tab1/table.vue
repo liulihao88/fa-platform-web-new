@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -466,7 +466,7 @@
     :maskClosable="false"
     :footer="null"
     :defaultFullscreen="true"
-    wrap-class-name="full-modal"
+    wrap-class-name="full-modal title-config-modal"
   >
     <a-card style="height: 100%">
       <!-- 上方：文件名称、文件夹信息 -->
@@ -483,15 +483,14 @@
               <a-col :span="16">
                 <div>
                   <strong>所属银行/支付公司：</strong>
-                  <JSearchSelect
-                    :dictOptions="orgListOptions"
-                    v-model:value="currentTitleConfigFile.organizationCode"
+                  <JSelectOrgsConfig
+                    :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
                     allow-clear
                     notFoundContent="无此银行，请联系运维添加"
                     style="width: 60%"
                     :disabled="isOrganizationSelectDisabled"
-                    @change="onOrganizationChange"
+                    @change="(value) => onOrganizationChange(value)"
                   />
                 </div>
               </a-col>
@@ -615,14 +614,13 @@ import VueOfficePdf from '@vue-office/pdf'
 //引入相关样式
 import '@vue-office/excel/lib/index.css'
 import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
+import JSelectOrgsConfig from "@/components/Form/src/jeecg/components/JSelectOrgsConfig.vue";
 import {
-  caseFileListApi,
   deleteFileListApi,
   getFileConverResultApi,
   uploadFileApi,
   getFileStreamByFileId,
   getFileInfoItem,
-  saveEditBankApi,
   getFileConfirmInfo,
   standardCustomerApi,
   standardTransApi,
@@ -632,7 +630,6 @@ import {
   standardFilePageListApi,
   getFileConfigApi,
   updateFileConfigApi,
-  getOrgListApi,
   fileConfigDataApi,
   queryFilePropertyByFileIdApi
 } from '../../user.api'
@@ -1052,6 +1049,7 @@ interface CurrentFile {
   filePages: SheetData[];
   organization: string;
   organizationCode: string;
+  selectOrgCd: string;
 
 }
 
@@ -1060,7 +1058,8 @@ let currentFile = reactive<CurrentFile>({
   fileAddress: '',
   filePages: [],
   organization: '',
-  organizationCode:''
+  organizationCode:'',
+  selectOrgCd: ''
 });
 // 上传Modal相关状态
 const uploadModalVisible = ref(false);
@@ -1663,27 +1662,6 @@ const loadTabData = async (tabKey) => {
 };
 
 
-//
-const doBankEdit = () => {
-  bankEfit.value = true
-};
-
-const cancelBank = () => {
-  bankEfit.value = false
-};
-// 确认银行选择
-const confirmBank = () => {
-  const params = {
-    fileId: currentFile.id,
-    organizationCode: selectedBank.value
-  }
-  saveEditBankApi(params).then(()=>{
-    bankEfit.value = false
-  }).catch(()=>{
-    bankEfit.value = false
-  })
-};
-
 const getFileConvertInfo =(id)=>{
    getFileConfirmInfo({fileId:id}).then((response)=>{
     convertFormState.value = response
@@ -1983,12 +1961,25 @@ const saveTitleConfig = async () => {
       isSaveButtonDisabled.value = false;
       return;
     }
+    
+    // 确保orgCode是字符串而不是对象或数组
+    let orgCodeValue = currentTitleConfigFile.value.organizationCode;
+    if (Array.isArray(orgCodeValue)) {
+      orgCodeValue = orgCodeValue[0];
+    }
+    if (typeof orgCodeValue === 'object' && orgCodeValue !== null) {
+      orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue);
+    }
+    if (typeof orgCodeValue !== 'string') {
+      orgCodeValue = String(orgCodeValue);
+    }
+    
     // 准备请求参数
     const params = {
       faFileParameters: titleConfigData.value.result.flatMap(dataBlock => 
         dataBlock.dataBlockStucts.map(struct => struct.faFileParameter)
       ),
-      orgCode: currentTitleConfigFile.value.organizationCode,
+      orgCode: orgCodeValue,
       pageId: activeTitleConfigSheet.value
     };
     
@@ -2016,7 +2007,7 @@ const saveTitleConfig = async () => {
     }
   } catch (error) {
     console.error('保存标题配置失败:', error);
-    message.error('保存标题配置失败');
+    message.error('保存标题配置失败: ' + (error instanceof Error ? error.message : String(error)));
   } finally {
     // 无论成功或失败，都取消按钮的禁用状态
     isSaveButtonDisabled.value = false;
@@ -2269,18 +2260,6 @@ const showTitleConfigModal = async (record) => {
   titleConfigOptions.value = [];
   try {
 
-    
-    // 获取机构列表选项
-    const orgListResponse = await getOrgListApi({});
-    if (orgListResponse && Array.isArray(orgListResponse)) {
-      orgListOptions.value = orgListResponse.map(item => ({
-        value: item.orgCd,
-        text: item.orgName
-      }));
-    } else {
-      orgListOptions.value = [];
-    }
-    
     // 获取文件转换结果信息（包含文件页码信息）
     const fileConvertResult = await getFileConverResultApi({fileId: record.id});
     
@@ -2306,7 +2285,7 @@ const showTitleConfigModal = async (record) => {
     currentTitleConfigFile.value = {
       ...record,
       ...fileConvertResult,
-      organizationCode
+      organizationCode:organizationCode
     };
 
     let configAllComplete = currentTitleConfigFile.value.filePages.every(v=>{
@@ -2315,11 +2294,7 @@ const showTitleConfigModal = async (record) => {
     if(configAllComplete){
       message.info('该文件已经配置完成，系统开始自动解析');
     }
-    
-    // 设置默认激活的第一个页码
-    // if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
-    //   activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId;
-    // }
+
 
     // 如果之前有选中的页码，则重新加载该页码的数据
     if (activeTitleConfigSheet.value) {
@@ -2330,7 +2305,8 @@ const showTitleConfigModal = async (record) => {
 
       // 如果找到了页码对象，则重新加载数据
       if (currentSheet) {
-        await selectTitleConfigSheet(currentSheet);
+        currentTitleConfigFile.value.selectOrgCd = organizationCode;
+        // await selectTitleConfigSheet(currentSheet);
       }
     }else{
       if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
@@ -2340,7 +2316,8 @@ const showTitleConfigModal = async (record) => {
 
       // 如果找到了页码对象，则重新加载数据
       if (currentSheet) {
-        await selectTitleConfigSheet(currentSheet);
+        currentTitleConfigFile.value.selectOrgCd = organizationCode;
+        // await selectTitleConfigSheet(currentSheet);
       }
     }
 
@@ -2350,19 +2327,53 @@ const showTitleConfigModal = async (record) => {
   }
 };
 
+// 所属银行/支付公司下拉框值变更事件处理
+const onOrganizationChange = (value) => {
+  // 确保传递给后端的是字符串而不是数组或对象
+  let orgCodeValue = value;
+  // 更新currentTitleConfigFile.value.organizationCode的值
+  if (currentTitleConfigFile.value) {
+    currentTitleConfigFile.value.organizationCode = orgCodeValue;
+  }
+  
+  // 如果已有选中的页码ID，则触发页码的点击事件重新加载标题配置列表数据
+  if (activeTitleConfigSheet.value && currentTitleConfigFile.value) {
+    // 查找当前选中的页码对象
+    const currentSheet = currentTitleConfigFile.value.filePages?.find(
+      sheet => sheet.pageId === activeTitleConfigSheet.value
+    );
+    
+    // 如果找到了页码对象，则重新加载数据
+    if (currentSheet) {
+      // 传递新的organizationCode值给selectTitleConfigSheet方法
+      selectTitleConfigSheet(currentSheet, orgCodeValue);
+    }
+  }
+};
+
 // 添加全屏状态
 const isIgnoreTitleConfig = ref(false);
 
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
-  const orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
+  let orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
   
   // 校验是否选择了所属银行/支付公司
   if (!orgCode) {
     message.warning('请先选择所属银行/支付公司');
     return;
   }
-  
+  // 确保orgCode是字符串而不是数组或对象
+  let orgCodeValue = orgCode;
+  if (Array.isArray(orgCodeValue)) {
+    orgCodeValue = orgCodeValue[0];
+  }
+  if (typeof orgCodeValue === 'object' && orgCodeValue !== null) {
+    orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue);
+  }
+  if (typeof orgCodeValue !== 'string') {
+    orgCodeValue = String(orgCodeValue);
+  }
   activeTitleConfigSheet.value = sheet.pageId;
   
   try {
@@ -2371,7 +2382,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     isIgnoreTitleConfig.value = false;
     
     // 获取文件配置选项
-    const configResponse = await getFileConfigApi({orgCode: orgCode});
+    const configResponse = await getFileConfigApi({orgCode: orgCodeValue});
 
     // 修复数据处理逻辑
     if (configResponse && Array.isArray(configResponse)) {
@@ -2386,7 +2397,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
       pageId: sheet.pageId,
-      orgCode: orgCode
+      orgCode: orgCodeValue
     });
 
     if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
@@ -2434,7 +2445,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     }
   } catch (error) {
     console.error('获取标题配置数据失败:', error);
-    message.error('获取标题配置数据失败');
+    message.error('获取标题配置数据失败: ' + (error instanceof Error ? error.message : String(error)));
   } finally {
     // 结束加载，设置加载状态为false
     titleConfigLoading.value = false;
@@ -2559,23 +2570,9 @@ const handleTitleConfigChange = (value, dataBlock, column, record) => {
   }
 };
 
-// 所属银行/支付公司下拉框值变更事件处理
-const onOrganizationChange = (value) => {
-  // 如果已有选中的页码ID，则触发页码的点击事件重新加载标题配置列表数据
-  if (activeTitleConfigSheet.value && currentTitleConfigFile.value) {
-    // 查找当前选中的页码对象
-    const currentSheet = currentTitleConfigFile.value.filePages?.find(
-      sheet => sheet.pageId === activeTitleConfigSheet.value
-    );
-    
-    // 如果找到了页码对象，则重新加载数据
-    if (currentSheet) {
-      // 传递新的organizationCode值给selectTitleConfigSheet方法
-      selectTitleConfigSheet(currentSheet, value);
-    }
-  }
-};
+;
 
+// 文件命名说明点击事件
 // 文件命名说明点击事件
 const onFileNameInstructionClick = () => {
   // TODO: 实现文件命名说明点击逻辑
