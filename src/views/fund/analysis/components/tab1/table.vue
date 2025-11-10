@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -2019,7 +2019,7 @@ const saveTitleConfig = async () => {
     
     // 调用API保存配置
     await updateFileConfigApi(params);
-    message.success('字段映射已保存');
+    //message.success('字段映射已保存');
     
     // 保存成功后，刷新文件列表数据
     fetchFileList();
@@ -2041,7 +2041,7 @@ const saveTitleConfig = async () => {
     }
   } catch (error) {
     console.error('保存标题配置失败:', error);
-    message.error('保存标题配置失败: ' + (error instanceof Error ? error.message : String(error)));
+    //message.error('保存标题配置失败: ' + (error instanceof Error ? error.message : String(error)));
   } finally {
     // 无论成功或失败，都取消按钮的禁用状态
     isSaveButtonDisabled.value = false;
@@ -2358,6 +2358,11 @@ const showTitleConfigModal = async (record, isSaving = false) => {
       }
     }
 
+    if (!organizationCode) {
+      message.warning('请先选择所属银行/支付公司');
+      return;
+    }
+
   } catch (error) {
     console.error('获取标题配置数据失败:', error);
     message.error('获取标题配置数据失败');
@@ -2398,7 +2403,7 @@ const editingCell = ref<{record: any, column: any} | null>(null);
 const handleIgnoreConfig = () => {
   Modal.confirm({
     title: '确认操作',
-    content: '确定要忽略配置吗？',
+    content: '确认忽略配置吗？',
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
@@ -2411,7 +2416,7 @@ const handleIgnoreConfig = () => {
 const handleSaveConfig = () => {
   Modal.confirm({
     title: '确认操作',
-    content: '确定要保存配置吗？',
+    content: '多个数据块的配置会一起提交保存，确认配置已完成，点击确认提交',
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
