@@ -872,6 +872,12 @@ const pagination = reactive({
 // 表格列配置
 const columns = [
   {
+    title: '行号',
+    dataIndex: 'rowNum',
+    key: 'rowNum',
+    resizable: true
+  },
+  {
     title: '发起行',
     dataIndex: 'orgName',
     key: 'orgName',
