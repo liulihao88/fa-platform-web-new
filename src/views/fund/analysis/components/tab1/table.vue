@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -521,7 +521,17 @@
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
           <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
-            <a-button v-if="isIgnoreTitleConfig" type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
+            <div v-if="isIgnoreTitleConfig" class="ml2">
+              <a-button  type="primary" @click="handleIgnoreConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
+              <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
+              <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
+            </div>
+            <div v-else class="ml2">
+              <a-button  type="primary" @click="handleSaveConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
+              <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
+              <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
+            </div>
+
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
                 v-for="(dataBlock, index) in titleConfigData.result" 
@@ -531,9 +541,6 @@
                 <div style="display: flex; justify-content: space-between;">
                   <div>
                     <div class="ml4" ><span>未映射的字段：</span><span style="color:red">{{dataBlock.noMappingTitle}}</span></div>
-                  </div>
-                  <div style="text-align: right; white-space: nowrap;">
-                    下表数据为示例数据，不是全部数据
                   </div>
                 </div>
                 <!-- 构造表格数据 -->
@@ -553,8 +560,9 @@
                   class="title-config-table"
                 >
                   <template #tableTitle>
-                    <a-button type="primary" @click="saveTitleConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
-                    <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
+                    <div class="ml2">
+                      <span style="color:red">*</span>下表数据为示例数据，不是全部数据
+                    </div>
                   </template>
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'config'">
@@ -2385,6 +2393,32 @@ const isIgnoreTitleConfig = ref(false);
 
 // 添加编辑状态管理
 const editingCell = ref<{record: any, column: any} | null>(null);
+
+// 忽略配置二次确认
+const handleIgnoreConfig = () => {
+  Modal.confirm({
+    title: '确认操作',
+    content: '确定要忽略配置吗？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      saveTitleConfig();
+    }
+  });
+};
+
+// 保存配置二次确认
+const handleSaveConfig = () => {
+  Modal.confirm({
+    title: '确认操作',
+    content: '确定要保存配置吗？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      saveTitleConfig();
+    }
+  });
+};
 
 // 启用编辑模式
 const enableEdit = (record, column, dataBlock) => {
