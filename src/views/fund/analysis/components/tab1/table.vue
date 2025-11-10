@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -153,7 +153,10 @@
           >
             <a-card title="源文件视图" size="small" style="height: 750px">
               <a-row>
-                <a-col span="24">文件名称：{{ currentFile.fileName || '-' }}</a-col>
+                <a-col span="24">
+                  文件名称：{{ currentFile.fileName || '-' }}
+                  <a-button type="primary" size="small" @click="previewFile(currentRecord)" class="ml2">预览文件</a-button>
+                </a-col>
               </a-row>
               <a-row>
                 <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 640px" >
@@ -162,7 +165,7 @@
                     <p>文件加载中，请稍候...</p>
                   </div>
                   <VueOfficeExcel
-                      v-else
+                      v-else-if="fileStreamInfo"
                       :src="fileStreamInfo"
                       :options="vueExcelOptions"
                       @rendered="onExcelRendered"
@@ -172,6 +175,9 @@
                       :min-col-width="100"
                       :max-col-width="300"
                   />
+                  <div v-else class="file-loading">
+                    <p>点击"预览文件"按钮加载文件内容</p>
+                  </div>
                 </a-col>
                 <a-col v-if="currentFileType == 'pdf'" span="24">
                   <div v-if="fileLoading" class="file-loading">
@@ -179,7 +185,7 @@
                     <p>文件加载中，请稍候...</p>
                   </div>
                   <div v-else-if="!fileStreamInfo" class="file-loading">
-                    <p>文件内容为空</p>
+                    <p>点击"预览文件"按钮加载文件内容</p>
                   </div>
                   <div v-else class="pdf-container">
                     <VueOfficePdf
@@ -198,11 +204,12 @@
                     <a-spin size="large" />
                     <p>文件加载中，请稍候...</p>
                   </div>
+                  <div v-else-if="!csvData || csvData.length === 0" class="file-loading">
+                    <p v-if="!csvContent">点击"预览文件"按钮加载文件内容</p>
+                    <p v-else>没有可显示的数据</p>
+                  </div>
                   <div v-else class="csv-preview">
-                    <div v-if="csvData.length === 0" class="csv-empty">
-                      <p>没有可显示的数据</p>
-                    </div>
-                    <div v-else class="csv-table-container">
+                    <div class="csv-table-container">
                       <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
                         <thead>
                         <tr>
@@ -1728,23 +1735,25 @@ const handleEditFileClick = (record) => {
   }
 };
 
-// 修改editFile方法，在显示Modal后加载数据
+// 修改editFile方法，不再在打开模态框时自动加载文件预览
 const editFile = async (record) => {
   // 先显示模态框
   editModalVisible.value = true;
   currentRecord.value = record;
+  
   // 查询转换基本信息
   const convertInfo = await getFileConverResultApi({fileId:record.id})
   const fileInfo = await getFileInfoItem({fileId:record.id})
   const { fileType } = fileInfo
   currentFileType.value = (fileType || '').toLowerCase()
 
-  if (supportedTypes.includes(currentFileType.value)) {
-    previewFile(record)
-  } else {
-    message.error(`不支持的文件类型: ${fileType}`)
-    return; // 如果文件类型不支持，直接返回，不显示Modal
-  }
+  // 不再自动预览文件
+  // if (supportedTypes.includes(currentFileType.value)) {
+  //   previewFile(record)
+  // } else {
+  //   message.error(`不支持的文件类型: ${fileType}`)
+  //   return; // 如果文件类型不支持，直接返回，不显示Modal
+  // }
 
   Object.assign(currentFile, convertInfo || {});
   if(convertInfo.organizationCode){
@@ -1766,7 +1775,10 @@ const editFile = async (record) => {
     await selectSheet(filePages[0]);
   }
 
-
+  // 清空文件预览相关数据
+  fileStreamInfo.value = '';
+  csvData.value = [];
+  csvContent.value = '';
 
   nextTick(() => {
     // 先显示模态框
@@ -1776,8 +1788,8 @@ const editFile = async (record) => {
       resetSplitPanelsToCenter();
     }, 100);
   });
-
 };
+
 // 清理创建的对象URL
 const cleanupUrl = () => {
   if (fileStreamInfo.value) {
