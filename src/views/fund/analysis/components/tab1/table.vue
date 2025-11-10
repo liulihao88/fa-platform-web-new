@@ -2003,7 +2003,7 @@ const saveTitleConfig = async () => {
     fetchFileList();
     
     // 重新加载所属银行/支付公司下拉框和页码列表数据
-    await showTitleConfigModal(currentTitleConfigFile.value);
+    await showTitleConfigModal(currentTitleConfigFile.value, true);
     
     // 如果之前有选中的页码，则重新加载该页码的数据
     if (activeTitleConfigSheet.value) {
@@ -2255,7 +2255,7 @@ const handleTitleConfigClick = (record) => {
 };
 
 // 标题配置相关方法
-const showTitleConfigModal = async (record) => {
+const showTitleConfigModal = async (record, isSaving = false) => {
   currentTitleConfigFile.value = record;
   titleConfigModalVisible.value = true;
 
@@ -2300,11 +2300,14 @@ const showTitleConfigModal = async (record) => {
       organizationCode:organizationCode
     };
 
-    let configAllComplete = currentTitleConfigFile.value.filePages.every(v=>{
-      return v.configureStatus == '1'
-    })
-    if(configAllComplete){
-      message.info('该文件已经配置完成，系统开始自动解析');
+    // 只有是点击完以后, 才检查是否配置完成
+    if(isSaving){
+      let configAllComplete = currentTitleConfigFile.value.filePages.every(v=>{
+        return v.configureStatus == '1'
+      })
+      if(configAllComplete){
+        message.info('该文件已经配置完成，系统开始自动解析');
+      }
     }
 
 
