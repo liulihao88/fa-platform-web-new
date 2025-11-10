@@ -1185,41 +1185,41 @@ const fieldOptions = ref([
 // 下拉选选项配置
 const selectOptions = {
   // 币种选项
-  curr_no: [
-    { label: '人民币', value: 'CNY' },
-    { label: '美元', value: 'USD' },
-    { label: '港元', value: 'HKD' },
-    { label: '澳门元', value: 'MOP' },
-    { label: '欧元', value: 'EUR' },
-    { label: '日元', value: 'JPY' },
-    { label: '新台币', value: 'TWD' },
-  ],
+  // curr_no: [
+  //   { label: '人民币', value: 'CNY' },
+  //   { label: '美元', value: 'USD' },
+  //   { label: '港元', value: 'HKD' },
+  //   { label: '澳门元', value: 'MOP' },
+  //   { label: '欧元', value: 'EUR' },
+  //   { label: '日元', value: 'JPY' },
+  //   { label: '新台币', value: 'TWD' },
+  // ],
   // 交易方向选项
   trans_way: [
-    { label: '转入', value: '01' },
-    { label: '转出', value: '02' }
+    { label: '转入', value: '转入' },
+    { label: '转出', value: '转出' }
   ],
   // 交易种类选项
   trans_type: [
-    { label: '现金', value: '001' },
-    { label: '转账', value: '002' },
-    { label: '消费', value: '003' },
-    { label: '退款', value: '004' },
-    { label: '投资', value: '005' },
-    { label: '收益', value: '006' },
-    { label: '利息', value: '007' },
-    { label: '还款', value: '008' },
-    { label: '回款', value: '009' },
-    { label: '费用', value: '010' },
-    { label: '违约金', value: '011' },
+    { label: '现金', value: '现金' },
+    { label: '转账', value: '转账' },
+    { label: '消费', value: '消费' },
+    { label: '退款', value: '退款' },
+    { label: '投资', value: '投资' },
+    { label: '收益', value: '收益' },
+    { label: '利息', value: '利息' },
+    { label: '还款', value: '还款' },
+    { label: '回款', value: '回款' },
+    { label: '费用', value: '费用' },
+    { label: '违约金', value: '违约金' },
   ],
   // 交易状态选项
   status: [
-    { label: '正常', value: '00' },
-    { label: '撤销', value: '01' },
-    { label: '冲账', value: '02' },
-    { label: '抹账', value: '03' },
-    { label: '其他', value: '99' },
+    { label: '正常', value: '正常' },
+    { label: '撤销', value: '撤销' },
+    { label: '冲账', value: '冲账' },
+    { label: '抹账', value: '抹账' },
+    { label: '其他', value: '其他' },
   ]
 };
 
@@ -1232,7 +1232,7 @@ const getFieldComponentType = (field: string) => {
       return 'date'; // 日期选择器
     case 'trans_time':
       return 'datetime'; // 日期时间选择器
-    case 'curr_no':
+    //case 'curr_no':
     case 'trans_way':
     case 'trans_type':
     case 'status':
