@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -570,16 +570,29 @@
                     </template>
                     
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
-                      <div v-if="record.type === 'newMetaData'" class="config-select-cell">
-                        <JSearchSelect
-                          :dictOptions="titleConfigOptions"
-                          v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
-                          placeholder="请选择配置项"
-                          allow-clear
-                          style="width: 150px"
-                          :disabled="isCurrentSheetConfigured"
-                          @change="(value) => handleTitleConfigChange(value, dataBlock, column, record)"
-                        />
+                      <div v-if="record.type === 'newMetaData'" 
+                           class="config-select-cell"
+                           @dblclick="enableEdit(record, column, dataBlock)"
+                           :class="{ 'editing': isEditing(record, column) }">
+                        <template v-if="isEditing(record, column)">
+                          <JSearchSelect
+                            :dictOptions="titleConfigOptions"
+                            v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
+                            placeholder="请选择配置项"
+                            allow-clear
+                            style="width: 150px"
+                            :disabled="isCurrentSheetConfigured"
+                            @change="(value) => handleTitleConfigChange(value, dataBlock, column, record)"
+                            @blur="disableEdit(record, column)"
+                            @keydown.enter="disableEdit(record, column)"
+                          />
+                        </template>
+                        <template v-else>
+                          <span>
+                            {{ getSelectedOptionText(dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData) }}
+                          </span>
+                          <EditOutlined v-if="!isCurrentSheetConfigured" style="margin-left: 5px; color: #1890ff; font-size: 12px;" />
+                        </template>
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
                         <span :style="{ color: dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.oriMetaData ? 'inherit' : 'red' }">
@@ -643,6 +656,7 @@ import 'splitpanes/dist/splitpanes.css';
 import { useTimer } from '@/hooks/core/useTimer';
 
 import FileInfo from "./fileInfo.vue";
+import { EditOutlined } from '@ant-design/icons-vue';
 
 const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
 
@@ -2369,6 +2383,41 @@ const onOrganizationChange = (value) => {
 // 添加全屏状态
 const isIgnoreTitleConfig = ref(false);
 
+// 添加编辑状态管理
+const editingCell = ref<{record: any, column: any} | null>(null);
+
+// 启用编辑模式
+const enableEdit = (record, column, dataBlock) => {
+  if (isCurrentSheetConfigured.value) return;
+  editingCell.value = { record, column };
+  nextTick(() => {
+    // 聚焦到下拉框
+    const selectElement = document.querySelector('.config-select-cell.editing .ant-select-selector') as HTMLElement;
+    if (selectElement) {
+      selectElement.click();
+    }
+  });
+};
+
+// 禁用编辑模式
+const disableEdit = (record, column) => {
+  editingCell.value = null;
+};
+
+// 检查是否处于编辑状态
+const isEditing = (record, column) => {
+  return editingCell.value && 
+         editingCell.value.record.type === record.type && 
+         editingCell.value.column.dataIndex === column.dataIndex;
+};
+
+// 获取选中选项的文本
+const getSelectedOptionText = (value) => {
+  if (!value) return '';
+  const option = titleConfigOptions.value.find(opt => opt.value === value);
+  return option ? option.text : value;
+};
+
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
   let orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
@@ -2876,6 +2925,17 @@ defineExpose({
 .config-select-cell {
   position: relative;
   z-index: 104;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.config-select-cell:hover {
+  background-color: #f5f5f5;
+}
+
+.config-select-cell.editing {
+  cursor: default;
+  background-color: transparent;
 }
 
 /* 标题配置表格最小高度 */
