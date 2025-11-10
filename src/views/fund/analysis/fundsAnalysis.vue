@@ -9,7 +9,7 @@
           部门受案号: {{caseInfo.departmentCaseNumber}}
         </a-col>
         <a-col span="6">
-          受理日期：{{caseInfo.acceptTime}}
+          受理日期：{{formattedAcceptTime}}
         </a-col>
       </a-row>
     </a-card>
@@ -26,10 +26,11 @@
 </template>
 
 <script lang="ts" name="fundAnalysis" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import {caseDetailApi} from './user.api'
 import intelligent from './components/intelligent.vue'
+import dayjs from 'dayjs'
 
 const {query} = useRoute();
 const activeKey = ref('1');
@@ -49,6 +50,12 @@ const fetchCaseInfo = async () => {
       caseInfo.value = res;
   })
 };
+
+const formattedAcceptTime = computed(() => {
+  return caseInfo.value.acceptTime
+    ? dayjs(caseInfo.value.acceptTime).format('YYYY-MM-DD')
+    : '';
+});
 
 </script>
 

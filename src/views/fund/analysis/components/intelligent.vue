@@ -873,8 +873,8 @@ const pagination = reactive({
 const columns = [
   {
     title: '发起行',
-    dataIndex: 'orgCd',
-    key: 'orgCd',
+    dataIndex: 'orgName',
+    key: 'orgName',
     align: 'center' as const,
     resizable: true
   },
@@ -973,6 +973,13 @@ const columns = [
     title: '交易状态',
     dataIndex: 'status',
     key: 'status',
+    align: 'center' as const,
+    resizable: true
+  },
+  {
+    title: '文件名称',
+    dataIndex: 'fileName',
+    key: 'fileName',
     align: 'center' as const,
     resizable: true
   },
@@ -1113,7 +1120,7 @@ const nonBankTransactionColumns = [
   { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
 ];
 
-const dataSource = ref([]);
+const dataSource = ref<any[]>([]);
 
 const [registerTable] = useTable({
   columns,
@@ -1726,7 +1733,7 @@ const resetSearch = () => {
 const exportCurrentPage = async () => {
   const params = {
     caseId: query.caseId,
-    ids: selectedRowKeys.value,
+    ids: dataSource.value.map(v=>v.id),
     conditionJson: JSON.stringify({grouproot:rootGroups.value}),
     pageNo: pagination.current,
     pageSize: pagination.pageSize

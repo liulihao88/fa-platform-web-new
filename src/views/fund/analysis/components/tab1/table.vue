@@ -1166,6 +1166,18 @@ const columns = ref([
     resizable: true
   },
   {
+    title: '导入笔数',
+    dataIndex: 'importDataNum',
+    width: 150,
+    resizable: true
+  },
+  {
+    title: '去重笔数',
+    dataIndex: 'repeatDataNum',
+    width: 150,
+    resizable: true
+  },
+  {
     title: '操作',
     key: 'operation',
     dataIndex: 'operation',

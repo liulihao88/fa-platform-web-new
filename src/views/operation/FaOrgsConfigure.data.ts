@@ -113,7 +113,8 @@ export const formSchema: FormSchema[] = [
         {label: '非银行', value: 2},
       ]
     },
-    defaultValue:1,
+    defaultValue:'',
+    rules: [{required: true}],
     //动态禁用，values代表当前表单的值，返回 true或false
     // dynamicDisabled: ({ values }) => {
     //   return values.id != ''&& values.id != undefined;
