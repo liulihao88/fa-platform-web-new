@@ -5,20 +5,15 @@ import { render } from '/@/utils/common/renderUtils';
 import { getWeekMonthQuarterYear } from '/@/utils';
 //列表数据
 export const columns: BasicColumn[] = [
+
    {
-    title: '机构编码',
-    align:"center",
-    resizable: true,
-    dataIndex: 'orgCd'
-   },
-   {
-    title: '名称',
+    title: '机构官方名称',
     align:"center",
     resizable: true,
     dataIndex: 'orgName'
    },
    {
-    title: '简称',
+    title: '通常叫法',
     align:"center",
     resizable: true,
     dataIndex: 'names'
@@ -39,14 +34,17 @@ export const columns: BasicColumn[] = [
     title: '种类',
     align:"center",
     resizable: true,
-    dataIndex: 'orgType'
+    dataIndex: 'orgType',
+    customRender:({text}) => {
+      if(text === 1){
+        return '银行'
+      }else if(text === 2){
+        return '非银行'
+      }else{
+        return text
+      }
    },
-   {
-    title: '启用标志',
-    align:"center",
-    resizable: true,
-    dataIndex: 'ifToUse'
-   },
+  }
 ];
 //查询数据
 export const searchFormSchema: FormSchema[] = [
@@ -72,27 +70,20 @@ export const searchFormSchema: FormSchema[] = [
 //表单数据
 export const formSchema: FormSchema[] = [
   {
-    label: '机构编码',
-    field: 'orgCd',
-    component: 'Input',
-    //动态禁用，values代表当前表单的值，返回 true或false
-    // dynamicDisabled: ({ values }) => {
-    //   return values.id != ''&& values.id != undefined;
-    // },
-  },
-  {
-    label: '名称',
+    label: '机构官方名称',
     field: 'orgName',
     component: 'Input',
+    rules: [{required: true}],
     //动态禁用，values代表当前表单的值，返回 true或false
     // dynamicDisabled: ({ values }) => {
     //   return values.id != ''&& values.id != undefined;
     // },
   },
   {
-    label: '简称',
+    label: '通常叫法',
     field: 'names',
     component: 'Input',
+    rules: [{required: true}],
     //动态禁用，values代表当前表单的值，返回 true或false
     // dynamicDisabled: ({ values }) => {
     //   return values.id != ''&& values.id != undefined;
@@ -115,16 +106,14 @@ export const formSchema: FormSchema[] = [
   {
     label: '种类',
     field: 'orgType',
-    component: 'InputNumber',
-    //动态禁用，values代表当前表单的值，返回 true或false
-    // dynamicDisabled: ({ values }) => {
-    //   return values.id != ''&& values.id != undefined;
-    // },
-  },
-  {
-    label: '启用标志',
-    field: 'ifToUse',
-    component: 'InputNumber',
+    component: 'Select',
+    componentProps:{
+      options: [
+        {label: '银行', value: 1},
+        {label: '非银行', value: 2},
+      ]
+    },
+    defaultValue:1,
     //动态禁用，values代表当前表单的值，返回 true或false
     // dynamicDisabled: ({ values }) => {
     //   return values.id != ''&& values.id != undefined;
@@ -141,13 +130,11 @@ export const formSchema: FormSchema[] = [
 
 // 高级查询数据
 export const superQuerySchema = {
-  orgCd: {title: '机构编码',order: 0,view: 'text', type: 'string',},
-  orgName: {title: '名称',order: 1,view: 'text', type: 'string',},
-  names: {title: '简称',order: 2,view: 'text', type: 'string',},
+  orgName: {title: '机构官方名称',order: 1,view: 'text', type: 'string',},
+  names: {title: '通常叫法',order: 2,view: 'text', type: 'string',},
   alias: {title: '别名',order: 3,view: 'text', type: 'string',},
   commonts: {title: '注释',order: 4,view: 'text', type: 'string',},
   orgType: {title: '种类',order: 5,view: 'number', type: 'number',},
-  ifToUse: {title: '启用标志',order: 6,view: 'number', type: 'number',},
 };
 
 /**

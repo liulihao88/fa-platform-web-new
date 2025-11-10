@@ -171,6 +171,11 @@ export const formSchema: FormSchema[] = [
     label: '案件名称',
     field: 'caseCode',
     component: 'Input',
+    rules: [
+      {
+        required: true
+      }
+    ],
   },
   {
     label: '案由',
