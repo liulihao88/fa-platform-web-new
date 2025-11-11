@@ -122,38 +122,44 @@
         },
         //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
         schemas: [
-          {
-            label: '机构编码',
-            field: 'orgCd',
-            component: 'JInput',
-            colProps: { span: 10 },
-          },
+          //{
+          // label: '机构编码',
+          //  field: 'orgCd',
+          //  component: 'JInput',
+          //  colProps: { span: 10 },
+          //},
           {
             label: '机构名称',
             field: 'orgName',
             component: 'JInput',
             colProps: { span: 10 },
-          },
-          {
-            label: '别名',
-            field: 'alias',
-            component: 'JInput',
-            colProps: { span: 10 },
-          },
+          }
+          //{
+          //  label: '别名',
+          //  field: 'alias',
+          //  component: 'JInput',
+          //  colProps: { span: 10 },
+          // },
         ],
       };
       //定义表格列
       const columns = [
+        //{
+        //  title: '机构编码',
+        //  dataIndex: 'orgCd',
+        //  width: 180,
+        //  align: 'left',
+        //},
         {
-          title: '机构编码',
-          dataIndex: 'orgCd',
+          title: '机构名称',
+          dataIndex: 'orgName',
           width: 180,
           align: 'left',
         },
         {
-          title: '机构名称',
-          dataIndex: 'orgName',
-          // width: 180,
+          title: '常用名称',
+          dataIndex: 'names',
+          width: 180,
         },
         {
           title: '别名',
