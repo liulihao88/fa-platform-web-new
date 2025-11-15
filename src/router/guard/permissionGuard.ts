@@ -13,6 +13,9 @@ import {isOAuth2AppEnv, isOAuth2DingAppEnv} from '/@/views/sys/login/useLogin';
 import { OAUTH2_THIRD_LOGIN_TENANT_ID } from "/@/enums/cacheEnum";
 import { setAuthCache } from "/@/utils/auth";
 import { PAGE_NOT_FOUND_NAME_404 } from '/@/router/constant';
+// 引入SSO相关函数
+import { useSso } from '/@/hooks/web/useSso';
+import { getUrlParam } from '/@/utils';
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN;
 //auth2登录路由
@@ -24,17 +27,22 @@ const SYS_FILES_PATH = PageEnum.SYS_FILES_PATH;
 // 邮件中的跳转地址,对应此路由,携带token免登录直接去办理页面
 const TOKEN_LOGIN = PageEnum.TOKEN_LOGIN;
 
+// SSO异常页面
+const SSO_EXCEPTION = PageEnum.SSO_EXCEPTION;
+
 const ROOT_PATH = RootRoute.path;
 
 //update-begin---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3不支持auth2登录------------
 //update-begin---author:wangshuai ---date:20221111  for: [VUEN-2472]分享免登录------------
-const whitePathList: PageEnum[] = [LOGIN_PATH, OAUTH2_LOGIN_PAGE_PATH,SYS_FILES_PATH, TOKEN_LOGIN ];
+const whitePathList: PageEnum[] = [LOGIN_PATH, OAUTH2_LOGIN_PAGE_PATH, SYS_FILES_PATH, TOKEN_LOGIN, SSO_EXCEPTION];
 //update-end---author:wangshuai ---date:20221111  for: [VUEN-2472]分享免登录------------
 //update-end---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3不支持auth2登录------------
 
 export function createPermissionGuard(router: Router) {
   const userStore = useUserStoreWithOut();
   const permissionStore = usePermissionStoreWithOut();
+  // 获取SSO相关函数
+  const { ssoLogin } = useSso();
 
   // 自定义首页跳转次数
   let homePathJumpCount = 0;
@@ -57,6 +65,17 @@ export function createPermissionGuard(router: Router) {
 
     // Whitelist can be directly entered
     if (whitePathList.includes(to.path as PageEnum)) {
+      // 检查是否包含ens参数，如果包含则执行SSO登录
+      const ens = getUrlParam('ens');
+      if (ens && to.path === LOGIN_PATH) {
+        // 如果当前是登录页面且包含ens参数，执行SSO登录逻辑
+        const ssoHandled = await ssoLogin();
+        // 如果SSO已处理跳转逻辑，则直接返回
+        if (ssoHandled) {
+          return;
+        }
+      }
+      
       if (to.path === LOGIN_PATH && token) {
         const isSessionTimeout = userStore.getSessionTimeout;
         

@@ -173,6 +173,10 @@
   import CaptchaModal from '@/components/jeecg/captcha/CaptchaModal.vue';
   import { useModal } from "@/components/Modal";
   import { ExceptionEnum } from "@/enums/exceptionEnum";
+  // 引入SSO相关函数
+  import { useSso } from '/@/hooks/web/useSso';
+  import { onBeforeMount } from 'vue';
+  import { getUrlParam } from '/@/utils';
 
   const IconFont = createFromIconfontCN({
     scriptUrl: '/resource/js/font_2316098_umqusozousr.js',
@@ -433,6 +437,18 @@
     //加载验证码
     handleChangeCheckCode();
   });
+
+  // 在组件挂载前检查SSO登录
+  onBeforeMount(async () => {
+    // 检查是否开启单点登录以及是否有ens参数
+    const { ssoLogin } = useSso();
+    const ens = getUrlParam('ens');
+    if (ens) {
+      // 如果有ens参数，执行SSO登录检查
+      await ssoLogin();
+    }
+  });
+
 </script>
 
 <style lang="less" scoped>

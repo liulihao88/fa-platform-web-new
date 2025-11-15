@@ -64,5 +64,17 @@ export const TokenLoginRoute: AppRouteRecordRaw = {
     ignoreAuth: true,
   },
 };
+
+// SSO异常页面路由
+export const SsoExceptionRoute: AppRouteRecordRaw = {
+  path: '/exception/sso',
+  name: 'SsoException',
+  component: () => import('/@/views/sys/exception/SsoException.vue'),
+  meta: {
+    title: '单点登录',
+    ignoreAuth: true,
+  },
+};
+
 // Basic routing without permission
-export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, REDIRECT_ROUTE, PAGE_NOT_FOUND_ROUTE, TokenLoginRoute, Oauth2LoginRoute];
+export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, REDIRECT_ROUTE, PAGE_NOT_FOUND_ROUTE, TokenLoginRoute, Oauth2LoginRoute, SsoExceptionRoute];

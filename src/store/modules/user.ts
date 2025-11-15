@@ -219,7 +219,7 @@ export const useUserStore = defineStore({
         // update-end-author:sunjianlei date:20230306 for: 修复登录成功后，没有正确重定向的问题
 
         //update-begin---author:wangshuai---date:2024-04-03---for:【issues/1102】设置单点登录后页面，进入首页提示404，也没有绘制侧边栏 #1102---
-        let ticket = getUrlParam('ticket');
+        let ticket = getUrlParam('ens');
         if(ticket){
           goHome && (window.location.replace((userInfo && userInfo.homePath) || PageEnum.BASE_HOME));
         }else{
@@ -319,7 +319,11 @@ export const useUserStore = defineStore({
       //如果开启单点登录,则跳转到单点统一登录中心
       const openSso = useGlobSetting().openSso;
       if (openSso == 'true') {
-        await useSso().ssoLoginOut();
+        const ssoHandled = await useSso().ssoLoginOut();
+        // 如果 SSO 已处理退出逻辑，则直接返回
+        if (ssoHandled) {
+          return;
+        }
       }
       //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
       //退出登录的时候需要用的应用id

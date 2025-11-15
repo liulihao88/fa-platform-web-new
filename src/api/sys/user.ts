@@ -31,6 +31,8 @@ enum Api {
   checkOnlyUser = '/sys/user/checkOnlyUser',
   //SSO登录校验
   validateCasLogin = '/sys/cas/client/validateLogin',
+  //SSO登录校验JCY
+  validateJcyLogin = '/sys/cas/client/validateJcyLogin',
   //校验手机号
   phoneVerify = '/sys/user/phoneVerification',
   //修改密码
@@ -218,5 +220,13 @@ export function getQrcodeToken(params) {
  */
 export async function validateCasLogin(params) {
   let url = Api.validateCasLogin;
+  return defHttp.get({ url: url, params });
+}
+
+/**
+ * SSO登录校验 JCY
+ */
+export async function validateJcyLogin(params) {
+  let url = Api.validateJcyLogin;
   return defHttp.get({ url: url, params });
 }
