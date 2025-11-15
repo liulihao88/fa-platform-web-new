@@ -590,7 +590,7 @@
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
                       <div v-if="record.type === 'newMetaData'" 
                            class="config-select-cell"
-                           @dblclick="enableEdit(record, column, dataBlock)"
+                           @click="enableEdit(record, column, dataBlock)"
                            :class="{ 'editing': isEditing(record, column) }">
                         <template v-if="isEditing(record, column)">
                           <JSearchSelect
@@ -2467,13 +2467,6 @@ const handleSaveConfig = () => {
 const enableEdit = (record, column, dataBlock) => {
   if (isCurrentSheetConfigured.value) return;
   editingCell.value = { record, column };
-  nextTick(() => {
-    // 聚焦到下拉框
-    const selectElement = document.querySelector('.config-select-cell.editing .ant-select-selector') as HTMLElement;
-    if (selectElement) {
-      selectElement.click();
-    }
-  });
 };
 
 // 禁用编辑模式
