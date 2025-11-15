@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div>
   <!-- 搜索卡片 -->
   <a-card class="search-form-card">
@@ -542,6 +542,9 @@
               <a-button  type="primary" @click="handleSaveConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
               <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
               <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
+            </div>
+            <div v-if="titleConfigData.result.length > 0 && titleConfigData.result[0].errorMessage" class="ml2 config-error-message" style="color: #ff4d4f; margin-top: 8px; font-size: 14px;">
+                {{ titleConfigData.result[0].errorMessage }}
             </div>
 
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
@@ -1259,6 +1262,7 @@ interface DataBlock {
   dataBlockNum: number;
   dataBlockStucts: DataBlockStruct[];
   noMappingTitle: string;
+  errorMessage?: string; // 添加错误信息属性
 }
 
 // 添加配置选项类型
@@ -2066,7 +2070,22 @@ const saveTitleConfig = async () => {
     }
   } catch (error) {
     console.error('保存标题配置失败:', error);
-    //message.error('保存标题配置失败: ' + (error instanceof Error ? error.message : String(error)));
+    // 解析错误信息并显示在"未映射的字段"下方
+    let errorMessage = '保存标题配置失败';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error && typeof error === 'object' && 'message' in error) {
+      errorMessage = (error as { message: string }).message;
+    }
+    
+    // 将错误信息添加到对应的数据块中
+    if (titleConfigData.value.result.length > 0) {
+      // 默认显示在第一个数据块中
+      titleConfigData.value.result[0].errorMessage = errorMessage;
+    }
+    
   } finally {
     // 无论成功或失败，都取消按钮的禁用状态
     isSaveButtonDisabled.value = false;
