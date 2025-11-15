@@ -2451,7 +2451,16 @@ const handleIgnoreConfig = () => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      saveTitleConfig();
+      return saveTitleConfig().then(() => {
+        // 保存成功后确保模态框仍然可见
+        titleConfigModalVisible.value = true;
+      });
+    },
+    onCancel() {
+      // 取消时也确保模态框可见
+      nextTick(() => {
+        titleConfigModalVisible.value = true;
+      });
     }
   });
 };
@@ -2464,7 +2473,16 @@ const handleSaveConfig = () => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      saveTitleConfig();
+      return saveTitleConfig().then(() => {
+        // 保存成功后确保模态框仍然可见
+        titleConfigModalVisible.value = true;
+      });
+    },
+    onCancel() {
+      // 取消时也确保模态框可见
+      nextTick(() => {
+        titleConfigModalVisible.value = true;
+      });
     }
   });
 };
