@@ -123,23 +123,28 @@
     <div>
       <a-card style="height: 850px">
         <div class="panel-controls">
-          <a-button 
-            type="primary" 
-            size="small" 
-            @click="toggleLeftPanel"
-            :icon="leftPanelVisible ? '<-' : '->'"
-          >
-            {{ leftPanelVisible ? '隐藏源文件视图' : '显示源文件视图' }}
-          </a-button>
-          <a-button 
-            type="primary" 
-            size="small" 
-            @click="toggleRightPanel"
-            :icon="rightPanelVisible ? '->' : '<-'"
-            class="ml2"
-          >
-            {{ rightPanelVisible ? '隐藏转换结果' : '显示转换结果' }}
-          </a-button>
+         <div>
+           <a-button 
+             type="primary" 
+             size="small" 
+             @click="toggleLeftPanel"
+             :icon="leftPanelVisible ? '<-' : '->'"
+           >
+             {{ leftPanelVisible ? '隐藏源文件视图' : '显示源文件视图' }}
+           </a-button>
+           <a-button 
+             type="primary" 
+             size="small" 
+             @click="toggleRightPanel"
+             :icon="rightPanelVisible ? '->' : '<-'"
+             class="ml2"
+           >
+             {{ rightPanelVisible ? '隐藏转换结果' : '显示转换结果' }}
+           </a-button>
+         </div>
+         <div>
+           <TransformInfo></TransformInfo>
+         </div>
         </div>
         <splitpanes 
           class="default-theme" 
@@ -643,6 +648,7 @@ import VueOfficePdf from '@vue-office/pdf'
 import '@vue-office/excel/lib/index.css'
 import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
 import JSelectOrgsConfig from "@/components/Form/src/jeecg/components/JSelectOrgsConfig.vue";
+import TransformInfo from "@/views/fund/analysis/components/tab1/transformInfo.vue";
 import {
   deleteFileListApi,
   getFileConverResultApi,
@@ -2719,6 +2725,9 @@ defineExpose({
 
 .panel-controls {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* 自定义上传拖拽区域样式 */

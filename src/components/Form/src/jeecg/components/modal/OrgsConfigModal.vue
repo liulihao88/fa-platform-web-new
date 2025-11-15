@@ -190,7 +190,9 @@
           // 添加调试信息
           console.log('options:', options);
           console.log('values:', values);
-          
+          if(!options || options?.length === 0){
+            return;
+          }
           // 检查是否选择了数据 - 更全面的检查
           const hasSelection = values && (
             (Array.isArray(values) && values.length > 0) || 
