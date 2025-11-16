@@ -191,6 +191,7 @@
           console.log('options:', options);
           console.log('values:', values);
           if(!options || options?.length === 0){
+            createMessage.warning(' 必须选择一个银行/支付公司');
             return;
           }
           // 检查是否选择了数据 - 更全面的检查
