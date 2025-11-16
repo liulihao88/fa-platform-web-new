@@ -1245,7 +1245,7 @@ const getFieldComponentType = (field: string) => {
     //case 'curr_no':
     case 'trans_way':
     case 'trans_type':
-    case 'status':
+    //case 'status':
       return 'select'; // 下拉选择器
     default:
       return 'input'; // 输入框
