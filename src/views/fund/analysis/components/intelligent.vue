@@ -1251,7 +1251,7 @@ const getFieldComponentType = (field: string) => {
       return 'datetime'; // 日期时间选择器
     //case 'curr_no':
     case 'trans_way':
-    case 'trans_type':
+    //case 'trans_type':
     //case 'status':
       return 'select'; // 下拉选择器
     default:
