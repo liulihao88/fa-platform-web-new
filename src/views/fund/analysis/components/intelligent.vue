@@ -980,6 +980,13 @@ const columns = [
     resizable: true
   },
   {
+    title: '备注',
+    dataIndex: 'comment',
+    key: 'comment',
+    align: 'center' as const,
+    resizable: true
+  },
+  {
     title: '交易状态',
     dataIndex: 'status',
     key: 'status',
