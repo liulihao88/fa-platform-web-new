@@ -593,6 +593,9 @@
       >
         导出选择数据
       </a-button>
+      <a-button type="primary" @click="exportAllData">
+        导出全部数据
+      </a-button>
       <a-button type="primary" @click="showArchiveModal">
         生成卷宗信息
       </a-button>
@@ -638,7 +641,7 @@
     v-model:visible="detailModalVisible"
     title="查看原信息"
     width="1200px"
-    useWrapper="true"
+    :useWrapper="true"
     :footer="null"
     @cancel="closeDetailModal"
   >
@@ -863,6 +866,7 @@ const pagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
+  totalPage: 0,
   showSizeChanger: true,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
@@ -1128,7 +1132,7 @@ const nonBankTransactionColumns = [
 
 const dataSource = ref<any[]>([]);
 
-const [registerTable] = useTable({
+const [registerTable, { setPagination, getPaginationRef }] = useTable({
   columns,
   dataSource,
   loading: tableLoading,
@@ -1696,14 +1700,19 @@ const fetchIntelligentList = async () => {
 
     if (response && response.records) {
       dataSource.value = response.records;
-      pagination.total = response.total;
+      pagination.total = response.total || 0;
+      // 更新表格组件中的分页信息
+      setPagination({ total: response.total || 0 });
     } else {
       dataSource.value = [];
       pagination.total = 0;
+      setPagination({ total: 0 });
     }
   } catch (error) {
     console.error('获取数据失败:', error);
     message.error('获取数据失败');
+    // 出错时也更新分页信息
+    setPagination({ total: 0 });
   } finally {
     tableLoading.value = false;
     searchLoading.value = false;
@@ -1714,12 +1723,16 @@ const fetchIntelligentList = async () => {
 const handleTableChange = (pag: any, filters: any, sorter: any) => {
   pagination.current = pag.current;
   pagination.pageSize = pag.pageSize;
+  // 更新表格组件中的分页信息
+  //setPagination({ current: pag.current, pageSize: pag.pageSize });
   fetchIntelligentList();
 };
 
 // 搜索处理
 const onSearch = () => {
   pagination.current = 1;
+  // 更新表格组件中的分页信息
+  setPagination({ current: 1, total: 0 });
   searchLoading.value = true;
   fetchIntelligentList();
 };
@@ -1732,6 +1745,8 @@ const resetSearch = () => {
   selectedRowKeys.value = [];
   selectedRowsData.value = [];
   pagination.current = 1;
+  // 更新表格组件中的分页信息
+  setPagination({ current: 1 });
   fetchIntelligentList();
 };
 
@@ -1761,6 +1776,20 @@ const exportMarkedData = async () => {
     pageSize: pagination.pageSize
   };
   handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post');
+};
+
+// 导出所有数据
+// 导出所有数据
+const exportAllData = async () => {
+  const params = {
+    caseId: query.caseId,
+    ids: [],
+    conditionJson: JSON.stringify({grouproot:rootGroups.value}),
+    pageNo: 1,
+    pageSize: pagination.total, // 导出所有数据
+    exportAll: true // 标识导出所有数据
+  };
+  handleExportXls('智能查询全部数据', exportIntelligentPageData, params, 'post');
 };
 
 // 显示卷宗信息弹窗
