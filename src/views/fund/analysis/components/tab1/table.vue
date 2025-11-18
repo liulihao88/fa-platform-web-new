@@ -493,14 +493,13 @@
 <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
 <!--              </a-col>-->
               <a-col :span="16">
-                <div>
+                <div style="width: 400px">
                   <strong>所属银行/支付公司：</strong>
                   <JSelectOrgsConfig
                     :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
                     allow-clear
                     notFoundContent="无此银行，请联系运维添加"
-                    style="width: 60%"
                     :disabled="isOrganizationSelectDisabled"
                     @change="(value) => onOrganizationChange(value)"
                   />
@@ -1825,11 +1824,12 @@ const previewFile = (record)=>{
   getFileInfoItem({fileId:record.id}).then(fileInfo => {
     const fileSize = fileInfo.fileSize || 0;
     
+    //  当前文件大小为 xxMB， 超过系统可负荷的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?
     // 检查文件大小是否超过限制
     if (fileSize > MAX_FILE_SIZE) {
       Modal.confirm({
         title: '文件过大提示',
-        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统建议的3MB限制，预览可能会影响浏览器性能。是否继续预览？`,
+        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统可负载的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?`,
         okText: '继续预览',
         cancelText: '取消',
         onOk: () => {
