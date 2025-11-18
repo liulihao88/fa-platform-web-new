@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import gTitle from "./gTitle.vue";
 import { Image } from 'ant-design-vue';
 import { BasicModal } from '/@/components/Modal';
 import support1Image from '@/assets/images/filedesc/support1.png';

@@ -22,6 +22,8 @@ import { useSso } from '/@/hooks/web/useSso';
 import { checkIsQiankunMicro } from "/@/qiankun/micro";
 import { autoUseQiankunMicro } from "/@/qiankun/micro/qiankunMicro";
 import { useAppStoreWithOut } from "@/store/modules/app";
+import registerPlugins from '/@/utils/registerPlugins';
+
 
 // 注册online模块lib
 import { registerPackages } from '/@/utils/monorepo/registerPackages';
@@ -47,6 +49,8 @@ async function bootstrap(props?: MainAppProps) {
   const app = createApp(App);
   // 【QQYUN-6329】
   window['JAppRootInstance'] = app;
+
+  registerPlugins(app)
 
   // 创建路由
   createRouter();

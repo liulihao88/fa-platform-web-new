@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
 import {BasicModal} from '/@/components/Modal';
-import gTitle from "./gTitle.vue";
 const { proxy } = getCurrentInstance()
 const isShow = ref(false)
 const transformInfo = ()=>{
