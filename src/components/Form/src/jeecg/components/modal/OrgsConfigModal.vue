@@ -100,9 +100,6 @@
       
       //查询form
       const formConfig = {
-        labelCol: {
-          span: 4,
-        },
         baseColProps: {
           xs: 24,
           sm: 10,
@@ -132,7 +129,7 @@
             label: '机构名称',
             field: 'orgName',
             component: 'JInput',
-            colProps: { span: 10 },
+            colProps: { span: 14 },
           }
           //{
           //  label: '别名',

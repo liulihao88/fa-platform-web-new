@@ -492,9 +492,10 @@
 <!--              <a-col :span="8">-->
 <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
 <!--              </a-col>-->
-              <a-col :span="16">
-                <div style="width: 400px">
+              <a-col :span="3">
                   <strong>所属银行/支付公司：</strong>
+              </a-col>
+              <a-col :span="6">
                   <JSelectOrgsConfig
                     :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
@@ -503,7 +504,6 @@
                     :disabled="isOrganizationSelectDisabled"
                     @change="(value) => onOrganizationChange(value)"
                   />
-                </div>
               </a-col>
             </a-row>
           </a-card>
