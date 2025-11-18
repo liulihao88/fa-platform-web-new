@@ -34,19 +34,19 @@
         <a-tab-pane key="1" tab="上传文件">
            <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref"></tab1>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="涉案人管理" force-render>
+        <!--<a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2
             :idCardTypeOptions="idCardTypeOptions"
             :involvedRelateOptions="involvedRelateOptions"
             :involvedKindOptions="involvedKindOptions"
           ></tab2>
-        </a-tab-pane>
-        <a-tab-pane key="3" tab="标准数据查看">
+        </a-tab-pane>-->
+        <a-tab-pane key="2" tab="标准数据查看">
           <tab3
               :filteredFiles="filteredFiles"
           ></tab3>
         </a-tab-pane>
-        <a-tab-pane key="4" tab="重复数据查看">
+        <a-tab-pane key="3" tab="重复数据查看">
           <tab4></tab4>
         </a-tab-pane>
       </a-tabs>
