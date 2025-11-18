@@ -71,6 +71,9 @@
               }
               return Object.assign(params, queryParam);
             },
+            tableSetting: { 
+              redo: false, 
+            } 
       },
        exportConfig: {
             name:"机构配置",

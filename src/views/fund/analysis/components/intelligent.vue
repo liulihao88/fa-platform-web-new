@@ -1153,7 +1153,7 @@ const [registerTable, { setPagination, getPaginationRef }] = useTable({
   canResize: true,
   minHeight: 300,
   tableSetting: { 
-    redo: true, 
+    redo: false, 
     size: true, 
     setting: true, 
     fullScreen: true,

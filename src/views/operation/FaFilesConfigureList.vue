@@ -64,6 +64,9 @@
         width: 160,
         fixed: 'right',
       },
+      tableSetting:{
+        redo: false
+      },
       beforeFetch: async (params) => {
         for (let key in fieldPickers) {
           if (queryParam[key] && fieldPickers[key]) {
