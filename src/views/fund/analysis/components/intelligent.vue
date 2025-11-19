@@ -1777,6 +1777,15 @@ const onSearch = () => {
     return true;
   };
 
+  if (rootGroups.value.items.length == 1){
+    const item = rootGroups.value.items[0];
+    if(item.field){
+      if (!item.condition|| !item.value) {
+        message.error('请完善筛选条件配置');
+        return;
+      }
+    }
+  }
   if (rootGroups.value.items.length>1&&!validateGroup(rootGroups.value)) {
     message.error('请完善筛选条件配置');
     return;
