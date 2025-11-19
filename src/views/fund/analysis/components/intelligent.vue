@@ -659,7 +659,7 @@
           @change="handleBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -678,7 +678,7 @@
           @change="handleBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -697,7 +697,7 @@
           @change="handleNonBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -716,7 +716,7 @@
           @change="handleNonBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: true, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -879,6 +879,7 @@ const columns = [
     title: '行号',
     dataIndex: 'rowNum',
     key: 'rowNum',
+    width: 100,
     resizable: true
   },
   {
@@ -886,6 +887,7 @@ const columns = [
     dataIndex: 'orgName',
     key: 'orgName',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -893,6 +895,7 @@ const columns = [
     dataIndex: 'customerName',
     key: 'customerName',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -900,6 +903,7 @@ const columns = [
     dataIndex: 'transAccountNo',
     key: 'transAccountNo',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -907,6 +911,7 @@ const columns = [
     dataIndex: 'transNo',
     key: 'transNo',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -914,6 +919,7 @@ const columns = [
     dataIndex: 'channel',
     key: 'channel',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -921,6 +927,7 @@ const columns = [
     dataIndex: 'currNo',
     key: 'currNo',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -928,6 +935,7 @@ const columns = [
     dataIndex: 'transWay',
     key: 'transWay',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -935,6 +943,7 @@ const columns = [
     dataIndex: 'transAmt',
     key: 'transAmt',
     align: 'right' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -942,6 +951,7 @@ const columns = [
     dataIndex: 'transType',
     key: 'transType',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -949,6 +959,7 @@ const columns = [
     dataIndex: 'bizDate',
     key: 'bizDate',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -956,6 +967,7 @@ const columns = [
     dataIndex: 'transTime',
     key: 'transTime',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -963,6 +975,7 @@ const columns = [
     dataIndex: 'counterOrgName',
     key: 'counterOrgName',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -970,6 +983,7 @@ const columns = [
     dataIndex: 'counterName',
     key: 'counterName',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -977,6 +991,7 @@ const columns = [
     dataIndex: 'counterAccountNo',
     key: 'counterAccountNo',
     ellipsis: true,
+    width: 100,
     resizable: true
   },
   {
@@ -984,6 +999,7 @@ const columns = [
     dataIndex: 'comment',
     key: 'comment',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -991,6 +1007,7 @@ const columns = [
     dataIndex: 'status',
     key: 'status',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -998,6 +1015,7 @@ const columns = [
     dataIndex: 'fileName',
     key: 'fileName',
     align: 'center' as const,
+    width: 100,
     resizable: true
   },
   {
@@ -1550,7 +1568,6 @@ const saveFilterCondition = () => {
 
   // 校验条件完整性
   const validateGroup = (group: ConditionGroup): boolean => {
-    console.info('888888888888888888',group)
     if (!group.items || group.items.length === 0) {
       return false;
     }
@@ -1571,7 +1588,7 @@ const saveFilterCondition = () => {
   };
 
   if (!validateGroup(rootGroups.value)) {
-    message.error('请完善所有条件配置（字段和逻辑运算符必填）');
+    message.error('请完善筛选条件配置');
     return;
   }
 
@@ -1591,11 +1608,9 @@ const saveFilterCondition = () => {
   };
 
   const saveData = processGroupForSave(rootGroups.value);
-  console.info('条件1111111111111111--------->',saveData)
   const grouptootData = {
     grouproot: saveData
   }
-  console.info('222222222222222222222--------->',grouptootData)
   const params = {
     caseId: query.caseId,
     name: conditionName.value,
@@ -1673,7 +1688,6 @@ const getQueryConditionList = async () => {
     };
 
     const response = await searchConditionListApi(params);
-    console.info('查询条件列表响应数据:', response);
 
     if (response && response.length) {
       savedConditions.value = response.map(item => ({
@@ -1703,7 +1717,6 @@ const fetchIntelligentList = async () => {
     };
 
     const response = await intelligentTableListApi(params);
-    console.info('接口响应数据:', response);
 
     if (response && response.records) {
       dataSource.value = response.records;
@@ -1737,6 +1750,37 @@ const handleTableChange = (pag: any, filters: any, sorter: any) => {
 
 // 搜索处理
 const onSearch = () => {
+
+  if (!rootGroups.value.items || rootGroups.value.items.length === 0) {
+    message.error('请至少添加一个查询条件');
+    return;
+  }
+
+  // 校验条件完整性
+  const validateGroup = (group: ConditionGroup): boolean => {
+    if (!group.items || group.items.length === 0) {
+      return false;
+    }
+
+    for (const item of group.items) {
+      if (!item.field || !item.condition|| !item.value) {
+        return false;
+      }
+      if (item.groups && item.groups.length > 0) {
+        for (const subGroup of item.groups) {
+          if (!validateGroup(subGroup)) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
+
+  if (rootGroups.value.items.length>1&&!validateGroup(rootGroups.value)) {
+    message.error('请完善筛选条件配置');
+    return;
+  }
   pagination.current = 1;
   // 更新表格组件中的分页信息
   setPagination({ current: 1, total: 0 });
@@ -1813,7 +1857,6 @@ const showArchiveModal = async() => {
     pageSize: pagination.pageSize
   };
   const response = await fileContextInfo(params);
-  console.info('接口响应数据:', response);
   archiveModalVisible.value = true;
   archiveModalPreviewData.value = response;
 };
@@ -1935,7 +1978,6 @@ const loadTabData = async (tabKey) => {
         break;
     }
   } catch (error) {
-    console.error(`加载${tabKey}数据失败:`, error);
     message.error(`加载数据失败`);
   } finally {
     // 根据tabKey关闭对应的loading状态
