@@ -1568,18 +1568,16 @@ const saveFilterCondition = () => {
 
   // 校验条件完整性
   const validateGroup = (group: ConditionGroup): boolean => {
-    if (!group.items || group.items.length === 0) {
-      return false;
-    }
-
-    for (const item of group.items) {
-      if (!item.field || !item.condition) {
-        return false;
-      }
-      if (item.groups && item.groups.length > 0) {
-        for (const subGroup of item.groups) {
-          if (!validateGroup(subGroup)) {
-            return false;
+    if (group.items && group.items.length > 0) {
+      for (const item of group.items) {
+        if (!item.field || !item.condition) {
+          return false;
+        }
+        if (item.groups && item.groups.length > 0) {
+          for (const subGroup of item.groups) {
+            if (!validateGroup(subGroup)) {
+              return false;
+            }
           }
         }
       }
@@ -1750,7 +1748,7 @@ const handleTableChange = (pag: any, filters: any, sorter: any) => {
 
 // 搜索处理
 const onSearch = () => {
-
+  console.log(rootGroups.value);
   if (!rootGroups.value.items || rootGroups.value.items.length === 0) {
     message.error('请至少添加一个查询条件');
     return;
@@ -1758,18 +1756,16 @@ const onSearch = () => {
 
   // 校验条件完整性
   const validateGroup = (group: ConditionGroup): boolean => {
-    if (!group.items || group.items.length === 0) {
-      return false;
-    }
-
-    for (const item of group.items) {
-      if (!item.field || !item.condition|| !item.value) {
-        return false;
-      }
-      if (item.groups && item.groups.length > 0) {
-        for (const subGroup of item.groups) {
-          if (!validateGroup(subGroup)) {
-            return false;
+    if (group.items && group.items.length > 0) {
+      for (const item of group.items) {
+        if (!item.field || !item.condition|| !item.value) {
+          return false;
+        }
+        if (item.groups && item.groups.length > 0) {
+          for (const subGroup of item.groups) {
+            if (!validateGroup(subGroup)) {
+              return false;
+            }
           }
         }
       }
