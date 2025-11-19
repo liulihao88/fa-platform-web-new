@@ -48,24 +48,24 @@ export const columns: BasicColumn[] = [
 ];
 //查询数据
 export const searchFormSchema: FormSchema[] = [
-	{
-      label: "机构编码",
-      field: 'orgCd',
-      component: 'Input',
+	//{
+    //  label: "机构编码",
+    //  field: 'orgCd',
+    //  component: 'Input',
       //colProps: {span: 6},
- 	},
+ 	//},
 	{
-      label: "名称",
+      label: "机构名称",
       field: 'orgName',
       component: 'Input',
       //colProps: {span: 6},
  	},
-	{
-      label: "别名",
-      field: 'alias',
-      component: 'Input',
+	//{
+  //    label: "别名",
+  //    field: 'alias',
+  //    component: 'Input',
       //colProps: {span: 6},
- 	},
+ 	//},
 ];
 //表单数据
 export const formSchema: FormSchema[] = [
