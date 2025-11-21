@@ -395,7 +395,7 @@
           </div>
           
           <div class="ml4" style="color: red">1、如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
-          <div class="ml4" style="color: red">2、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包</div>
+          <div class="ml4" style="color: red">2、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包,当文件20M时，建议压缩成多个文件上传</div>
           <div class="ml4" style="color: red">3、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
         </div>
         <div style="text-align: left; white-space: nowrap">
@@ -1203,13 +1203,13 @@ const columns = ref([
     resizable: true
   },
   {
-    title: '导入笔数',
+    title: '导入行数',
     dataIndex: 'importDataNum',
     width: 150,
     resizable: true
   },
   {
-    title: '去重笔数',
+    title: '去重行数',
     dataIndex: 'repeatDataNum',
     width: 150,
     resizable: true

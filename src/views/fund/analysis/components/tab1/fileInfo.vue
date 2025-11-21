@@ -50,6 +50,7 @@ defineExpose({
            <div  class="title-1">图片：PDF文件如果内容是图片，则不能识别</div>
            <div  class="title-1">表格的表头错行  或者没有表格，则不能识别</div>
            <div  class="title-1">文件没有表格，只有文字，则不能识别</div>
+           <div  class="title-1">对于不能识别的文件，请用WPS转换成可以识别的文件类型，或者调整文件格式为可识别的格式</div>
            <div  class="title-1">1) 没有表格</div>
            <Image :src="unSupport2Image" />
            <div  class="title-1">2) 表格错行</div>

@@ -202,7 +202,7 @@ function getTableAction(record){
       // auth: 'casefiles:fa_case_info:edit'
     },
     {
-      label: '资金分析',
+      label: '智能筛查',
       onClick: handleGoToAnalysisDetail.bind(null, record),
       // auth: 'casefiles:fa_case_info:edit'
     },
