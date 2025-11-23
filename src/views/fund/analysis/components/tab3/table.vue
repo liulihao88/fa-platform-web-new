@@ -362,7 +362,7 @@ const customerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -372,7 +372,7 @@ const transactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -382,7 +382,7 @@ const nonBankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -392,7 +392,7 @@ const nonBankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -443,7 +443,7 @@ const parseEntityPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -454,7 +454,7 @@ const parseTransPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -465,7 +465,7 @@ const parseOrderPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
