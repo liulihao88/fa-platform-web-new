@@ -5,17 +5,21 @@
         <div class="case-header">
           <!--<h2>{{ caseInfo.caseName }}</h2>-->
           <a-row :gutter="16" class="case-info">
-            <a-col :xs="24" :sm="8">
+            <a-col :xs="24" :sm="6">
               <span class="info-label">案件名称:</span>
               <span class="info-value"><b>{{ caseInfo.caseName }}</b></span>
             </a-col>
-            <a-col :xs="24" :sm="8">
+            <a-col :xs="24" :sm="6">
               <span class="info-label">部门受案号:</span>
               <span class="info-value">{{ caseInfo.departmentCaseNumber }}</span>
             </a-col>
-            <a-col :xs="24" :sm="8">
+            <a-col :xs="24" :sm="6">
               <span class="info-label">受理日期:</span>
               <span class="info-value">{{ formattedAcceptTime }}</span>
+            </a-col>
+              <a-col :xs="24" :sm="6">
+              <span class="info-label">案由:</span>
+              <span class="info-value">{{ caseInfo.caseReason }}</span>
             </a-col>
           </a-row>
         </div>
