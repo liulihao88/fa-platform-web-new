@@ -18,8 +18,14 @@
               <span class="info-value">{{ formattedAcceptTime }}</span>
             </a-col>
               <a-col :xs="24" :sm="6">
-              <span class="info-label">案由:</span>
-              <span class="info-value">{{ caseInfo.caseReason }}</span>
+                <div class="reason-box">
+                  <div class="info-label">案由:</div>
+                  <gTooltip :title="caseInfo.caseReason">
+                    <div class="one-line">
+                      {{ caseInfo.caseReason }} 
+                    </div>
+                  </gTooltip>
+              </div>
             </a-col>
           </a-row>
         </div>
@@ -183,6 +189,7 @@ import {ref, onMounted, reactive, computed, watch} from 'vue';
     font-weight: 500;
     color: #86909c;
     margin-right: 8px;
+    white-space: nowrap; 
   }
 
   .info-value {
@@ -209,6 +216,21 @@ import {ref, onMounted, reactive, computed, watch} from 'vue';
 
     .case-body:deep(.ant-card-body) {
       padding: 16px;
+    }
+  }
+  .reason-box{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    .one-line{
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 1; 
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      /* 推荐添加的属性 */
+      text-overflow: ellipsis; 
+      white-space: nowrap; 
     }
   }
 </style>

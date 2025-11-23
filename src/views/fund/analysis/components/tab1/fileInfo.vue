@@ -36,6 +36,7 @@ defineExpose({
           <g-title title="一丶支持的文件种类"></g-title>
           <div class="title-1">PDF文件：文件数据的格式是表格，不能没有表格，不能是图片。</div>
           <div class="title-1">EXCEL文件： xls xlsx xlsm 结尾的文件</div>
+          <div class="title-1">CSV文件： csv结尾的文件</div>
           <div class="title-1">ZIP 文件： 可以把多个文件或者目录压缩成一个文件一次上传</div>
           <g-title title="二丶支持的格式"></g-title>
           <div class="title-1">1) 横向表格</div>
