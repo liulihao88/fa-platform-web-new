@@ -474,7 +474,7 @@
     },
   });
 </script>
-<style lang="less">
+<style lang="less" scoped>
   @border-color: #cecece4d;
 
   @prefix-cls: ~'@{namespace}-basic-table';
@@ -633,5 +633,11 @@
       margin-bottom: 0;
     }
     // update-end--author:liaozhiyang---date:20240604---for：【TV360X-377】关联记录必填影响到了table的输入框和页码样式
+  }
+
+  :where(:fullscreen) {
+    :deep(.ant-form-item){
+      margin-top: 100px;
+    }
   }
 </style>

@@ -73,6 +73,7 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     striped:true,
     tableSetting: {
       redo: false, // 禁用刷新按钮
+      setting: false, 
     },
     formConfig: {
       //labelWidth: 120,
@@ -227,10 +228,11 @@ function getDropDownAction(record){
       onClick: handleEdit.bind(null, record),
       //  auth: 'casefiles:fa_case_info:edit'
     },
+    // {
+    //   label: '详情',
+    //   onClick: handleDetail.bind(null, record),
+    // },
     {
-      label: '详情',
-      onClick: handleDetail.bind(null, record),
-    }, {
       label: '删除',
       popConfirm: {
         title: '是否确认删除',
