@@ -153,11 +153,11 @@
           width: 180,
           align: 'left',
         },
-        {
-          title: '常用名称',
-          dataIndex: 'names',
-          width: 180,
-        },
+        //{
+        //  title: '常用名称',
+        //  dataIndex: 'names',
+        //  width: 180,
+        //},
         {
           title: '别名',
           dataIndex: 'alias',
