@@ -73,6 +73,7 @@ const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     striped:true,
     tableSetting: {
       redo: false, // 禁用刷新按钮
+      setting: false, 
     },
     formConfig: {
       //labelWidth: 120,

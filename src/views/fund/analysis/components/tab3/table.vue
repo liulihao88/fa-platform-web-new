@@ -1050,7 +1050,7 @@ const [registerCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-customer'
   }
@@ -1069,7 +1069,7 @@ const [registerTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-transaction'
   }
@@ -1088,7 +1088,7 @@ const [registerNonBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-non-bank-customer'
   }
@@ -1106,7 +1106,7 @@ const [registerNonBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-non-bank-transaction'
   }
@@ -1125,7 +1125,7 @@ const [registerParseEntityTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-entity'
   }
@@ -1144,7 +1144,7 @@ const [registerParseTransTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-trans'
   }
@@ -1163,7 +1163,7 @@ const [registerParseOrderTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-order'
   }

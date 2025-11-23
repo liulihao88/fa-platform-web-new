@@ -160,7 +160,7 @@ const [registerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab4-repeated-files'
   }

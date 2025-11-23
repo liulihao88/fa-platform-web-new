@@ -47,7 +47,6 @@
         @change="handleTableChange"
         :canColDrag="true"
         :showTableSetting="true"
-        :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'file-config-table' }"
         :canResize="true"
         :minHeight="300"
         @register="registerTable"
@@ -413,8 +412,8 @@ const [registerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
-    fullScreen: true,
+    setting: false, 
+    fullScreen: false,
     cacheKey: 'file-config-table'
   }
 });

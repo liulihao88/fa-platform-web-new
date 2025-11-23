@@ -272,7 +272,7 @@
                             @change="handleBankCustomerTableChange"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
+                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankCustomerTable"
@@ -1310,9 +1310,9 @@ const [registerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: false,
-    setting: true, 
-    fullScreen: true,
+    size: true,
+    setting: false, 
+    fullScreen: false,
     cacheKey: 'fund-analysis-main-table'
   }
 });
@@ -1332,7 +1332,7 @@ const [registerBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-bank-customer-table'
   }
@@ -1353,7 +1353,7 @@ const [registerBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-bank-transaction-table'
   }
@@ -1374,7 +1374,7 @@ const [registerNonBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-non-bank-customer-table'
   }
@@ -1394,7 +1394,7 @@ const [registerNonBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-non-bank-transaction-table'
   }

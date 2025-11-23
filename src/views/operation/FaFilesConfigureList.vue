@@ -65,7 +65,8 @@
         fixed: 'right',
       },
       tableSetting:{
-        redo: false
+        redo: false,
+        setting: false
       },
       beforeFetch: async (params) => {
         for (let key in fieldPickers) {

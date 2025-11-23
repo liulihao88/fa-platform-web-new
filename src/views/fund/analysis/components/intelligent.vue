@@ -659,7 +659,7 @@
           @change="handleBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -678,7 +678,7 @@
           @change="handleBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -697,7 +697,7 @@
           @change="handleNonBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -716,7 +716,7 @@
           @change="handleNonBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -1173,8 +1173,8 @@ const [registerTable, { setPagination, getPaginationRef }] = useTable({
   tableSetting: { 
     redo: false, 
     size: true, 
-    setting: true, 
-    fullScreen: true,
+    setting: false, 
+    fullScreen: false,
     cacheKey: 'fund-analysis-intelligent-table'
   }
 });
