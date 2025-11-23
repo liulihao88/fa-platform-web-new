@@ -8,7 +8,7 @@
       </template>
        <!--操作栏-->
       <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" />
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
       <!--字段回显插槽-->
       <template v-slot:bodyCell="{ column, record, index, text }">
@@ -157,15 +157,6 @@
            label: '编辑',
            onClick: handleEdit.bind(null, record),
            //auth: 'casefiles:fa_orgs_configure:edit'
-         },
-        {
-           label: '删除',
-           popConfirm: {
-             title: '是否确认删除',
-             confirm: handleDelete.bind(null, record),
-             placement: 'topLeft',
-           },
-           auth: 'casefiles:fa_orgs_configure:delete'
          }
        ]
    }

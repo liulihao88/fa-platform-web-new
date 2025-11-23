@@ -161,6 +161,7 @@
         {
           title: '别名',
           dataIndex: 'alias',
+          align: 'left',
           width: 180,
         },
       ];
