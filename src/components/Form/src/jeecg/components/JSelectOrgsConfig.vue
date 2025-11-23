@@ -1,6 +1,6 @@
 <template>
   <div class="JSelectOrgsConfig">
-    <JSelectBiz @handleOpen="handleOpen" :multiple="false" :loading="loadingEcho" v-bind="attrs" @change="(changeValue) => $emit('update:value', changeValue)"></JSelectBiz>
+    <JSelectBiz @handleOpen="handleOpen" :multiple="false" :loading="loadingEcho" v-bind="attrs" @change="(changeValue) => $emit('update:value', changeValue)" :selectDisabled="true"></JSelectBiz>
     <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <OrgsConfigModal 
@@ -126,6 +126,8 @@
        * 设置下拉框的值
        */
       function setValue(options, values) {
+        console.log(`18 values`, values);
+        console.log(`11 options`, options);
         selectOptions.value = options;
         //emitData.value = values.join(",");
         state.value = values;
@@ -156,6 +158,7 @@
 <style lang="less" scoped>
   // update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .JSelectOrgsConfig {
+    width: 300px;
     > .ant-form-item {
       display: none;
     }

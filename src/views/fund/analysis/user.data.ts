@@ -48,7 +48,7 @@ export const columns: BasicColumn[] = [
     resizable: true
   },
   {
-    title: '导入笔数',
+    title: '导入行数',
     dataIndex: 'importCount',
     resizable: true
   },

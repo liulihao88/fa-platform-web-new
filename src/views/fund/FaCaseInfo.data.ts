@@ -104,7 +104,7 @@ export const columns: BasicColumn[] = [
        },
    },
    {
-    title: '导入笔数',
+    title: '导入行数',
     align:"center",
     resizable: true,
     dataIndex: 'importDataNum',
@@ -113,7 +113,7 @@ export const columns: BasicColumn[] = [
        },
    },
    {
-    title: '去重笔数',
+    title: '去重行数',
     align:"center",
     resizable: true,
     dataIndex: 'repeatDataNum',
@@ -214,8 +214,8 @@ export const superQuerySchema = {
   processStatus: {title: '案件处理状态',order: 4,view: 'text', type: 'string',},
   fileNum: {title: '文件数量',order: 3,view: 'number', type: 'number',},
   fileImportNum: {title: '文件导入次数',order: 5,view: 'number', type: 'number',},
-  importDataNum: {title: '导入笔数',order: 6,view: 'number', type: 'number',},
-  repeatDataNum: {title: '去重笔数',order: 7,view: 'text', type: 'string',},
+  importDataNum: {title: '导入行数',order: 6,view: 'number', type: 'number',},
+  repeatDataNum: {title: '去重行数',order: 7,view: 'text', type: 'string',},
 
 };
 

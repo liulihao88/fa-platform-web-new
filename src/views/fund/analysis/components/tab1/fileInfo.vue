@@ -28,14 +28,15 @@ defineExpose({
       v-model:visible="isShow"
       :useWrapper="true"
       :defaultFullscreen="true"
-      title="文件命名说明"
+      title="上传文件格式说明"
       @ok="confirm"
     >
       <a-row class="row-box">
         <a-col :span="12" class="l">
           <g-title title="一丶支持的文件种类"></g-title>
           <div class="title-1">PDF文件：文件数据的格式是表格，不能没有表格，不能是图片。</div>
-          <div class="title-1">EXCEL文件： xls xlsx csv xlsm 结尾的文件</div>
+          <div class="title-1">EXCEL文件： xls xlsx xlsm 结尾的文件</div>
+          <div class="title-1">CSV文件： csv结尾的文件</div>
           <div class="title-1">ZIP 文件： 可以把多个文件或者目录压缩成一个文件一次上传</div>
           <g-title title="二丶支持的格式"></g-title>
           <div class="title-1">1) 横向表格</div>
@@ -50,6 +51,7 @@ defineExpose({
            <div  class="title-1">图片：PDF文件如果内容是图片，则不能识别</div>
            <div  class="title-1">表格的表头错行  或者没有表格，则不能识别</div>
            <div  class="title-1">文件没有表格，只有文字，则不能识别</div>
+           <div  class="title-1">对于不能识别的文件，请用WPS转换成可以识别的文件类型，或者调整文件格式为可识别的格式</div>
            <div  class="title-1">1) 没有表格</div>
            <Image :src="unSupport2Image" />
            <div  class="title-1">2) 表格错行</div>

@@ -66,6 +66,7 @@ export function useModal(): UseModalReturnType {
       // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
       getInstance()?.setModalProps({
         open: visible,
+        canFullscreen: (data as any)?.canFullscreen || false
       });
       // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
 

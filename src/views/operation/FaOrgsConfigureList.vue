@@ -73,6 +73,7 @@
             },
             tableSetting: { 
               redo: false, 
+              setting: false
             } 
       },
        exportConfig: {

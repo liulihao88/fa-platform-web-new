@@ -18,7 +18,7 @@
           :placeholder="placeholder"
           :mode="multiple"
           :open="false"
-          :disabled="disabled"
+          :disabled="disabled || selectDisabled"
           :options="options"
           :maxTagCount="maxTagCount"
           @change="handleChange"
@@ -52,6 +52,10 @@
       showButton: propTypes.bool.def(true),
       buttonText: propTypes.string.def('选择'),
       disabled: propTypes.bool.def(false),
+      selectDisabled: {
+        type: Boolean,
+        default: false,
+      },
       placeholder: {
         type: String,
         default: '请选择',
@@ -94,7 +98,7 @@
        * 下拉框值改变事件
        */
       function handleChange(value) {
-        selectValues.value = value;
+        selectValues.value = value ?? []
         selectValues.change = true;
         emit('change', value);
       }

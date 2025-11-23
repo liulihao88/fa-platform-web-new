@@ -417,7 +417,7 @@ const [registerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab2-involved-person'
   }
@@ -434,7 +434,7 @@ const [registerDetailTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: true, 
+    setting: false, 
     fullScreen: true,
     cacheKey: 'fund-analysis-tab2-relation-detail'
   }
