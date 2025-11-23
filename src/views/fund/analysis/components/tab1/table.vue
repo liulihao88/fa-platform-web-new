@@ -499,9 +499,8 @@
                   <JSelectOrgsConfig
                     :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
-                    allow-clear
                     notFoundContent="无此银行，请联系运维添加"
-                    :disabled="isOrganizationSelectDisabled"
+                    
                     @change="(value) => onOrganizationChange(value)"
                   />
               </a-col>
@@ -2415,6 +2414,9 @@ const showTitleConfigModal = async (record, isSaving = false) => {
 
 // 所属银行/支付公司下拉框值变更事件处理
 const onOrganizationChange = (value) => {
+  if(value?.length === 0){
+    return;
+  }
   // 确保传递给后端的是字符串而不是数组或对象
   let orgCodeValue = value;
   // 更新currentTitleConfigFile.value.organizationCode的值

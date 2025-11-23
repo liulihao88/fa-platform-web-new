@@ -187,10 +187,6 @@
           // 添加调试信息
           console.log('options:', options);
           console.log('values:', values);
-          if(!options || options?.length === 0){
-            createMessage.warning(' 必须选择一个银行/支付公司');
-            return;
-          }
           // 检查是否选择了数据 - 更全面的检查
           const hasSelection = values && (
             (Array.isArray(values) && values.length > 0) || 
@@ -201,7 +197,7 @@
           
           if (!hasSelection) {
             // 没有选择数据，提示用户
-            createMessage.warning('请选择数据');
+            createMessage.warning(' 必须选择一个所属银行/支付公司');
             return;
           }
           
