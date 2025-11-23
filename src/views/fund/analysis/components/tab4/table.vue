@@ -10,7 +10,6 @@
       rowKey="id"
       :canResize="true"
       :showTableSetting="true"
-      :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab4-repeated-files' }"
       @register="registerTable"
       @change="handleTableChange"
   >
@@ -161,7 +160,7 @@ const [registerTable] = useTable({
     redo: false,
     size: true, 
     setting: false, 
-    fullScreen: true,
+    fullScreen: false,
     cacheKey: 'fund-analysis-tab4-repeated-files'
   }
 });

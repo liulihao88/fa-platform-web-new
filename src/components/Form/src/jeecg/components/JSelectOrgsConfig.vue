@@ -158,6 +158,7 @@
 <style lang="less" scoped>
   // update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .JSelectOrgsConfig {
+    width: 300px;
     > .ant-form-item {
       display: none;
     }

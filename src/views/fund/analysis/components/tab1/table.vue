@@ -72,7 +72,7 @@
     size="small"
     :canColDrag="true"
     :showTableSetting="true"
-    :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-main-table' }"
+    :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-main-table' }"
     :showActionColumn="true"
     :canResize="true"
     @change="handleTableChange"
@@ -272,7 +272,7 @@
                             @change="handleBankCustomerTableChange"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-customer-table' }"
+                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-bank-customer-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankCustomerTable"
@@ -299,7 +299,7 @@
                             style="margin-bottom: 16px;"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-bank-transaction-table' }"
+                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-bank-transaction-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerBankTransactionTable"
@@ -327,7 +327,7 @@
                             :rowClassName="getRowClassName"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-customer-table' }"
+                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-non-bank-customer-table' }"
                             :canResize="true"
                             @register="registerNonBankCustomerTable"
                             class="file-trans-table"
@@ -352,7 +352,7 @@
                             @change="handleNonBankTransactionTableChange"
                             :canColDrag="true"
                             :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
+                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
                             :canResize="true"
                             :rowClassName="getRowClassName"
                             @register="registerNonBankTransactionTable"
@@ -483,27 +483,26 @@
     <a-card style="height: 100%">
       <!-- 上方：文件名称、文件夹信息 -->
       <a-row :gutter="16" style="margin-bottom: 16px;">
-        <a-col :span="24">
-          <a-card title="文件信息" size="small">
-            <a-row :gutter="16">
+        <a-col :span="24" style="">
+          <a-card title="文件信息" size="small" >
+            <a-row :gutter="16" style="display: flex; align-items: center;">
               <a-col :span="8">
                 <div><strong>文件名称：</strong>{{ currentTitleConfigFile?.folder || '-' }}{{ currentTitleConfigFile?.sourceFile || currentTitleConfigFile?.fileName || '-' }}</div>
               </a-col>
 <!--              <a-col :span="8">-->
 <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
 <!--              </a-col>-->
-              <a-col :span="3">
+              <a-col :span="16" style="display: flex; align-items: center; width: 100%">
                   <strong>所属银行/支付公司：</strong>
-              </a-col>
-              <a-col :span="6">
                   <JSelectOrgsConfig
                     :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
+                    style="width: 400px;"
                     notFoundContent="无此银行，请联系运维添加"
-                    
                     @change="(value) => onOrganizationChange(value)"
                   />
               </a-col>
+           
             </a-row>
           </a-card>
         </a-col>
@@ -567,7 +566,7 @@
                   :loading="titleConfigLoading"
                   :canColDrag="true"
                   :showTableSetting="true"
-                  :tableSetting="{redo: false, size: true, setting: false, fullScreen: true }"
+                  :tableSetting="{redo: false, size: false, setting: false, fullScreen: false }"
                   :canResize="false"
                   :showIndexColumn="false"
                   class="title-config-table"
@@ -1309,7 +1308,7 @@ const [registerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: true,
+    size: false,
     setting: false, 
     fullScreen: false,
     cacheKey: 'fund-analysis-main-table'
@@ -1330,9 +1329,9 @@ const [registerBankCustomerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: true, 
+    size: false, 
     setting: false, 
-    fullScreen: true,
+    fullScreen: false,
     cacheKey: 'fund-analysis-bank-customer-table'
   }
 });
@@ -1351,9 +1350,9 @@ const [registerBankTransactionTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: true, 
+    size: false, 
     setting: false, 
-    fullScreen: true,
+    fullScreen: false,
     cacheKey: 'fund-analysis-bank-transaction-table'
   }
 });
@@ -1372,9 +1371,9 @@ const [registerNonBankCustomerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: true, 
+    size: false, 
     setting: false, 
-    fullScreen: true,
+    fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-customer-table'
   }
 });
@@ -1392,9 +1391,9 @@ const [registerNonBankTransactionTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: true, 
+    size: false, 
     setting: false, 
-    fullScreen: true,
+    fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-transaction-table'
   }
 });
