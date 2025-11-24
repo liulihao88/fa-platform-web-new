@@ -781,7 +781,7 @@ const bankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -794,7 +794,7 @@ const bankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -807,7 +807,7 @@ const nonBankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -820,7 +820,7 @@ const nonBankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -867,7 +867,7 @@ const pagination = reactive({
   pageSize: 10,
   total: 0,
   totalPage: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
   pageSizeOptions: ['10', '20', '50', '100']

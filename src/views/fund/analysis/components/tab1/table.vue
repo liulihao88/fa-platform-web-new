@@ -492,17 +492,19 @@
 <!--              <a-col :span="8">-->
 <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
 <!--              </a-col>-->
-              <a-col :span="16" style="display: flex; align-items: center; width: 100%">
+              <a-col :span="3" style="text-align: right;">
                   <strong>所属银行/支付公司：</strong>
+              </a-col>
+              <a-col :span="6">
                   <JSelectOrgsConfig
                     :value="currentTitleConfigFile.selectOrgCd"
                     placeholder="请选择所属银行/支付公司"
-                    style="width: 400px;"
+                    allow-clear
                     notFoundContent="无此银行，请联系运维添加"
+                    :disabled="isOrganizationSelectDisabled"
                     @change="(value) => onOrganizationChange(value)"
                   />
               </a-col>
-           
             </a-row>
           </a-card>
         </a-col>
@@ -824,7 +826,7 @@ const bankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -834,7 +836,7 @@ const bankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -844,7 +846,7 @@ const nonBankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -854,7 +856,7 @@ const nonBankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -1217,7 +1219,7 @@ const columns = ref([
     key: 'operation',
     dataIndex: 'operation',
     fixed: 'right' as const,
-    width: 200,
+    width: 250,
     ifShow: true, // 确保操作列始终显示
     resizable: true
   }
@@ -1229,7 +1231,7 @@ const pagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  showSizeChanger: true,
+  showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
   pageSizeOptions: ['10', '20', '50', '100']
@@ -1309,7 +1311,7 @@ const [registerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: false,
-    setting: false, 
+    setting: false,
     fullScreen: false,
     cacheKey: 'fund-analysis-main-table'
   }
@@ -1329,8 +1331,8 @@ const [registerBankCustomerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: false, 
-    setting: false, 
+    size: false,
+    setting: false,
     fullScreen: false,
     cacheKey: 'fund-analysis-bank-customer-table'
   }
@@ -1350,8 +1352,8 @@ const [registerBankTransactionTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: false, 
-    setting: false, 
+    size: false,
+    setting: false,
     fullScreen: false,
     cacheKey: 'fund-analysis-bank-transaction-table'
   }
@@ -1371,8 +1373,8 @@ const [registerNonBankCustomerTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: false, 
-    setting: false, 
+    size: false,
+    setting: false,
     fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-customer-table'
   }
@@ -1391,8 +1393,8 @@ const [registerNonBankTransactionTable] = useTable({
   minHeight: 300,
   tableSetting: { 
     redo: false,
-    size: false, 
-    setting: false, 
+    size: false,
+    setting: false,
     fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-transaction-table'
   }
@@ -1729,14 +1731,19 @@ const getFileConvertInfo =(id)=>{
 const handleEditFileClick = (record) => {
   // 定义可打开模态框的状态
   const validStatuses = [ '101', '102'];
+  // 定义配置中的状态
+  const configStatuses = ['003'];
   // 定义加载中的状态
-  const loadingStatuses = ['000','003', '100', '001', '002', '004', '005'];
+  const loadingStatuses = ['000', '100', '001', '002', '004', '005'];
   // 定义错误状态
   const errorStatuses = ['900', '901', '902', '904', '999'];
 
   if (validStatuses.includes(record.status)) {
     // 状态允许打开模态框
     editFile(record);
+  } else if (configStatuses.includes(record.status)) {
+    // 文件正在配置中
+    message.warning('请配置完成后操作');
   } else if (loadingStatuses.includes(record.status)) {
     // 文件正在加载中
     message.warning('文件数据正在解析中，请稍后');

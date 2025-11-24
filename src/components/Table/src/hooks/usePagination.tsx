@@ -52,7 +52,7 @@ export function usePagination(refProps: ComputedRef<BasicTableProps>) {
       size: 'small',
       defaultPageSize: PAGE_SIZE,
       showTotal: (total) => t('component.table.total', { total }),
-      showSizeChanger: true,
+      showSizeChanger: false,
       pageSizeOptions: PAGE_SIZE_OPTIONS,
       itemRender: itemRender,
       showQuickJumper: true,
