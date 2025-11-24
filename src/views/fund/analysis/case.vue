@@ -19,12 +19,9 @@
             </a-col>
               <a-col :xs="24" :sm="6">
                 <div class="reason-box">
-                  <div class="info-label">案由:</div>
-                  <gTooltip :title="caseInfo.caseReason">
-                    <div class="one-line">
-                      {{ caseInfo.caseReason }} 
-                    </div>
-                  </gTooltip>
+                  <div class="info-label" >案由:</div>
+                  <gLocalTooltip :content="caseInfo.caseReason">
+                  </gLocalTooltip>
               </div>
             </a-col>
           </a-row>
@@ -222,6 +219,7 @@ import {ref, onMounted, reactive, computed, watch} from 'vue';
     display: flex;
     width: 100%;
     align-items: center;
+    position: relative;
     .one-line{
       flex: 1;
       display: -webkit-box;
