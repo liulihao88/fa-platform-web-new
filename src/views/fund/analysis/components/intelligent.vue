@@ -899,9 +899,17 @@ const columns = [
     resizable: true
   },
   {
-    title: '账号/卡号',
+    title: '账号',
     dataIndex: 'transAccountNo',
     key: 'transAccountNo',
+    ellipsis: true,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '卡号',
+    dataIndex: 'relAccountNo',
+    key: 'relAccountNo',
     ellipsis: true,
     width: 100,
     resizable: true
