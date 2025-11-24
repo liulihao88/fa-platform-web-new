@@ -45,7 +45,7 @@
                     :getPopupContainer="retBodyContainer"
                     style="width: 100%"
                     @change="(value) => updateItem(item.id, { condition: value })"
-                    dict="fa_trans_query_rule"
+                    :dict="getConditionDict(item.field)"
                     v-model:value="item.condition"
                     placeholder="选择逻辑">
                 </JSearchSelect>
@@ -137,9 +137,9 @@
                     </div>
                     <div class="condition-cell">
                       <JSearchSelect
-                          dict="fa_trans_query_rule"
                           :getPopupContainer="retBodyContainer"
                           v-model:value="subItem.condition"
+                          :dict="getConditionDict(subItem.field)"
                           placeholder="选择逻辑"
                           style="width: 100%"
                           allowClear
@@ -234,9 +234,9 @@
                           </div>
                           <div class="condition-cell">
                             <JSearchSelect
-                                dict="fa_trans_query_rule"
                                 :getPopupContainer="retBodyContainer"
                                 v-model:value="subItem3.condition"
+                                :dict="getConditionDict(subItem3.field)"
                                 placeholder="选择逻辑"
                                 style="width: 100%"
                                 allowClear
@@ -331,9 +331,9 @@
                                 </div>
                                 <div class="condition-cell">
                                   <JSearchSelect
-                                      dict="fa_trans_query_rule"
                                       :getPopupContainer="retBodyContainer"
                                       v-model:value="subItem4.condition"
+                                      :dict="getConditionDict(subItem4.field)"
                                       placeholder="选择逻辑"
                                       style="width: 100%"
                                       allowClear
@@ -428,13 +428,13 @@
                                       </div>
                                       <div class="condition-cell">
                                         <JSearchSelect
-                                            dict="fa_trans_query_rule"
                                             :getPopupContainer="retBodyContainer"
                                             v-model:value="subItem5.condition"
+                                            :dict="getConditionDict(subItem5.field)"
                                             placeholder="选择逻辑"
                                             style="width: 100%"
                                             allowClear
-                                            @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { condition: value })"
+                                            @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })"
                                         />
 
                                       </div>
@@ -1258,7 +1258,22 @@ const selectOptions = {
   ]
 };
 
-// 判断字段类型
+// 判断字段类型 - 根据要求，trans_amt、biz_date、trans_time字段类型为other，其他均为string
+const getFieldType = (field: string) => {
+  const otherFields = ['trans_amt', 'biz_date', 'trans_time'];
+  return otherFields.includes(field) ? 'other' : 'string';
+};
+
+// 根据字段类型获取对应的逻辑字典
+const getConditionDict = (field: string) => {
+  const fieldType = getFieldType(field);
+  if (fieldType === 'other') {
+    return 'fa_trans_query_rule_nostr';
+  } else {
+    return 'fa_trans_query_rule_str';
+  }
+};
+
 // 判断字段类型 - 修复：根据字段名而不是逻辑运算符判断组件类型
 const getFieldComponentType = (field: string) => {
   console.info('字段类型判断------>', field);
