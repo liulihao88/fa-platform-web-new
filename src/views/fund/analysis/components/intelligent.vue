@@ -1946,6 +1946,7 @@ const loadTabData = async (tabKey) => {
     const params: any = {
       caseId: query.caseId,
       filePageId: currentRecord.value.caseFilePageId,
+      rowNum: currentRecord.value.rowNum,
       pageNo: 1,
       pageSize: 10
     };
@@ -1965,13 +1966,17 @@ const loadTabData = async (tabKey) => {
         break;
 
       case 'bankTransaction':
-        // 银行交易流水需要交易账号查询条件
-        if (!currentRecord.value.transAccountNo) {
-          message.warning('交易账号为空，数据不完整');
+        if (!currentRecord.value.rowNum) {
+          message.warning('行号为空，数据不完整');
           return;
         }
-        params.transAccoutNo = currentRecord.value.transAccountNo;
-        params.transNo = currentRecord.value.transNo;
+        // 银行交易流水需要交易账号查询条件
+        // if (!currentRecord.value.transAccountNo) {
+        //   message.warning('交易账号为空，数据不完整');
+        //   return;
+        // }
+        // params.transAccoutNo = currentRecord.value.transAccountNo;
+        // params.transNo = currentRecord.value.transNo;
         bankTransactionLoading.value = true;
         response = await standardTransApi(params);
         bankTransactionDataSource.value = response.records || [];
@@ -1992,13 +1997,17 @@ const loadTabData = async (tabKey) => {
         break;
 
       case 'nonBankTransaction':
+        if (!currentRecord.value.rowNum) {
+        message.warning('行号为空，数据不完整');
+        return;
+      }
         // 非银行交易流水需要交易账号查询条件
-        if (!currentRecord.value.transAccountNo) {
-          message.warning('交易账号为空，数据不完整');
-          return;
-        }
-        params.transAccoutNo = currentRecord.value.transAccountNo;
-        params.transNo = currentRecord.value.transNo;
+        // if (!currentRecord.value.transAccountNo) {
+        //   message.warning('交易账号为空，数据不完整');
+        //   return;
+        // }
+        // params.transAccoutNo = currentRecord.value.transAccountNo;
+        // params.transNo = currentRecord.value.transNo;
         nonBankTransactionLoading.value = true;
         response = await standardNonBankTransApi(params);
         nonBankTransactionDataSource.value = response.records || [];
