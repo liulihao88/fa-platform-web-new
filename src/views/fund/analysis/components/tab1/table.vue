@@ -16,21 +16,11 @@
             <a-col :span="6">
               <a-form-item
                   name="folder"
-                  label="文件夹"
-                  :labelCol="{ span: 4 }"
-                  :wrapperCol="{ span: 18 }"
+                  label="文件夹/文件名称"
+                  :labelCol="{ span: 8 }"
+                  :wrapperCol="{ span: 40 }"
               >
-                <a-input v-model:value="formState.folder" placeholder="请输入文件夹名称" />
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item
-                  name="fileName"
-                  label="文件名称"
-                  :labelCol="{ span: 5 }"
-                  :wrapperCol="{ span: 18 }"
-              >
-                <a-input v-model:value="formState.fileName" placeholder="请输入文件名称"></a-input>
+                <a-input v-model:value="formState.folder" placeholder="请输入文件夹/文件名称" />
               </a-form-item>
             </a-col>
             <a-col :span="6">
