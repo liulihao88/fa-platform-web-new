@@ -1789,6 +1789,7 @@ const editFile = async (record) => {
 
   // 清空文件预览相关数据
   fileStreamInfo.value = '';
+  iframeUrl.value ='';
   csvData.value = [];
   csvContent.value = '';
 
@@ -1806,6 +1807,9 @@ const editFile = async (record) => {
 const cleanupUrl = () => {
   if (fileStreamInfo.value) {
     fileStreamInfo.value = ''
+  }
+  if (iframeUrl.value) {
+    iframeUrl.value = '';
   }
 }
 
@@ -1846,6 +1850,7 @@ const previewFile = (record)=>{
           // 用户取消预览
           fileLoading.value = false;
           fileStreamInfo.value = '';
+          iframeUrl.value ='';
         }
       });
     } else {
