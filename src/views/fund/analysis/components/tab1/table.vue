@@ -179,18 +179,19 @@
                     <a-spin size="large" />
                     <p>文件加载中，请稍候...</p>
                   </div>
-                  <div v-else-if="!fileStreamInfo" class="file-loading">
+                  <div v-else-if="!iframeUrl" class="file-loading">
                     <p>点击"预览文件"按钮加载文件内容</p>
                   </div>
                   <div v-else class="pdf-container">
-                    <VueOfficePdf
+                    <!--<VueOfficePdf
                         :src="fileStreamInfo"
                         @rendered="onPdfRendered"
                         style="height: 640px;width: 100%"
                         @error="onPdfError"
                         :page-size="10"
                         :min-page-width="700"
-                    />
+                    />-->
+                  <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;"></iframe>
                   </div>
                 </a-col>
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
@@ -913,7 +914,7 @@ const convertFormState = ref({
 // 添加文件加载状态
 const fileLoading = ref(false);
 // 添加文件大小限制（以字节为单位）
-const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+const MAX_FILE_SIZE = 10; // 3MB
 
 const bankEfit = ref(false);
 const selectedBank = ref('');
@@ -1808,6 +1809,16 @@ const cleanupUrl = () => {
   }
 }
 
+const iframeUrl = ref('');
+
+// const previewFile2 = (record)=>{
+//   var url = 'http://192.168.1.11:3100/jeecgboot/1979469283597438977/4028818b99f6898d0199f6898de00003_0 0test.xls'; //要预览文件的访问地址
+//   alert(url);
+//   var previewUrl = 'http://127.0.0.1:8012/onlinePreview?url='+encodeURIComponent(Base64.encode(url));
+//   iframeUrl.value = previewUrl;
+//   //window.open('http://127.0.0.1:8012/onlinePreview?url='+encodeURIComponent(Base64.encode(url)),"_blank");
+// }
+
 // 预览文件excel或者pdf或者csv文件
 const previewFile = (record)=>{
   const responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer';
@@ -1821,15 +1832,15 @@ const previewFile = (record)=>{
     
     //  当前文件大小为 xxMB， 超过系统可负荷的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?
     // 检查文件大小是否超过限制
-    if (fileSize > MAX_FILE_SIZE) {
+    if (fileSize > MAX_FILE_SIZE * 1024 * 1024) {
       Modal.confirm({
         title: '文件过大提示',
-        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统可负载的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?`,
+        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统可负载的 ${MAX_FILE_SIZE}MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?`,
         okText: '继续预览',
         cancelText: '取消',
         onOk: () => {
           // 用户选择继续，执行文件加载
-          loadFileContent(record, responseType);
+          loadFileContent(record, responseType,fileInfo);
         },
         onCancel: () => {
           // 用户取消预览
@@ -1839,17 +1850,27 @@ const previewFile = (record)=>{
       });
     } else {
       // 文件大小在限制范围内，直接加载
-      loadFileContent(record, responseType);
+      loadFileContent(record, responseType,fileInfo);
     }
   }).catch(error => {
     console.error('获取文件信息失败:', error);
-    // 即使无法获取文件大小，也尝试加载文件
-    loadFileContent(record, responseType);
   });
 }
 
 // 实际加载文件内容的方法
-const loadFileContent = (record, responseType) => {
+const loadFileContent = (record, responseType,fileInfo) => {
+  const API_DOMAIN = import.meta.env.VITE_GLOB_DOMAIN_URL
+  const previewUrl = API_DOMAIN+"/"+fileInfo.fileViewUrl;
+  if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
+    fileStreamInfo.value = previewUrl;
+    fileLoading.value = false;
+    return;
+  } else if(['pdf'].includes(currentFileType.value)){
+    const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl);
+    iframeUrl.value = pdfPreviewUrl;
+    fileLoading.value = false;
+    return;
+  }
   getFileStreamByFileId({fileId:record.id}, responseType).then((response)=>{
     console.info('文件类型',currentFileType.value)
     if (currentFileType.value === 'csv') {
@@ -1885,24 +1906,25 @@ const loadFileContent = (record, responseType) => {
         message.error('CSV文件解析失败');
       }
       fileLoading.value = false;
-    } else if (currentFileType.value === 'excel') {
-      // Excel文件以blob形式获取，然后转换为URL
-      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      const url = URL.createObjectURL(blob);
-      fileStreamInfo.value = url;
-      fileLoading.value = false;
-    } else if (currentFileType.value === 'pdf') {
-      // PDF文件以blob形式获取，然后转换为URL
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      fileStreamInfo.value = blob;
-      fileLoading.value = false;
-    } else {
-      // 其他文件类型直接显示
-      const blob = new Blob([response.data], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      fileStreamInfo.value = url;
-      fileLoading.value = false;
     }
+    // else if (currentFileType.value === 'excel') {
+    //   // Excel文件以blob形式获取，然后转换为URL
+    //   const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    //   const url = URL.createObjectURL(blob);
+    //   fileStreamInfo.value = url;
+    //   fileLoading.value = false;
+    // } else if (currentFileType.value === 'pdf') {
+    //   // PDF文件以blob形式获取，然后转换为URL
+    //   const blob = new Blob([response.data], { type: 'application/pdf' });
+    //   fileStreamInfo.value = blob;
+    //   fileLoading.value = false;
+    // } else {
+    //   // 其他文件类型直接显示
+    //   const blob = new Blob([response.data], { type: 'application/octet-stream' });
+    //   const url = URL.createObjectURL(blob);
+    //   fileStreamInfo.value = url;
+    //   fileLoading.value = false;
+    // }
   }).catch(error => {
     console.error('获取文件流失败:', error);
     fileLoading.value = false;
