@@ -135,7 +135,20 @@
       const [registerForm, formActions] = useForm();
 
       const getProps = computed(() => {
-        return { ...props, ...unref(innerPropsRef) } as BasicTableProps;
+        const propsData = { ...props, ...unref(innerPropsRef) } as BasicTableProps;
+        
+        // 深拷贝处理关键的嵌套对象，确保响应式
+        const result: BasicTableProps = { ...propsData };
+        
+        if (result.pagination) {
+          result.pagination = { ...result.pagination };
+        }
+        
+        if (result.formConfig) {
+          result.formConfig = { ...result.formConfig };
+        }
+        
+        return result;
       });
 
       const isFixedHeightPage = inject(PageWrapperFixedHeightKey, false);
