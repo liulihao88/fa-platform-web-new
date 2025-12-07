@@ -11,6 +11,8 @@ export const caseFileListApi = (params) => defHttp.post({ url: '/fa/casefile/lis
 
 // 删除文件
 export const deleteFileListApi = (params) => defHttp.post({ url: '/fa/casefile/deleteFile', params });
+// 批量删除文件
+export const batchDeleteFileListApi = (params) => defHttp.post({ url: '/fa/casefile/batchDeleteFile', params });
 
 // 确认转换文件
 export const convertFileListApi = (params) => defHttp.post({ url: '/fa/faCaseInfo/confirmCaseInfo', params });

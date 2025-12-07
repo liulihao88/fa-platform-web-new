@@ -71,6 +71,7 @@
     <!--插槽:table标题-->
     <template #tableTitle>
       <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
+      <a-button type="primary" class="ml2" @click="batchDeleteFiles">删除选择文件</a-button>
       <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
     </template>
     <template #bodyCell="{ column, record, index }">
@@ -644,6 +645,7 @@ import JSelectOrgsConfig from "@/components/Form/src/jeecg/components/JSelectOrg
 import TransformInfo from "@/views/fund/analysis/components/tab1/transformInfo.vue";
 import {
   deleteFileListApi,
+  batchDeleteFileListApi,
   getFileConverResultApi,
   uploadFileApi,
   getFileStreamByFileId,
@@ -658,7 +660,7 @@ import {
   getFileConfigApi,
   updateFileConfigApi,
   fileConfigDataApi,
-  queryFilePropertyByFileIdApi
+  queryFilePropertyByFileIdApi, exportDataApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
@@ -1285,12 +1287,68 @@ const isSaveButtonDisabled = ref(false);
 const titleConfigOptions = ref<FileConfigOption[]>([]);
 const orgListOptions = ref<{value: string, text: string}[]>([]);
 
+const selectedRowKeys = ref<string[]>([]);
+
+// 配置行选择器
+const rowSelection = computed(() => {
+  return {
+    selectedRowKeys: selectedRowKeys.value,
+    onChange: (selectedKeys: string[]) => {
+      selectedRowKeys.value = selectedKeys;
+    },
+    selections: [
+      {
+        key: 'all',
+        text: '选择全部',
+        onSelect: () => {
+          selectedRowKeys.value = dataSource.value.map(item => item.id);
+        },
+      },
+      {
+        key: 'clear',
+        text: '清空所有',
+        onSelect: () => {
+          selectedRowKeys.value = [];
+        },
+      },
+    ],
+  };
+});
+// 删除文件
+const batchDeleteFiles = async (record) => {
+  // 校验是否选择了数据
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请先选择要删除的文件');
+    return;
+  }
+
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除选择文件吗？`,
+    okText: '删除',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      const params = {
+        caseId: query.caseId,
+        ids: selectedRowKeys.value
+      }
+      batchDeleteFileListApi(params).then(()=>{
+        fetchFileList();
+      })
+
+    }
+  });
+};
+
 const [registerTable] = useTable({
   columns: columns.value,
   dataSource: dataSource,
   loading: tableLoading,
   pagination: pagination,
+  rowSelection:rowSelection,
   bordered: true,
+  rowKey:'id',
   size: 'small',
   scroll: { x: 1500 },
   canColDrag: true,
