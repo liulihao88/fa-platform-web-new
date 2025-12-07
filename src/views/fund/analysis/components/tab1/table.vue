@@ -660,7 +660,7 @@ import {
   getFileConfigApi,
   updateFileConfigApi,
   fileConfigDataApi,
-  queryFilePropertyByFileIdApi, exportDataApi
+  queryFilePropertyByFileIdApi
 } from '../../user.api'
 //ts语法
 import { useRoute } from 'vue-router';
