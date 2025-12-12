@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, h } from 'vue'
 import {BasicModal} from '/@/components/Modal';
 const { proxy } = getCurrentInstance()
 const isShow = ref(false)
@@ -7,11 +7,21 @@ const transformInfo = ()=>{
   isShow.value = true
 }
 
+const useDescriptionTitle = h('div', {}, [
+  h('div', '关于导入行数：'),
+  h('div', '1、每个文件的导入行数，对应文件的每一行，包括空行都会导入到系统；每个文件的导入行数相加，则是本案件的导入行数'),
+  h('div', '2、纵表导入时，每个数据段，只导入一行数据'),
+  h('div', '3、在生成标准数据的时候，空行会被排除，所以标准数据的导入行数可能小于文件的导入行数')
+]);
+
 </script>
 
 <template>
   <div>
-      <a-button class="ml1" size="small" type="primary" danger @click="transformInfo">转换结果说明</a-button>
+      <gTooltip class="use-description" :title="useDescriptionTitle" trigger="click">
+        <a-button type="primary" size="small">转换结果说明</a-button>
+      </gTooltip>
+      <!-- <a-button class="ml1" size="small" type="primary" danger @click="transformInfo">转换结果说明</a-button>
 
          <BasicModal
             v-model:visible="isShow"
@@ -33,7 +43,7 @@ const transformInfo = ()=>{
               3、在生成标准数据的时候，空行会被排除，所以标准数据的导入行数可能小于文件的导入行数
             </div>
           </div>
-        </BasicModal>
+        </BasicModal> -->
   </div>
 </template>
 

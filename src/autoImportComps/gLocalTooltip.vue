@@ -1,6 +1,6 @@
 <template>
   <div class="content-container" @mouseenter="checkOverflow" @mouseleave="hideTooltip">
-    <div ref="textRef" class="text-content">
+    <div ref="textRef" class="text-content" :style="{...contentAttrs}">
       {{ content }}
     </div>
     <div v-if="showTooltip" class="custom-tooltip">
@@ -14,6 +14,7 @@ import { ref } from 'vue'
 
 const props = defineProps<{
   content: string
+  contentAttrs?: Record<string, any>
 }>()
 
 const textRef = ref<HTMLElement | null>(null)

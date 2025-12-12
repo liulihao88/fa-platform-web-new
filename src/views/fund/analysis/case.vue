@@ -39,7 +39,7 @@
     <div class="case-tabs">
       <a-tabs v-model:activeKey="activeKey">
         <a-tab-pane key="1" tab="上传文件">
-           <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref"></tab1>
+           <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref" :caseInfo="caseInfo"></tab1>
         </a-tab-pane>
         <!--<a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2

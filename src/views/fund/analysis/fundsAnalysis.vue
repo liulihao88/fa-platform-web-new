@@ -23,7 +23,7 @@
         </a-tab-pane>-->
       </a-tabs>
       <gTooltip class="use-description" :title="useDescriptionTitle" trigger="click">
-        <a-button type="primary">操作说明</a-button>
+        <a-button type="primary">智能筛查操作说明</a-button>
       </gTooltip>
   </div>
   </a-card>
@@ -42,7 +42,6 @@ const activeKey = ref('1');
 const caseInfo = ref({});
 
 const useDescriptionTitle = h('div', {}, [
-  h('div', '智能筛查操作说明：'),
   h('div', '1、且： 两个条件同时成立； 或：两个条件任意一个成立即可'),
   h('div', '2、筛查的值里面，不支持 （）*.  等特殊字符')
 ]);

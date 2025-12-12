@@ -484,7 +484,7 @@
 <!--              <a-col :span="8">-->
 <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
 <!--              </a-col>-->
-              <a-col :span="3" style="text-align: right;">
+              <a-col :span="2" style="text-align: right;">
                   <strong>所属银行/支付公司：</strong>
               </a-col>
               <a-col :span="6">
@@ -496,6 +496,13 @@
                     :disabled="isOrganizationSelectDisabled"
                     @change="(value) => onOrganizationChange(value)"
                   />
+              </a-col>
+              <a-col :span="8">
+                   <div class="tooltip-box">
+                      <gTooltip :title="useMapTextTitle" trigger="click" >
+                       <a-button type="primary">字段映射说明</a-button>
+                      </gTooltip>
+                   </div>
               </a-col>
             </a-row>
           </a-card>
@@ -524,19 +531,60 @@
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
           <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
-            <div v-if="isIgnoreTitleConfig" class="ml2">
-              <a-button  type="primary" @click="handleIgnoreConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
-              <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
-              <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
-            </div>
-            <div v-else class="ml2">
-              <a-button  type="primary" @click="handleSaveConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
-              <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
-              <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
-            </div>
-            <div v-if="titleConfigData.result.length > 0 && titleConfigData.result[0].errorMessage" class="ml2 config-error-message" style="color: #ff4d4f; margin-top: 8px; font-size: 14px;">
-                {{ titleConfigData.result[0].errorMessage }}
-            </div>
+           <div class="top-box">
+             <div v-if="isIgnoreTitleConfig" class="ml2">
+               <a-button  type="primary" @click="handleIgnoreConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
+               <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
+               <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
+             </div>
+             <div v-else class="ml2">
+               <a-button  type="primary" @click="handleSaveConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
+               <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
+               <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
+             </div>
+             <div v-if="titleConfigData.result.length > 0 && titleConfigData.result[0].errorMessage" class="ml2 config-error-message" style="color: #ff4d4f; margin-top: 8px; font-size: 14px;">
+                 {{ titleConfigData.result[0].errorMessage }}
+             </div>
+ 
+             <div class="select-box">
+               <div class="select-container">
+                 <div class="select-container-left">交易金额调整项:</div>
+                  <a-select v-model:value="adjForm.adjTransAmt" placeholder="请选择" style="width: 80px">
+                   <a-select-option
+                       v-for="item in booleanOptions"
+                       :key="item.value"
+                       :value="item.value"
+                   >
+                     {{item.label}}
+                   </a-select-option>
+                 </a-select>
+               </div>
+               <div class="select-container">
+                 <div class="select-container-left">贷方金额调整项:</div>
+                  <a-select v-model:value="adjForm.adjCreditAmt" placeholder="请选择" style="width: 80px">
+                   <a-select-option
+                       v-for="item in booleanOptions"
+                       :key="item.value"
+                       :value="item.value"
+                   >
+                     {{item.label}}
+                   </a-select-option>
+                 </a-select>
+               </div>
+               <div class="select-container">
+                 <div class="select-container-left">结算金额调整项:</div>
+                  <a-select v-model:value="adjForm.adjSettlementAmt" placeholder="请选择" style="width: 80px">
+                   <a-select-option
+                       v-for="item in booleanOptions"
+                       :key="item.value"
+                       :value="item.value"
+                   >
+                     {{item.label}}
+                   </a-select-option>
+                 </a-select>
+               </div>
+             </div>
+           </div>
 
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
               <a-tab-pane 
@@ -545,8 +593,15 @@
                 :tab="`数据块${dataBlock.dataBlockNum}`"
               >
                 <div style="display: flex; justify-content: space-between;">
-                  <div>
-                    <div class="ml4" ><span>未映射的字段：</span><span style="color:red">{{dataBlock.noMappingTitle}}</span></div>
+                  <div >
+                    <div class="ml4" style="display: flex; align-items: center; width: 100%"><div style="width: 100px">未映射的字段：</div>
+                    <div style="width: 1400px">
+                        <gLocalTooltip :content="dataBlock.noMappingTitle" :contentAttrs="{color: 'red'}">
+  
+                        </gLocalTooltip>
+                    </div>
+                      <!-- <span style="color:red">{{dataBlock.noMappingTitle}}</span> -->
+                    </div>
                   </div>
                 </div>
                 <!-- 构造表格数据 -->
@@ -679,6 +734,22 @@ const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
 
 const emits = defineEmits(['timerUpdate']);
 
+const useMapTextTitle = h('div', {}, [
+  h('div', '1、首先需要确定银行/支付公司， 如果系统没有自动识别，则必须手工选择正确的机构'),
+  h('div', '2、正常情况下，当调整项为否时，对于金额字段，以正数表示交易金额为借方；正数表示贷方金额为贷方；正数表示结算金额为贷方，如果该Sheet的数据与此规则定义相反，请选择对应调整项为是'),
+  h('div', '3、当未映射的字段不重要时，可以不做映射')
+]);
+
+
+
+const booleanOptions = [
+  {
+    label: '是', value: 1,
+  },{
+    label: '否', value: 0,
+  }
+]
+
 const statusMap:any = {
   '900': ['900', '901', '902', '904'],
   '001': ['002', '100', '101'],
@@ -696,7 +767,10 @@ interface ConvertFileItem {
 
 interface Props {
   fileProcessOptions: Array<{value: string, label: string}>;
+  caseInfo: Record<string, any>;
 }
+
+
 
 // 添加文件分页配置
 const filePagination = reactive({
@@ -805,6 +879,11 @@ const isCurrentSheetConfigured = computed(() => {
 const props = defineProps<Props>();
 const formRef = ref();
 const {query} = useRoute();
+const adjForm = ref({
+  adjTransAmt: props.caseInfo?.adjTransAmt || 0,
+  adjCreditAmt: props.caseInfo?.adjCreditAmt || 0,
+  adjSettlementAmt: props.caseInfo?.adjSettlementAmt || 0,
+})
 const formState = reactive({
   folder: '',
   fileName: '',
@@ -1488,6 +1567,7 @@ const fetchFileList = async (isAutoRefresh = false) => {
     const response = await caseFilePageListApi(params);
     dataSource.value = response.records || [];
     pagination.total = response.total || 0;
+  
     // 确保分页信息完全更新，解决总页数不更新的问题
     if (response.pages !== undefined) {
       // 更新分页的总页数
@@ -2123,7 +2203,10 @@ const saveTitleConfig = async () => {
         dataBlock.dataBlockStucts.map(struct => struct.faFileParameter)
       ),
       orgCode: orgCodeValue,
-      pageId: activeTitleConfigSheet.value
+      pageId: activeTitleConfigSheet.value,
+      adjTransAmt: adjForm.value.adjTransAmt,
+      adjCreditAmt: adjForm.value.adjCreditAmt,
+      adjSettlementAmt: adjForm.value.adjSettlementAmt,
     };
     
     // 调用API保存配置
@@ -3238,5 +3321,29 @@ defineExpose({
     text-align: center;
     padding: 40px;
     color: #999;
+  }
+
+  .top-box{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .select-box{
+      display: flex;
+      .select-container{
+        margin-left: 8px;
+        display: flex;
+        align-items: center;
+        .select-container-left {
+          margin-right: 4px;
+           white-space: nowrap;
+        }
+      }
+    }
+  }
+  .tooltip-box{
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 </style>
