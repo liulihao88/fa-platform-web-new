@@ -11,6 +11,13 @@
         <a-col span="6">
           受理日期：{{formattedAcceptTime}}
         </a-col>
+         <a-col span="6">
+           <div class="reason-box">
+              <div class="info-label" style="margin-right: 4px">案由:</div>
+              <gLocalTooltip :content="caseInfo.caseReason">
+              </gLocalTooltip>
+          </div>
+        </a-col>
       </a-row>
     </a-card>
   <div class="tabs-box">
@@ -85,6 +92,22 @@ const formattedAcceptTime = computed(() => {
     top: 4px;
   }
 }
+  .reason-box{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    position: relative;
+    .one-line{
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 1; 
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      /* 推荐添加的属性 */
+      text-overflow: ellipsis; 
+      white-space: nowrap; 
+    }
+  }
 
 
 </style>
