@@ -549,7 +549,7 @@
              <div class="select-box">
                <div class="select-container">
                  <div class="select-container-left">交易金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjTransAmt" placeholder="请选择" style="width: 80px">
+                  <a-select v-model:value="adjForm.adjTransAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
                    <a-select-option
                        v-for="item in booleanOptions"
                        :key="item.value"
@@ -561,7 +561,7 @@
                </div>
                <div class="select-container">
                  <div class="select-container-left">贷方金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjCreditAmt" placeholder="请选择" style="width: 80px">
+                  <a-select v-model:value="adjForm.adjCreditAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
                    <a-select-option
                        v-for="item in booleanOptions"
                        :key="item.value"
@@ -573,7 +573,7 @@
                </div>
                <div class="select-container">
                  <div class="select-container-left">结算金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjSettlementAmt" placeholder="请选择" style="width: 80px">
+                  <a-select v-model:value="adjForm.adjSettlementAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
                    <a-select-option
                        v-for="item in booleanOptions"
                        :key="item.value"
@@ -744,9 +744,9 @@ const useMapTextTitle = h('div', {}, [
 
 const booleanOptions = [
   {
-    label: '是', value: 1,
+    label: '是', value: '是',
   },{
-    label: '否', value: 0,
+    label: '否', value: '否',
   }
 ]
 
@@ -2664,6 +2664,10 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     message.warning('请先选择所属银行/支付公司');
     return;
   }
+  //初始化交易金额调整项adjTransAmt、贷方金额调整项adjCreditAmt、结算金额调整项adjSettlementAmt下拉框
+  adjForm.value.adjTransAmt = sheet.adjTransAmt || "否";
+  adjForm.value.adjCreditAmt = sheet.adjCreditAmt || "否";
+  adjForm.value.adjSettlementAmt = sheet.adjSettlementAmt || "否";
   // 确保orgCode是字符串而不是数组或对象
   let orgCodeValue = orgCode;
   if (Array.isArray(orgCodeValue)) {
