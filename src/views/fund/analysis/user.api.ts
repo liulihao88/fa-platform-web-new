@@ -85,6 +85,8 @@ export const saveQueryConditionApi = (params) => defHttp.post({ url: '/fa/faQuer
 export const fileContextInfo = (params) => defHttp.post({ url: '/fa/caseStandardData/generateTransText', params });
 // 标题配置查询
 export const getFileConfigApi = (params) => defHttp.post({ url: '/fa/casefile/getFileConfig', params });
+// 标题配置查询
+export const getFileConfigPageListApi = (params) => defHttp.get({ url: '/fa/casefile/getFileConfigPageList', params });
 // 标题配置数据查询
 export const fileConfigDataApi = (params) => defHttp.post({ url: '/fa/casefile/fileConfigData', params });
 // 标题配置修改

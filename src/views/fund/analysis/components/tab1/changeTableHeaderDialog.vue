@@ -5,7 +5,8 @@ import { useAttrs } from '/@/hooks/core/useAttrs';
 import BasicTable from '/@/components/Table/src/BasicTable.vue'
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { useSelectBiz } from '/@/components/Form/src/jeecg/hooks/useSelectBiz';
-import { list } from '/@/views/operation/FaOrgsConfigure.api';
+import { getFileConfigPageListApi } from '/@/views/fund/analysis/user.api';
+
 const props = defineProps({
  headerDialogObject: {
     type: Object,
@@ -13,7 +14,7 @@ const props = defineProps({
  }
 })
 const attrs = useAttrs();
-const ROW_KEY= 'orgName'
+const ROW_KEY= 'metaData'
 
 const emits = defineEmits(['register', 'getSelectResult']);
 const [register, { closeModal }] = useModalInner()
@@ -21,13 +22,22 @@ const [register, { closeModal }] = useModalInner()
 //定义表格列
 const columns = [
   {
-    title: '标准字段',
-    dataIndex: 'orgName',
+    title: '标准数据',
+    dataIndex: 'metaData',
+    width: 180,
+    align: 'left',
+  },
+  {
+    title: '别名',
+    dataIndex: 'alias',
     width: 180,
     align: 'left',
   },
 ];
-const searchInfo = ref()
+const searchInfo = ref({
+  orgCode: '',
+  mappingTitle: '',
+})
 //查询form
 const formConfig = {
   baseColProps: {
@@ -50,8 +60,8 @@ const formConfig = {
   //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
   schemas: [
     {
-      label: '标准字段',
-      field: 'orgName',
+      label: '标准数据',
+      field: 'metaData',
       component: 'JInput',
       colProps: { span: 14 },
     }
@@ -83,8 +93,8 @@ const config = {
 const getBindValue = Object.assign({}, unref(props), unref(attrs), config);
 console.log(`96 getBindValue`, getBindValue);
 // 显式传递emit参数以确保事件通信正常
-const [{ rowSelection, onSelectChange, indexColumnProps, getSelectResult, handleDeleteSelected, selectRows, reset }] = useSelectBiz(
-  list,
+const [{ rowSelection, indexColumnProps, getSelectResult, handleDeleteSelected, selectRows, reset }] = useSelectBiz(
+  getFileConfigPageListApi,
   getBindValue,
   emits
 );
@@ -94,12 +104,14 @@ const dataSource = ref([
 ])
 
 watch(()=>props.headerDialogObject, (val)=>{
-  dataSource.value = val.titleConfigOptions.map(v=>{
-    return v
-  })
-  let sRows = dataSource.value.find(v=>v[ROW_KEY] === val.colText)
-  console.log(`28 sRows`, sRows);
-  onSelectChange([val.colText], sRows)
+  // dataSource.value = val.titleConfigOptions.map(v=>{
+  //   return v
+  // })
+  searchInfo.value.orgCode = val.orgCode;
+  searchInfo.value.mappingTitle = val.mappingTitle;
+  // let sRows = dataSource.value.find(v=>v[ROW_KEY] === val.colText)
+  // console.log(`28 sRows`, sRows);
+  // onSelectChange([val.colText], sRows)
 }, {
   deep: true,
   immediate: true
@@ -173,7 +185,7 @@ const modalClassName = computed(() => {
     <BasicTable
       ref="tableRef"
       :dataSource="dataSource"
-      :api="list"
+      :api="getFileConfigPageListApi"
       :columns="columns"
       v-bind="getBindValue"
       :searchInfo="searchInfo"

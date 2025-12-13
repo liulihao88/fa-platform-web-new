@@ -2886,14 +2886,19 @@ const headerDialogObject = ref({
   titleConfigOptions: titleConfigOptions.value,
   column: '',
   dataBlock: '',
+  orgCode: '',
+  mappingTitle: '',
 })
 const openDialog = (record, column, dataBlock) => {
   let colText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData;
   let originColText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName;
+  let mappingTitle = dataBlock.mappingTitle;
   headerDialogObject.value.colText = colText;
   headerDialogObject.value.originColText = originColText;
   headerDialogObject.value.column = column;
   headerDialogObject.value.dataBlock = dataBlock;
+  headerDialogObject.value.orgCode =  currentTitleConfigFile.value.organizationCode;
+  headerDialogObject.value.mappingTitle = mappingTitle;
   if (isCurrentSheetConfigured.value) return;
   editingCell.value = { record, column };
   openModal(true, {
@@ -2952,19 +2957,19 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     titleConfigLoading.value = true;
     isIgnoreTitleConfig.value = false;
     
-    // 获取文件配置选项
-    const configResponse = await getFileConfigApi({orgCode: orgCodeValue});
-
-    // 修复数据处理逻辑
-    if (configResponse && Array.isArray(configResponse)) {
-      titleConfigOptions.value = configResponse.map(item => ({
-        value: item,
-        text: item
-      }));
-    } else {
-      titleConfigOptions.value = [];
-    }
-    headerDialogObject.value.titleConfigOptions = titleConfigOptions.value;
+    // // 获取文件配置选项
+    // const configResponse = await getFileConfigApi({orgCode: orgCodeValue});
+    //
+    // // 修复数据处理逻辑
+    // if (configResponse && Array.isArray(configResponse)) {
+    //   titleConfigOptions.value = configResponse.map(item => ({
+    //     value: item,
+    //     text: item
+    //   }));
+    // } else {
+    //   titleConfigOptions.value = [];
+    // }
+    // headerDialogObject.value.titleConfigOptions = titleConfigOptions.value;
 
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
