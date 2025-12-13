@@ -1022,31 +1022,31 @@ const activeSheetData = ref<ActiveSheetData>({
 
 // 表格列定义
 const bankCustomerColumns = ref([
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属银行', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '银行名称', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
   { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '客户证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '客户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
   { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
-  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true},
-  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
   { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ]);
 
 const bankTransactionColumns = ref([
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
   { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
@@ -1059,64 +1059,53 @@ const bankTransactionColumns = ref([
   { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
   { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
   { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true},
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true},
-  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true},
-  { title: '对方机构', dataIndex: 'counterOrgName', width: 100, resizable: true},
-  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100, resizable: true},
+  { title: '对方机构名称', dataIndex: 'counterOrgName', width: 100, resizable: true},
   { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true},
-  { title: '对方户名', dataIndex: 'counterName', width: 100, resizable: true},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
+  { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true},
+  { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ]);
 
 // 表格列定义
 const nonBankCustomerColumns = ref([
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '结算银行名称', dataIndex: 'settlementOrg', width: 100, resizable: true},
+  { title: '结算账号/卡号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
-  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
   { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '是否商户', dataIndex: 'isMerchant', width: 100, resizable: true},
-  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
-  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true},
-  { title: '结算银行', dataIndex: 'settlementOrg', width: 100, resizable: true},
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
-  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true},
-  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
-  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
+  { title: '商户证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ]);
 
 
 const nonBankTransactionColumns = ref([
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
   { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
-  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true},
-  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
   { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
   { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
   { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
   { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
@@ -1124,27 +1113,15 @@ const nonBankTransactionColumns = ref([
   { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
   { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
   { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true},
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true},
-  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true},
   { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true},
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
-  { title: '交易卡号', dataIndex: 'cardNum', width: 100, resizable: true},
-  { title: '卡类型', dataIndex: 'cardType', width: 100, resizable: true},
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true},
-  { title: '创建日期', dataIndex: 'createTime', width: 100, resizable: true},
   { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
   { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
   { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
   { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true},
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true}
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balance', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ]);
 
 
@@ -1460,7 +1437,7 @@ const [registerBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: false,
-    setting: false,
+    setting: true,
     fullScreen: false,
     cacheKey: 'fund-analysis-bank-customer-table'
   }
@@ -1481,7 +1458,7 @@ const [registerBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: false,
-    setting: false,
+    setting: true,
     fullScreen: false,
     cacheKey: 'fund-analysis-bank-transaction-table'
   }
@@ -1502,7 +1479,7 @@ const [registerNonBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: false,
-    setting: false,
+    setting: true,
     fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-customer-table'
   }
@@ -1522,7 +1499,7 @@ const [registerNonBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: false,
-    setting: false,
+    setting: true,
     fullScreen: false,
     cacheKey: 'fund-analysis-non-bank-transaction-table'
   }

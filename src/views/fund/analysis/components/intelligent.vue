@@ -659,7 +659,7 @@
           @change="handleBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -678,7 +678,7 @@
           @change="handleBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -697,7 +697,7 @@
           @change="handleNonBankCustomerTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -716,7 +716,7 @@
           @change="handleNonBankTransactionTableChange"
           :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{ redo: false, size: true, setting: false, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
           :canResize="true"
           :minHeight="300"
         />
@@ -876,14 +876,23 @@ const pagination = reactive({
 // 表格列配置
 const columns = [
   {
-    title: '行号',
-    dataIndex: 'rowNum',
-    key: 'rowNum',
+    title: '文件名称',
+    dataIndex: 'fileName',
+    key: 'fileName',
+    align: 'center' as const,
     width: 100,
     resizable: true
   },
   {
-    title: '发起行',
+    title: '行号',
+    dataIndex: 'rowNum',
+    key: 'rowNum',
+    align: 'center' as const,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '机构名称',
     dataIndex: 'orgName',
     key: 'orgName',
     align: 'center' as const,
@@ -891,41 +900,41 @@ const columns = [
     resizable: true
   },
   {
-    title: '户名',
+    title: '客户号',
+    dataIndex: 'customerCd',
+    key: 'customerCd',
+    align: 'center' as const,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '客户名称',
     dataIndex: 'customerName',
     key: 'customerName',
-    ellipsis: true,
+    align: 'center' as const,
     width: 100,
     resizable: true
   },
   {
-    title: '账号',
+    title: '交易账号',
     dataIndex: 'transAccountNo',
     key: 'transAccountNo',
-    ellipsis: true,
+    align: 'center' as const,
     width: 100,
     resizable: true
   },
   {
-    title: '卡号',
+    title: '相关账号',
     dataIndex: 'relAccountNo',
     key: 'relAccountNo',
-    ellipsis: true,
+    align: 'center' as const,
     width: 100,
     resizable: true
   },
   {
-    title: '流水号',
-    dataIndex: 'transNo',
-    key: 'transNo',
-    ellipsis: true,
-    width: 100,
-    resizable: true
-  },
-  {
-    title: '交易渠道',
-    dataIndex: 'channel',
-    key: 'channel',
+    title: '户名',
+    dataIndex: 'accountName',
+    key: 'accountName',
     ellipsis: true,
     width: 100,
     resizable: true
@@ -934,7 +943,15 @@ const columns = [
     title: '币种',
     dataIndex: 'currNo',
     key: 'currNo',
-    align: 'center' as const,
+    ellipsis: true,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '交易状态',
+    dataIndex: 'status',
+    key: 'status',
+    ellipsis: true,
     width: 100,
     resizable: true
   },
@@ -979,9 +996,25 @@ const columns = [
     resizable: true
   },
   {
-    title: '对方开户银行',
+    title: '余额',
+    dataIndex: 'balence',
+    key: 'balence',
+    align: 'center' as const,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '对方机构名称',
     dataIndex: 'counterOrgName',
     key: 'counterOrgName',
+    ellipsis: true,
+    width: 100,
+    resizable: true
+  },
+  {
+    title: '对方账号',
+    dataIndex: 'counterAccountNo',
+    key: 'counterAccountNo',
     ellipsis: true,
     width: 100,
     resizable: true
@@ -991,38 +1024,6 @@ const columns = [
     dataIndex: 'counterName',
     key: 'counterName',
     ellipsis: true,
-    width: 100,
-    resizable: true
-  },
-  {
-    title: '对方账号/卡号',
-    dataIndex: 'counterAccountNo',
-    key: 'counterAccountNo',
-    ellipsis: true,
-    width: 100,
-    resizable: true
-  },
-  {
-    title: '备注',
-    dataIndex: 'comment',
-    key: 'comment',
-    align: 'center' as const,
-    width: 100,
-    resizable: true
-  },
-  {
-    title: '交易状态',
-    dataIndex: 'status',
-    key: 'status',
-    align: 'center' as const,
-    width: 100,
-    resizable: true
-  },
-  {
-    title: '文件名称',
-    dataIndex: 'fileName',
-    key: 'fileName',
-    align: 'center' as const,
     width: 100,
     resizable: true
   },
@@ -1037,130 +1038,107 @@ const columns = [
 
 // 银行客户信息列配置
 const bankCustomerColumns = [
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属银行', dataIndex: 'orgName', width: 100, resizable: true },
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
-  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
-  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
-  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
-  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true },
-  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true },
-  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
-  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '银行名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '客户证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '客户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ];
 
 // 银行交易流列配置
 const bankTransactionColumns = [
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
-  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
-  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
-  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
-  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true },
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
-  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
-  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
-  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
-  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
-  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
-  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true },
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true },
-  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true },
-  { title: '对方机构', dataIndex: 'counterOrgName', width: 100, resizable: true },
-  { title: '对方客户号', dataIndex: 'counterCustomerId', width: 100, resizable: true },
-  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true },
-  { title: '对方户名', dataIndex: 'counterName', width: 100, resizable: true },
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true },
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
+  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
+  { title: '对方机构名称', dataIndex: 'counterOrgName', width: 100, resizable: true},
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
+  { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true},
+  { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ];
 
 // 非银行客户信息列配置
 const nonBankCustomerColumns = [
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
-  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
-  { title: '是否商户', dataIndex: 'isMerchant', width: 100, resizable: true },
-  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true },
-  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
-  { title: '结算银行', dataIndex: 'settlementOrg', width: 100, resizable: true },
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
-  { title: '状态', dataIndex: 'customerStatus', width: 100, resizable: true },
-  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
-  { title: '开户日期', dataIndex: 'openDate', width: 100, resizable: true },
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '结算银行名称', dataIndex: 'settlementOrg', width: 100, resizable: true},
+  { title: '结算账号/卡号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '商户证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ];
 
 // 非银行交易流列配置
 const nonBankTransactionColumns = [
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
-  { title: '归属机构', dataIndex: 'orgName', width: 100, resizable: true },
-  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true },
-  { title: '终端号', dataIndex: 'portId', width: 100, resizable: true },
-  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true },
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
-  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true },
-  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
-  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
-  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
-  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
-  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
-  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
-  { title: '设备MAC', dataIndex: 'macAddress', width: 100, resizable: true },
-  { title: '交易IP地址', dataIndex: 'ipAddress', width: 100, resizable: true },
-  { title: '交易状态', dataIndex: 'status', width: 100, resizable: true },
-  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true },
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true },
-  { title: '交易卡号', dataIndex: 'cardNum', width: 100, resizable: true },
-  { title: '卡类型', dataIndex: 'cardType', width: 100, resizable: true },
-  { title: '附加字段', dataIndex: 'addiCols', width: 100, resizable: true },
-  { title: '创建日期', dataIndex: 'createTime', width: 100, resizable: true },
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
-  { title: '结算行', dataIndex: 'settlementOrg', width: 100, resizable: true },
-  { title: '结算账号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
-  { title: '来源文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '清洗规则', dataIndex: 'cleanRule', width: 100, resizable: true }
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
+  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
+  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true},
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
+  { title: '余额', dataIndex: 'balance', width: 100, resizable: true},
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true}
 ];
 
 const dataSource = ref<any[]>([]);
