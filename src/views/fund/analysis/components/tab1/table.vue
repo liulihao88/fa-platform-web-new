@@ -30,7 +30,7 @@
                   :labelCol="{ span: 4 }"
                   :wrapperCol="{ span: 18 }"
               >
-                <a-select v-model:value="formState.fileStatus" placeholder="请选择状态">
+                <a-select v-model:value="formState.fileStatus" placeholder="请选择状态" @change="onSearch">
                   <a-select-option
                       v-for="item in filterStatusOptions"
                       :key="item.value"
@@ -638,13 +638,14 @@
                       </div>
                     </template>
                     
+                    
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
                       <div v-if="record.type === 'newMetaData'" 
                            class="config-select-cell"
-                           @click="enableEdit(record, column, dataBlock)"
+                           @click="openDialog(record, column, dataBlock)"
                            :class="{ 'editing': isEditing(record, column) }">
                         <template v-if="isEditing(record, column)">
-                          <JSearchSelect
+                          <!-- <JSearchSelect
                             :dictOptions="titleConfigOptions"
                             v-model:value="dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData"
                             placeholder="请选择配置项"
@@ -654,7 +655,11 @@
                             @change="(value) => handleTitleConfigChange(value, dataBlock, column, record)"
                             @blur="disableEdit(record, column)"
                             @keydown.enter="disableEdit(record, column)"
-                          />
+                          /> -->
+                           <span>
+                            {{ getSelectedOptionText(dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData) }}
+                          </span>
+                          <EditOutlined v-if="!isCurrentSheetConfigured" style="margin-left: 5px; color: #1890ff; font-size: 12px;" />
                         </template>
                         <template v-else>
                           <span>
@@ -684,11 +689,13 @@
 
   <!-- 文件命名说明组件 -->
   <FileInfo ref="fileInfoRef"></FileInfo>
+  <ChangeTableHeaderDialog @register="regModal" :headerDialogObject="headerDialogObject" @getSelectResult="getSelectResult"></ChangeTableHeaderDialog>
 </template>
 
 <script lang="ts" name="tab1" setup>
 import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
 import { render } from '/@/utils/common/renderUtils';
+import { useModal } from '/@/components/Modal';
 import { message, Modal } from 'ant-design-vue';
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
@@ -725,11 +732,14 @@ import { BasicTable, useTable, TableAction } from '/@/components/Table';
 import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { useTimer } from '@/hooks/core/useTimer';
+import ChangeTableHeaderDialog from "./changeTableHeaderDialog.vue";
 
 import FileInfo from "./fileInfo.vue";
 import { EditOutlined } from '@ant-design/icons-vue';
 
 const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
+
+const [regModal, { openModal }] = useModal();
 
 
 const emits = defineEmits(['timerUpdate']);
@@ -2658,6 +2668,26 @@ const enableEdit = (record, column, dataBlock) => {
   if (isCurrentSheetConfigured.value) return;
   editingCell.value = { record, column };
 };
+const headerDialogObject = ref({
+  colText: '',
+  originColText: '',
+  titleConfigOptions: titleConfigOptions.value,
+  column: '',
+  dataBlock: '',
+})
+const openDialog = (record, column, dataBlock) => {
+  let colText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData;
+  let originColText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName;
+  headerDialogObject.value.colText = colText;
+  headerDialogObject.value.originColText = originColText;
+  headerDialogObject.value.column = column;
+  headerDialogObject.value.dataBlock = dataBlock;
+  if (isCurrentSheetConfigured.value) return;
+  editingCell.value = { record, column };
+  openModal(true, {
+    isUpdate: false,
+  });
+}
 
 // 禁用编辑模式
 const disableEdit = (record, column) => {
@@ -2677,6 +2707,7 @@ const getSelectedOptionText = (value) => {
   const option = titleConfigOptions.value.find(opt => opt.value === value);
   return option ? option.text : value;
 };
+
 
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
@@ -2717,6 +2748,7 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     } else {
       titleConfigOptions.value = [];
     }
+    headerDialogObject.value.titleConfigOptions = titleConfigOptions.value;
 
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
@@ -2863,7 +2895,7 @@ const onNewMetaDataChange = (struct, event) => {
 };
 
 // 添加处理标题配置变化的函数
-const handleTitleConfigChange = (value, dataBlock, column, record) => {
+const handleTitleConfigChange = (value, dataBlock, column) => {
   // 获取列索引
   const colIndex = parseInt(column.dataIndex.replace('col', ''));
   
@@ -2890,9 +2922,15 @@ const handleTitleConfigChange = (value, dataBlock, column, record) => {
         dataBlock.noMappingTitle = noMappingTitles.join(',');
       }
     }
-
   }
+  dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData = value
 };
+
+const getSelectResult = (values, ...args) => {
+  const {dataBlock, column} = args[0]
+  handleTitleConfigChange(values[0], dataBlock, column)
+}
+
 
 ;
 
