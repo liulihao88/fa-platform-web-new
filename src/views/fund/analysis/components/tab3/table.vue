@@ -79,12 +79,14 @@
                   @change="handleCustomerTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-customer' }"
+                  :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-tab3-customer' }"
                   @register="registerCustomerTable"
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
                     <a @click="getAnalyzeResult(record,'01')">查看标准数据</a>
+                    <a-divider type="vertical" />
+                    <a @click="handleCustomerDetail(record)">查看详情</a>
                   </template>
                 </template>
               </BasicTable>
@@ -102,12 +104,14 @@
                   @change="handleTransactionTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-transaction' }"
+                  :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-tab3-transaction' }"
                   @register="registerTransactionTable"
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
                     <a @click="getAnalyzeResult(record,'02')">查看标准数据</a>
+                    <a-divider type="vertical" />
+                    <a @click="handleTransactionDetail(record)">查看详情</a>
                   </template>
                 </template>
               </BasicTable>
@@ -125,12 +129,14 @@
                   @change="handleNonBankCustomerTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-customer' }"
+                  :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-tab3-non-bank-customer' }"
                   @register="registerNonBankCustomerTable"
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
                     <a @click="getAnalyzeResult(record,'03')">查看标准数据</a>
+                    <a-divider type="vertical" />
+                    <a @click="handleNonBankCustomerDetail(record)">查看详情</a>
                   </template>
                 </template>
               </BasicTable>
@@ -148,12 +154,14 @@
                   @change="handleNonBankTransactionTableChange"
                   :canResize="true"
                   :showTableSetting="true"
-                  :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab3-non-bank-transaction' }"
+                  :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-tab3-non-bank-transaction' }"
                   @register="registerNonBankTransactionTable"
               >
                 <template #bodyCell="{ column, record }">
                   <template v-if="column.dataIndex === 'operation'">
                     <a @click="getAnalyzeResult(record,'04')">查看标准数据</a>
+                    <a-divider type="vertical" />
+                    <a @click="handleNonBankTransactionDetail(record)">查看详情</a>
                   </template>
                 </template>
               </BasicTable>
@@ -276,10 +284,239 @@
       </div>-->
     </a-card>
   </BasicModal>
+  
+  <!-- 客户信息详情抽屉 -->
+  <BasicDrawer
+    @register="registerCustomerDetailDrawer"
+    title="客户信息详情"
+    width="50%"
+    :showFooter="false"
+  >
+    <a-descriptions :column="2" bordered size="middle">
+      <a-descriptions-item label="文件">{{ customerDetailData.fileName }}</a-descriptions-item>
+      <a-descriptions-item label="行号">{{ customerDetailData.rowNum }}</a-descriptions-item>
+      <a-descriptions-item label="银行名称">{{ customerDetailData.orgName }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ customerDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="客户种类">{{ customerDetailData.customerType }}</a-descriptions-item>
+      <a-descriptions-item label="客户名称">{{ customerDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="营业执照">{{ customerDetailData.licenseNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人姓名">{{ customerDetailData.legalPersonName }}</a-descriptions-item>
+      <a-descriptions-item label="客户证件种类">{{ customerDetailData.idType }}</a-descriptions-item>
+      <a-descriptions-item label="客户证件号码">{{ customerDetailData.idNum }}</a-descriptions-item>
+      <a-descriptions-item label="手机号码">{{ customerDetailData.teleNum }}</a-descriptions-item>
+      <a-descriptions-item label="工作单位">{{ customerDetailData.workUnit }}</a-descriptions-item>
+      <a-descriptions-item label="账号">{{ customerDetailData.accountNum }}</a-descriptions-item>
+      <a-descriptions-item label="卡号">{{ customerDetailData.cardNum }}</a-descriptions-item>
+      <a-descriptions-item label="币种">{{ customerDetailData.currNo }}</a-descriptions-item>
+      <a-descriptions-item label="余额">{{ customerDetailData.balence }}</a-descriptions-item>
+      <a-descriptions-item label="账户类型">{{ customerDetailData.accountType }}</a-descriptions-item>
+      <a-descriptions-item label="备注">{{ customerDetailData.comment }}</a-descriptions-item>
+      <a-descriptions-item label="地税纳税号">{{ customerDetailData.localTaxNum }}</a-descriptions-item>
+      <a-descriptions-item label="国税纳税号">{{ customerDetailData.countryTaxNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人证件种类">{{ customerDetailData.legalIdType }}</a-descriptions-item>
+      <a-descriptions-item label="法人证件号码">{{ customerDetailData.legalIdNum }}</a-descriptions-item>
+      <a-descriptions-item label="住宅电话">{{ customerDetailData.homeTel }}</a-descriptions-item>
+      <a-descriptions-item label="单位电话">{{ customerDetailData.unitTel }}</a-descriptions-item>
+      <a-descriptions-item label="状态">{{ customerDetailData.customerStatus }}</a-descriptions-item>
+      <a-descriptions-item label="开户日期">{{ customerDetailData.openDate }}</a-descriptions-item>
+      <a-descriptions-item label="可用余额">{{ customerDetailData.avaiBalence }}</a-descriptions-item>
+      <a-descriptions-item label="开户网点">{{ customerDetailData.openBranches }}</a-descriptions-item>
+      <a-descriptions-item label="开户网点代码">{{ customerDetailData.openBranchesCd }}</a-descriptions-item>
+      <a-descriptions-item label="开户城市">{{ customerDetailData.openCity }}</a-descriptions-item>
+      <a-descriptions-item label="开户省份">{{ customerDetailData.openProvince }}</a-descriptions-item>
+      <a-descriptions-item label="关联资金账户">{{ customerDetailData.cashAccountRel }}</a-descriptions-item>
+      <a-descriptions-item label="统一客户号">{{ customerDetailData.customerCd }}</a-descriptions-item>
+      <a-descriptions-item label="清洗规则">{{ customerDetailData.cleanRule }}</a-descriptions-item>
+      <a-descriptions-item label="通信地址">{{ customerDetailData.communicationAddr }}</a-descriptions-item>
+      <a-descriptions-item label="住宅地址">{{ customerDetailData.homeAddr }}</a-descriptions-item>
+      <a-descriptions-item label="单位地址">{{ customerDetailData.unitAddr }}</a-descriptions-item>
+      <a-descriptions-item label="邮箱地址">{{ customerDetailData.mailAddr }}</a-descriptions-item>
+      <a-descriptions-item label="邮政编码">{{ customerDetailData.postCode }}</a-descriptions-item>
+      <a-descriptions-item label="销户日期">{{ customerDetailData.closeDate }}</a-descriptions-item>
+      <a-descriptions-item label="销户网点">{{ customerDetailData.closeBranches }}</a-descriptions-item>
+      <a-descriptions-item label="最后交易时间">{{ customerDetailData.lastTransTime }}</a-descriptions-item>
+      <a-descriptions-item label="账户销户银行">{{ customerDetailData.closeBank }}</a-descriptions-item>
+    </a-descriptions>
+  </BasicDrawer>
+  
+  <!-- 交易流水详情抽屉 -->
+  <BasicDrawer
+    @register="registerTransactionDetailDrawer"
+    title="交易流水详情"
+    width="50%"
+    :showFooter="false"
+  >
+    <a-descriptions :column="2" bordered size="middle">
+      <a-descriptions-item label="文件">{{ transactionDetailData.fileName }}</a-descriptions-item>
+      <a-descriptions-item label="行号">{{ transactionDetailData.rowNum }}</a-descriptions-item>
+      <a-descriptions-item label="机构名称">{{ transactionDetailData.orgName }}</a-descriptions-item>
+      <a-descriptions-item label="户名">{{ transactionDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="账号">{{ transactionDetailData.accountNum }}</a-descriptions-item>
+      <a-descriptions-item label="卡号">{{ transactionDetailData.cardNum }}</a-descriptions-item>
+      <a-descriptions-item label="流水号">{{ transactionDetailData.transNo }}</a-descriptions-item>
+      <a-descriptions-item label="交易渠道">{{ transactionDetailData.channel }}</a-descriptions-item>
+      <a-descriptions-item label="币种">{{ transactionDetailData.currNo }}</a-descriptions-item>
+      <a-descriptions-item label="交易方向">{{ transactionDetailData.transWay }}</a-descriptions-item>
+      <a-descriptions-item label="交易金额">{{ transactionDetailData.transAmt }}</a-descriptions-item>
+      <a-descriptions-item label="贷方发生额">{{ transactionDetailData.creditAmt }}</a-descriptions-item>
+      <a-descriptions-item label="余额">{{ transactionDetailData.balence }}</a-descriptions-item>
+      <a-descriptions-item label="交易种类">{{ transactionDetailData.transType }}</a-descriptions-item>
+      <a-descriptions-item label="业务日期">{{ transactionDetailData.bizDate }}</a-descriptions-item>
+      <a-descriptions-item label="交易时间">{{ transactionDetailData.transTime }}</a-descriptions-item>
+      <a-descriptions-item label="对方机构名称">{{ transactionDetailData.counterOrgName }}</a-descriptions-item>
+      <a-descriptions-item label="对方账号">{{ transactionDetailData.counterAccountNo }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ transactionDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="客户名称">{{ transactionDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="结算金额">{{ transactionDetailData.settlementAmt }}</a-descriptions-item>
+      <a-descriptions-item label="手续费">{{ transactionDetailData.feeAmt }}</a-descriptions-item>
+      <a-descriptions-item label="代办人姓名">{{ transactionDetailData.agentName }}</a-descriptions-item>
+      <a-descriptions-item label="备注">{{ transactionDetailData.comment }}</a-descriptions-item>
+      <a-descriptions-item label="设备MAC">{{ transactionDetailData.macAddress }}</a-descriptions-item>
+      <a-descriptions-item label="交易IP地址">{{ transactionDetailData.ipAddress }}</a-descriptions-item>
+      <a-descriptions-item label="交易状态">{{ transactionDetailData.status }}</a-descriptions-item>
+      <a-descriptions-item label="对方客户唯一识别">{{ transactionDetailData.counterCustomerId }}</a-descriptions-item>
+      <a-descriptions-item label="对方机构编码">{{ transactionDetailData.counterOrgCd }}</a-descriptions-item>
+      <a-descriptions-item label="对方卡号">{{ transactionDetailData.counterCardNum }}</a-descriptions-item>
+      <a-descriptions-item label="交易对方证件号码">{{ transactionDetailData.counterIdNum }}</a-descriptions-item>
+      <a-descriptions-item label="交易对方余额">{{ transactionDetailData.counterBalance }}</a-descriptions-item>
+      <a-descriptions-item label="统一客户号">{{ transactionDetailData.customerCd }}</a-descriptions-item>
+      <a-descriptions-item label="客户种类">{{ transactionDetailData.customerType }}</a-descriptions-item>
+      <a-descriptions-item label="营业执照">{{ transactionDetailData.licenseNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人姓名">{{ transactionDetailData.legalPersonName }}</a-descriptions-item>
+      <a-descriptions-item label="证件种类">{{ transactionDetailData.idType }}</a-descriptions-item>
+      <a-descriptions-item label="证件号码">{{ transactionDetailData.idNum }}</a-descriptions-item>
+      <a-descriptions-item label="手机号码">{{ transactionDetailData.teleNum }}</a-descriptions-item>
+      <a-descriptions-item label="清洗规则">{{ transactionDetailData.cleanRule }}</a-descriptions-item>
+      <a-descriptions-item label="交易代码">{{ transactionDetailData.transCode }}</a-descriptions-item>
+      <a-descriptions-item label="交易柜员">{{ transactionDetailData.teller }}</a-descriptions-item>
+      <a-descriptions-item label="交易发生地">{{ transactionDetailData.transLocation }}</a-descriptions-item>
+      <a-descriptions-item label="服务界面">{{ transactionDetailData.serviceInterface }}</a-descriptions-item>
+      <a-descriptions-item label="凭证号">{{ transactionDetailData.bankPaperNum }}</a-descriptions-item>
+      <a-descriptions-item label="凭证种类">{{ transactionDetailData.bankPaperType }}</a-descriptions-item>
+      <a-descriptions-item label="现金标志">{{ transactionDetailData.cashStatus }}</a-descriptions-item>
+      <a-descriptions-item label="钞汇标志">{{ transactionDetailData.fxCashStatus }}</a-descriptions-item>
+      <a-descriptions-item label="交易渠道">{{ transactionDetailData.transChannel }}</a-descriptions-item>
+      <a-descriptions-item label="交易渠道代码">{{ transactionDetailData.transChannelCd }}</a-descriptions-item>
+      <a-descriptions-item label="终端号">{{ transactionDetailData.portNumber }}</a-descriptions-item>
+      <a-descriptions-item label="代办人电话">{{ transactionDetailData.agentTel }}</a-descriptions-item>
+      <a-descriptions-item label="代办人证件号码">{{ transactionDetailData.agentIdNum }}</a-descriptions-item>
+      <a-descriptions-item label="代办人证件类型">{{ transactionDetailData.adengIdType }}</a-descriptions-item>
+    </a-descriptions>
+  </BasicDrawer>
+  
+  <!-- 非银行客户信息详情抽屉 -->
+  <BasicDrawer
+    @register="registerNonBankCustomerDetailDrawer"
+    title="非银行客户信息详情"
+    width="50%"
+    :showFooter="false"
+  >
+    <a-descriptions :column="2" bordered size="middle">
+      <a-descriptions-item label="文件">{{ nonBankCustomerDetailData.fileName }}</a-descriptions-item>
+      <a-descriptions-item label="行号">{{ nonBankCustomerDetailData.rowNum }}</a-descriptions-item>
+      <a-descriptions-item label="机构名称">{{ nonBankCustomerDetailData.orgName }}</a-descriptions-item>
+      <a-descriptions-item label="商户号">{{ nonBankCustomerDetailData.merchantId }}</a-descriptions-item>
+      <a-descriptions-item label="商户名称">{{ nonBankCustomerDetailData.merchantName }}</a-descriptions-item>
+      <a-descriptions-item label="手机号码">{{ nonBankCustomerDetailData.teleNum }}</a-descriptions-item>
+      <a-descriptions-item label="店铺号">{{ nonBankCustomerDetailData.portId }}</a-descriptions-item>
+      <a-descriptions-item label="结算银行名称">{{ nonBankCustomerDetailData.settlementOrg }}</a-descriptions-item>
+      <a-descriptions-item label="结算账号/卡号">{{ nonBankCustomerDetailData.settlementAccountNum }}</a-descriptions-item>
+      <a-descriptions-item label="币种">{{ nonBankCustomerDetailData.currNo }}</a-descriptions-item>
+      <a-descriptions-item label="账户类型">{{ nonBankCustomerDetailData.accountType }}</a-descriptions-item>
+      <a-descriptions-item label="余额">{{ nonBankCustomerDetailData.balence }}</a-descriptions-item>
+      <a-descriptions-item label="客户种类">{{ nonBankCustomerDetailData.customerType }}</a-descriptions-item>
+      <a-descriptions-item label="营业执照">{{ nonBankCustomerDetailData.licenseNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人姓名">{{ nonBankCustomerDetailData.legalPersonName }}</a-descriptions-item>
+      <a-descriptions-item label="商户证件种类">{{ nonBankCustomerDetailData.idType }}</a-descriptions-item>
+      <a-descriptions-item label="商户证件号码">{{ nonBankCustomerDetailData.idNum }}</a-descriptions-item>
+      <a-descriptions-item label="工作单位">{{ nonBankCustomerDetailData.workUnit }}</a-descriptions-item>
+      <a-descriptions-item label="备注">{{ nonBankCustomerDetailData.comment }}</a-descriptions-item>
+      <a-descriptions-item label="是否商户">{{ nonBankCustomerDetailData.isMerchant }}</a-descriptions-item>
+      <a-descriptions-item label="结算银行编码">{{ nonBankCustomerDetailData.settlementOrgCd }}</a-descriptions-item>
+      <a-descriptions-item label="账户状态">{{ nonBankCustomerDetailData.accontStatus }}</a-descriptions-item>
+      <a-descriptions-item label="开户日期">{{ nonBankCustomerDetailData.openDate }}</a-descriptions-item>
+      <a-descriptions-item label="可用余额">{{ nonBankCustomerDetailData.avaiBalence }}</a-descriptions-item>
+      <a-descriptions-item label="地税纳税号">{{ nonBankCustomerDetailData.localTaxNum }}</a-descriptions-item>
+      <a-descriptions-item label="国税纳税号">{{ nonBankCustomerDetailData.countryTaxNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人证件种类">{{ nonBankCustomerDetailData.legalIdType }}</a-descriptions-item>
+      <a-descriptions-item label="法人证件号码">{{ nonBankCustomerDetailData.legalIdNum }}</a-descriptions-item>
+      <a-descriptions-item label="住宅电话">{{ nonBankCustomerDetailData.homeTel }}</a-descriptions-item>
+      <a-descriptions-item label="单位电话">{{ nonBankCustomerDetailData.unitTel }}</a-descriptions-item>
+      <a-descriptions-item label="状态">{{ nonBankCustomerDetailData.customerStatus }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ nonBankCustomerDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="客户名称">{{ nonBankCustomerDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="统一客户号">{{ nonBankCustomerDetailData.customerCd }}</a-descriptions-item>
+      <a-descriptions-item label="清洗规则">{{ nonBankCustomerDetailData.cleanRule }}</a-descriptions-item>
+      <a-descriptions-item label="通信地址">{{ nonBankCustomerDetailData.communicationAddr }}</a-descriptions-item>
+      <a-descriptions-item label="住宅地址">{{ nonBankCustomerDetailData.homeAddr }}</a-descriptions-item>
+      <a-descriptions-item label="单位地址">{{ nonBankCustomerDetailData.unitAddr }}</a-descriptions-item>
+      <a-descriptions-item label="邮箱地址">{{ nonBankCustomerDetailData.mailAddr }}</a-descriptions-item>
+      <a-descriptions-item label="邮政编码">{{ nonBankCustomerDetailData.postCode }}</a-descriptions-item>
+      <a-descriptions-item label="开户网点">{{ nonBankCustomerDetailData.openBranches }}</a-descriptions-item>
+      <a-descriptions-item label="开户网点代码">{{ nonBankCustomerDetailData.openBranchesCd }}</a-descriptions-item>
+      <a-descriptions-item label="销户日期">{{ nonBankCustomerDetailData.closeDate }}</a-descriptions-item>
+      <a-descriptions-item label="最后交易时间">{{ nonBankCustomerDetailData.lastTransTime }}</a-descriptions-item>
+    </a-descriptions>
+  </BasicDrawer>
+  
+  <!-- 非银行交易流水详情抽屉 -->
+  <BasicDrawer
+    @register="registerNonBankTransactionDetailDrawer"
+    title="非银行交易流水详情"
+    width="50%"
+    :showFooter="false"
+  >
+    <a-descriptions :column="2" bordered size="middle">
+      <a-descriptions-item label="文件">{{ nonBankTransactionDetailData.fileName }}</a-descriptions-item>
+      <a-descriptions-item label="行号">{{ nonBankTransactionDetailData.rowNum }}</a-descriptions-item>
+      <a-descriptions-item label="机构名称">{{ nonBankTransactionDetailData.orgName }}</a-descriptions-item>
+      <a-descriptions-item label="商户号">{{ nonBankTransactionDetailData.merchantId }}</a-descriptions-item>
+      <a-descriptions-item label="商户名称">{{ nonBankTransactionDetailData.merchantName }}</a-descriptions-item>
+      <a-descriptions-item label="店铺号">{{ nonBankTransactionDetailData.portId }}</a-descriptions-item>
+      <a-descriptions-item label="订单号">{{ nonBankTransactionDetailData.orderNo }}</a-descriptions-item>
+      <a-descriptions-item label="商品名称">{{ nonBankTransactionDetailData.productName }}</a-descriptions-item>
+      <a-descriptions-item label="手机号码">{{ nonBankTransactionDetailData.teleNum }}</a-descriptions-item>
+      <a-descriptions-item label="流水号">{{ nonBankTransactionDetailData.transNo }}</a-descriptions-item>
+      <a-descriptions-item label="卡号">{{ nonBankTransactionDetailData.cardNum }}</a-descriptions-item>
+      <a-descriptions-item label="户名">{{ nonBankTransactionDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="币种">{{ nonBankTransactionDetailData.currNo }}</a-descriptions-item>
+      <a-descriptions-item label="交易方向">{{ nonBankTransactionDetailData.transWay }}</a-descriptions-item>
+      <a-descriptions-item label="交易金额">{{ nonBankTransactionDetailData.transAmt }}</a-descriptions-item>
+      <a-descriptions-item label="贷方发生额">{{ nonBankTransactionDetailData.creditAmt }}</a-descriptions-item>
+      <a-descriptions-item label="交易种类">{{ nonBankTransactionDetailData.transType }}</a-descriptions-item>
+      <a-descriptions-item label="业务日期">{{ nonBankTransactionDetailData.bizDate }}</a-descriptions-item>
+      <a-descriptions-item label="交易时间">{{ nonBankTransactionDetailData.transTime }}</a-descriptions-item>
+      <a-descriptions-item label="交易卡开户行">{{ nonBankTransactionDetailData.openOrgCd }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ nonBankTransactionDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="营业执照">{{ nonBankTransactionDetailData.licenseNum }}</a-descriptions-item>
+      <a-descriptions-item label="法人姓名">{{ nonBankTransactionDetailData.legalPersonName }}</a-descriptions-item>
+      <a-descriptions-item label="证件种类">{{ nonBankTransactionDetailData.idType }}</a-descriptions-item>
+      <a-descriptions-item label="证件号码">{{ nonBankTransactionDetailData.idNum }}</a-descriptions-item>
+      <a-descriptions-item label="结算金额">{{ nonBankTransactionDetailData.settlementAmt }}</a-descriptions-item>
+      <a-descriptions-item label="余额">{{ nonBankTransactionDetailData.balance }}</a-descriptions-item>
+      <a-descriptions-item label="备注">{{ nonBankTransactionDetailData.comment }}</a-descriptions-item>
+      <a-descriptions-item label="客户种类">{{ nonBankTransactionDetailData.customerType }}</a-descriptions-item>
+      <a-descriptions-item label="结算行">{{ nonBankTransactionDetailData.settlementOrg }}</a-descriptions-item>
+      <a-descriptions-item label="结算行编码">{{ nonBankTransactionDetailData.settlementOrgCd }}</a-descriptions-item>
+      <a-descriptions-item label="结算账号">{{ nonBankTransactionDetailData.settlementAccountNum }}</a-descriptions-item>
+      <a-descriptions-item label="卡类型">{{ nonBankTransactionDetailData.cardType }}</a-descriptions-item>
+      <a-descriptions-item label="设备MAC">{{ nonBankTransactionDetailData.macAddress }}</a-descriptions-item>
+      <a-descriptions-item label="交易IP地址">{{ nonBankTransactionDetailData.ipAddress }}</a-descriptions-item>
+      <a-descriptions-item label="交易状态">{{ nonBankTransactionDetailData.status }}</a-descriptions-item>
+      <a-descriptions-item label="统一客户号">{{ nonBankTransactionDetailData.customerCd }}</a-descriptions-item>
+      <a-descriptions-item label="清洗规则">{{ nonBankTransactionDetailData.cleanRule }}</a-descriptions-item>
+      <a-descriptions-item label="交易渠道">{{ nonBankTransactionDetailData.transChannel }}</a-descriptions-item>
+      <a-descriptions-item label="交易代码">{{ nonBankTransactionDetailData.transCode }}</a-descriptions-item>
+      <a-descriptions-item label="手续费">{{ nonBankTransactionDetailData.feeAmt }}</a-descriptions-item>
+      <a-descriptions-item label="现金标志">{{ nonBankTransactionDetailData.cashStatus }}</a-descriptions-item>
+      <a-descriptions-item label="钞汇标志">{{ nonBankTransactionDetailData.fxCashStatus }}</a-descriptions-item>
+      <a-descriptions-item label="交易发生地">{{ nonBankTransactionDetailData.transLocation }}</a-descriptions-item>
+    </a-descriptions>
+  </BasicDrawer>
 </template>
 
 <script lang="ts" name="tab1" setup>
-import {ref, reactive, onMounted, computed, defineProps} from 'vue';
+import {ref, reactive, onMounted, computed} from 'vue';
 import { useRoute } from "vue-router";
 import {
   // getAnalyzesultApi,
@@ -297,6 +534,7 @@ import {
 import {FullscreenExitOutlined, FullscreenOutlined} from "@ant-design/icons-vue";
 import {BasicModal, useModalInner} from '/@/components/Modal';
 import { BasicTable, useTable, TableAction } from '/@/components/Table';
+import { BasicDrawer, useDrawer } from '/@/components/Drawer';
 
 interface FileItem {
   id: string;
@@ -322,7 +560,7 @@ const searchLoading = ref(false);
 const searchText = ref('');
 const fileLoading = ref(false);
 const sheetLoading = ref(false);
-const selectedFileId = ref(null);
+const selectedFileId = ref<string | null>(null);
 const selectedSheet = ref<SheetItem | null>(null);
 const sheets = ref<SheetItem[]>([]);
 const customerData = ref([]);
@@ -343,6 +581,19 @@ const parseDataParams = reactive({
 
 // 分析结果弹框相关状态
 const analyzeModalVisible = ref(false);
+// 详情抽屉相关状态 - 为每个表格创建独立的状态
+const customerDetailData = ref<any>({});
+const [registerCustomerDetailDrawer, { openDrawer: openCustomerDetailDrawer }] = useDrawer();
+
+const transactionDetailData = ref<any>({});
+const [registerTransactionDetailDrawer, { openDrawer: openTransactionDetailDrawer }] = useDrawer();
+
+const nonBankCustomerDetailData = ref<any>({});
+const [registerNonBankCustomerDetailDrawer, { openDrawer: openNonBankCustomerDetailDrawer }] = useDrawer();
+
+const nonBankTransactionDetailData = ref<any>({});
+const [registerNonBankTransactionDetailDrawer, { openDrawer: openNonBankTransactionDetailDrawer }] = useDrawer();
+
 // const analyzeData = reactive({
 //   faStandardEntities: [],
 //   faStandardTrans: [],
@@ -579,7 +830,7 @@ const customerColumns = ref([
   { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
+  { title: '操作', dataIndex: 'operation',  width: 200, fixed: 'right' as const , resizable: true}
 ]);
 
 // 交易流水表格列配置
@@ -608,7 +859,7 @@ const transactionColumns = ref([
   { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true},
   { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
+  { title: '操作', dataIndex: 'operation',  width: 200, fixed: 'right' as const, resizable: true },
 ]);
 
 //const nonBankCustomerColumns = ref([...customerColumns.value]);
@@ -635,7 +886,7 @@ const nonBankCustomerColumns = ref([
   { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
   { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
+  { title: '操作', dataIndex: 'operation',  width: 200, fixed: 'right' as const, resizable: true },
 ]);
 
 
@@ -668,7 +919,7 @@ const nonBankTransactionColumns = ref([
   { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
   { title: '余额', dataIndex: 'balance', width: 100, resizable: true},
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const, resizable: true },
+  { title: '操作', dataIndex: 'operation',  width: 200, fixed: 'right' as const, resizable: true },
 ]);
 
 onMounted(() => {
@@ -1027,7 +1278,7 @@ const [registerCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-customer'
   }
@@ -1046,7 +1297,7 @@ const [registerTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-transaction'
   }
@@ -1065,7 +1316,7 @@ const [registerNonBankCustomerTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-non-bank-customer'
   }
@@ -1083,7 +1334,7 @@ const [registerNonBankTransactionTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-non-bank-transaction'
   }
@@ -1102,7 +1353,7 @@ const [registerParseEntityTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-entity'
   }
@@ -1121,7 +1372,7 @@ const [registerParseTransTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-trans'
   }
@@ -1140,11 +1391,32 @@ const [registerParseOrderTable] = useTable({
   tableSetting: { 
     redo: false,
     size: true, 
-    setting: false, 
+    setting: true,
     fullScreen: true,
     cacheKey: 'fund-analysis-tab3-parse-order'
   }
 });
+
+// 显示详情抽屉 - 为每个表格创建独立的处理函数
+function handleCustomerDetail(record) {
+  customerDetailData.value = record;
+  openCustomerDetailDrawer(true, record);
+}
+
+function handleTransactionDetail(record) {
+  transactionDetailData.value = record;
+  openTransactionDetailDrawer(true, record);
+}
+
+function handleNonBankCustomerDetail(record) {
+  nonBankCustomerDetailData.value = record;
+  openNonBankCustomerDetailDrawer(true, record);
+}
+
+function handleNonBankTransactionDetail(record) {
+  nonBankTransactionDetailData.value = record;
+  openNonBankTransactionDetailDrawer(true, record);
+}
 
 </script>
 
