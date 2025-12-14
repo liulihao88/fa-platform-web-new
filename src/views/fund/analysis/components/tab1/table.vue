@@ -3125,7 +3125,7 @@ const handleTitleConfigChange = (value, dataBlock, column) => {
   
   // 获取标题列名称
   const titleColName = dataBlock.dataBlockStucts[colIndex].faFileParameter.titleColName;
-  
+
   // 如果oriMetaData为空
   if (!oriMetaData) {
     // 重新组装未映射的标题配置
@@ -3145,6 +3145,8 @@ const handleTitleConfigChange = (value, dataBlock, column) => {
     }
   }
   dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData = value
+  // dataBlock.noMappingTitle = dataBlock.dataBlockStucts.filter(struct => !struct.faFileParameter.newMetaData).map(item => item.faFileParameter.titleColName).join(',');
+  dataBlock.mappingTitle = dataBlock.dataBlockStucts.filter(struct => struct.faFileParameter.newMetaData).map(item => item.faFileParameter.newMetaData).join(',');
 };
 
 const getSelectResult = (values, ...args) => {

@@ -1582,7 +1582,7 @@ const selectOptions = {
 
 // 判断字段类型 - 根据要求，trans_amt、biz_date、trans_time字段类型为other，其他均为string
 const getFieldType = (field: string) => {
-  const otherFields = ['trans_amt', 'biz_date', 'trans_time'];
+  const otherFields = ['balence', 'trans_amt', 'biz_date', 'trans_time'];
   return otherFields.includes(field) ? 'other' : 'string';
 };
 
