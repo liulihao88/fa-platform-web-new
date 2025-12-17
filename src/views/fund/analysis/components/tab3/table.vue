@@ -350,7 +350,7 @@
       <a-descriptions-item label="文件">{{ transactionDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ transactionDetailData.rowNum }}</a-descriptions-item>
       <a-descriptions-item label="机构名称">{{ transactionDetailData.orgName }}</a-descriptions-item>
-      <a-descriptions-item label="户名">{{ transactionDetailData.customerName }}</a-descriptions-item>
+      <a-descriptions-item label="户名">{{ transactionDetailData.accountName }}</a-descriptions-item>
       <a-descriptions-item label="账号">{{ transactionDetailData.accountNum }}</a-descriptions-item>
       <a-descriptions-item label="卡号">{{ transactionDetailData.cardNum }}</a-descriptions-item>
       <a-descriptions-item label="流水号">{{ transactionDetailData.transNo }}</a-descriptions-item>
@@ -838,7 +838,7 @@ const transactionColumns = ref([
   { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
   { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
+  { title: '户名', dataIndex: 'accountName', width: 100, resizable: true},
   { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
   { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
   { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
