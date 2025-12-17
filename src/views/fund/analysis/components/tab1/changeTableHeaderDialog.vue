@@ -92,7 +92,7 @@ const config = {
 const getBindValue = Object.assign({}, unref(props), unref(attrs), config);
 console.log(`96 getBindValue`, getBindValue);
 // 显式传递emit参数以确保事件通信正常
-const [{ rowSelection, indexColumnProps, getSelectResult, handleDeleteSelected, selectRows, reset }] = useSelectBiz(
+const [{ rowSelection, indexColumnProps, getSelectResult, handleDeleteSelected, selectRows, reset, onSelectChange, selectValues }] = useSelectBiz(
   getFileConfigPageListApi,
   getBindValue,
   emits
@@ -103,14 +103,10 @@ const dataSource = ref([
 ])
 
 watch(()=>props.headerDialogObject, (val)=>{
-  // dataSource.value = val.titleConfigOptions.map(v=>{
-  //   return v
-  // })
   searchInfo.value.orgCode = val.orgCode;
   searchInfo.value.mappingTitle = val.mappingTitle;
-  // let sRows = dataSource.value.find(v=>v[ROW_KEY] === val.colText)
-  // console.log(`28 sRows`, sRows);
-  // onSelectChange([val.colText], sRows)
+  selectValues.value = [val.colText];
+  selectValues.change = true;
 }, {
   deep: true,
   immediate: true
