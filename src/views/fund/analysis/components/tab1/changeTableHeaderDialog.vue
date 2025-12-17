@@ -24,13 +24,12 @@ const columns = [
   {
     title: '标准数据',
     dataIndex: 'metaData',
-    width: 180,
+    width: 120,
     align: 'left',
   },
   {
     title: '别名',
     dataIndex: 'alias',
-    width: 180,
     align: 'left',
   },
 ];
