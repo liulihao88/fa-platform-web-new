@@ -969,6 +969,9 @@ import { EditOutlined } from '@ant-design/icons-vue';
 
 import { BasicDrawer, useDrawer } from '/@/components/Drawer';
 
+import { useGlobSetting } from '/@/hooks/setting';
+
+
 
 const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
 
@@ -2230,8 +2233,11 @@ const previewFile = (record)=>{
 
 // 实际加载文件内容的方法
 const loadFileContent = (record, responseType,fileInfo) => {
-  const API_DOMAIN = import.meta.env.VITE_GLOB_DOMAIN_URL
-  const previewUrl = API_DOMAIN+"/"+fileInfo.fileViewUrl;
+  const globSetting = useGlobSetting();
+  const domainUrl = globSetting.domainUrl; // 这就是 VITE_GLOB_DOMAIN_URL 的值
+
+  // const API_DOMAIN = import.meta.env.VITE_GLOB_DOMAIN_URL
+  const previewUrl = domainUrl+"/"+fileInfo.fileViewUrl;
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
     fileStreamInfo.value = previewUrl;
     fileLoading.value = false;
