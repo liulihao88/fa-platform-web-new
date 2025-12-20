@@ -698,7 +698,7 @@
       <a-descriptions-item label="文件">{{ customerDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ customerDetailData.rowNum }}</a-descriptions-item>
       <a-descriptions-item label="银行名称">{{ customerDetailData.orgName }}</a-descriptions-item>
-      <a-descriptions-item label="客户号">{{ customerDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ customerDetailData.showCustomerId }}</a-descriptions-item>
       <a-descriptions-item label="客户种类">{{ customerDetailData.customerType }}</a-descriptions-item>
       <a-descriptions-item label="客户名称">{{ customerDetailData.customerName }}</a-descriptions-item>
       <a-descriptions-item label="营业执照">{{ customerDetailData.licenseNum }}</a-descriptions-item>
@@ -767,10 +767,12 @@
       <a-descriptions-item label="交易时间">{{ transactionDetailData.transTime }}</a-descriptions-item>
       <a-descriptions-item label="对方机构名称">{{ transactionDetailData.counterOrgName }}</a-descriptions-item>
       <a-descriptions-item label="对方账号">{{ transactionDetailData.counterAccountNo }}</a-descriptions-item>
-      <a-descriptions-item label="客户号">{{ transactionDetailData.customerId }}</a-descriptions-item>
+      <a-descriptions-item label="客户号">{{ transactionDetailData.showCustomerId }}</a-descriptions-item>
       <a-descriptions-item label="客户名称">{{ transactionDetailData.customerName }}</a-descriptions-item>
       <a-descriptions-item label="结算金额">{{ transactionDetailData.settlementAmt }}</a-descriptions-item>
       <a-descriptions-item label="手续费">{{ transactionDetailData.feeAmt }}</a-descriptions-item>
+      <a-descriptions-item label="利息">{{ transactionDetailData.interestAmt }}</a-descriptions-item>
+      <a-descriptions-item label="违约金">{{ transactionDetailData.liquidatedAmt }}</a-descriptions-item>
       <a-descriptions-item label="代办人姓名">{{ transactionDetailData.agentName }}</a-descriptions-item>
       <a-descriptions-item label="备注">{{ transactionDetailData.comment }}</a-descriptions-item>
       <a-descriptions-item label="设备MAC">{{ transactionDetailData.macAddress }}</a-descriptions-item>
@@ -817,7 +819,7 @@
       <a-descriptions-item label="文件">{{ nonBankCustomerDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ nonBankCustomerDetailData.rowNum }}</a-descriptions-item>
       <a-descriptions-item label="机构名称">{{ nonBankCustomerDetailData.orgName }}</a-descriptions-item>
-      <a-descriptions-item label="商户号">{{ nonBankCustomerDetailData.merchantId }}</a-descriptions-item>
+      <a-descriptions-item label="商户号">{{ nonBankCustomerDetailData.showMerchantId }}</a-descriptions-item>
       <a-descriptions-item label="商户名称">{{ nonBankCustomerDetailData.merchantName }}</a-descriptions-item>
       <a-descriptions-item label="手机号码">{{ nonBankCustomerDetailData.teleNum }}</a-descriptions-item>
       <a-descriptions-item label="店铺号">{{ nonBankCustomerDetailData.portId }}</a-descriptions-item>
@@ -872,7 +874,7 @@
       <a-descriptions-item label="文件">{{ nonBankTransactionDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ nonBankTransactionDetailData.rowNum }}</a-descriptions-item>
       <a-descriptions-item label="机构名称">{{ nonBankTransactionDetailData.orgName }}</a-descriptions-item>
-      <a-descriptions-item label="商户号">{{ nonBankTransactionDetailData.merchantId }}</a-descriptions-item>
+      <a-descriptions-item label="商户号">{{ nonBankTransactionDetailData.showMerchantId }}</a-descriptions-item>
       <a-descriptions-item label="商户名称">{{ nonBankTransactionDetailData.merchantName }}</a-descriptions-item>
       <a-descriptions-item label="店铺号">{{ nonBankTransactionDetailData.portId }}</a-descriptions-item>
       <a-descriptions-item label="订单号">{{ nonBankTransactionDetailData.orderNo }}</a-descriptions-item>
@@ -1270,7 +1272,7 @@ const bankCustomerColumns = ref([
   { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
   { title: '银行名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true},
   { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
@@ -1307,7 +1309,7 @@ const bankTransactionColumns = ref([
   { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
   { title: '对方机构名称', dataIndex: 'counterOrgName', width: 100, resizable: true},
   { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
+  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true},
   { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
   { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
   { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true},
@@ -1321,7 +1323,7 @@ const nonBankCustomerColumns = ref([
   { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
   { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
   { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
   { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
@@ -1345,7 +1347,7 @@ const nonBankTransactionColumns = ref([
   { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
   { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
   { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '商户号', dataIndex: 'merchantId', width: 100, resizable: true},
+  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true},
   { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
   { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
   { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
