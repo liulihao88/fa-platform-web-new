@@ -3515,6 +3515,7 @@ function handleNonBankTransactionDetail(record) {
 
 .file-trans-table :deep(.ant-table-body) {
   min-height: 400px;
+  overflow-y: auto !important;
 }
 
  :deep(.blue-row) {
