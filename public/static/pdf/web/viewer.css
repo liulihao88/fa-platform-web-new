@@ -937,7 +937,7 @@ html[dir="rtl"] #sidebarContent {
   position: absolute;
   top: 32px;
   right: 0;
-  bottom: 0;
+  bottom: 300px;
   left: 0;
   outline: none;
 }

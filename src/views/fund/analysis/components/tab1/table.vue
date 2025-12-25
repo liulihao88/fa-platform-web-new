@@ -154,8 +154,8 @@
                   <a-button type="primary" size="small" @click="previewFile(currentRecord)" class="ml2">预览文件</a-button>
                 </a-col>
               </a-row>
-              <a-row>
-                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 640px" >
+              <a-row style="height: 700px" class="custom-ant-col">
+                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 700px" >
                   <div v-if="fileLoading" class="file-loading">
                     <a-spin size="large" />
                     <p>文件加载中，请稍候...</p>
@@ -168,6 +168,7 @@
                       @error="onExcelError"
                       :pagination="true"
                       :page-size="20"
+                      style="height: 700px"
                       :min-col-width="100"
                       :max-col-width="300"
                   />
@@ -374,7 +375,7 @@
   <BasicModal
       v-model:visible="uploadModalVisible"
       title="上传文件"
-      width="800px"
+      width="700px"
       :maskClosable="false"
       :keyboard="false"
       :footer="null"
@@ -3281,7 +3282,7 @@ function handleNonBankTransactionDetail(record) {
   padding: 10px;
   background: #fff;
   height: 100%;
-  max-height: 800px;
+  max-height: 700px;
   overflow-y: auto;
 }
 .file-item, .sheet-item {
@@ -3653,5 +3654,9 @@ function handleNonBankTransactionDetail(record) {
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  .custom-ant-col :deep(.ant-col){
+    height: 700px;
   }
 </style>
