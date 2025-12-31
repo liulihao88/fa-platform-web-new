@@ -2250,7 +2250,7 @@ const loadFileContent = (record, responseType,fileInfo, type) => {
     if(type === 'fast'){
       iframeUrl.value = previewUrl
     }else{
-      const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl);
+      const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl) + '&disableRange=true&disableAutoFetch=false&disableStream=true';
       iframeUrl.value = pdfPreviewUrl;
     }
 
