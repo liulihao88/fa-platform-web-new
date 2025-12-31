@@ -194,9 +194,9 @@
                         :page-size="10"
                         :min-page-width="700"
                     />-->
-                  <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;" v-if="iframeUrl.startsWith('/static')"></iframe>
-                  <PdfNewViewer :url="iframeUrl" v-else></PdfNewViewer>
-                  </div>
+                      <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;" v-if="iframeUrl.startsWith('/static')"></iframe>
+                      <PdfNewViewer :url="iframeUrl" v-else></PdfNewViewer>
+                    </div>
                 </a-col>
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
                   <!-- CSV预览 - 仿Excel表格样式 -->

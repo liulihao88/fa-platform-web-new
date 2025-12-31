@@ -373,8 +373,17 @@ const scrollToPage = async (pageNum) => {
   }, 100);
 };
 
+// 添加节流相关变量
+const lastZoomTime = ref(0);
+
 // 放大
 const zoomIn = () => {
+  const now = Date.now();
+  if (now - lastZoomTime.value < 200) {
+    return; // 如果距离上次缩放操作不足200ms，则不执行
+  }
+  lastZoomTime.value = now;
+  
   scale.value = Math.min(scale.value + 0.2, 10);
   cancelPreviousRender();
   recalculateAllPages();
@@ -382,6 +391,12 @@ const zoomIn = () => {
 
 // 缩小
 const zoomOut = () => {
+  const now = Date.now();
+  if (now - lastZoomTime.value < 200) {
+    return; // 如果距离上次缩放操作不足200ms，则不执行
+  }
+  lastZoomTime.value = now;
+  
   scale.value = Math.max(scale.value - 0.2, 0.1);
   cancelPreviousRender();
   recalculateAllPages();
@@ -452,7 +467,7 @@ onUnmounted(() => {
 .pdf-viewer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90%;
   width: 100%;
 }
 
@@ -525,6 +540,8 @@ onUnmounted(() => {
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   left: 10px;
+  top: 10px;
+  bottom: 10px;
 }
 
 .pdf-text-layer {
