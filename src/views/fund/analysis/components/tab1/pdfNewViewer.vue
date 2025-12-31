@@ -8,7 +8,7 @@
       <button @click="nextPage" :disabled="!pdfDoc || currentPage >= pdfDoc.numPages" class="control-btn">下一页</button>
       <input type="number" v-model="jumpToPage" min="1" :max="pdfDoc ? pdfDoc.numPages : 1" @change="goToPage" class="page-input" placeholder="跳转到第几页" />
       <span>/</span>
-      <span> {{ pdfDoc ? pdfDoc.numPages : "--" }}</span>
+      <span> {{ pdfDoc ? pdfDoc.numPages : "--" }} 页</span>
     </div>
     <div ref="containerRef" class="pdf-container" @scroll="handleScroll">
       <div class="pages-wrapper" :style="{ height: totalHeight + 'px' }">
@@ -34,22 +34,22 @@
 import { ref, onMounted, onUnmounted, nextTick, computed, toRaw } from "vue";
 import * as pdfjsLib from "pdfjs-dist";
 
+const props = defineProps({
+  url: {
+    type: String,
+    required: true
+  }
+});
+
 // 在浏览器环境中动态设置worker
 if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `/node_modules/pdfjs-dist/build/pdf.worker.min.mjs`;
 }
 
-const props = defineProps({
- url: {
-  type: String,
-  required: true
- }
-})
-
 // 响应式数据
 const pdfDoc = ref(null);
 const currentPage = ref(1);
-const scale = ref(1.0);
+const scale = ref(0.6);
 const containerRef = ref(null);
 const pagesInfo = ref([]);
 const renderedPages = ref([]);
@@ -206,16 +206,19 @@ const updateRenderedPages = () => {
   });
 };
 
+// 添加用于控制渲染任务的变量
+const currentRenderAbortController = ref(null);
+
 // 渲染页面
 const renderPages = async (pagesToRender) => {
   // 使用Promise.all来并行渲染多个页面
   const renderPromises = pagesToRender.map((pageData) => {
     // 即使页面已缓存，也需要确保canvas被正确渲染
     if (!pageCache.value.has(pageData.pageNum)) {
-      return renderPage(pageData.pageNum, pageData.offsetTop);
+      return renderPage(pageData.pageNum, pageData.offsetTop, currentRenderAbortController.value?.signal);
     } else {
       // 如果页面已缓存，仍然需要确保canvas被渲染（可能在页面重新进入视图时）
-      return renderPage(pageData.pageNum, pageData.offsetTop);
+      return renderPage(pageData.pageNum, pageData.offsetTop, currentRenderAbortController.value?.signal);
     }
     return Promise.resolve();
   });
@@ -224,8 +227,14 @@ const renderPages = async (pagesToRender) => {
 };
 
 // 渲染单个页面
-const renderPage = async (pageNum, offsetTop) => {
+const renderPage = async (pageNum, offsetTop, abortSignal) => {
   if (!pdfDoc.value) return;
+
+  // 检查是否已被取消
+  if (abortSignal && abortSignal.aborted) {
+    console.log(`页面 ${pageNum} 渲染被取消`);
+    return;
+  }
 
   try {
     // 检查是否已经缓存了此页面
@@ -243,6 +252,12 @@ const renderPage = async (pageNum, offsetTop) => {
     const textLayerDiv = getTextLayerRef(pageNum);
 
     if (!canvas) return;
+
+    // 检查是否已被取消
+    if (abortSignal && abortSignal.aborted) {
+      console.log(`页面 ${pageNum} 渲染被取消`);
+      return;
+    }
 
     const context = canvas.getContext("2d");
     const viewport = page.getViewport({ scale: scale.value });
@@ -270,11 +285,24 @@ const renderPage = async (pageNum, offsetTop) => {
 
     const renderContext = {
       canvasContext: context,
-      viewport: viewport
+      viewport: viewport,
+      intent: "display"
     };
+
+    // 检查是否已被取消
+    if (abortSignal && abortSignal.aborted) {
+      console.log(`页面 ${pageNum} 渲染被取消`);
+      return;
+    }
 
     // 渲染页面到canvas
     await page.render(renderContext).promise;
+
+    // 检查是否已被取消
+    if (abortSignal && abortSignal.aborted) {
+      console.log(`页面 ${pageNum} 渲染被取消`);
+      return;
+    }
 
     // 渲染文本层以支持文本选择和复制
     if (textLayerDiv) {
@@ -288,7 +316,8 @@ const renderPage = async (pageNum, offsetTop) => {
           textContentSource: textContent,
           container: textLayerDiv,
           viewport: viewport,
-          textDivs: []
+          textDivs: [],
+          hideTextLayer: false
         });
 
         await textLayer.render();
@@ -305,6 +334,11 @@ const renderPage = async (pageNum, offsetTop) => {
     }
     pageCache.value.set(pageNum, true);
   } catch (error) {
+    // 检查错误是否由于取消操作引起
+    if (error.name === "AbortError") {
+      console.log(`页面 ${pageNum} 渲染被取消`);
+      return;
+    }
     console.error(`渲染页面 ${pageNum} 失败：`, error);
   }
 };
@@ -341,18 +375,32 @@ const scrollToPage = async (pageNum) => {
 
 // 放大
 const zoomIn = () => {
-  scale.value = Math.min(scale.value + 0.2, 4);
+  scale.value = Math.min(scale.value + 0.2, 3);
+  cancelPreviousRender();
   recalculateAllPages();
 };
 
 // 缩小
 const zoomOut = () => {
-  scale.value = Math.max(scale.value - 0.2, 0.2);
+  scale.value = Math.max(scale.value - 0.2, 0.5);
+  cancelPreviousRender();
   recalculateAllPages();
+};
+
+// 取消上一次渲染的方法
+const cancelPreviousRender = () => {
+  if (currentRenderAbortController.value) {
+    currentRenderAbortController.value.abort();
+  }
+  // 创建新的 AbortController 用于当前渲染任务
+  currentRenderAbortController.value = new AbortController();
 };
 
 // 重新计算所有页面
 const recalculateAllPages = async () => {
+  // 取消之前的渲染任务
+  cancelPreviousRender();
+
   // 清除缓存，重新计算页面尺寸
   pageCache.value.clear();
   textLayerCache.value.clear();
@@ -393,8 +441,7 @@ onMounted(async () => {
 // 组件卸载前执行
 onUnmounted(() => {
   if (loadingTask.value) {
-    console.log(`71 loadingTask.value`, loadingTask.value);
-    toRaw(loadingTask.value).destroy?.();
+    loadingTask.value.destroy();
   }
   clearTimeout(scrollTimer.value);
   window.removeEventListener("resize", handleResize);
@@ -412,7 +459,7 @@ onUnmounted(() => {
 .pdf-controls {
   display: flex;
   align-items: center;
-  padding: 0 8px 8px;
+  padding: 8px;
   background-color: #f5f5f5;
   border-bottom: 1px solid #ddd;
   gap: 8px;
@@ -502,7 +549,7 @@ onUnmounted(() => {
   z-index: 100;
 }
 .control-btn {
-  /* height: 30px; */
+  height: 30px;
   font-size: 12px;
 }
 </style>
