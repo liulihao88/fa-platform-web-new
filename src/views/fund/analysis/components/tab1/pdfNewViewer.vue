@@ -49,7 +49,7 @@ if (typeof window !== "undefined") {
 // 响应式数据
 const pdfDoc = ref(null);
 const currentPage = ref(1);
-const scale = ref(0.6);
+const scale = ref(1.0);
 const containerRef = ref(null);
 const pagesInfo = ref([]);
 const renderedPages = ref([]);
@@ -375,14 +375,14 @@ const scrollToPage = async (pageNum) => {
 
 // 放大
 const zoomIn = () => {
-  scale.value = Math.min(scale.value + 0.2, 3);
+  scale.value = Math.min(scale.value + 0.2, 10);
   cancelPreviousRender();
   recalculateAllPages();
 };
 
 // 缩小
 const zoomOut = () => {
-  scale.value = Math.max(scale.value - 0.2, 0.5);
+  scale.value = Math.max(scale.value - 0.2, 0.1);
   cancelPreviousRender();
   recalculateAllPages();
 };
