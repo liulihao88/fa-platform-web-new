@@ -152,6 +152,7 @@
                 <a-col span="24">
                   文件名称：{{ currentFile.fileName || '-' }}
                   <a-button type="primary" size="small" @click="previewFile(currentRecord)" class="ml2">预览文件</a-button>
+                  <a-button type="primary" size="small" @click="previewFile(currentRecord, 'fast')" class="ml2">快速预览文件</a-button>
                 </a-col>
               </a-row>
               <a-row style="height: 700px" class="custom-ant-col">
@@ -193,7 +194,8 @@
                         :page-size="10"
                         :min-page-width="700"
                     />-->
-                  <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;"></iframe>
+                  <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;" v-if="iframeUrl.startsWith('/static')"></iframe>
+                  <PdfNewViewer :url="iframeUrl" v-else></PdfNewViewer>
                   </div>
                 </a-col>
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
@@ -964,6 +966,7 @@ import { Splitpanes, Pane } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { useTimer } from '@/hooks/core/useTimer';
 import ChangeTableHeaderDialog from "./changeTableHeaderDialog.vue";
+import PdfNewViewer from "./pdfNewViewer.vue";
 
 import FileInfo from "./fileInfo.vue";
 import { EditOutlined } from '@ant-design/icons-vue';
@@ -2194,7 +2197,7 @@ const iframeUrl = ref('');
 // }
 
 // 预览文件excel或者pdf或者csv文件
-const previewFile = (record)=>{
+const previewFile = (record, type)=>{
   const responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer';
   
   // 设置加载状态
@@ -2214,7 +2217,7 @@ const previewFile = (record)=>{
         cancelText: '取消',
         onOk: () => {
           // 用户选择继续，执行文件加载
-          loadFileContent(record, responseType,fileInfo);
+          loadFileContent(record, responseType,fileInfo, type);
         },
         onCancel: () => {
           // 用户取消预览
@@ -2225,7 +2228,7 @@ const previewFile = (record)=>{
       });
     } else {
       // 文件大小在限制范围内，直接加载
-      loadFileContent(record, responseType,fileInfo);
+      loadFileContent(record, responseType,fileInfo, type);
     }
   }).catch(error => {
     console.error('获取文件信息失败:', error);
@@ -2233,7 +2236,7 @@ const previewFile = (record)=>{
 }
 
 // 实际加载文件内容的方法
-const loadFileContent = (record, responseType,fileInfo) => {
+const loadFileContent = (record, responseType,fileInfo, type) => {
   const globSetting = useGlobSetting();
   const domainUrl = globSetting.domainUrl; // 这就是 VITE_GLOB_DOMAIN_URL 的值
 
@@ -2244,8 +2247,13 @@ const loadFileContent = (record, responseType,fileInfo) => {
     fileLoading.value = false;
     return;
   } else if(['pdf'].includes(currentFileType.value)){
-    const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl);
-    iframeUrl.value = pdfPreviewUrl;
+    if(type === 'fast'){
+      iframeUrl.value = previewUrl
+    }else{
+      const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl);
+      iframeUrl.value = pdfPreviewUrl;
+    }
+
     fileLoading.value = false;
     return;
   }
