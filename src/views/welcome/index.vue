@@ -5,5 +5,6 @@ defineOptions({
 </script>
 
 <template>
-  <h1>Pure-Admin-Thin（非国际化版本）</h1>
+  <h1>Pure-Admin-Thin（非国际化版本11）</h1>
+  <o-button type="primary">按钮</o-button>
 </template>
