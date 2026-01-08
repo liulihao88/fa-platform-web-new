@@ -19,7 +19,8 @@
     "lint:stylelint": "stylelint --cache --fix \"**/*.{html,vue,css,scss}\" --cache-location node_modules/.cache/stylelint/",
     "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
     "prepare": "husky",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "update": "pnpm add oeos-components@latest && pnpm add @oeos-components/utils@latest"
   },
   "keywords": [
     "pure-admin-thin",
@@ -48,6 +49,7 @@
     "url": "https://github.com/xiaoxian521"
   },
   "dependencies": {
+    "@oeos-components/utils": "^0.0.19",
     "@pureadmin/descriptions": "^1.2.1",
     "@pureadmin/table": "^3.3.0",
     "@pureadmin/utils": "^2.6.2",
@@ -57,18 +59,19 @@
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
     "echarts": "^6.0.0",
-    "element-plus": "^2.11.5",
+    "element-plus": "^2.13.0",
     "js-cookie": "^3.0.5",
     "localforage": "^1.10.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
-    "oeos-components": "^0.3.72",
+    "oeos-components": "^0.3.75",
     "path-browserify": "^1.0.1",
     "pinia": "^3.0.3",
     "pinyin-pro": "^3.27.0",
     "qs": "^6.14.0",
     "responsive-storage": "^2.2.0",
     "sortablejs": "^1.15.6",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3",
     "vue-tippy": "^6.7.1",

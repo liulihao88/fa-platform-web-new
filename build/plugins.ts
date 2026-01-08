@@ -1,5 +1,6 @@
 import { cdn } from "./cdn";
 import vue from "@vitejs/plugin-vue";
+import path from "path";
 import { viteBuildInfo } from "./info";
 import svgLoader from "vite-svg-loader";
 import Icons from "unplugin-icons/vite";
@@ -11,6 +12,7 @@ import removeNoMatch from "vite-plugin-router-warn";
 import { visualizer } from "rollup-plugin-visualizer";
 import removeConsole from "vite-plugin-remove-console";
 import { codeInspectorPlugin } from "code-inspector-plugin";
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { vitePluginFakeServer } from "vite-plugin-fake-server";
 
 export function getPluginsList(
@@ -61,6 +63,10 @@ export function getPluginsList(
     // 打包分析
     lifecycle === "report"
       ? visualizer({ open: true, brotliSize: true, filename: "report.html" })
-      : (null as any)
+      : (null as any),
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(__dirname, "../src/assets/svg")],
+      symbolId: "icon-[dir]-[name]"
+    })
   ];
 }

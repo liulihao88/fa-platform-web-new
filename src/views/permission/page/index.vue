@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { initRouter } from "@/router/utils";
 import { storageLocal } from "@pureadmin/utils";
-import { type CSSProperties, ref, computed } from "vue";
+import { type CSSProperties, ref, computed, getCurrentInstance } from "vue";
 import { useUserStoreHook } from "@/store/modules/user";
 import { usePermissionStoreHook } from "@/store/modules/permission";
+
+const { proxy } = getCurrentInstance();
 
 defineOptions({
   name: "PermissionPage"

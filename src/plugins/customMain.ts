@@ -1,11 +1,10 @@
 // main.ts
-import oeosComponents from "oeos-components";
 import "oeos-components/dist/style.css";
-
-// const app = createApp(App);
-// app.use(oeosComponents);
-// app.mount("#app");
-
+import OeosComponents from "oeos-components";
+import * as utils from "@oeos-components/utils";
 export function installOeos(app) {
-  app.use(oeosComponents);
+  app.use(OeosComponents);
+  Object.keys(utils).forEach(v => {
+    app.config.globalProperties[v] = utils[v];
+  });
 }
