@@ -41,12 +41,16 @@
         <a-tab-pane key="1" tab="上传文件">
            <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref" :caseInfo="caseInfo"></tab1>
         </a-tab-pane>
+ 
         <a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2
             :idCardTypeOptions="idCardTypeOptions"
             :involvedRelateOptions="involvedRelateOptions"
             :involvedKindOptions="involvedKindOptions"
           ></tab2>
+        </a-tab-pane>
+        <a-tab-pane key="5" tab="涉案人交易查询">
+          <tab5></tab5>
         </a-tab-pane>
         <a-tab-pane key="3" tab="标准数据查看">
           <tab3
@@ -71,6 +75,7 @@ import {ref, onMounted, reactive, computed, watch} from 'vue';
   import tab2 from './components/tab2/table.vue'
   import tab3 from './components/tab3/table.vue'
   import tab4 from './components/tab4/table.vue'
+  import tab5 from './components/tab5/index.vue'
 
   const { query } = useRoute();
   const activeKey = ref('1');
