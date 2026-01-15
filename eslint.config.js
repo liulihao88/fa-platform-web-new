@@ -100,7 +100,9 @@ export default defineConfig([
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_"
         }
-      ]
+      ],
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-empty-object-type": "off"
     }
   }),
   {
@@ -167,7 +169,8 @@ export default defineConfig([
           svg: "always",
           math: "always"
         }
-      ]
+      ],
+      "vue/no-unused-vars": "off"
     }
   }
 ]);

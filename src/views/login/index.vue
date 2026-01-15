@@ -14,6 +14,7 @@ import { initRouter, getTopMenu } from "@/router/utils";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
+import { getCodeInfo } from "@/api/login.ts";
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
@@ -27,7 +28,7 @@ defineOptions({
 const router = useRouter();
 const loading = ref(false);
 const disabled = ref(false);
-const ruleFormRef = ref<FormInstance>();
+const formDataRef = ref<FormInstance>();
 
 const { initStorage } = useLayout();
 initStorage();
@@ -36,9 +37,16 @@ const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange();
 dataThemeChange(overallStyle.value);
 const { title } = useNav();
 
-const ruleForm = reactive({
+const formData = reactive({
   username: "admin",
-  password: "admin123"
+  password: "admin123",
+  inputCode: ""
+});
+
+const randCodeData = reactive<any>({
+  randCodeImage: "",
+  requestCodeSuccess: false,
+  checkKey: null
 });
 
 const onLogin = async (formEl: FormInstance | undefined) => {
@@ -48,8 +56,8 @@ const onLogin = async (formEl: FormInstance | undefined) => {
       loading.value = true;
       useUserStoreHook()
         .loginByUsername({
-          username: ruleForm.username,
-          password: ruleForm.password
+          username: formData.username,
+          password: formData.password
         })
         .then(res => {
           if (res.success) {
@@ -72,6 +80,21 @@ const onLogin = async (formEl: FormInstance | undefined) => {
   });
 };
 
+/**
+ * 获取验证码
+ */
+function handleChangeCheckCode() {
+  formData.inputCode = "";
+  //update-begin---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
+  randCodeData.checkKey =
+    new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
+  //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
+  getCodeInfo(randCodeData.checkKey).then(res => {
+    randCodeData.randCodeImage = res;
+    randCodeData.requestCodeSuccess = true;
+  });
+}
+
 const immediateDebounce: any = debounce(
   formRef => onLogin(formRef),
   1000,
@@ -84,7 +107,7 @@ useEventListener(document, "keydown", ({ code }) => {
     !disabled.value &&
     !loading.value
   )
-    immediateDebounce(ruleFormRef.value);
+    immediateDebounce(formDataRef.value);
 });
 </script>
 
@@ -113,8 +136,8 @@ useEventListener(document, "keydown", ({ code }) => {
           </Motion>
 
           <el-form
-            ref="ruleFormRef"
-            :model="ruleForm"
+            ref="formDataRef"
+            :model="formData"
             :rules="loginRules"
             size="large"
           >
@@ -130,7 +153,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 prop="username"
               >
                 <el-input
-                  v-model="ruleForm.username"
+                  v-model="formData.username"
                   clearable
                   placeholder="账号"
                   :prefix-icon="useRenderIcon(User)"
@@ -141,11 +164,33 @@ useEventListener(document, "keydown", ({ code }) => {
             <Motion :delay="150">
               <el-form-item prop="password">
                 <el-input
-                  v-model="ruleForm.password"
+                  v-model="formData.password"
                   clearable
                   show-password
                   placeholder="密码"
                   :prefix-icon="useRenderIcon(Lock)"
+                />
+              </el-form-item>
+            </Motion>
+
+            <Motion :delay="150">
+              <el-form-item prop="inputCode">
+                <el-input
+                  v-model="formData.inputCode"
+                  clearable
+                  show-password
+                  :prefix-icon="useRenderIcon(Lock)"
+                />
+                <img
+                  v-if="randCodeData.requestCodeSuccess"
+                  :src="randCodeData.randCodeImage"
+                  @click="handleChangeCheckCode"
+                />
+                <img
+                  v-else
+                  style=" max-width: initial;margin-top: 2px"
+                  :src="codeImg"
+                  @click="handleChangeCheckCode"
                 />
               </el-form-item>
             </Motion>
@@ -157,7 +202,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 type="primary"
                 :loading="loading"
                 :disabled="disabled"
-                @click="onLogin(ruleFormRef)"
+                @click="onLogin(formDataRef)"
               >
                 登录
               </el-button>
