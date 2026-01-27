@@ -5,6 +5,6 @@ const { proxy } = getCurrentInstance();
 
 <template>
   <div>
-    <div>welcome/index.vue</div>
+    <div>fighting/index.vue</div>
   </div>
 </template>
