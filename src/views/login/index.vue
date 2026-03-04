@@ -14,7 +14,9 @@ import { initRouter, getTopMenu } from "@/router/utils";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-import { getCodeInfo } from "@/api/login";
+import { getCodeInfo, login } from "@/api/login";
+import { validForm, setStorage, tryCatch } from "@oeos-components/utils";
+import { TOKEN } from "@/assets/constants";
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
@@ -40,8 +42,8 @@ const { title } = useNav();
 
 const formData = reactive({
   username: "admin",
-  password: "admin123",
-  inputCode: ""
+  password: "1qaz@WSX",
+  captcha: ""
 });
 
 const randCodeData = reactive<any>({
@@ -50,34 +52,59 @@ const randCodeData = reactive<any>({
   checkKey: null
 });
 
-const onLogin = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  await formEl.validate(valid => {
-    if (valid) {
-      loading.value = true;
-      useUserStoreHook()
-        .loginByUsername({
-          username: formData.username,
-          password: formData.password
-        })
-        .then(res => {
-          if (res.success) {
-            // 获取后端路由
-            return initRouter().then(() => {
-              disabled.value = true;
-              router
-                .push(getTopMenu(true).path)
-                .then(() => {
-                  message("登录成功", { type: "success" });
-                })
-                .finally(() => (disabled.value = false));
-            });
-          } else {
-            message("登录失败", { type: "error" });
-          }
-        })
-        .finally(() => (loading.value = false));
-    }
+// const onLogin = async (formEl: FormInstance | undefined) => {
+//   if (!formEl) return;
+//   await formEl.validate(valid => {
+//     if (valid) {
+//       loading.value = true;
+//       useUserStoreHook()
+//         .loginByUsername({
+//           username: formData.username,
+//           password: formData.password
+//         })
+//         .then(res => {
+//           if (res.success) {
+//             // 获取后端路由
+//             return initRouter().then(() => {
+//               disabled.value = true;
+//               router
+//                 .push(getTopMenu(true).path)
+//                 .then(() => {
+//                   message("登录成功", { type: "success" });
+//                 })
+//                 .finally(() => (disabled.value = false));
+//             });
+//           } else {
+//             message("登录失败", { type: "error" });
+//           }
+//         })
+//         .finally(() => (loading.value = false));
+//     }
+//   });
+// };
+
+const onLogin = async () => {
+  await validForm(formDataRef.value);
+  let sendData = {
+    captcha: formData.captcha,
+    checkKey: randCodeData.checkKey,
+    password: formData.password,
+    username: formData.username
+  };
+  const { data, error } = await tryCatch(login(sendData), loading);
+  if (error) {
+    handleChangeCheckCode();
+    return;
+  }
+  setStorage(TOKEN, data.token);
+  initRouter().then(() => {
+    disabled.value = true;
+    router
+      .push(getTopMenu(true).path)
+      .then(() => {
+        message("登录成功", { type: "success" });
+      })
+      .finally(() => (disabled.value = false));
   });
 };
 
@@ -85,23 +112,20 @@ const onLogin = async (formEl: FormInstance | undefined) => {
  * 获取验证码
  */
 function handleChangeCheckCode() {
-  formData.inputCode = "";
+  formData.captcha = "";
   //update-begin---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
   randCodeData.checkKey =
     new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
   //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
   getCodeInfo(randCodeData.checkKey).then(res => {
+    console.log(`43 res`, res);
     randCodeData.randCodeImage = res;
     randCodeData.requestCodeSuccess = true;
   });
 }
 handleChangeCheckCode();
 
-const immediateDebounce: any = debounce(
-  formRef => onLogin(formRef),
-  1000,
-  true
-);
+const immediateDebounce: any = debounce(onLogin, 1000, true);
 
 useEventListener(document, "keydown", ({ code }) => {
   if (
@@ -176,24 +200,27 @@ useEventListener(document, "keydown", ({ code }) => {
             </Motion>
 
             <Motion :delay="150">
-              <el-form-item prop="inputCode">
-                <el-input
-                  v-model="formData.inputCode"
-                  clearable
-                  show-password
+              <el-form-item prop="captcha">
+                <o-input
+                  v-model="formData.captcha"
+                  placeholder="验证码"
+                  :clearable="false"
                   :prefix-icon="useRenderIcon(Lock)"
-                />
-                <img
-                  v-if="randCodeData.requestCodeSuccess"
-                  :src="randCodeData.randCodeImage"
-                  @click="handleChangeCheckCode"
-                />
-                <img
-                  v-else
-                  style="max-width: initial; margin-top: 2px"
-                  :src="codeImg"
-                  @click="handleChangeCheckCode"
-                />
+                >
+                  <template #suffix>
+                    <img
+                      v-if="randCodeData.requestCodeSuccess"
+                      :src="randCodeData.randCodeImage"
+                      @click="handleChangeCheckCode"
+                    />
+                    <img
+                      v-else
+                      style="max-width: initial; margin-top: 2px"
+                      :src="codeImg"
+                      @click="handleChangeCheckCode"
+                    />
+                  </template>
+                </o-input>
               </el-form-item>
             </Motion>
 

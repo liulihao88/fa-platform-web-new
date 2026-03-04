@@ -114,19 +114,16 @@ instance.interceptors.response.use(
     }
     // TODO 这里应该判断状态码，待确定
     if (response.status === 200) {
-      if (response.data.status !== 200 && response.data.status !== 201) {
+      if (response.data.code !== 0) {
         if (response.config.showError) {
           $toast(response.data.message || "请求错误", "e", { closeAll: true });
-        }
-        if (response.config.url === "ui/menu") {
-          return menuLogout();
         }
         return Promise.reject(response.data);
       } else {
         // 返回正常数据
         const resolveData = response.config.resolve
           ? response[response.config.resolve]
-          : response.data.details;
+          : response.data.result;
         return Promise.resolve(resolveData);
       }
     } else {

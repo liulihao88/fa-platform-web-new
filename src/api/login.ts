@@ -17,3 +17,7 @@ export async function encryptionPassword(...rest) {
   }
   return genPwdList;
 }
+
+export function login(data) {
+  return request("sys/login", "post", { data });
+}
