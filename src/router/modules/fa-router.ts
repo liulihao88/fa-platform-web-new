@@ -13,6 +13,23 @@ export function use$dev() {
 
 export default [
   {
+    path: "/fund",
+    component: Layout,
+    redirect: "/fund/analysis",
+    meta: {
+      title: "资金分析"
+    },
+    children: [
+      {
+        path: "/fund/analysis",
+        component: () => import("@/views/fund/analysis.vue"),
+        meta: {
+          title: "案件文件管理"
+        }
+      }
+    ]
+  },
+  {
     path: "/test",
     component: Layout,
     redirect: "/test/t1",

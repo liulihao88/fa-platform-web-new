@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import Motion from "./utils/motion";
 import { useRouter } from "vue-router";
-import { message } from "@/utils/message";
 import { loginRules } from "./utils/rule";
 import { ref, reactive, toRaw } from "vue";
-import { debounce } from "@pureadmin/utils";
 import { useNav } from "@/layout/hooks/useNav";
 import { useEventListener } from "@vueuse/core";
 import type { FormInstance } from "element-plus";
@@ -15,7 +13,13 @@ import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { getCodeInfo, login } from "@/api/login";
-import { validForm, setStorage, tryCatch } from "@oeos-components/utils";
+import {
+  validForm,
+  setStorage,
+  tryCatch,
+  $toast,
+  debounce
+} from "@oeos-components/utils";
 import { TOKEN } from "@/assets/constants";
 
 import dayIcon from "@/assets/svg/day.svg?component";
@@ -92,17 +96,20 @@ const onLogin = async () => {
     username: formData.username
   };
   const { data, error } = await tryCatch(login(sendData), loading);
+  console.log(`56 error`, error);
+  console.log(`76 data`, data);
   if (error) {
     handleChangeCheckCode();
     return;
   }
+  console.log(`73 data`, data);
   setStorage(TOKEN, data.token);
   initRouter().then(() => {
     disabled.value = true;
     router
-      .push(getTopMenu(true).path)
+      .push("/fund/analysis")
       .then(() => {
-        message("登录成功", { type: "success" });
+        $toast("登录成功");
       })
       .finally(() => (disabled.value = false));
   });
@@ -121,11 +128,12 @@ function handleChangeCheckCode() {
     console.log(`43 res`, res);
     randCodeData.randCodeImage = res;
     randCodeData.requestCodeSuccess = true;
+    formData.captcha = randCodeData.randCodeImage;
   });
 }
 handleChangeCheckCode();
 
-const immediateDebounce: any = debounce(onLogin, 1000, true);
+const immediateDebounce: any = debounce(onLogin, 1000);
 
 useEventListener(document, "keydown", ({ code }) => {
   if (
@@ -203,6 +211,7 @@ useEventListener(document, "keydown", ({ code }) => {
               <el-form-item prop="captcha">
                 <o-input
                   v-model="formData.captcha"
+                  v-focus
                   placeholder="验证码"
                   :clearable="false"
                   :prefix-icon="useRenderIcon(Lock)"
@@ -231,7 +240,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 type="primary"
                 :loading="loading"
                 :disabled="disabled"
-                @click="onLogin(formDataRef)"
+                @click="onLogin()"
               >
                 登录
               </el-button>

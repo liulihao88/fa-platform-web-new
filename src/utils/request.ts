@@ -1,6 +1,6 @@
 import axios from "axios";
-import { $toast, getType } from "@oeos-components/utils";
-import { getTenantStorage } from "@/utils/gFunc";
+import { $toast, getType, getStorage } from "@oeos-components/utils";
+import { TOKEN } from "@/assets/constants";
 import { devLogin, menuLogout } from "@/utils/local401LoginAgain";
 import { ref } from "vue";
 import qs from "qs";
@@ -68,9 +68,9 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (_hasLoading(config.showLoading)) {
     loadingTrue(config.showLoading);
   }
-  const token = getTenantStorage("tenant-token");
+  const token = getStorage(TOKEN);
   if (token) {
-    config.headers.Authorization = token;
+    config.headers[TOKEN] = token;
   }
   // 对上传类参数，要转换为FormData形式
   if (config.headers["content-type"] === "multipart/form-data") {
@@ -114,7 +114,7 @@ instance.interceptors.response.use(
     }
     // TODO 这里应该判断状态码，待确定
     if (response.status === 200) {
-      if (response.data.code !== 0) {
+      if (response.data.code !== 0 && response.data.code !== 200) {
         if (response.config.showError) {
           $toast(response.data.message || "请求错误", "e", { closeAll: true });
         }

@@ -219,6 +219,7 @@ function initRouter() {
   } else {
     return new Promise(resolve => {
       getAsyncRoutes().then(({ data }) => {
+        console.log(`61 data`, data);
         handleAsyncRoutes(cloneDeep(data));
         resolve(router);
       });
