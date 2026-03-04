@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Motion from "./utils/motion";
 import { useRouter } from "vue-router";
+import { createWorker } from "tesseract.js";
 import { loginRules } from "./utils/rule";
 import { ref, reactive, toRaw } from "vue";
 import { useNav } from "@/layout/hooks/useNav";
@@ -35,7 +36,9 @@ const router = useRouter();
 const loading = ref(false);
 const disabled = ref(false);
 const formDataRef = ref<FormInstance>();
-const codeImg = ref("");
+const codeImg = ref(
+  "https://cdn.jsdelivr.net/gh/themusecatcher/resources@0.1.2/2.jpg"
+);
 
 const { initStorage } = useLayout();
 initStorage();
@@ -124,12 +127,19 @@ function handleChangeCheckCode() {
   randCodeData.checkKey =
     new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
   //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
-  getCodeInfo(randCodeData.checkKey).then(res => {
-    console.log(`43 res`, res);
-    randCodeData.randCodeImage = res;
-    randCodeData.requestCodeSuccess = true;
-    formData.captcha = randCodeData.randCodeImage;
-  });
+  getCodeInfo(randCodeData.checkKey)
+    .then(async res => {
+      randCodeData.randCodeImage = res;
+      randCodeData.requestCodeSuccess = true;
+      const worker = await createWorker("eng");
+      const ret = await worker.recognize(res);
+      formData.captcha = ret.data.text;
+      formData.captcha = ret.data.text.replace(" ", "");
+    })
+    .catch(() => {
+      randCodeData.randCodeImage = "";
+      randCodeData.requestCodeSuccess = false;
+    });
 }
 handleChangeCheckCode();
 
@@ -220,11 +230,14 @@ useEventListener(document, "keydown", ({ code }) => {
                     <img
                       v-if="randCodeData.requestCodeSuccess"
                       :src="randCodeData.randCodeImage"
+                      class="cp"
                       @click="handleChangeCheckCode"
                     />
                     <img
                       v-else
                       style="max-width: initial; margin-top: 2px"
+                      width="30"
+                      class="cp"
                       :src="codeImg"
                       @click="handleChangeCheckCode"
                     />
