@@ -14,7 +14,7 @@ import { initRouter, getTopMenu } from "@/router/utils";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-import { getCodeInfo } from "@/api/login.ts";
+import { getCodeInfo } from "@/api/login";
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
@@ -29,6 +29,7 @@ const router = useRouter();
 const loading = ref(false);
 const disabled = ref(false);
 const formDataRef = ref<FormInstance>();
+const codeImg = ref("");
 
 const { initStorage } = useLayout();
 initStorage();
@@ -94,6 +95,7 @@ function handleChangeCheckCode() {
     randCodeData.requestCodeSuccess = true;
   });
 }
+handleChangeCheckCode();
 
 const immediateDebounce: any = debounce(
   formRef => onLogin(formRef),
@@ -188,7 +190,7 @@ useEventListener(document, "keydown", ({ code }) => {
                 />
                 <img
                   v-else
-                  style=" max-width: initial;margin-top: 2px"
+                  style="max-width: initial; margin-top: 2px"
                   :src="codeImg"
                   @click="handleChangeCheckCode"
                 />

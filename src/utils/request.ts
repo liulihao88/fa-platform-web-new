@@ -51,7 +51,7 @@ const defaultConfig = {
 };
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_PROXY_API + "/v1/admin/tenant",
+  baseURL: "/jeecgboot",
   timeout: 600000,
   validateStatus: function (status) {
     return true;

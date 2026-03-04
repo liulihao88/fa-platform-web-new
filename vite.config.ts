@@ -26,15 +26,11 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     },
     // 服务端渲染
     server: {
-      // 端口号
+      host: true,
       port: VITE_PORT,
-      host: "0.0.0.0",
       // 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
-      // proxy: createProxy(VITE_PROXY),
+      proxy: createProxy(JSON.parse(VITE_PROXY))
       // 预热文件以提前转换和缓存结果，降低启动期间的初始页面加载时长并防止转换瀑布
-      warmup: {
-        clientFiles: ["./index.html", "./src/{views,components}/*"]
-      }
     },
     plugins: getPluginsList(VITE_CDN, VITE_COMPRESSION),
     // https://cn.vitejs.dev/config/dep-optimization-options.html#dep-optimization-options
