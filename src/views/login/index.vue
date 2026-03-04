@@ -14,6 +14,7 @@ import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
 import { getCodeInfo, login } from "@/api/login";
+import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
 import {
   validForm,
   setStorage,
@@ -106,11 +107,13 @@ const onLogin = async () => {
     return;
   }
   console.log(`73 data`, data);
-  setStorage(TOKEN, data.token);
+
+  setToken(data.token);
   initRouter().then(() => {
     disabled.value = true;
     router
       .push("/fund/analysis")
+      // .push("/")
       .then(() => {
         $toast("登录成功");
       })
@@ -132,7 +135,7 @@ function handleChangeCheckCode() {
       randCodeData.randCodeImage = res;
       randCodeData.requestCodeSuccess = true;
       const worker = await createWorker("eng");
-      const ret = await worker.recognize(res);
+      const ret = await worker.recognize(res as any);
       formData.captcha = ret.data.text;
       formData.captcha = ret.data.text.replace(" ", "");
     })

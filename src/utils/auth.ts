@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
 import { useUserStoreHook } from "@/store/modules/user";
 import { storageLocal, isString, isIncludeAllChildren } from "@pureadmin/utils";
+import { TOKEN } from "@/assets/constants";
+import { setStorage } from "@oeos-components/utils";
 
 export interface DataInfo<T> {
   /** token */
@@ -22,7 +24,7 @@ export interface DataInfo<T> {
 }
 
 export const userKey = "user-info";
-export const TokenKey = "authorized-token";
+export const TokenKey = TOKEN;
 /**
  * 通过`multiple-tabs`是否在`cookie`中，判断用户是否已经登录系统，
  * 从而支持多标签页打开已经登录的系统后无需再登录。
@@ -46,6 +48,7 @@ export function getToken(): DataInfo<number> {
  * 将`avatar`、`username`、`nickname`、`roles`、`permissions`、`refreshToken`、`expires`这七条信息放在key值为`user-info`的localStorage里（利用`multipleTabsKey`当浏览器完全关闭后自动销毁）
  */
 export function setToken(data: DataInfo<Date>) {
+  setStorage(TOKEN, data);
   let expires = 0;
   const { accessToken, refreshToken } = data;
   const { isRemembered, loginDay } = useUserStoreHook();

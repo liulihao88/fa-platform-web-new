@@ -221,6 +221,7 @@ function initRouter() {
       getAsyncRoutes().then(({ data }) => {
         console.log(`61 data`, data);
         handleAsyncRoutes(cloneDeep(data));
+        console.log(`79 router`, router);
         resolve(router);
       });
     });

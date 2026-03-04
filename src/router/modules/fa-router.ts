@@ -22,9 +22,11 @@ export default [
     children: [
       {
         path: "/fund/analysis",
+        name: "Analysis",
         component: () => import("@/views/fund/analysis.vue"),
         meta: {
-          title: "案件文件管理"
+          title: "案件文件管理",
+          showParent: true
         }
       }
     ]
