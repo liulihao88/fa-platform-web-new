@@ -32,6 +32,25 @@ export default [
     ]
   },
   {
+    path: "/monitor",
+    component: Layout,
+    redirect: "/monitor/quartz",
+    meta: {
+      title: "系统管理"
+    },
+    children: [
+      {
+        path: "/monitor/quartz",
+        name: "Quartz",
+        component: () => import("@/views/monitor/quartz.vue"),
+        meta: {
+          title: "定时任务",
+          showParent: true
+        }
+      }
+    ]
+  },
+  {
     path: "/test",
     component: Layout,
     redirect: "/test/t1",

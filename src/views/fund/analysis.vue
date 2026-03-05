@@ -12,6 +12,8 @@ const baseSearch = {
 const data = ref([]);
 const total = ref(0);
 
+const editRow = row => {};
+
 const columns = [
   {
     label: "案件名称",
@@ -64,20 +66,7 @@ const columns = [
       {
         content: "编辑",
         comp: "o-icon",
-        attrs: {
-          name: "edit",
-          type: "svg",
-          content: "数据处理"
-        }
-      },
-      {
-        content: "删除",
-        comp: "o-icon",
-        attrs: {
-          name: "delete",
-          type: "svg",
-          content: "智能筛查"
-        }
+        handler: editRow
       }
     ]
   }
