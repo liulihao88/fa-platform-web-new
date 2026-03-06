@@ -7,6 +7,8 @@ import { MotionPlugin } from "@vueuse/motion";
 import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
 import { injectResponsiveStorage } from "@/utils/responsive";
+import Antd from "ant-design-vue";
+import "ant-design-vue/dist/reset.css";
 
 import Table from "@pureadmin/table";
 // import PureDescriptions from "@pureadmin/descriptions";
@@ -66,6 +68,6 @@ getPlatformConfig(app).then(async config => {
 
   installOeos(app);
   injectResponsiveStorage(app, config);
-  app.use(MotionPlugin).use(Table);
+  app.use(MotionPlugin).use(Antd).use(Table);
   app.mount("#app");
 });

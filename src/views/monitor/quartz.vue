@@ -52,7 +52,6 @@ const columns = [
 ];
 
 function editRow(row) {
-  console.log(`66 row`, row);
   if (getType(row.parameter) === "object") {
     row.paramterType = "json";
   } else {
@@ -73,6 +72,6 @@ init();
 <template>
   <div>
     <o-table ref="tableRef" :columns="columns" :data="data" :total="total" />
-    <TaskDialog ref="taskDialogRef" />
+    <TaskDialog ref="taskDialogRef" @success="init" />
   </div>
 </template>
