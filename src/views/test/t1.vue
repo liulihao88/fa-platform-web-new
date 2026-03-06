@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { $toast, validate } from "@oeos-components/utils";
 import { ref, getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance();
+import EasyCron from "@/components/easyCron/index.vue";
 </script>
 
 <template>
   <div>
-    <div>test/t1.vue</div>
+    <EasyCron />
   </div>
 </template>
