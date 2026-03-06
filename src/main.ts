@@ -26,6 +26,9 @@ import "./assets/iconfont/iconfont.css";
 
 import "virtual:svg-icons-register";
 
+// 引入全局组件
+import AutoImportComps from "@/autoComponents";
+
 const app = createApp(App);
 import { installOeos } from "@/plugins/customMain";
 
@@ -68,6 +71,6 @@ getPlatformConfig(app).then(async config => {
 
   installOeos(app);
   injectResponsiveStorage(app, config);
-  app.use(MotionPlugin).use(Antd).use(Table);
+  app.use(MotionPlugin).use(Antd).use(Table).use(AutoImportComps);
   app.mount("#app");
 });

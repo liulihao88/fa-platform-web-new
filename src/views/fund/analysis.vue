@@ -108,10 +108,23 @@ const columns = [
   {
     key: "operation",
     label: "操作",
+    width: 200,
     btns: [
+      {
+        content: "数据处理",
+        handler: handleRow
+      },
+      {
+        content: "智能筛查",
+        handler: handleRow
+      },
       {
         content: "编辑",
         comp: "o-icon",
+        attrs: {
+          name: "edit",
+          content: "编辑"
+        },
         handler: editRow
       }
     ]
@@ -131,6 +144,9 @@ const parseProcess = text => {
   const percent = progressMap[text] || 0;
   return percent;
 };
+async function handleRow() {
+  console.log("handleRow");
+}
 
 const init = async () => {
   let res = await getFaCaseInfoList(baseSearch);

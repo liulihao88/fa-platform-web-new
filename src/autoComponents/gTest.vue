@@ -5,7 +5,6 @@ const { proxy } = getCurrentInstance();
 
 <template>
   <div>
-    <div>test/t1.vue</div>
-    <g-test />
+    <div>src/autoComponents/gTest.vue</div>
   </div>
 </template>
