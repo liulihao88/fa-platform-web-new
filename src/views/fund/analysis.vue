@@ -2,6 +2,8 @@
 import { ref, getCurrentInstance } from "vue";
 import { getFaCaseInfoList } from "@/api/analysis";
 const { proxy } = getCurrentInstance();
+import { useCommonHook } from "@/store";
+const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook();
 
 const baseSearch = {
   order: "desc",
@@ -25,7 +27,8 @@ const columns = [
   },
   {
     label: "部门受案号",
-    prop: "sysOrgCode"
+    prop: "sysOrgCode",
+    width: 100
   },
   {
     label: "受理时间",
@@ -33,31 +36,74 @@ const columns = [
   },
   {
     label: "文件处理状态",
-    prop: "processStatus"
+    prop: "processStatus",
+
+    filter: value => {
+      return getDictItems("fa_case_process_status").find(v => v.value === value)
+        .label;
+    }
   },
+  /**
+   *  {
+    title: '处理进度',
+    align:"center",
+    resizable: true,
+    dataIndex: 'processStatus',
+    customRender: ({ text }) => {
+      // 进度条显示规则
+      const progressMap = {
+        '000': 0,
+        '001': 20,
+        '010': 40,
+        '002': 60,
+        '003': 80,
+        '004': 100
+      };
+
+      const percent = progressMap[text] || 0;
+
+      return h('div', { style: 'display: flex; align-items: center;' }, [
+        h('div', {
+          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
+        }, [
+          h('div', {
+            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+          }, `${percent}%`)
+        ])
+      ]);
+    }
+  },
+   */
   {
     label: "处理进度",
-    prop: "name"
+    prop: "processStatus",
+    width: 150,
+    useSlot: true
   },
   {
     label: "文件数量",
-    prop: "fileNum"
+    prop: "fileNum",
+    width: 100
   },
   {
     label: "成功数量",
-    prop: "succFileNum"
+    prop: "succFileNum",
+    width: 100
   },
   {
     label: "失败数量",
-    prop: "errorFileNum"
+    prop: "errorFileNum",
+    width: 100
   },
   {
     label: "导入行数",
-    prop: "importDataNum"
+    prop: "importDataNum",
+    width: 100
   },
   {
     label: "去重行数",
-    prop: "repeatDataNum"
+    prop: "repeatDataNum",
+    width: 100
   },
   {
     key: "operation",
@@ -72,6 +118,20 @@ const columns = [
   }
 ];
 
+const parseProcess = text => {
+  const progressMap = {
+    "000": 0,
+    "001": 20,
+    "010": 40,
+    "002": 60,
+    "003": 80,
+    "004": 100
+  };
+
+  const percent = progressMap[text] || 0;
+  return percent;
+};
+
 const init = async () => {
   let res = await getFaCaseInfoList(baseSearch);
   console.log(`02 res`, res);
@@ -83,6 +143,10 @@ init();
 
 <template>
   <div>
-    <o-table ref="tableRef" :columns="columns" :data="data" :total="total" />
+    <o-table ref="tableRef" :columns="columns" :data="data" :total="total">
+      <template #processStatus="{ value }">
+        <o-progress :percentage="parseProcess(value)" text-inside="true" />
+      </template>
+    </o-table>
   </div>
 </template>

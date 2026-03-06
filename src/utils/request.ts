@@ -1,7 +1,7 @@
 import axios from "axios";
 import { $toast, getType, getStorage } from "@oeos-components/utils";
 import { TOKEN } from "@/assets/constants";
-import { devLogin, menuLogout } from "@/utils/local401LoginAgain";
+// import { devLogin, menuLogout } from "@/utils/local401LoginAgain";
 import { ref } from "vue";
 import qs from "qs";
 
@@ -152,12 +152,12 @@ instance.interceptors.response.use(
 async function handleMultiple401Requests(config, response) {
   const msg = response?.data?.message;
   if (!window.VueApp.config.globalProperties.$test) {
-    return menuLogout();
+    // return menuLogout();
   }
   if (!isRefresh) {
     isRefresh = true;
     try {
-      await devLogin();
+      // await devLogin();
       requests.forEach(v => v());
       requests = [];
       return request(config.url, config.method, config);

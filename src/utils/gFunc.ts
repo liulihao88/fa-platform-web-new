@@ -9,10 +9,9 @@ import {
   confirm,
   formatBytesConvert
 } from "@oeos-components/utils";
-import settings from "@/config/settings.ts";
-import { useTenantStore } from "@/store/tenantStore.ts";
+import settings from "@/config/settings";
 
-import { router } from "@/router/index.ts";
+import { router } from "@/router/index";
 import { ElMessage, ElMessageBox } from "element-plus";
 import request from "@/utils/request.js";
 import axios from "axios";
@@ -514,27 +513,6 @@ export function confirm2(message, options) {
     ...options
   };
   return ElMessageBox.confirm(resolvedMessage, mergeOptions);
-}
-
-const getTenantKey = rawKey => {
-  const tenantStore = useTenantStore();
-  const tenantId = tenantStore.getTenantId(); // 从 Pinia 获取租户ID
-  // let tenantId = 'T05'
-  if (!tenantId) {
-    return rawKey; // 如果没有租户ID，直接返回原始key
-  }
-  return `${tenantId}-${rawKey}`;
-};
-
-export function setTenantStorage(key, value, ...rest) {
-  return setStorage(getTenantKey(key), value, ...rest);
-}
-export function getTenantStorage(key, ...rest) {
-  return getStorage(getTenantKey(key), ...rest);
-}
-
-export function clearTenantStorage(key) {
-  return clearStorage(getTenantKey(key));
 }
 
 // 根据tenantId前缀去清除本地缓存

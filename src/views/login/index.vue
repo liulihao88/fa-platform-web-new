@@ -23,6 +23,9 @@ import {
   debounce
 } from "@oeos-components/utils";
 import { TOKEN } from "@/assets/constants";
+import { useCommonHook } from "@/store/common";
+const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook();
+console.log(`81 setCommonItems`, setCommonItems);
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
@@ -109,6 +112,7 @@ const onLogin = async () => {
   console.log(`73 data`, data);
 
   setToken(data.token);
+  setCommonItems("sysAllDictItems", data.sysAllDictItems);
   initRouter().then(() => {
     disabled.value = true;
     router
