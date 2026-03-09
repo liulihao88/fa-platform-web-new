@@ -140,7 +140,7 @@ function handleChangeCheckCode() {
       const worker = await createWorker("eng");
       const ret = await worker.recognize(res as any);
       formData.captcha = ret.data.text;
-      formData.captcha = ret.data.text.replace(" ", "");
+      formData.captcha = ret.data.text.replace(" ", "").replace("\n", "");
     })
     .catch(() => {
       randCodeData.randCodeImage = "";
