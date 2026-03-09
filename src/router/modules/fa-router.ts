@@ -25,8 +25,8 @@ export default [
         name: "Analysis",
         component: () => import("@/views/fund/analysis.vue"),
         meta: {
-          title: "案件文件管理",
-          showParent: true
+          title: "案件文件管理"
+          // showParent: true
         }
       }
     ]
@@ -44,8 +44,8 @@ export default [
         name: "Quartz",
         component: () => import("@/views/monitor/quartz.vue"),
         meta: {
-          title: "定时任务",
-          showParent: true
+          title: "定时任务"
+          // showParent: true
         }
       }
     ]

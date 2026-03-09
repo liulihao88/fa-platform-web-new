@@ -18,7 +18,6 @@
     <EasyCronModal
       ref="dialogRef"
       v-model:value="editCronValue"
-      title="EasyCronInput"
       :exeStartTime="exeStartTime"
       :hideYear="hideYear"
       :remote="remote"
