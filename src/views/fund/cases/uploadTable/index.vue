@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
+import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import { getCasefileList } from '@/api/analysis.ts'
 import { getStorage } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
@@ -74,5 +75,6 @@ function deleteRow(row) {
 </script>
 
 <template>
+  <CaseUploadFile class="mb" />
   <o-table ref="tableRef" :columns="columns" :data="data" :total="total" />
 </template>
