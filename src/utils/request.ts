@@ -1,8 +1,9 @@
 import axios from "axios";
-import { $toast, getType, getStorage } from "@oeos-components/utils";
+import { $toast, getType, getStorage, clone } from "@oeos-components/utils";
 import { ConfigEnum } from "@/enums/httpEnum.ts";
 // import { devLogin, menuLogout } from "@/utils/local401LoginAgain";
 import { ref } from "vue";
+import signMd5Utils from "@/utils/encryption/signMd5Utils";
 import qs from "qs";
 
 import { addPendingRequest } from "@/utils/cancelTokenRequests";
@@ -68,6 +69,13 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (_hasLoading(config.showLoading)) {
     loadingTrue(config.showLoading);
   }
+  config.headers[ConfigEnum.TIMESTAMP] = signMd5Utils.getTimestamp();
+  //update-begin---author:wangshuai---date:2024-04-25---for: 生成签名的时候复制一份，避免影响原来的参数---
+  config.headers[ConfigEnum.Sign] = signMd5Utils.getSign(
+    config.url,
+    clone(config.params),
+    clone(config.data)
+  );
   const token = getStorage(ConfigEnum.TOKEN);
   if (token) {
     config.headers[ConfigEnum.TOKEN] = token;

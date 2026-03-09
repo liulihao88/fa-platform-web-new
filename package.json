@@ -66,6 +66,7 @@
     "jsencrypt": "^3.5.4",
     "less": "^4.5.1",
     "localforage": "^1.10.0",
+    "md5": "^2.3.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "oeos-components": "^0.3.88",

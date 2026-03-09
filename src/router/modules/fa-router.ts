@@ -34,8 +34,8 @@ export default [
         name: "Cases",
         component: () => import("@/views/fund/cases/index.vue"),
         meta: {
-          title: "案件文件管理",
-          showLink: false
+          title: "数据处理",
+          showLink: true
           // showParent: true
         }
       }
