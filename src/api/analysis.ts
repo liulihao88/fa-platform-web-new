@@ -9,6 +9,22 @@ export const getFaCaseInfoList = params => {
 };
 
 /**
+ * 数据处理
+ */
+
+// 案件详情
+export const getCaseInfoById = data => {
+  return request("fa/faCaseInfo/getCaseInfoById", "post", {
+    data: data
+  });
+};
+
+// fa_case_process_status 上传文件状态列表
+export const getCommonDictionary = key => {
+  return request(`sys/dict/getDictItems/${key}`);
+};
+
+/**
  *
  * 定时任务
  * @param params

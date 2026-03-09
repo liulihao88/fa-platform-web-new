@@ -22,7 +22,6 @@ import {
   $toast,
   debounce
 } from "@oeos-components/utils";
-import { TOKEN } from "@/assets/constants";
 import { useCommonHook } from "@/store/common";
 const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook();
 console.log(`81 setCommonItems`, setCommonItems);

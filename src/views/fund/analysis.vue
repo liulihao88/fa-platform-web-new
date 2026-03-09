@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from "vue";
 import { getFaCaseInfoList } from "@/api/analysis";
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
 const { proxy } = getCurrentInstance();
+const route = useRoute();
 import { useCommonHook } from "@/store";
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook();
 
@@ -145,8 +148,14 @@ const parseProcess = text => {
   const percent = progressMap[text] || 0;
   return percent;
 };
-async function handleRow() {
-  console.log("handleRow");
+async function handleRow(row) {
+  console.log(`81 row`, row);
+  router.push({
+    path: "/fund/cases",
+    query: {
+      caseId: row.id
+    }
+  });
 }
 
 const init = async () => {

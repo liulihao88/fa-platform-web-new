@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { useUserStoreHook } from "@/store/modules/user";
 import { storageLocal, isString, isIncludeAllChildren } from "@pureadmin/utils";
-import { TOKEN } from "@/assets/constants";
+import { ConfigEnum } from "@/enums/httpEnum.ts";
 import { setStorage } from "@oeos-components/utils";
 
 export interface DataInfo<T> {
@@ -24,7 +24,7 @@ export interface DataInfo<T> {
 }
 
 export const userKey = "user-info";
-export const TokenKey = TOKEN;
+export const TokenKey = ConfigEnum.TOKEN;
 /**
  * 通过`multiple-tabs`是否在`cookie`中，判断用户是否已经登录系统，
  * 从而支持多标签页打开已经登录的系统后无需再登录。

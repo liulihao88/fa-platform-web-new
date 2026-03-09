@@ -1,6 +1,6 @@
 import axios from "axios";
 import { $toast, getType, getStorage } from "@oeos-components/utils";
-import { TOKEN } from "@/assets/constants";
+import { ConfigEnum } from "@/enums/httpEnum.ts";
 // import { devLogin, menuLogout } from "@/utils/local401LoginAgain";
 import { ref } from "vue";
 import qs from "qs";
@@ -68,9 +68,9 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (_hasLoading(config.showLoading)) {
     loadingTrue(config.showLoading);
   }
-  const token = getStorage(TOKEN);
+  const token = getStorage(ConfigEnum.TOKEN);
   if (token) {
-    config.headers[TOKEN] = token;
+    config.headers[ConfigEnum.TOKEN] = token;
   }
   // 对上传类参数，要转换为FormData形式
   if (config.headers["content-type"] === "multipart/form-data") {

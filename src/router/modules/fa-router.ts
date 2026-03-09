@@ -28,6 +28,16 @@ export default [
           title: "案件文件管理"
           // showParent: true
         }
+      },
+      {
+        path: "/fund/cases",
+        name: "Cases",
+        component: () => import("@/views/fund/cases/index.vue"),
+        meta: {
+          title: "案件文件管理",
+          showLink: false
+          // showParent: true
+        }
       }
     ]
   },
