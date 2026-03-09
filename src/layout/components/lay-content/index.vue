@@ -202,6 +202,9 @@ const transitionMain = defineComponent({
 }
 
 .main-content {
-  margin: 24px;
+  box-sizing: border-box;
+  height: calc(100vh - 81px);
+  padding: 24px;
+  overflow-y: auto;
 }
 </style>
