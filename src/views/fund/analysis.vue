@@ -13,6 +13,7 @@ const baseSearch = {
 };
 const data = ref([]);
 const total = ref(0);
+const headerRef = ref();
 
 const editRow = row => {};
 
@@ -155,11 +156,19 @@ const init = async () => {
   total.value = res.total;
 };
 init();
+proxy.$initTableHeight(headerRef, true);
 </script>
 
 <template>
   <div>
-    <o-table ref="tableRef" :columns="columns" :data="data" :total="total">
+    <div ref="headerRef">我是头部</div>
+    <o-table
+      ref="tableRef"
+      :columns="columns"
+      :data="data"
+      :total="total"
+      :height="$tableHeight.value"
+    >
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>

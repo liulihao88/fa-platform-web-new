@@ -3,9 +3,9 @@ import router from "./router";
 import { setupStore } from "@/store";
 import { getPlatformConfig } from "./config";
 import { MotionPlugin } from "@vueuse/motion";
-// import { useEcharts } from "@/plugins/echarts";
 import { createApp, type Directive } from "vue";
 import { useElementPlus } from "@/plugins/elementPlus";
+import TableHeightPlugin from "@/plugins/tableHeight.ts";
 import { injectResponsiveStorage } from "@/utils/responsive";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/reset.css";
@@ -59,6 +59,7 @@ import "tippy.js/dist/tippy.css";
 import "tippy.js/themes/light.css";
 import VueTippy from "vue-tippy";
 app.use(VueTippy);
+app.use(TableHeightPlugin);
 
 window.VueApp = app;
 

@@ -26,6 +26,7 @@ declare global {
    * Window 的类型提示
    */
   interface Window {
+    VueApp?: typeof app;
     // Global vue app instance
     __APP__: App<Element>;
     webkitCancelAnimationFrame: (handle: number) => void;
