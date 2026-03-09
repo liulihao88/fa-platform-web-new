@@ -1,100 +1,98 @@
 <script lang="ts">
-const UPLOAD = "UPLOAD";
-const MANAGE = "MANAGE";
-const SEARCH = "SEARCH";
-const STANDARD_VIEW = "STANDARD_VIEW";
-const REPEATE_VIEW = "REPEATE_VIEW";
+const UPLOAD = 'UPLOAD'
+const MANAGE = 'MANAGE'
+const SEARCH = 'SEARCH'
+const STANDARD_VIEW = 'STANDARD_VIEW'
+const REPEATE_VIEW = 'REPEATE_VIEW'
 </script>
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from "vue";
-import { getCaseInfoById, getCommonDictionary } from "@/api/analysis.ts";
-import UploadTable from "@/views/fund/cases/uploadTable/index.vue";
-import { $toast, formatTime } from "@oeos-components/utils";
-const { proxy } = getCurrentInstance();
+import { ref, getCurrentInstance, computed } from 'vue'
+import { getCaseInfoById, getCommonDictionary } from '@/api/analysis.ts'
+import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
+import { $toast, formatTime } from '@oeos-components/utils'
+const { proxy } = getCurrentInstance()
 
-import { useRouter, useRoute } from "vue-router";
-const router = useRouter();
-const route = useRoute();
-console.log(`91 route`, route);
-const caseId = route.query.caseId;
-console.log(`83 caseId`, caseId);
-const caseDetails: any = ref({});
-const caseStatusOptions: any = ref([]);
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+console.log(`91 route`, route)
+const caseId = route.query.caseId
+console.log(`83 caseId`, caseId)
+const caseDetails: any = ref({})
+const caseStatusOptions: any = ref([])
 
 const init = async () => {
-  Promise.allSettled([
-    getCaseInfoById({ caseId: caseId }),
-    getCommonDictionary("fa_case_process_status")
-  ]).then(results =>
-    results.forEach((result, idx) => {
-      console.log(`96 result, idx`, result, idx);
-      if (result.status === "fulfilled") {
-        if (idx === 0) {
-          caseDetails.value = result.value;
+  Promise.allSettled([getCaseInfoById({ caseId: caseId }), getCommonDictionary('fa_case_process_status')]).then(
+    (results) =>
+      results.forEach((result, idx) => {
+        console.log(`96 result, idx`, result, idx)
+        if (result.status === 'fulfilled') {
+          if (idx === 0) {
+            caseDetails.value = result.value
+          }
+          if (idx === 1) {
+            caseStatusOptions.value = result.value
+          }
         }
-        if (idx === 1) {
-          caseStatusOptions.value = result.value;
-        }
-      }
-    })
-  );
-};
-init();
+      }),
+  )
+}
+init()
 
 const descOptions = computed(() => {
   return [
     {
-      label: "案件名称",
+      label: '案件名称',
       value: caseDetails.value.caseName,
       attrs: {
-        width: "100px"
-      }
+        width: '100px',
+      },
     },
     {
-      label: "部门受案号",
+      label: '部门受案号',
       value: caseDetails.value.invoiceCount,
       attrs: {
-        width: "100px"
-      }
+        width: '100px',
+      },
     },
     {
-      label: "受理日期",
+      label: '受理日期',
       value: caseDetails.value.acceptTime,
       attrs: {
-        width: "100px"
+        width: '100px',
       },
-      filter: val => formatTime(val, "{y}/{m}/{d}")
+      filter: (val) => formatTime(val, '{y}/{m}/{d}'),
     },
     {
-      label: "案由",
-      value: caseDetails.value.caseReason
-    }
-  ];
-});
+      label: '案由',
+      value: caseDetails.value.caseReason,
+    },
+  ]
+})
 
-const currentTab = ref(UPLOAD);
+const currentTab = ref(UPLOAD)
 const tabsOptions = [
   {
-    label: "上传文件",
-    value: UPLOAD
+    label: '上传文件',
+    value: UPLOAD,
   },
   {
-    label: "涉案人管理",
-    value: MANAGE
+    label: '涉案人管理',
+    value: MANAGE,
   },
   {
-    label: "涉案人交易查询",
-    value: SEARCH
+    label: '涉案人交易查询',
+    value: SEARCH,
   },
   {
-    label: "标准数据查看",
-    value: STANDARD_VIEW
+    label: '标准数据查看',
+    value: STANDARD_VIEW,
   },
   {
-    label: "重复数据查看",
-    value: REPEATE_VIEW
-  }
-];
+    label: '重复数据查看',
+    value: REPEATE_VIEW,
+  },
+]
 
 // <a-tab-pane key="1" tab="上传文件">
 //      <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref" :caseInfo="caseInfo"></tab1>
@@ -122,10 +120,10 @@ const tabsOptions = [
 const activeStatus = computed(() => {
   return (
     caseStatusOptions.value.findIndex((v, i) => {
-      return v.value === caseDetails.value.fileProcessStatus;
+      return v.value === caseDetails.value.fileProcessStatus
     }) + 1
-  );
-});
+  )
+})
 </script>
 
 <template>
@@ -134,19 +132,9 @@ const activeStatus = computed(() => {
       <div>
         <o-descriptions :options="descOptions" :column="4" />
         <!-- 'wait' | 'process' | 'finish' | 'error' | 'success' -->
-        <el-steps
-          :active="activeStatus"
-          simple
-          finish-status="finish"
-          process-status="finish"
-          class="mtb2"
-        >
-          <el-step
-            v-for="(v, i) in caseStatusOptions"
-            :key="v.value"
-            :title="v.label"
-          >
-            <template #title> {{ Number(i) + 1 }} {{ v.label }} </template>
+        <el-steps :active="activeStatus" simple finish-status="finish" process-status="finish" class="mtb2">
+          <el-step v-for="(v, i) in caseStatusOptions" :key="v.value" :title="v.label">
+            <template #title>{{ Number(i) + 1 }} {{ v.label }}</template>
             <template #icon />
           </el-step>
         </el-steps>

@@ -7,29 +7,24 @@ import {
   formatTime,
   formatDurationTime,
   confirm,
-  formatBytesConvert
-} from "@oeos-components/utils";
-import settings from "@/config/settings";
+  formatBytesConvert,
+} from '@oeos-components/utils'
+import settings from '@/config/settings'
 
-import { router } from "@/router/index";
-import { ElMessage, ElMessageBox } from "element-plus";
-import request from "@/utils/request.js";
-import axios from "axios";
+import { router } from '@/router/index'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import request from '@/utils/request.js'
+import axios from 'axios'
 
 export async function gDownloadExport(sendUrl, sendData) {
-  const baseUrl = import.meta.env.DEV ? settings.url : window.origin;
-  const url =
-    baseUrl +
-    "/v1/admin/tenant/" +
-    sendUrl +
-    "?" +
-    new URLSearchParams(sendData).toString();
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "租户事件"; // 设置下载文件名
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const baseUrl = import.meta.env.DEV ? settings.url : window.origin
+  const url = baseUrl + '/v1/admin/tenant/' + sendUrl + '?' + new URLSearchParams(sendData).toString()
+  const link = document.createElement('a')
+  link.href = url
+  link.download = '租户事件' // 设置下载文件名
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 // export async function gDownload(item, needVersion = true) {
@@ -96,67 +91,62 @@ export async function gDownloadExport(sendUrl, sendData) {
 // }
 export async function gDownload(item, needVersion = true) {
   if (item.size / 1024 / 1024 > 1024 * 5) {
-    return $toast("下载文件大小最高不能超过5GB", "e");
+    return $toast('下载文件大小最高不能超过5GB', 'e')
   }
   if (!item.bucket) {
-    $toast("不是有效数据，不支持下载!", "w");
-    return false;
+    $toast('不是有效数据，不支持下载!', 'w')
+    return false
   } else {
     if (item.bucket.length <= 0) {
-      $toast("不是有效数据，不支持下载!", "w");
+      $toast('不是有效数据，不支持下载!', 'w')
     }
   }
-  const bucketName = item.bucket ? item.bucket : "";
-  const objectKey = item.key ? item.key : "";
-  const objectVersionID = item.version ? item.version : "";
+  const bucketName = item.bucket ? item.bucket : ''
+  const objectKey = item.key ? item.key : ''
+  const objectVersionID = item.version ? item.version : ''
 
-  const parseKey = encodeURIComponent(objectKey);
+  const parseKey = encodeURIComponent(objectKey)
   // let parseKey = objectKey
   const sendParams = {
     bucket: bucketName,
     key: parseKey,
-    Authorization: getTenantStorage("tenant-token")
-  };
+    Authorization: getTenantStorage('tenant-token'),
+  }
   if (needVersion) {
-    sendParams.version = objectVersionID;
+    sendParams.version = objectVersionID
   }
   axios
-    .head(
-      import.meta.env.VITE_PROXY_API +
-        "/v1/admin/tenant" +
-        "/object/checkObject",
-      {
-        params: sendParams
-      }
-    )
-    .then(async response => {
-      const contentType = response.headers["content-type"];
-      if (contentType.startsWith("application/json")) {
-        const res = await request("object/download", "get", {
+    .head(import.meta.env.VITE_PROXY_API + '/v1/admin/tenant' + '/object/checkObject', {
+      params: sendParams,
+    })
+    .then(async (response) => {
+      const contentType = response.headers['content-type']
+      if (contentType.startsWith('application/json')) {
+        const res = await request('object/download', 'get', {
           customResponse: true,
-          responseType: "blob",
+          responseType: 'blob',
           params: sendParams,
-          stringify: false
-        });
+          stringify: false,
+        })
         if (res.status !== 200) {
-          return $toast(res.message || "下载失败", "e");
+          return $toast(res.message || '下载失败', 'e')
         }
         try {
           // 尝试将文本解析为 JSON
-          const result = await parseBlobToJson(res.data);
-          $toast(result.message, "e");
+          const result = await parseBlobToJson(res.data)
+          $toast(result.message, 'e')
         } catch (e) {}
       } else {
-        const baseUrl = import.meta.env.DEV ? settings.url : window.origin;
-        const getUrl = `/v1/admin/tenant/object/download?`;
+        const baseUrl = import.meta.env.DEV ? settings.url : window.origin
+        const getUrl = `/v1/admin/tenant/object/download?`
         const url =
           import.meta.env.VITE_PROXY_API +
-          "/v1/admin/tenant" +
-          "/object/download?" +
-          new URLSearchParams(sendParams).toString();
-        window.location.href = url;
+          '/v1/admin/tenant' +
+          '/object/download?' +
+          new URLSearchParams(sendParams).toString()
+        window.location.href = url
       }
-    });
+    })
   // let res = await request('object/download', 'get', {
   //   customResponse: true,
   //   responseType: 'blob',
@@ -186,49 +176,44 @@ export async function gDownload(item, needVersion = true) {
   // }
   function parseBlobToJson(blob) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = function (event) {
         try {
-          const text = event.target.result; // 获取 Blob 的文本内容
-          const json = JSON.parse(text); // 将文本解析为 JSON
-          resolve(json);
+          const text = event.target.result // 获取 Blob 的文本内容
+          const json = JSON.parse(text) // 将文本解析为 JSON
+          resolve(json)
         } catch (error) {
-          reject(new Error("无法解析 JSON: " + error.message));
+          reject(new Error('无法解析 JSON: ' + error.message))
         }
-      };
+      }
       reader.onerror = function (error) {
-        reject(new Error("读取 Blob 时出错: " + error.message));
-      };
-      reader.readAsText(blob); // 以文本形式读取 Blob
-    });
+        reject(new Error('读取 Blob 时出错: ' + error.message))
+      }
+      reader.readAsText(blob) // 以文本形式读取 Blob
+    })
   }
 }
 
 export function gDownloadAll(id) {
-  const baseUrl = import.meta.env.DEV ? settings.url : window.origin;
-  const getUrl = `/v1/admin/tenant/object/download/batch`;
-  const _href =
-    baseUrl +
-    getUrl +
-    `?id=${encodeURIComponent(id)}&Authorization=${getTenantStorage("tenant-token")}`;
-  window.location.href = _href;
+  const baseUrl = import.meta.env.DEV ? settings.url : window.origin
+  const getUrl = `/v1/admin/tenant/object/download/batch`
+  const _href = baseUrl + getUrl + `?id=${encodeURIComponent(id)}&Authorization=${getTenantStorage('tenant-token')}`
+  window.location.href = _href
 }
 
 export function gDownloadUrl(url, params = {}) {
-  const baseUrl = import.meta.env.DEV ? settings.url : window.origin;
-  const prefix = "/v1/admin/tenant/";
-  const fullUrl = baseUrl + prefix + url;
+  const baseUrl = import.meta.env.DEV ? settings.url : window.origin
+  const prefix = '/v1/admin/tenant/'
+  const fullUrl = baseUrl + prefix + url
 
-  const _href =
-    fullUrl +
-    `?Authorization=${getTenantStorage("tenant-token")}${objectToQueryString(params)}`;
+  const _href = fullUrl + `?Authorization=${getTenantStorage('tenant-token')}${objectToQueryString(params)}`
   // let _href = fullUrl + `?Authorization=${getTenantStorage('tenant-token')}`
   // window.open(_href)
-  const link = document.createElement("a");
-  link.href = _href;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const link = document.createElement('a')
+  link.href = _href
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 /**
@@ -237,79 +222,74 @@ export function gDownloadUrl(url, params = {}) {
  * @param prefix 是否在开头添加 '&' 符号（默认为 true）
  * @returns 格式化后的查询字符串
  */
-export const objectToQueryString = (
-  params: Record<string, any>,
-  prefix: boolean = true
-): string => {
-  const parts: string[] = [];
+export const objectToQueryString = (params: Record<string, any>, prefix: boolean = true): string => {
+  const parts: string[] = []
   Object.entries(params).forEach(([key, value]) => {
     // 处理数组或对象值（转换为 JSON 字符串）
-    let encodedValue: string;
-    if (typeof value === "object" && value !== null) {
+    let encodedValue: string
+    if (typeof value === 'object' && value !== null) {
       // 排除 null/undefined
-      encodedValue = encodeURIComponent(value);
+      encodedValue = encodeURIComponent(value)
     } else {
       // 处理基本类型
-      encodedValue = encodeURIComponent(value);
+      encodedValue = encodeURIComponent(value)
     }
 
-    console.log(`24 encodedValue`, encodedValue);
-    parts.push(`${key}=${encodedValue}`);
-  });
+    console.log(`24 encodedValue`, encodedValue)
+    parts.push(`${key}=${encodedValue}`)
+  })
   // 按需添加前缀
-  return prefix ? `&${parts.join("&")}` : parts.join("&");
-};
-
-export function jump(path) {
-  return router.push(path);
+  return prefix ? `&${parts.join('&')}` : parts.join('&')
 }
 
-export function formatTimeByRule(time, timeStr = "datetime") {
-  timeStr = timeStr.toLowerCase();
+export function jump(path) {
+  return router.push(path)
+}
+
+export function formatTimeByRule(time, timeStr = 'datetime') {
+  timeStr = timeStr.toLowerCase()
   if (isEmpty(time)) {
-    return "-";
+    return '-'
   }
-  const rule = getTenantStorage("tenant-time-rule") || {
-    date: "YYYY-MM-DD",
-    time: "HH:mm:ss",
-    datetime: "YYYY-MM-DD HH:mm:ss",
-    uptime: "DD 天 HH 时 mm 分 ss 秒",
-    speed1s: "MB/s"
-  };
-  const ruleValue = rule[timeStr];
+  const rule = getTenantStorage('tenant-time-rule') || {
+    date: 'YYYY-MM-DD',
+    time: 'HH:mm:ss',
+    datetime: 'YYYY-MM-DD HH:mm:ss',
+    uptime: 'DD 天 HH 时 mm 分 ss 秒',
+    speed1s: 'MB/s',
+  }
+  const ruleValue = rule[timeStr]
   if (!ruleValue) {
-    return time;
+    return time
   }
-  if (timeStr === "speed1s") {
-    return time + ruleValue;
+  if (timeStr === 'speed1s') {
+    return time + ruleValue
   }
   const parseRuleFormat = ruleValue
-    .replace("YYYY", "{y}")
-    .replace("MM", "{m}")
-    .replace("DD", "{d}")
-    .replace("HH", "{h}")
-    .replace("mm", "{i}")
-    .replace("ss", "{s}");
-  if (timeStr === "uptime" || timeStr === "time") {
-    return formatDurationTime(time, parseRuleFormat);
+    .replace('YYYY', '{y}')
+    .replace('MM', '{m}')
+    .replace('DD', '{d}')
+    .replace('HH', '{h}')
+    .replace('mm', '{i}')
+    .replace('ss', '{s}')
+  if (timeStr === 'uptime' || timeStr === 'time') {
+    return formatDurationTime(time, parseRuleFormat)
   }
-  return formatTime(time, parseRuleFormat);
+  return formatTime(time, parseRuleFormat)
 }
 
 export function isImage(str) {
   // 正则表达式匹配常见的图片文件扩展名
-  const imageRegex = /\.(jpg|jpeg|png|gif|bmp|webp|tif|tiff)$/i;
-  return imageRegex.test(str);
+  const imageRegex = /\.(jpg|jpeg|png|gif|bmp|webp|tif|tiff)$/i
+  return imageRegex.test(str)
 }
 
 export function setFavIcon(icon) {
-  const link =
-    document.querySelector("link[rel*='icon']") ||
-    document.createElement("link");
-  link.type = "image/x-icon";
-  link.rel = "shortcut icon";
-  link.href = icon;
-  document.getElementsByTagName("head")[0].appendChild(link);
+  const link = document.querySelector("link[rel*='icon']") || document.createElement('link')
+  link.type = 'image/x-icon'
+  link.rel = 'shortcut icon'
+  link.href = icon
+  document.getElementsByTagName('head')[0].appendChild(link)
 }
 
 /**
@@ -324,116 +304,110 @@ export function setFavIcon(icon) {
  */
 export function formatFixed(number, toFixed = 2) {
   // 提取数字部分、小数点和小数部分
-  const matches = ("" + number).match(/^([\d,]+\.?\d+?)(\D+)?$/);
+  const matches = ('' + number).match(/^([\d,]+\.?\d+?)(\D+)?$/)
   if (!matches) {
-    return number; // 如果没有找到匹配，则返回原始输入
+    return number // 如果没有找到匹配，则返回原始输入
   }
 
-  const numericString = Number(matches[1]).toFixed(toFixed); // 仅保留数字
-  const unit = matches[2] || ""; // 单位部分，如果没有则为空字符串
+  const numericString = Number(matches[1]).toFixed(toFixed) // 仅保留数字
+  const unit = matches[2] || '' // 单位部分，如果没有则为空字符串
 
   // 拼接数字、小数点、小数部分和单位，并返回结果
-  return `${numericString}${unit}`;
+  return `${numericString}${unit}`
 }
 
-export function formatImg(
-  photoName,
-  addPath = "",
-  { basePath = "assets/images" } = {}
-) {
-  if (photoName.startsWith("http") || photoName.startsWith("https")) {
-    return photoName;
+export function formatImg(photoName, addPath = '', { basePath = 'assets/images' } = {}) {
+  if (photoName.startsWith('http') || photoName.startsWith('https')) {
+    return photoName
   }
-  if (photoName.indexOf(".") === -1) {
-    photoName = photoName + ".png";
+  if (photoName.indexOf('.') === -1) {
+    photoName = photoName + '.png'
   }
-  const addLastSlash =
-    addPath.endsWith("/") || !addPath ? addPath : `${addPath}/`;
-  const addLastBasePathSlash =
-    basePath.endsWith("/") || !basePath ? basePath : `${basePath}/`;
-  const mergeSrc = `${addLastSlash}${photoName}`;
-  const finalImg = `${addLastBasePathSlash}${mergeSrc}`;
-  const res = new URL(`../${finalImg}`, import.meta.url).href;
-  return res;
+  const addLastSlash = addPath.endsWith('/') || !addPath ? addPath : `${addPath}/`
+  const addLastBasePathSlash = basePath.endsWith('/') || !basePath ? basePath : `${basePath}/`
+  const mergeSrc = `${addLastSlash}${photoName}`
+  const finalImg = `${addLastBasePathSlash}${mergeSrc}`
+  const res = new URL(`../${finalImg}`, import.meta.url).href
+  return res
 }
 
 export function formatToFixed(number, fixed = 2) {
   // 提取数字部分、小数点和小数部分
-  const matches = ("" + number).match(/^([\d,]+)(\.?)(\d+)?(\D+)?$/);
+  const matches = ('' + number).match(/^([\d,]+)(\.?)(\d+)?(\D+)?$/)
   if (!matches) {
-    return number; // 如果没有找到匹配，则返回原始输入
+    return number // 如果没有找到匹配，则返回原始输入
   }
 
-  const numericString = matches[1].replace(/\D/g, ""); // 仅保留数字
-  const decimalString = matches[3] ? `.${matches[3]}` : ""; // 小数部分，如果没有则为空字符串
-  const unit = matches[4] || ""; // 单位部分，如果没有则为空字符串
-  const numTofixed = parseFloat(numericString + decimalString).toFixed(fixed);
-  return `${numTofixed}${unit}`;
+  const numericString = matches[1].replace(/\D/g, '') // 仅保留数字
+  const decimalString = matches[3] ? `.${matches[3]}` : '' // 小数部分，如果没有则为空字符串
+  const unit = matches[4] || '' // 单位部分，如果没有则为空字符串
+  const numTofixed = parseFloat(numericString + decimalString).toFixed(fixed)
+  return `${numTofixed}${unit}`
 }
 
-export async function devConfirm(title = "确定删除吗?", otherParams = {}) {
+export async function devConfirm(title = '确定删除吗?', otherParams = {}) {
   if (window.VueApp.config.globalProperties.$dev) {
-    return true;
+    return true
   }
   // dangerouslyUseHTMLString: true,
   await confirm(title, {
     showCancelButton: true,
-    cancelButtonText: "取消",
-    type: "warning",
+    cancelButtonText: '取消',
+    type: 'warning',
     // title: '注意',
-    ...otherParams
-  });
+    ...otherParams,
+  })
 }
 
 function parseBlobToJson(blob) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = function (event) {
       try {
-        const text = event.target.result; // 获取 Blob 的文本内容
-        const json = JSON.parse(text); // 将文本解析为 JSON
-        resolve(json);
+        const text = event.target.result // 获取 Blob 的文本内容
+        const json = JSON.parse(text) // 将文本解析为 JSON
+        resolve(json)
       } catch (error) {
-        reject(new Error("无法解析 JSON: " + error.message));
+        reject(new Error('无法解析 JSON: ' + error.message))
       }
-    };
+    }
     reader.onerror = function (error) {
-      reject(new Error("读取 Blob 时出错: " + error.message));
-    };
-    reader.readAsText(blob); // 以文本形式读取 Blob
-  });
+      reject(new Error('读取 Blob 时出错: ' + error.message))
+    }
+    reader.readAsText(blob) // 以文本形式读取 Blob
+  })
 }
 
 export async function parseBlob(data) {
   return new Promise<void>(async (resolve, reject) => {
     try {
       // 尝试将文本解析为 JSON
-      const result = await parseBlobToJson(data);
-      console.log(`96 result`, result);
-      reject(result);
+      const result = await parseBlobToJson(data)
+      console.log(`96 result`, result)
+      reject(result)
     } catch (e) {
-      console.log(`36 e`, e);
+      console.log(`36 e`, e)
       // 如果无法解析为json, 代表是数据流, 可以下载
-      resolve();
+      resolve()
     }
-  });
+  })
 }
 
 // 如果解析成了json, 说明是后端返回的错误; 否则解析arrayBuffer
 export function parseArraybuffer(arrayBuffer) {
   return new Promise(async (resolve, reject) => {
     try {
-      const textDecoder = new TextDecoder("utf-8");
-      const jsonString = textDecoder.decode(arrayBuffer);
-      const jsonData = JSON.parse(jsonString);
-      $toast(jsonData.message, "e");
-      return reject(jsonData);
+      const textDecoder = new TextDecoder('utf-8')
+      const jsonString = textDecoder.decode(arrayBuffer)
+      const jsonData = JSON.parse(jsonString)
+      $toast(jsonData.message, 'e')
+      return reject(jsonData)
     } catch (e) {
-      console.log(`36 e`, e);
+      console.log(`36 e`, e)
       // 如果无法解析为json, 代表是数据流, 可以下载
-      return resolve(arrayBuffer);
+      return resolve(arrayBuffer)
     }
-  });
+  })
 }
 
 /** Function to get a CSS custom property value
@@ -441,19 +415,17 @@ export function parseArraybuffer(arrayBuffer) {
  * const primaryColor = getColor('--primary');
  *  */
 export function getVariableColor(propertyName) {
-  const res = getComputedStyle(document.documentElement)
-    .getPropertyValue(propertyName)
-    .trim();
-  return res;
+  const res = getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim()
+  return res
 }
 
 export function quotaRules(rule, value, callback, unit, lower, upper) {
   if (formatBytesConvert(value + unit) < formatBytesConvert(lower)) {
-    callback(new Error(`桶配额下限为 ${lower}`));
+    callback(new Error(`桶配额下限为 ${lower}`))
   } else if (formatBytesConvert(value + unit) > formatBytesConvert(upper)) {
-    callback(new Error(`剩余可用容量为 ${upper}`));
+    callback(new Error(`剩余可用容量为 ${upper}`))
   } else {
-    callback();
+    callback()
   }
 }
 
@@ -472,62 +444,56 @@ export function quotaRules(rule, value, callback, unit, lower, upper) {
   const step = calculatePrometheusStep(startTime, endTime);
   console.log(`Recommended step: ${step} seconds`); // ~7秒 (7200秒/1000点)
  */
-export function calculatePrometheusStep(
-  start,
-  end,
-  desiredDataPoints = 1000,
-  minStep = 1,
-  maxStep
-) {
+export function calculatePrometheusStep(start, end, desiredDataPoints = 1000, minStep = 1, maxStep) {
   // 确保时间范围有效
   if (start >= end) {
-    throw new Error("Start time must be before end time");
+    throw new Error('Start time must be before end time')
   }
 
   // 计算时间范围（转换为秒）
-  const durationSeconds = (end - start) / 1000;
+  const durationSeconds = (end - start) / 1000
 
   // 计算基础 step 值
-  let step = Math.ceil(durationSeconds / desiredDataPoints);
+  let step = Math.ceil(durationSeconds / desiredDataPoints)
 
   // 应用最小步长约束
-  step = Math.max(step, minStep);
+  step = Math.max(step, minStep)
 
   // 应用最大步长约束（如果提供）
   if (maxStep !== undefined) {
-    step = Math.min(step, maxStep);
+    step = Math.min(step, maxStep)
   }
 
   // 返回计算结果
-  return step;
+  return step
 }
 
 export function confirm2(message, options) {
-  const resolvedMessage = typeof message === "function" ? message() : message;
+  const resolvedMessage = typeof message === 'function' ? message() : message
   const mergeOptions = {
-    title: "提示",
+    title: '提示',
     draggable: true,
     showCancelButton: false,
-    confirmButtonText: "确定",
+    confirmButtonText: '确定',
     dangerouslyUseHTMLString: true, // 允许 HTML
-    ...options
-  };
-  return ElMessageBox.confirm(resolvedMessage, mergeOptions);
+    ...options,
+  }
+  return ElMessageBox.confirm(resolvedMessage, mergeOptions)
 }
 
 // 根据tenantId前缀去清除本地缓存
 export function _clearCacheWithPrefix() {
-  const storage = window.localStorage; // 或者 window.sessionStorage
-  const tenantId = useTenantStore().getTenantId();
-  const keys = Object.keys(storage);
-  keys.forEach(key => {
+  const storage = window.localStorage // 或者 window.sessionStorage
+  const tenantId = useTenantStore().getTenantId()
+  const keys = Object.keys(storage)
+  keys.forEach((key) => {
     if (key.startsWith(tenantId)) {
       // 白名单的不删除
-      const whiteKeys = ["tenant-sysdomain"];
-      const deleteTenantIdKey = key.replace(tenantId + "-", "");
+      const whiteKeys = ['tenant-sysdomain']
+      const deleteTenantIdKey = key.replace(tenantId + '-', '')
       if (!whiteKeys.includes(deleteTenantIdKey)) {
-        storage.removeItem(key);
+        storage.removeItem(key)
       }
     }
-  });
+  })
 }

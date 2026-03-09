@@ -5,15 +5,15 @@
 </template>
 
 <script lang="ts" setup>
-import EasyCron from "./EasyCronInner.vue";
-import { defineComponent, ref } from "vue";
-const isShow = ref(false);
+import EasyCron from './EasyCronInner.vue'
+import { defineComponent, ref } from 'vue'
+const isShow = ref(false)
 
 const open = () => {
-  isShow.value = true;
-};
+  isShow.value = true
+}
 
 defineExpose({
-  open
-});
+  open,
+})
 </script>

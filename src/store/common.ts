@@ -6,27 +6,27 @@ getDictItems("ol_form_biz_type")
 
  */
 
-import { defineStore } from "pinia";
-import { store } from "@/store/index";
-export const useCommonStore = defineStore("common", {
+import { defineStore } from 'pinia'
+import { store } from '@/store/index'
+export const useCommonStore = defineStore('common', {
   state: () => ({
     sysAllDictItems: {},
-    userInfo: {}
+    userInfo: {},
   }),
   actions: {
     setCommonItems(key, obj) {
-      console.log(`18 key`, key);
-      this[key] = obj;
+      console.log(`18 key`, key)
+      this[key] = obj
     },
     getDictItems(code) {
-      return this.sysAllDictItems[code];
-    }
+      return this.sysAllDictItems[code]
+    },
   },
   persist: {
-    pick: ["sysAllDictItems"]
-  }
-});
+    pick: ['sysAllDictItems'],
+  },
+})
 
 export function useCommonHook() {
-  return useCommonStore(store);
+  return useCommonStore(store)
 }

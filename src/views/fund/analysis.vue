@@ -1,52 +1,51 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from "vue";
-import { getFaCaseInfoList } from "@/api/analysis";
-import { useRouter, useRoute } from "vue-router";
-import { $toast, getStorage, setStorage } from "@oeos-components/utils";
-const router = useRouter();
-const { proxy } = getCurrentInstance();
-const route = useRoute();
-import { useCommonHook } from "@/store";
-const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook();
+import { ref, getCurrentInstance } from 'vue'
+import { getFaCaseInfoList } from '@/api/analysis'
+import { useRouter, useRoute } from 'vue-router'
+import { $toast, getStorage, setStorage } from '@oeos-components/utils'
+const router = useRouter()
+const { proxy } = getCurrentInstance()
+const route = useRoute()
+import { useCommonHook } from '@/store'
+const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
 
 const baseSearch = {
-  order: "desc",
+  order: 'desc',
   pageNo: 1,
   pageSize: 10,
-  column: "createTime"
-};
-const data = ref([]);
-const total = ref(0);
-const headerRef = ref();
+  column: 'createTime',
+}
+const data = ref([])
+const total = ref(0)
+const headerRef = ref()
 
-const editRow = row => {};
+const editRow = (row) => {}
 
 const columns = [
   {
-    label: "案件名称",
-    prop: "caseCode"
+    label: '案件名称',
+    prop: 'caseCode',
   },
   {
-    label: "案由",
-    prop: "caseReason"
+    label: '案由',
+    prop: 'caseReason',
   },
   {
-    label: "部门受案号",
-    prop: "sysOrgCode",
-    width: 100
+    label: '部门受案号',
+    prop: 'sysOrgCode',
+    width: 100,
   },
   {
-    label: "受理时间",
-    prop: "createTime"
+    label: '受理时间',
+    prop: 'createTime',
   },
   {
-    label: "文件处理状态",
-    prop: "processStatus",
+    label: '文件处理状态',
+    prop: 'processStatus',
 
-    filter: value => {
-      return getDictItems("fa_case_process_status").find(v => v.value === value)
-        .label;
-    }
+    filter: (value) => {
+      return getDictItems('fa_case_process_status').find((v) => v.value === value).label
+    },
   },
   /**
    *  {
@@ -80,106 +79,100 @@ const columns = [
   },
    */
   {
-    label: "处理进度",
-    prop: "processStatus",
+    label: '处理进度',
+    prop: 'processStatus',
     width: 150,
-    useSlot: true
+    useSlot: true,
   },
   {
-    label: "文件数量",
-    prop: "fileNum",
-    width: 100
+    label: '文件数量',
+    prop: 'fileNum',
+    width: 100,
   },
   {
-    label: "成功数量",
-    prop: "succFileNum",
-    width: 100
+    label: '成功数量',
+    prop: 'succFileNum',
+    width: 100,
   },
   {
-    label: "失败数量",
-    prop: "errorFileNum",
-    width: 100
+    label: '失败数量',
+    prop: 'errorFileNum',
+    width: 100,
   },
   {
-    label: "导入行数",
-    prop: "importDataNum",
-    width: 100
+    label: '导入行数',
+    prop: 'importDataNum',
+    width: 100,
   },
   {
-    label: "去重行数",
-    prop: "repeatDataNum",
-    width: 100
+    label: '去重行数',
+    prop: 'repeatDataNum',
+    width: 100,
   },
   {
-    key: "operation",
-    label: "操作",
+    key: 'operation',
+    label: '操作',
     width: 200,
     btns: [
       {
-        content: "数据处理",
-        handler: handleRow
+        content: '数据处理',
+        handler: handleRow,
       },
       {
-        content: "智能筛查",
-        handler: handleRow
+        content: '智能筛查',
+        handler: handleRow,
       },
       {
-        content: "编辑",
-        comp: "o-icon",
+        content: '编辑',
+        comp: 'o-icon',
         attrs: {
-          name: "edit",
-          content: "编辑"
+          name: 'edit',
+          content: '编辑',
         },
-        handler: editRow
-      }
-    ]
-  }
-];
+        handler: editRow,
+      },
+    ],
+  },
+]
 
-const parseProcess = text => {
+const parseProcess = (text) => {
   const progressMap = {
-    "000": 0,
-    "001": 20,
-    "010": 40,
-    "002": 60,
-    "003": 80,
-    "004": 100
-  };
+    '000': 0,
+    '001': 20,
+    '010': 40,
+    '002': 60,
+    '003': 80,
+    '004': 100,
+  }
 
-  const percent = progressMap[text] || 0;
-  return percent;
-};
+  const percent = progressMap[text] || 0
+  return percent
+}
 async function handleRow(row) {
-  console.log(`81 row`, row);
+  console.log(`81 row`, row)
   router.push({
-    path: "/fund/cases",
+    path: '/fund/cases',
     query: {
-      caseId: row.id
-    }
-  });
-  setStorage("caseId", row.id);
+      caseId: row.id,
+    },
+  })
+  setStorage('caseId', row.id)
 }
 
 const init = async () => {
-  let res = await getFaCaseInfoList(baseSearch);
-  console.log(`02 res`, res);
-  data.value = res.records;
-  total.value = res.total;
-};
-init();
-proxy.$initTableHeight(headerRef, true);
+  let res = await getFaCaseInfoList(baseSearch)
+  console.log(`02 res`, res)
+  data.value = res.records
+  total.value = res.total
+}
+init()
+proxy.$initTableHeight(headerRef, true)
 </script>
 
 <template>
   <div>
     <div ref="headerRef">我是头部</div>
-    <o-table
-      ref="tableRef"
-      :columns="columns"
-      :data="data"
-      :total="total"
-      :height="$tableHeight.value"
-    >
+    <o-table ref="tableRef" :columns="columns" :data="data" :total="total" :height="$tableHeight.value">
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>

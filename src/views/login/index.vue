@@ -1,66 +1,58 @@
 <script setup lang="ts">
-import Motion from "./utils/motion";
-import { useRouter } from "vue-router";
-import { createWorker } from "tesseract.js";
-import { loginRules } from "./utils/rule";
-import { ref, reactive, toRaw } from "vue";
-import { useNav } from "@/layout/hooks/useNav";
-import { useEventListener } from "@vueuse/core";
-import type { FormInstance } from "element-plus";
-import { useLayout } from "@/layout/hooks/useLayout";
-import { useUserStoreHook } from "@/store/modules/user";
-import { initRouter, getTopMenu } from "@/router/utils";
-import { bg, avatar, illustration } from "./utils/static";
-import { useRenderIcon } from "@/components/ReIcon/src/hooks";
-import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-import { getCodeInfo, login } from "@/api/login";
-import { type DataInfo, setToken, removeToken, userKey } from "@/utils/auth";
-import {
-  validForm,
-  setStorage,
-  tryCatch,
-  $toast,
-  debounce
-} from "@oeos-components/utils";
-import { useCommonHook } from "@/store/common";
-const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook();
-console.log(`81 setCommonItems`, setCommonItems);
+import Motion from './utils/motion'
+import { useRouter } from 'vue-router'
+import { createWorker } from 'tesseract.js'
+import { loginRules } from './utils/rule'
+import { ref, reactive, toRaw } from 'vue'
+import { useNav } from '@/layout/hooks/useNav'
+import { useEventListener } from '@vueuse/core'
+import type { FormInstance } from 'element-plus'
+import { useLayout } from '@/layout/hooks/useLayout'
+import { useUserStoreHook } from '@/store/modules/user'
+import { initRouter, getTopMenu } from '@/router/utils'
+import { bg, avatar, illustration } from './utils/static'
+import { useRenderIcon } from '@/components/ReIcon/src/hooks'
+import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
+import { getCodeInfo, login } from '@/api/login'
+import { type DataInfo, setToken, removeToken, userKey } from '@/utils/auth'
+import { validForm, setStorage, tryCatch, $toast, debounce } from '@oeos-components/utils'
+import { useCommonHook } from '@/store/common'
+const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook()
+console.log(`81 setCommonItems`, setCommonItems)
 
-import dayIcon from "@/assets/svg/day.svg?component";
-import darkIcon from "@/assets/svg/dark.svg?component";
-import Lock from "~icons/ri/lock-fill";
-import User from "~icons/ri/user-3-fill";
+import dayIcon from '@/assets/svg/day.svg?component'
+import darkIcon from '@/assets/svg/dark.svg?component'
+import Lock from '~icons/ri/lock-fill'
+import User from '~icons/ri/user-3-fill'
 
 defineOptions({
-  name: "Login"
-});
+  name: 'Login',
+})
 
-const router = useRouter();
-const loading = ref(false);
-const disabled = ref(false);
-const formDataRef = ref<FormInstance>();
-const codeImg = ref(
-  "https://cdn.jsdelivr.net/gh/themusecatcher/resources@0.1.2/2.jpg"
-);
+const router = useRouter()
+const loading = ref(false)
+const disabled = ref(false)
+const formDataRef = ref<FormInstance>()
+const codeImg = ref('https://cdn.jsdelivr.net/gh/themusecatcher/resources@0.1.2/2.jpg')
 
-const { initStorage } = useLayout();
-initStorage();
+const { initStorage } = useLayout()
+initStorage()
 
-const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange();
-dataThemeChange(overallStyle.value);
-const { title } = useNav();
+const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange()
+dataThemeChange(overallStyle.value)
+const { title } = useNav()
 
 const formData = reactive({
-  username: "admin",
-  password: "1qaz@WSX",
-  captcha: ""
-});
+  username: 'admin',
+  password: '1qaz@WSX',
+  captcha: '',
+})
 
 const randCodeData = reactive<any>({
-  randCodeImage: "",
+  randCodeImage: '',
   requestCodeSuccess: false,
-  checkKey: null
-});
+  checkKey: null,
+})
 
 // const onLogin = async (formEl: FormInstance | undefined) => {
 //   if (!formEl) return;
@@ -94,71 +86,65 @@ const randCodeData = reactive<any>({
 // };
 
 const onLogin = async () => {
-  await validForm(formDataRef.value);
+  await validForm(formDataRef.value)
   let sendData = {
     captcha: formData.captcha,
     checkKey: randCodeData.checkKey,
     password: formData.password,
-    username: formData.username
-  };
-  const { data, error } = await tryCatch(login(sendData), loading);
-  console.log(`56 error`, error);
-  console.log(`76 data`, data);
-  if (error) {
-    handleChangeCheckCode();
-    return;
+    username: formData.username,
   }
-  console.log(`73 data`, data);
+  const { data, error } = await tryCatch(login(sendData), loading)
+  console.log(`56 error`, error)
+  console.log(`76 data`, data)
+  if (error) {
+    handleChangeCheckCode()
+    return
+  }
+  console.log(`73 data`, data)
 
-  setToken(data.token);
-  setCommonItems("sysAllDictItems", data.sysAllDictItems);
+  setToken(data.token)
+  setCommonItems('sysAllDictItems', data.sysAllDictItems)
   initRouter().then(() => {
-    disabled.value = true;
+    disabled.value = true
     router
-      .push("/fund/analysis")
+      .push('/fund/analysis')
       // .push("/")
       .then(() => {
-        $toast("登录成功");
+        $toast('登录成功')
       })
-      .finally(() => (disabled.value = false));
-  });
-};
+      .finally(() => (disabled.value = false))
+  })
+}
 
 /**
  * 获取验证码
  */
 function handleChangeCheckCode() {
-  formData.captcha = "";
+  formData.captcha = ''
   //update-begin---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
-  randCodeData.checkKey =
-    new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
+  randCodeData.checkKey = new Date().getTime() + Math.random().toString(36).slice(-4) // 1629428467008;
   //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
   getCodeInfo(randCodeData.checkKey)
-    .then(async res => {
-      randCodeData.randCodeImage = res;
-      randCodeData.requestCodeSuccess = true;
-      const worker = await createWorker("eng");
-      const ret = await worker.recognize(res as any);
-      formData.captcha = ret.data.text;
-      formData.captcha = ret.data.text.replace(" ", "").replace("\n", "");
+    .then(async (res) => {
+      randCodeData.randCodeImage = res
+      randCodeData.requestCodeSuccess = true
+      const worker = await createWorker('eng')
+      const ret = await worker.recognize(res as any)
+      formData.captcha = ret.data.text
+      formData.captcha = ret.data.text.replace(' ', '').replace('\n', '')
     })
     .catch(() => {
-      randCodeData.randCodeImage = "";
-      randCodeData.requestCodeSuccess = false;
-    });
+      randCodeData.randCodeImage = ''
+      randCodeData.requestCodeSuccess = false
+    })
 }
-handleChangeCheckCode();
+handleChangeCheckCode()
 
-const immediateDebounce: any = debounce(onLogin, 1000);
+const immediateDebounce: any = debounce(onLogin, 1000)
 
-useEventListener(document, "keydown", ({ code }) => {
-  if (
-    ["Enter", "NumpadEnter"].includes(code) &&
-    !disabled.value &&
-    !loading.value
-  )
-    immediateDebounce(formDataRef.value);
-});
+useEventListener(document, 'keydown', ({ code }) => {
+  if (['Enter', 'NumpadEnter'].includes(code) && !disabled.value && !loading.value) immediateDebounce(formDataRef.value)
+})
 </script>
 
 <template>
@@ -185,29 +171,19 @@ useEventListener(document, "keydown", ({ code }) => {
             <h2 class="outline-hidden">{{ title }}</h2>
           </Motion>
 
-          <el-form
-            ref="formDataRef"
-            :model="formData"
-            :rules="loginRules"
-            size="large"
-          >
+          <el-form ref="formDataRef" :model="formData" :rules="loginRules" size="large">
             <Motion :delay="100">
               <el-form-item
                 :rules="[
                   {
                     required: true,
                     message: '请输入账号',
-                    trigger: 'blur'
-                  }
+                    trigger: 'blur',
+                  },
                 ]"
                 prop="username"
               >
-                <el-input
-                  v-model="formData.username"
-                  clearable
-                  placeholder="账号"
-                  :prefix-icon="useRenderIcon(User)"
-                />
+                <el-input v-model="formData.username" clearable placeholder="账号" :prefix-icon="useRenderIcon(User)" />
               </el-form-item>
             </Motion>
 
@@ -272,7 +248,7 @@ useEventListener(document, "keydown", ({ code }) => {
 </template>
 
 <style scoped>
-@import url("@/style/login.css");
+@import url('@/style/login.css');
 </style>
 
 <style lang="scss" scoped>

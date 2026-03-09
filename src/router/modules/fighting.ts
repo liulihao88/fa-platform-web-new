@@ -1,18 +1,18 @@
 // 最简代码，也就是这些字段必须有
 export default {
-  path: "/fighting",
-  redirect: "/fighting/index",
+  path: '/fighting',
+  redirect: '/fighting/index',
   meta: {
-    title: "加油"
+    title: '加油',
   },
   children: [
     {
-      path: "/fighting/index",
-      name: "Fighting",
-      component: () => import("@/views/fighting/index.vue"),
+      path: '/fighting/index',
+      name: 'Fighting',
+      component: () => import('@/views/fighting/index.vue'),
       meta: {
-        title: "加油"
-      }
-    }
-  ]
-};
+        title: '加油',
+      },
+    },
+  ],
+}

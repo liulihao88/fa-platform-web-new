@@ -1,70 +1,64 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from "vue";
-const { proxy } = getCurrentInstance();
-import { editQuartzJob } from "@/api/analysis";
-import {
-  $toast,
-  validate,
-  isEmpty,
-  clone,
-  validForm
-} from "@oeos-components/utils";
-import { JCronValidator } from "@/components/JEasyCron";
-import JEasyCron from "@/components/JEasyCron/EasyCronInput.vue";
-const isShow = ref(false);
-const formRef = ref();
+import { ref, getCurrentInstance } from 'vue'
+const { proxy } = getCurrentInstance()
+import { editQuartzJob } from '@/api/analysis'
+import { $toast, validate, isEmpty, clone, validForm } from '@oeos-components/utils'
+import { JCronValidator } from '@/components/JEasyCron'
+import JEasyCron from '@/components/JEasyCron/EasyCronInput.vue'
+const isShow = ref(false)
+const formRef = ref()
 
-const emits = defineEmits(["success"]);
+const emits = defineEmits(['success'])
 
 const baseForm = {
-  jobClassName: "",
-  cronExpression: "",
-  paramterType: "string",
-  parameter: "",
+  jobClassName: '',
+  cronExpression: '',
+  paramterType: 'string',
+  parameter: '',
   status: 0,
-  description: ""
-};
+  description: '',
+}
 
 const form = ref({
-  ...baseForm
-});
+  ...baseForm,
+})
 
 const save = async () => {
-  await validForm(formRef.value);
-  await editQuartzJob(form.value);
-  isShow.value = false;
-  $toast("保存成功");
-  emits("success");
-};
+  await validForm(formRef.value)
+  await editQuartzJob(form.value)
+  isShow.value = false
+  $toast('保存成功')
+  emits('success')
+}
 
 const rules = {
   jobClassName: [validate()],
   cronExpression: [
     {
       required: true,
-      message: "请输入Cron表达式",
-      trigger: ["blur", "change"]
+      message: '请输入Cron表达式',
+      trigger: ['blur', 'change'],
     },
-    { validator: JCronValidator, trigger: ["blur", "change"] }
-  ]
-};
+    { validator: JCronValidator, trigger: ['blur', 'change'] },
+  ],
+}
 
 const open = async (row = {}) => {
   if (!isEmpty(row)) {
-    form.value = clone(row);
+    form.value = clone(row)
   } else {
-    form.value = clone(baseForm);
+    form.value = clone(baseForm)
   }
-  isShow.value = true;
-};
+  isShow.value = true
+}
 
 const chooseCron = () => {
-  console.log("chooseCron");
-};
+  console.log('chooseCron')
+}
 
 defineExpose({
-  open
-});
+  open,
+})
 </script>
 
 <template>
@@ -75,11 +69,7 @@ defineExpose({
           <o-input v-model="form.jobClassName" />
         </el-form-item>
         <el-form-item label="Cron表达式" prop="cronExpression">
-          <JEasyCron
-            v-model:value="form.cronExpression"
-            v-model="form.cronExpression"
-            class="w-100%"
-          />
+          <JEasyCron v-model:value="form.cronExpression" v-model="form.cronExpression" class="w-100%" />
         </el-form-item>
         <el-form-item label="参数类型" prop="paramterType">
           <o-select
@@ -87,12 +77,12 @@ defineExpose({
             :options="[
               {
                 label: '字符串',
-                value: 'string'
+                value: 'string',
               },
               {
                 label: 'JSON对象',
-                value: 'object'
-              }
+                value: 'object',
+              },
             ]"
           />
         </el-form-item>

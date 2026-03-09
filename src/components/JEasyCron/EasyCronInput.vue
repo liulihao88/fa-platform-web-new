@@ -1,16 +1,8 @@
 <template>
   <div class="easy-cron-input">
-    <a-input
-      v-model:value="editCronValue"
-      :placeholder="placeholder"
-      :disabled="disabled"
-    >
+    <a-input v-model:value="editCronValue" :placeholder="placeholder" :disabled="disabled">
       <template #addonAfter>
-        <a
-          class="open-btn"
-          :disabled="disabled ? 'disabled' : null"
-          @click="showConfigModal"
-        >
+        <a class="open-btn" :disabled="disabled ? 'disabled' : null" @click="showConfigModal">
           <span>选择</span>
         </a>
       </template>
@@ -27,38 +19,36 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue";
-import { propTypes } from "@/utils/propTypes";
-import EasyCronModal from "./EasyCronModal.vue";
-import { cronEmits, cronProps } from "./easy.cron.data";
-const emit = defineEmits([...cronEmits]);
-const dialogRef = ref();
+import { ref, watch } from 'vue'
+import { propTypes } from '@/utils/propTypes'
+import EasyCronModal from './EasyCronModal.vue'
+import { cronEmits, cronProps } from './easy.cron.data'
+const emit = defineEmits([...cronEmits])
+const dialogRef = ref()
 const props = defineProps({
   ...cronProps,
-  placeholder: propTypes.string.def("请输入cron表达式"),
-  exeStartTime: propTypes
-    .oneOfType([propTypes.number, propTypes.string, propTypes.object])
-    .def(0)
-});
-const editCronValue = ref(props.value);
+  placeholder: propTypes.string.def('请输入cron表达式'),
+  exeStartTime: propTypes.oneOfType([propTypes.number, propTypes.string, propTypes.object]).def(0),
+})
+const editCronValue = ref(props.value)
 
 watch(
   () => props.value,
-  newVal => {
+  (newVal) => {
     if (newVal !== editCronValue.value) {
-      editCronValue.value = newVal;
+      editCronValue.value = newVal
     }
-  }
-);
-watch(editCronValue, newVal => {
-  emit("change", newVal);
-  emit("update:value", newVal);
-  emit("update:modelValue, newVal");
-});
+  },
+)
+watch(editCronValue, (newVal) => {
+  emit('change', newVal)
+  emit('update:value', newVal)
+  emit('update:modelValue, newVal')
+})
 
 function showConfigModal() {
   if (!props.disabled) {
-    dialogRef.value.open();
+    dialogRef.value.open()
   }
 }
 </script>

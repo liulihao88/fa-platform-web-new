@@ -1,4 +1,4 @@
-const url = "";
+const url = ''
 export default {
-  url
-};
+  url,
+}
