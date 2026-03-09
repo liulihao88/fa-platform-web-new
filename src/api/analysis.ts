@@ -25,6 +25,19 @@ export const getCommonDictionary = key => {
 };
 
 /**
+ * 1. 上传文件
+ *
+ * */
+
+// 上传文件列表
+// ?caseId=2019233950631804930&folder=&fileName=&pageNo=1&pageSize=10&_t=1773039731359
+export const getCasefileList = params => {
+  return request(`fa/casefile/pageList`, {
+    params: params
+  });
+};
+
+/**
  *
  * 定时任务
  * @param params

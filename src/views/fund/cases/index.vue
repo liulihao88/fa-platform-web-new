@@ -8,6 +8,7 @@ const REPEATE_VIEW = "REPEATE_VIEW";
 <script setup lang="ts">
 import { ref, getCurrentInstance, computed } from "vue";
 import { getCaseInfoById, getCommonDictionary } from "@/api/analysis.ts";
+import UploadTable from "@/views/fund/cases/uploadTable/index.vue";
 import { $toast, formatTime } from "@oeos-components/utils";
 const { proxy } = getCurrentInstance();
 
@@ -152,6 +153,7 @@ const activeStatus = computed(() => {
       </div>
 
       <o-tabs v-model="currentTab" :options="tabsOptions" size="small" />
+      <UploadTable v-if="currentTab === UPLOAD" />
     </o-basic-layout>
   </div>
 </template>

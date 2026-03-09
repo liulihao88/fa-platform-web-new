@@ -2,6 +2,7 @@
 import { ref, getCurrentInstance } from "vue";
 import { getFaCaseInfoList } from "@/api/analysis";
 import { useRouter, useRoute } from "vue-router";
+import { $toast, getStorage, setStorage } from "@oeos-components/utils";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const route = useRoute();
@@ -156,6 +157,7 @@ async function handleRow(row) {
       caseId: row.id
     }
   });
+  setStorage("caseId", row.id);
 }
 
 const init = async () => {
