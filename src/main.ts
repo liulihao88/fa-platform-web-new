@@ -62,6 +62,15 @@ window.VueApp = app
 
 app.use(useElementPlus)
 
+import * as utils from '@oeos-components/utils'
+
+Object.keys(utils).forEach((v) => {
+  app.config.globalProperties[v] = utils[v]
+})
+
+const $dev = import.meta.env.MODE === 'development'
+app.config.globalProperties.$dev = utils.getStorage('$dev') ?? $dev
+
 getPlatformConfig(app).then(async (config) => {
   setupStore(app)
   app.use(router)

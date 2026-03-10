@@ -7,8 +7,9 @@ import { useLayout } from './hooks/useLayout'
 import { useAppStoreHook } from '@/store/modules/app'
 import { useSettingStoreHook } from '@/store/modules/settings'
 import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
-import { h, ref, reactive, computed, onMounted, onBeforeMount, defineComponent } from 'vue'
+import { h, ref, reactive, computed, onMounted, onBeforeMount, defineComponent, getCurrentInstance } from 'vue'
 import { useDark, useGlobal, deviceDetection, useResizeObserver } from '@pureadmin/utils'
+import nativeRefresh from '@/components/nativeRefresh.vue'
 
 import LayTag from './components/lay-tag/index.vue'
 import LayNavbar from './components/lay-navbar/index.vue'
@@ -17,6 +18,8 @@ import LaySetting from './components/lay-setting/index.vue'
 import NavVertical from './components/lay-sidebar/NavVertical.vue'
 import NavHorizontal from './components/lay-sidebar/NavHorizontal.vue'
 import BackTopIcon from '@/assets/svg/back_top.svg?component'
+
+const { proxy } = getCurrentInstance()
 
 const appWrapperRef = ref()
 const { isDark } = useDark()
@@ -142,6 +145,7 @@ const LayHeader = defineComponent({
 
 <template>
   <div ref="appWrapperRef" :class="['app-wrapper', set.classes]">
+    <nativeRefresh v-if="proxy.$dev" />
     <div
       v-show="set.device === 'mobile' && set.sidebar.opened && layout.includes('vertical')"
       class="app-mask"
