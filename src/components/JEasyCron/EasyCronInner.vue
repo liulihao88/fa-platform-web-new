@@ -313,7 +313,12 @@ function onInputCronBlur(event) {
 function emitValue(value) {
   emit('change', value)
   emit('update:value', value)
+  emit('update:modelValue', value)
 }
+
+defineExpose({
+  cronValueInner,
+})
 </script>
 <style lang="scss" scoped>
 .easy-cron-inner {

@@ -8,7 +8,7 @@
       </template>
     </a-input>
     <EasyCronModal
-      ref="dialogRef"
+      v-model:visible="modalVisible"
       v-model:value="editCronValue"
       :exeStartTime="exeStartTime"
       :hideYear="hideYear"
@@ -24,31 +24,40 @@ import { propTypes } from '@/utils/propTypes'
 import EasyCronModal from './EasyCronModal.vue'
 import { cronEmits, cronProps } from './easy.cron.data'
 const emit = defineEmits([...cronEmits])
-const dialogRef = ref()
 const props = defineProps({
   ...cronProps,
   placeholder: propTypes.string.def('请输入cron表达式'),
   exeStartTime: propTypes.oneOfType([propTypes.number, propTypes.string, propTypes.object]).def(0),
 })
-const editCronValue = ref(props.value)
+const modalVisible = ref(false)
+// 将第33行修改为：
+const editCronValue = ref(props.value || '* * * * * ? *')
+
+// 并修改watch，添加空值检查：
+watch(
+  () => props.value,
+  (newVal) => {
+    if (newVal !== undefined && newVal !== null) {
+      editCronValue.value = newVal
+    }
+  },
+)
 
 watch(
   () => props.value,
   (newVal) => {
-    if (newVal !== editCronValue.value) {
-      editCronValue.value = newVal
-    }
+    editCronValue.value = newVal
   },
 )
 watch(editCronValue, (newVal) => {
   emit('change', newVal)
   emit('update:value', newVal)
-  emit('update:modelValue, newVal')
+  emit('update:modelValue', newVal)
 })
 
 function showConfigModal() {
   if (!props.disabled) {
-    dialogRef.value.open()
+    modalVisible.value = true
   }
 }
 </script>
