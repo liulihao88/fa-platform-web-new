@@ -89,14 +89,13 @@ const init = async () => {
   data.value = res?.records
   total.value = res?.total
 }
-onMounted(() => {
-  init()
-})
+init()
 </script>
 
 <template>
   <div>
-    <g-search-bar :items="items" :items-per-row="3" @search="handleSearch" @reset="handleSearch" />
+    <g-search-bar :items="items" />
+
     <div class="mb-2">
       <el-button type="primary" @click="editRow({})">新增</el-button>
       <el-button>导入</el-button>

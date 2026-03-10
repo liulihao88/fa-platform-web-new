@@ -56,6 +56,7 @@ import 'tippy.js/themes/light.css'
 import VueTippy from 'vue-tippy'
 app.use(VueTippy)
 app.use(TableHeightPlugin)
+app.use(AutoImportComps)
 
 window.VueApp = app
 
@@ -68,6 +69,6 @@ getPlatformConfig(app).then(async (config) => {
 
   installOeos(app)
   injectResponsiveStorage(app, config)
-  app.use(MotionPlugin).use(Antd).use(Table).use(AutoImportComps)
+  app.use(MotionPlugin).use(Antd).use(Table)
   app.mount('#app')
 })
