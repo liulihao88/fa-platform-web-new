@@ -12,6 +12,8 @@ const open = () => {
   isShow.value = true
 }
 
+const allUrlLists = [support1Image, support2Image, support3Image, support4Image, unSupport1Image, unSupport2Image]
+
 defineExpose({
   open,
 })
@@ -29,11 +31,11 @@ defineExpose({
           <div class="title-1">ZIP 文件： 可以把多个文件或者目录压缩成一个文件一次上传</div>
           <o-title title="二丶支持的格式" />
           <div class="title-1">1) 横向表格</div>
-          <g-img :src="support1Image" showPreview />
+          <g-img :src="support1Image" :preview-src-list="allUrlLists" />
           <div class="title-1">2) 纵向表格</div>
           <g-img :src="support2Image" />
           <div class="title-1">3) 横表+纵表 任意组合</div>
-          <g-img :src="support3Image" />
+          <g-img :src="support3Image" :preview-src-list="allUrlLists" />
         </el-col>
         <el-col :span="12" class="r">
           <o-title title="三丶不支持的文件种类" />
@@ -42,11 +44,11 @@ defineExpose({
           <div class="title-1">文件没有表格，只有文字，则不能识别</div>
           <div class="title-1">对于不能识别的文件，请用WPS转换成可以识别的文件类型，或者调整文件格式为可识别的格式</div>
           <div class="title-1">1) 没有表格</div>
-          <g-img :src="unSupport2Image" />
+          <g-img :src="unSupport2Image" :preview-src-list="allUrlLists" />
           <div class="title-1">2) 表格错行</div>
-          <g-img :src="unSupport1Image" />
+          <g-img :src="unSupport1Image" :preview-src-list="allUrlLists" />
           <div class="title-1">3) 只有文字</div>
-          <g-img :src="support4Image" />
+          <g-img :src="support4Image" :preview-src-list="allUrlLists" />
         </el-col>
       </el-row>
     </o-dialog>

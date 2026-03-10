@@ -37,6 +37,19 @@ export const getCasefileList = (params) => {
   })
 }
 
+/* export const caseUploadImg = (data) => {
+  return request('fa/casefile/upload', 'post', {
+    data: data,
+    headers: {
+      'Content-Type': 'multiparrt/form-data',
+    },
+    onUploadProgress: (progressEvent: ProgressEvent) => {
+      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+      console.log(`上传进度: ${percentCompleted}%`)
+    },
+  })
+} */
+
 /**
  *
  * 定时任务

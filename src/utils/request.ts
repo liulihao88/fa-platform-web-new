@@ -76,13 +76,13 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     config.headers[ConfigEnum.TOKEN] = token
   }
   // 对上传类参数，要转换为FormData形式
-  if (config.headers['content-type'] === 'multipart/form-data') {
-    const formData = new FormData()
-    for (const key in config.data) {
-      formData.append(key, config.data[key])
-    }
-    config.data = formData
-  }
+  // if (config.headers['Content-Type'] === 'multipart/form-data') {
+  //   const formData = new FormData()
+  //   for (const key in config.data) {
+  //     formData.append(key, config.data[key])
+  //   }
+  //   config.data = formData
+  // }
   if (config.stringify !== false) {
     const [baseUrl, urlQuery] = config.url.split('?')
     const parseQueryParams = getQueryObject(urlQuery)
@@ -98,8 +98,9 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   // request('info/overview', { showLoading: true, cancel: (c)=>{ setTimeout(() => {c()}, 100); } }) 取消请求
   config.cancelToken = new CancelToken(function executor(c) {
+    console.log(`73 c`, c)
     if (config.cancel) {
-      return config.cancel()
+      return config.cancel(c)
     }
     addPendingRequest(config, c)
   })

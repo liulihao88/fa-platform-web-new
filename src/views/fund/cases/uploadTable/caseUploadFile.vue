@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
 import FileInfo from '@/views/fund/cases/uploadTable/fileInfo.vue'
+import CaseUploadImage from '@/views/fund/cases/uploadTable/caseUploadImage.vue'
 const { proxy } = getCurrentInstance()
 const fileInfoRef = ref()
 const isShow = ref()
@@ -33,6 +34,8 @@ const showUploadInfo = () => {
       </o-flex>
 
       <FileInfo ref="fileInfoRef" />
+
+      <CaseUploadImage />
     </o-dialog>
   </div>
 </template>
