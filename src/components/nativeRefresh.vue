@@ -13,7 +13,7 @@ const instance = getCurrentInstance()
 const useRefresh = useNativeRefresh()
 
 onMounted(() => {
-  Mousetrap.bind('command+enter', function () {
+  Mousetrap.bind(['command+enter', 'ctrl+enter'], function () {
     // 执行你想要的操作
     nativeRefresh()
   })

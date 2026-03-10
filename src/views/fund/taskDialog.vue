@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
-import { editQuartzJob } from '@/api/analysis'
+import { editQuartzJob, addQuartzJob } from '@/api/analysis'
 import { $toast, validate, isEmpty, clone, validForm } from '@oeos-components/utils'
 import { JCronValidator } from '@/components/JEasyCron'
 import JEasyCron from '@/components/JEasyCron/EasyCronInput.vue'
@@ -13,10 +13,10 @@ const emits = defineEmits(['success'])
 
 const baseForm = {
   jobClassName: '',
-  cronExpression: '',
+  cronExpression: '* * * * * ? *',
   paramterType: 'string',
   parameter: '',
-  status: 0,
+  status: '0',
   description: '',
 }
 
@@ -26,7 +26,11 @@ const form = ref({
 
 const save = async () => {
   await validForm(formRef.value)
-  await editQuartzJob(form.value)
+  if (title.value === '新增任务') {
+    await addQuartzJob(form.value)
+  } else {
+    await editQuartzJob(form.value)
+  }
   isShow.value = false
   $toast('保存成功')
   emits('success')
@@ -44,8 +48,9 @@ const rules = {
   ],
 }
 const title = ref('编辑任务')
-const open = async (row = {}, dialogTitle = '编辑任务') => {
+const open = async (row: any = {}, dialogTitle = '编辑任务') => {
   title.value = dialogTitle
+  row.status = row.status ? row.status.toString() : '0'
   if (!isEmpty(row)) {
     form.value = clone(row)
   } else {
@@ -94,8 +99,8 @@ defineExpose({
         <el-form-item label="状态" prop="status">
           <o-radio v-model="form.status" :options="getDictItems('quartz_status')" showType="button" />
         </el-form-item>
-        <el-form-item label="描述" prop="jobClassName">
-          <o-input v-model="form.jobClassName" />
+        <el-form-item label="描述" prop="description">
+          <o-input v-model="form.description" />
         </el-form-item>
       </el-form>
     </o-dialog>

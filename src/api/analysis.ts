@@ -81,3 +81,6 @@ export const getQuartzJobList = (params) => {
 export const editQuartzJob = (data) => {
   return request('sys/quartzJob/edit', 'post', { data })
 }
+export const addQuartzJob = (data) => {
+  return request('sys/quartzJob/add', 'post', { data })
+}

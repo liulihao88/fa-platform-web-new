@@ -47,6 +47,14 @@ const columns = [
     prop: 'cronExpression',
   },
   {
+    label: '参数',
+    prop: 'parameter',
+  },
+  {
+    label: '描述',
+    prop: 'description',
+  },
+  {
     key: 'operation',
     label: '操作',
     btns: [
