@@ -39,6 +39,16 @@ export default [
           // showParent: true
         },
       },
+      {
+        path: '/fund/textMapping',
+        name: 'TextMapping',
+        component: () => import('@/views/fund/cases/uploadTable/textMapping.vue'),
+        meta: {
+          title: '字段映射',
+          showLink: false,
+          // showParent: true
+        },
+      },
     ],
   },
   {

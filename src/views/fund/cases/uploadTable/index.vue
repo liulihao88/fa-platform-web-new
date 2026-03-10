@@ -2,13 +2,16 @@
 import { ref, getCurrentInstance } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
-import { getCasefileList } from '@/api/analysis.ts'
+import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
 import { getStorage } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
 
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+
 const total = ref(0)
 const data = ref([])
-const textMappingRef = ref()
 const init = async () => {
   let params = {
     pageNo: 1,
@@ -68,16 +71,21 @@ function translateRow(row) {
   console.log(`37 row`, row)
 }
 function textRow(row) {
-  textMappingRef.value.open(row)
+  router.push({
+    path: '/fund/textMapping',
+    query: {
+      fileId: row.id,
+    },
+  })
 }
 
-function deleteRow(row) {
-  console.log(`46 row`, row)
+async function deleteRow(row) {
+  await deleteCasefile({ fileId: row.id })
+  init()
 }
 </script>
 
 <template>
-  <CaseUploadFile class="mb" />
+  <CaseUploadFile class="mb" @close="init" />
   <o-table ref="tableRef" :columns="columns" :data="data" :total="total" />
-  <TextMapping ref="textMappingRef" />
 </template>

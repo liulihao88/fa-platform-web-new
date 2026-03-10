@@ -1,16 +1,29 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, computed } from 'vue'
 import {
   getCaseFileTransInfo,
   queryFilePropertyByFileId,
   faOrgsConfigureList,
   casefileFileConfigData,
 } from '@/api/analysis.ts'
+import { $toast, getStorage } from '@oeos-components/utils'
+import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
 const { proxy } = getCurrentInstance()
 
-const isShow = ref(false)
-const details = ref({})
-const payOptions = ref([])
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+
+const fileId = ref(route.query.fileId)
+
+const payOptions: any = ref([])
+
+const caseInfo = ref({})
+const adjForm = ref({
+  adjTransAmt: caseInfo.value?.adjTransAmt,
+  adjCreditAmt: caseInfo.value?.adjCreditAmt,
+  adjSettlementAmt: caseInfo.value?.adjSettlementAmt,
+})
 
 /**
   * {
@@ -31,7 +44,7 @@ const payOptions = ref([])
   ]
 }
   */
-const fileInfo = ref({})
+const fileInfo: any = ref({})
 const orgCode = ref('')
 const orgDisabled = ref(false)
 
@@ -49,7 +62,7 @@ const initPayList = async () => {
 
 const init = async () => {
   let sendParams = {
-    fileId: details.value.id,
+    fileId: fileId.value,
   }
   Promise.all([getCaseFileTransInfo(sendParams), queryFilePropertyByFileId(sendParams)]).then((res) => {
     fileInfo.value = res[0]
@@ -57,16 +70,15 @@ const init = async () => {
     orgDisabled.value = res[1].configFlag === true
   })
 }
+init()
 
 const selectOrg = () => {
   console.log('selectOrg')
 }
 
-const open = async (row) => {
-  details.value = row
-  await init()
-  isShow.value = true
-}
+const dialogTitle = computed(() => {
+  return '字段映射 - ' + fileInfo.value.fileName
+})
 
 defineExpose({
   open,
@@ -74,19 +86,66 @@ defineExpose({
 </script>
 
 <template>
-  <div>
-    <o-dialog ref="dialogRef" v-model="isShow" title="textMapping" fullscreen>
-      <o-row class="w-100%" :col="8">
-        <o-input v-model="fileInfo.fileName" title="文件名称" disabled :width="300" />
-        <o-select v-model="orgCode" title="所属银行/支付公司" disabled :options="payOptions" label="orgName" value="id">
-          <template #suffix>
-            <el-button type="primary" :disabled="orgDisabled" @click="selectOrg">选择</el-button>
-          </template>
-        </o-select>
+  <div class="h-100%">
+    <el-card size="small">
+      <o-title :title="fileInfo.fileName">
         <o-tooltip content="1111111">
           <el-button type="primary">字段映射说明</el-button>
         </o-tooltip>
-      </o-row>
-    </o-dialog>
+        <template #right>
+          <div>
+            <o-select
+              v-model="orgCode"
+              title="所属银行/支付公司"
+              disabled
+              :options="payOptions"
+              label="orgName"
+              value="id"
+              class="mr"
+            />
+            <el-button type="primary" :disabled="orgDisabled" @click="selectOrg">选择</el-button>
+          </div>
+        </template>
+      </o-title>
+    </el-card>
+
+    <o-row
+      :col="[3, 21]"
+      :gutter="16"
+      class="mt2 h-800"
+      :colAttrs="{
+        style: {
+          height: '100%',
+        },
+      }"
+    >
+      <o-basic-layout title="文件sheet" class="h-100%">
+        <div class="bg-white">
+          <o-flex v-for="(v, i) in fileInfo.filePages" :key="i">
+            <div>{{ v.pageName }}</div>
+            <el-tag v-if="v.configureStatus === '1'">已配置</el-tag>
+          </o-flex>
+        </div>
+      </o-basic-layout>
+
+      <div class="bg-white h-100%">
+        <o-basic-layout>
+          <o-row :col="6">
+            <o-select v-model="adjForm.adjTransAmt" title="交易金额调整项" :options="BOOLEAN_OPTIONS" width="300" />
+            <o-select v-model="adjForm.adjCreditAmt" title="贷款金额调整项" :options="BOOLEAN_OPTIONS" width="300" />
+            <o-select
+              v-model="adjForm.adjSettlementAmt"
+              title="结算金额调整项"
+              :options="BOOLEAN_OPTIONS"
+              width="300"
+            />
+            <div>
+              <o-button type="primary">保存配置</o-button>
+              <o-button>暂存为草稿</o-button>
+            </div>
+          </o-row>
+        </o-basic-layout>
+      </div>
+    </o-row>
   </div>
 </template>

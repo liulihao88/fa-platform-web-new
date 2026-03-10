@@ -37,6 +37,13 @@ export const getCasefileList = (params) => {
   })
 }
 
+// 删除文件
+export const deleteCasefile = (data) => {
+  return request(`fa/casefile/deleteFile`, 'post', {
+    data: data,
+  })
+}
+
 // 字段映射 -> 文件信息
 export const getCaseFileTransInfo = (data) => {
   return request(`fa/casefile/getCaseFileTransInfo`, 'post', {

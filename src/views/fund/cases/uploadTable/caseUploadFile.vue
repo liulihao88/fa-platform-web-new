@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 import FileInfo from '@/views/fund/cases/uploadTable/fileInfo.vue'
 import CaseUploadImage from '@/views/fund/cases/uploadTable/caseUploadImage.vue'
 const { proxy } = getCurrentInstance()
 const fileInfoRef = ref()
 const isShow = ref()
 const isShowInfo = ref()
+
+const emits = defineEmits(['close'])
 const uploadFileHandle = () => {
   isShow.value = true
 }
@@ -13,6 +15,19 @@ const showUploadInfo = () => {
   // isShowInfo.value = true
   fileInfoRef.value.open()
 }
+
+watch(
+  isShow,
+  (val) => {
+    if (val === false) {
+      emits('close')
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+)
 </script>
 
 <template>
