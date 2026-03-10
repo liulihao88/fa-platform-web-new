@@ -79,7 +79,7 @@ function editRow(row) {
   } else {
     row.paramterType = 'string'
   }
-  taskDialogRef.value.open(row)
+  taskDialogRef.value.open(row, row.id ? '编辑任务' : '新增任务')
 }
 
 const init = async () => {
@@ -94,8 +94,7 @@ init()
 
 <template>
   <div>
-    <g-search-bar :items="items" />
-
+    <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
     <div class="mb-2">
       <el-button type="primary" @click="editRow({})">新增</el-button>
       <el-button>导入</el-button>

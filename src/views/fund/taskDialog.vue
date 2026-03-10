@@ -5,9 +5,10 @@ import { editQuartzJob } from '@/api/analysis'
 import { $toast, validate, isEmpty, clone, validForm } from '@oeos-components/utils'
 import { JCronValidator } from '@/components/JEasyCron'
 import JEasyCron from '@/components/JEasyCron/EasyCronInput.vue'
+import { useCommonHook } from '@/store'
 const isShow = ref(false)
 const formRef = ref()
-
+const { getDictItems } = useCommonHook()
 const emits = defineEmits(['success'])
 
 const baseForm = {
@@ -42,8 +43,9 @@ const rules = {
     { validator: JCronValidator, trigger: ['blur', 'change'] },
   ],
 }
-
-const open = async (row = {}) => {
+const title = ref('编辑任务')
+const open = async (row = {}, dialogTitle = '编辑任务') => {
+  title.value = dialogTitle
   if (!isEmpty(row)) {
     form.value = clone(row)
   } else {
@@ -63,7 +65,7 @@ defineExpose({
 
 <template>
   <div>
-    <o-dialog ref="dialogRef" v-model="isShow" title="编辑任务" @confirm="save">
+    <o-dialog ref="dialogRef" v-model="isShow" :title="title" @confirm="save">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="任务名称" prop="jobClassName">
           <o-input v-model="form.jobClassName" />
@@ -89,7 +91,10 @@ defineExpose({
         <el-form-item label="参数" prop="parameter">
           <o-input v-model="form.parameter" />
         </el-form-item>
-        <el-form-item label="任务名称" prop="jobClassName">
+        <el-form-item label="状态" prop="status">
+          <o-radio v-model="form.status" :options="getDictItems('quartz_status')" showType="button" />
+        </el-form-item>
+        <el-form-item label="描述" prop="jobClassName">
           <o-input v-model="form.jobClassName" />
         </el-form-item>
       </el-form>

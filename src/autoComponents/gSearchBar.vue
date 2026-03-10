@@ -64,16 +64,9 @@ const { itemsPerRow } = props
 
 const getItemOptions = (item: FormItem) => {
   if (item.dict) {
-    const options = getDictItems(item.dict)
-    if (options && Array.isArray(options)) {
-      return options.map((option) => ({ label: option.label || '', value: option.value || '' }))
-    }
-    return []
+    return getDictItems(item.dict) || []
   }
-  if (item.options && Array.isArray(item.options)) {
-    return item.options.map((option) => ({ label: option.label || '', value: option.value || '' }))
-  }
-  return []
+  return item.options || []
 }
 
 const emit = defineEmits<{
@@ -87,8 +80,8 @@ const form = ref<Record<string, any>>({})
 const formRows = computed(() => {
   const rows: FormItem[][] = []
 
-  for (let i = 0; i < props.items.length; i += itemsPerRow) {
-    const row = props.items.slice(i, i + itemsPerRow)
+  for (let i = 0; i < props.items.length; i += props.itemsPerRow) {
+    const row = props.items.slice(i, i + props.itemsPerRow)
     rows.push(row)
   }
 
