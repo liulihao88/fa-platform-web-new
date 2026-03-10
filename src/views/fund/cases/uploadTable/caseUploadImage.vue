@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, computed } from 'vue'
 import { $toast, getStorage, tryCatch } from '@oeos-components/utils'
-import { caseUploadImg } from '@/api/analysis.ts'
 import request from '@/utils/request'
 const { proxy } = getCurrentInstance()
 const fileList = ref([])

@@ -37,18 +37,33 @@ export const getCasefileList = (params) => {
   })
 }
 
-/* export const caseUploadImg = (data) => {
-  return request('fa/casefile/upload', 'post', {
+// 字段映射 -> 文件信息
+export const getCaseFileTransInfo = (data) => {
+  return request(`fa/casefile/getCaseFileTransInfo`, 'post', {
     data: data,
-    headers: {
-      'Content-Type': 'multiparrt/form-data',
-    },
-    onUploadProgress: (progressEvent: ProgressEvent) => {
-      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-      console.log(`上传进度: ${percentCompleted}%`)
-    },
   })
-} */
+}
+
+// 字段映射 -> 根据fileId查询所属银行/支付公司
+export const queryFilePropertyByFileId = (data) => {
+  return request(`fa/casefile/queryFilePropertyByFileId`, 'post', {
+    data: data,
+  })
+}
+// 字段映射 -> 获取所属银行/支付公司列表
+export const faOrgsConfigureList = (data) => {
+  return request(`fa/faOrgsConfigure/list`, 'post', {
+    data: data,
+  })
+}
+
+// 字段映射 ->  根据orgCode和pageId生成对应table
+
+export const casefileFileConfigData = (data) => {
+  return request(`fa/casefile/fileConfigData`, 'post', {
+    data: data,
+  })
+}
 
 /**
  *
