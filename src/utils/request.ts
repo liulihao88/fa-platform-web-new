@@ -9,16 +9,40 @@ import qs from 'qs'
 import { addPendingRequest } from '@/utils/cancelTokenRequests'
 import { useGlobalLoading } from '@/hooks/useGlobalLoading'
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+
+// 上传文件参数类型
+export interface UploadFileParams {
+  file: File | Blob
+  name?: string
+  filename?: string
+  data?: Record<string, any>
+}
+
+// 上传文件回调类型
+export interface UploadFileCallBack {
+  success?: (data: any) => void
+  isReturnResponse?: boolean
+}
+
+// 自定义请求配置接口，包含resolve字段
+interface CustomRequestConfig extends AxiosRequestConfig {
+  resolve?: string
+}
+
 type AxiosConfig = {
   showLoading?: boolean
   stringify?: boolean
-  cancel?: void
+  cancel?: (cancelFunction: () => void) => void
   customResponse?: boolean
   original?: boolean
   showError?: boolean
-  fileName?: string
-  fileType?: string
+  fileName?: string // 下载的文件名，默认download
+  fileType?: string // 下载的文件类型，默认xlsx
   resolve?: string
+  joinTimeStamp?: boolean // 是否在参数中加入时间戳，默认true
+  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text' | 'stream' // 响应类型，默认json
+  download?: boolean // 是否下载文件，默认false
+  success?: (data: any) => void
 }
 // Extend InternalAxiosRequestConfig to include custom fields for response interceptor
 declare module 'axios' {
@@ -68,6 +92,11 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (_hasLoading(config.showLoading)) {
     loadingTrue(config.showLoading)
   }
+  // 如果设置了download，自动配置为二进制下载
+  if (config.download) {
+    config.responseType = config.responseType || 'blob'
+    config.fileName = config.fileName || 'download'
+  }
   config.headers[ConfigEnum.TIMESTAMP] = signMd5Utils.getTimestamp()
   //update-begin---author:wangshuai---date:2024-04-25---for: 生成签名的时候复制一份，避免影响原来的参数---
   config.headers[ConfigEnum.Sign] = signMd5Utils.getSign(config.url, clone(config.params), clone(config.data))
@@ -86,7 +115,11 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (config.stringify !== false) {
     const [baseUrl, urlQuery] = config.url.split('?')
     const parseQueryParams = getQueryObject(urlQuery)
-    const mergeParams = { ...config.params, ...parseQueryParams }
+    let mergeParams = { ...config.params, ...parseQueryParams }
+    // 如果joinTimeStamp为true，添加_t参数
+    if (config.joinTimeStamp) {
+      mergeParams = { ...mergeParams, _t: Date.now() }
+    }
     const qsParams = qs.stringify(mergeParams)
     if (qsParams) {
       config.url = baseUrl + '?' + qsParams
@@ -94,6 +127,9 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       config.url = baseUrl
     }
     delete config.params
+  } else if (config.joinTimeStamp) {
+    // 如果stringify为false但joinTimeStamp为true，直接在params中添加_t参数
+    config.params = { ...config.params, _t: Date.now() }
   }
 
   // request('info/overview', { showLoading: true, cancel: (c)=>{ setTimeout(() => {c()}, 100); } }) 取消请求
@@ -116,6 +152,20 @@ instance.interceptors.response.use(
     if (response.config.customResponse) {
       return Promise.resolve(response)
     }
+    // 处理二进制响应
+    if (response.config.responseType === 'blob' || response.config.responseType === 'arraybuffer') {
+      // 如果有fileName，触发下载
+      if (response.config.fileName) {
+        const blob = new Blob([response.data], { type: response.config.fileType || '' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = response.config.fileName
+        link.click()
+        URL.revokeObjectURL(url)
+      }
+      return Promise.resolve(response.data)
+    }
     // TODO 这里应该判断状态码，待确定
     if (response.status === 200) {
       if (response.data.code !== 0 && response.data.code !== 200) {
@@ -125,6 +175,7 @@ instance.interceptors.response.use(
         return Promise.reject(response.data)
       } else {
         // 返回正常数据
+        console.log(response, 'response')
         const resolveData = response.config.resolve ? response[response.config.resolve] : response.data.result
         return Promise.resolve(resolveData)
       }
@@ -134,7 +185,8 @@ instance.interceptors.response.use(
       }
       if (('' + response.status).startsWith('5')) {
         // devLogin(true)
-        return $toast('系统繁忙, 请稍后再试', 'e', { closeAll: true })
+        $toast('系统繁忙, 请稍后再试', 'e', { closeAll: true })
+        return Promise.reject(response.data)
       }
       return Promise.reject(response.data)
     }
@@ -197,7 +249,7 @@ export default function request(
   url: string,
   method: MethodType | MethodOrConfig = 'get',
   config: { [key: string]: any } = {},
-) {
+): Promise<any> {
   const methodMap = ['get', 'post', 'put', 'delete']
   const methodIsObj = !(typeof method === 'string' && methodMap.includes(method)) && getType(method) === 'object'
   const configObj: { [key: string]: any } = methodIsObj && typeof method === 'object' ? method : config
@@ -212,6 +264,173 @@ export default function request(
 
   const finalMergeConfig = Object.assign({}, defaultConfig, mergeConfig)
   return instance(finalMergeConfig)
+}
+
+/**
+ * 文件上传 - 自动触发文件选择弹窗
+ * @param options 上传配置
+ * @returns Promise 上传结果
+ */
+export function uploadFile<T = any>(options: {
+  url: string
+  multiple?: boolean
+  name?: string
+  data?: Record<string, any>
+  headers?: Record<string, string>
+  showLoading?: boolean
+  callback?: UploadFileCallBack
+}): Promise<T> {
+  return new Promise((resolve, reject) => {
+    // 创建隐藏的文件输入框
+    const fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.style.display = 'none'
+    fileInput.multiple = options.multiple || false
+
+    // 处理文件选择事件
+    fileInput.onchange = async (event) => {
+      const target = event.target as HTMLInputElement
+      const files = target.files
+
+      if (!files || files.length === 0) {
+        document.body.removeChild(fileInput)
+        reject(new Error('未选择文件'))
+        return
+      }
+
+      try {
+        // 显示加载动画
+        if (options.showLoading) {
+          loadingTrue(options.showLoading)
+        }
+
+        // 处理多文件上传
+        if (options.multiple && files.length > 1) {
+          const uploadPromises = Array.from(files).map((file) => {
+            return uploadSingleFile({
+              url: options.url,
+              file: file,
+              name: options.name,
+              data: options.data,
+              headers: options.headers,
+            })
+          })
+
+          const results = await Promise.all(uploadPromises)
+
+          // 隐藏加载动画
+          if (options.showLoading) {
+            loadingFalse(options.showLoading)
+          }
+
+          if (options.callback?.success) {
+            options.callback.success(results)
+          }
+
+          resolve(results as unknown as T)
+        } else {
+          // 单文件上传
+          const file = files[0]
+          const result = await uploadSingleFile({
+            url: options.url,
+            file: file,
+            name: options.name,
+            data: options.data,
+            headers: options.headers,
+          })
+          console.log(result, 'result')
+
+          // 隐藏加载动画
+          if (options.showLoading) {
+            loadingFalse(options.showLoading)
+          }
+
+          if (options.callback?.success) {
+            options.callback.success(result)
+          }
+
+          resolve(result as unknown as T)
+        }
+      } catch (error) {
+        console.log(error, 'err')
+
+        // 隐藏加载动画
+        if (options.showLoading) {
+          loadingFalse(options.showLoading)
+        }
+        if (options.callback?.isReturnResponse) {
+          reject(error)
+        } else {
+          $toast('上传失败', 'e', { closeAll: true })
+          reject(error)
+        }
+      } finally {
+        // 清理文件输入框
+        document.body.removeChild(fileInput)
+      }
+    }
+
+    // 添加到DOM并触发点击
+    document.body.appendChild(fileInput)
+    fileInput.click()
+  })
+}
+
+/**
+ * 单个文件上传
+ */
+function uploadSingleFile<T = any>(params: {
+  url: string
+  file: File
+  name?: string
+  data?: Record<string, any>
+  headers?: Record<string, string>
+}): Promise<T> {
+  const formData = new window.FormData()
+  const customFilename = params.name || 'file'
+
+  // 添加文件
+  formData.append(customFilename, params.file)
+
+  // 添加附加数据
+  if (params.data) {
+    Object.keys(params.data).forEach((key) => {
+      const value = params.data![key]
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          formData.append(`${key}[]`, item)
+        })
+        return
+      }
+      formData.append(key, params.data[key])
+    })
+  }
+
+  return instance
+    .request<T>({
+      url: params.url,
+      method: 'POST',
+      data: formData,
+      headers: {
+        'Content-type': 'multipart/form-data',
+        ...params.headers,
+      },
+      resolve: 'data',
+    } as CustomRequestConfig)
+    .then((res: any) => {
+      console.log(res, 'res')
+      if (res.code === 0 || res.code === 200) {
+        $toast(res.message || '上传成功', 's', { closeAll: true })
+      } else {
+        $toast(res.message || '上传失败', 'e', { closeAll: true })
+        return Promise.reject(res)
+      }
+      return res
+    })
+    .catch((error) => {
+      $toast('上传失败', 'e', { closeAll: true })
+      return Promise.reject(error)
+    })
 }
 
 function _hasLoading(sendLoading) {

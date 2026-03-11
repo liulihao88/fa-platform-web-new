@@ -122,10 +122,6 @@ const handleReset = () => {
   }
 }
 
-.search-bar {
-  margin-bottom: 20px;
-}
-
 .search-form {
   display: flex;
   flex-direction: column;

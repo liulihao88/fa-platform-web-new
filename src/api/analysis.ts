@@ -1,6 +1,12 @@
-import request from '@/utils/request'
+import request, { uploadFile } from '@/utils/request'
 
-// 案件列表
+// 定时任务列表返回类型
+interface QuartzJobListResponse {
+  records: any[]
+  total: number
+}
+
+// 案件列表案件列表
 
 // fa / faCaseInfo / list ? column = createTime & order=desc & pageNo=1 & pageSize=10 & _t=1772678940540
 
@@ -89,13 +95,39 @@ export const casefileFileConfigData = (data) => {
 
 // 定时任务列表
 // sys/quartzJob/list?column=createTime&order=desc&pageNo=1&pageSize=10&_t=1772693397998
-export const getQuartzJobList = (params) => {
+export const getQuartzJobList = (params): Promise<QuartzJobListResponse> => {
   return request('sys/quartzJob/list', { params: params })
 }
-// 保存定时任务
+// 编辑定时任务
 export const editQuartzJob = (data) => {
   return request('sys/quartzJob/edit', 'post', { data })
 }
+// 新增定时任务
 export const addQuartzJob = (data) => {
   return request('sys/quartzJob/add', 'post', { data })
+}
+// 导出定时任务
+export const exportQuartzJob = (params) => {
+  return request('sys/quartzJob/exportXls', 'get', {
+    params,
+    joinTimeStamp: true,
+    download: true,
+    fileName: '定时任务列表.xlsx',
+  })
+}
+//启动定时任务
+export const resumeQuartzJob = (params) => {
+  return request('sys/quartzJob/resume', 'get', { params, joinTimeStamp: true, resolve: 'data' })
+}
+// 暂停定时任务
+export const pauseQuartzJob = (params) => {
+  return request('sys/quartzJob/pause', 'get', { params, joinTimeStamp: true, resolve: 'data' })
+}
+// 删除定时任务
+export const deleteQuartzJob = (params) => {
+  return request('sys/quartzJob/delete', 'delete', { params, joinTimeStamp: true, resolve: 'data' })
+}
+// 立即执行定时任务
+export const runQuartzJob = (params) => {
+  return request('sys/quartzJob/execute', 'get', { params, joinTimeStamp: true, resolve: 'data' })
 }
