@@ -65,11 +65,14 @@ const columns = [
     label: '状态',
     prop: 'status',
     useSlot: true,
+    width: 100,
+    align: 'center',
   },
   {
     key: 'operation',
     label: '操作',
     width: 240,
+    maxBtns: 5,
     btns: [
       {
         content: (value, row) => {
