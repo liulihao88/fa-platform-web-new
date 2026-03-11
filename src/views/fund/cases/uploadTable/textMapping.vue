@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from 'vue'
+import { ref, getCurrentInstance, computed, useTemplateRef } from 'vue'
 import OrgTableDIalog from '@/views/fund/cases/uploadTable/orgTableDIalog.vue'
+import TextMappingInfo from '@/views/fund/cases/uploadTable/textMappingInfo.vue'
 import {
   getCaseFileTransInfo,
   queryFilePropertyByFileId,
@@ -19,6 +20,7 @@ const fileId = ref(route.query.fileId)
 
 const payOptions: any = ref([])
 const orgTableDIalogRef = ref()
+const headerRef = useTemplateRef('headerRef')
 
 const caseInfo = ref({})
 const adjForm = ref({
@@ -82,6 +84,8 @@ const dialogTitle = computed(() => {
   return '字段映射 - ' + fileInfo.value.fileName
 })
 
+proxy.$initTableHeight(headerRef)
+
 defineExpose({
   open,
 })
@@ -89,11 +93,9 @@ defineExpose({
 
 <template>
   <div class="h-100%">
-    <el-card size="small">
+    <el-card ref="headerRef" size="small" class="mb2">
       <o-title :title="fileInfo.fileName">
-        <o-tooltip content="1111111">
-          <el-button type="primary">字段映射说明</el-button>
-        </o-tooltip>
+        <TextMappingInfo />
         <template #right>
           <div>
             <o-select
@@ -111,16 +113,7 @@ defineExpose({
       </o-title>
     </el-card>
 
-    <o-row
-      :col="[3, 21]"
-      :gutter="16"
-      class="mt2 h-800"
-      :colAttrs="{
-        style: {
-          height: '100%',
-        },
-      }"
-    >
+    <o-row :col="[3, 21]" :gutter="16" :style="{ height: $tableHeight.value + 'px' }">
       <o-basic-layout title="文件sheet" class="h-100%">
         <div class="bg-white">
           <o-flex v-for="(v, i) in fileInfo.filePages" :key="i">
