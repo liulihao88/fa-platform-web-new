@@ -88,20 +88,13 @@ const columns = [
           if (value?.status == '-1') {
             proxy.confirm('确定启动吗?').then(() => {
               resumeQuartzJob({ id: value.id }).then((res) => {
-                console.log(res)
-                if (res?.code == 200) {
-                  $toast.success('操作成功')
-                  init()
-                }
+                init()
               })
             })
           } else {
             proxy.confirm('确定停止吗?').then(() => {
               pauseQuartzJob({ id: value.id }).then((res) => {
-                if (res?.code == 200) {
-                  $toast.success('操作成功')
-                  init()
-                }
+                init()
               })
             })
           }
@@ -117,10 +110,7 @@ const columns = [
         handler: (value, row) => {
           proxy.confirm('确定删除吗?').then(() => {
             deleteQuartzJob({ id: value.id }).then((res) => {
-              if (res?.code == 200) {
-                $toast.success('操作成功')
-                init()
-              }
+              init()
             })
           })
         },
@@ -131,10 +121,7 @@ const columns = [
         handler: (value, row) => {
           proxy.confirm('确定立即执行吗?').then(() => {
             runQuartzJob({ id: value.id }).then((res) => {
-              if (res?.code == 200) {
-                $toast.success('操作成功')
-                init()
-              }
+              init()
             })
           })
         },

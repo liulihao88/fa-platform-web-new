@@ -117,17 +117,17 @@ export const exportQuartzJob = (params) => {
 }
 //启动定时任务
 export const resumeQuartzJob = (params) => {
-  return request('sys/quartzJob/resume', 'get', { params, joinTimeStamp: true, resolve: 'data' })
+  return request('sys/quartzJob/resume', 'get', { params, joinTimeStamp: true })
 }
 // 暂停定时任务
 export const pauseQuartzJob = (params) => {
-  return request('sys/quartzJob/pause', 'get', { params, joinTimeStamp: true, resolve: 'data' })
+  return request('sys/quartzJob/pause', 'get', { params, joinTimeStamp: true })
 }
 // 删除定时任务
 export const deleteQuartzJob = (params) => {
-  return request('sys/quartzJob/delete', 'delete', { params, joinTimeStamp: true, resolve: 'data' })
+  return request('sys/quartzJob/delete', 'delete', { params, joinTimeStamp: true })
 }
 // 立即执行定时任务
 export const runQuartzJob = (params) => {
-  return request('sys/quartzJob/execute', 'get', { params, joinTimeStamp: true, resolve: 'data' })
+  return request('sys/quartzJob/execute', 'get', { params, joinTimeStamp: true })
 }
