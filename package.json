@@ -20,7 +20,9 @@
     "lint": "pnpm lint:eslint && pnpm lint:prettier && pnpm lint:stylelint",
     "prepare": "husky",
     "preinstall": "npx only-allow pnpm",
-    "update": "pnpm add oeos-components@latest && pnpm add @oeos-components/utils@latest"
+    "update": "pnpm add oeos-components@latest && pnpm add @oeos-components/utils@latest",
+    "deploy": "sh -x deploy.sh",
+    "deploy-no-build": "sh -x deploy.sh -k"
   },
   "keywords": [
     "pure-admin-thin",

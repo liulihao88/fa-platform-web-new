@@ -36,6 +36,7 @@ type AxiosConfig = {
   customResponse?: boolean
   original?: boolean
   showError?: boolean
+  showMessage?: boolean
   fileName?: string // 下载的文件名，默认download
   fileType?: string // 下载的文件类型，默认xlsx
   resolve?: string
@@ -68,6 +69,7 @@ const defaultConfig = {
   fileName: '', // 下载的文件名
   fileType: '', // 下载的文件类型
   showLoading: false, // 是否在全局(页面级)显示loading
+  showMessage: true, // 如果有message是否显示
   // loadingText: '',          // loading中的文字提示，默认为空
   // loadingTime: 0,         // loading加载时长，单位ms；0表示请求成功或失败后动关闭
   original: false, // 是否在拦截器中返回服务服的原始数据（response.data）
@@ -176,8 +178,8 @@ instance.interceptors.response.use(
       } else {
         // 返回正常数据
         const resolveData = response.config.resolve ? response[response.config.resolve] : response.data.result
-        if (getType(resolveData) === 'string') {
-          $toast(resolveData)
+        if (getType(resolveData) === 'string' && response.data.message && response.config.showMessage) {
+          $toast(response.data.message)
         }
         return Promise.resolve(resolveData)
       }
