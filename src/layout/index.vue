@@ -145,7 +145,7 @@ const LayHeader = defineComponent({
 
 <template>
   <div ref="appWrapperRef" :class="['app-wrapper', set.classes]">
-    <nativeRefresh v-if="proxy.$dev" />
+    <nativeRefresh v-if="proxy.$show" />
     <div
       v-show="set.device === 'mobile' && set.sidebar.opened && layout.includes('vertical')"
       class="app-mask"

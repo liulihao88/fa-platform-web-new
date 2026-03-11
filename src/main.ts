@@ -69,7 +69,8 @@ Object.keys(utils).forEach((v) => {
 })
 
 const $dev = import.meta.env.MODE === 'development'
-app.config.globalProperties.$dev = utils.getStorage('$dev') ?? $dev
+app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
+app.config.globalProperties.$show = true
 
 getPlatformConfig(app).then(async (config) => {
   setupStore(app)
