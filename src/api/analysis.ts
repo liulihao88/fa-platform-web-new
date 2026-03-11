@@ -64,6 +64,14 @@ export const faOrgsConfigureList = (data) => {
   })
 }
 
+// 银行机构选择 fa/faOrgsConfigure/list?pageNo=1&pageSize=10&_t=1773194714539
+
+export const faOrgsConfigureAllList = (params) => {
+  return request(`fa/faOrgsConfigure/list`, {
+    params: params,
+  })
+}
+
 // 字段映射 ->  根据orgCode和pageId生成对应table
 
 export const casefileFileConfigData = (data) => {

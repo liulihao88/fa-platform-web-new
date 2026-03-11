@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, computed } from 'vue'
+import OrgTableDIalog from '@/views/fund/cases/uploadTable/orgTableDIalog.vue'
 import {
   getCaseFileTransInfo,
   queryFilePropertyByFileId,
@@ -17,6 +18,7 @@ const route = useRoute()
 const fileId = ref(route.query.fileId)
 
 const payOptions: any = ref([])
+const orgTableDIalogRef = ref()
 
 const caseInfo = ref({})
 const adjForm = ref({
@@ -73,7 +75,7 @@ const init = async () => {
 init()
 
 const selectOrg = () => {
-  console.log('selectOrg')
+  orgTableDIalogRef.value.open()
 }
 
 const dialogTitle = computed(() => {
@@ -147,5 +149,7 @@ defineExpose({
         </o-basic-layout>
       </div>
     </o-row>
+
+    <OrgTableDIalog ref="orgTableDIalogRef" />
   </div>
 </template>
