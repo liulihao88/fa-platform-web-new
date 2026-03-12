@@ -64,6 +64,7 @@ interface ButtonConfig {
   disabled?: boolean
   handler?: () => void
   tag?: boolean
+  visible?: () => boolean
 }
 
 const props = defineProps<{
@@ -78,8 +79,12 @@ const slots = defineSlots()
 
 // 计算基础按钮和更多按钮
 const baseButtons = computed(() => {
-  const allButtons = props.btns || []
-
+  const allButtons = (props.btns || []).filter((btn) => {
+    if (typeof btn.visible === 'function') {
+      return btn.visible()
+    }
+    return btn.visible !== false
+  })
   if (props.showNum && props.showNum > 0) {
     return allButtons.slice(0, props.showNum)
   } else if (props.showIndex && props.showIndex.length > 0) {
@@ -89,7 +94,12 @@ const baseButtons = computed(() => {
 })
 
 const moreButtons = computed(() => {
-  const allButtons = props.btns || []
+  const allButtons = (props.btns || []).filter((btn) => {
+    if (typeof btn.visible === 'function') {
+      return btn.visible()
+    }
+    return btn.visible !== false
+  })
   return allButtons.filter((btn) => !baseButtons.value.includes(btn))
 })
 
