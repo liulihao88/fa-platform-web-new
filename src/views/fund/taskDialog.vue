@@ -37,7 +37,7 @@ const save = async () => {
 }
 
 const rules = {
-  jobClassName: [validate()],
+  jobClassName: [validate() as any],
   cronExpression: [
     {
       required: true,
@@ -46,7 +46,7 @@ const rules = {
     },
     { validator: JCronValidator, trigger: ['blur', 'change'] },
   ],
-}
+} as any
 const title = ref('编辑任务')
 const open = async (row: any = {}, dialogTitle = '编辑任务') => {
   title.value = dialogTitle

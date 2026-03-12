@@ -1,7 +1,7 @@
 import request, { uploadFile } from '@/utils/request'
 
 // 定时任务列表返回类型
-interface QuartzJobListResponse {
+interface commonListResponse {
   records: any[]
   total: number
 }
@@ -95,7 +95,7 @@ export const casefileFileConfigData = (data) => {
 
 // 定时任务列表
 // sys/quartzJob/list?column=createTime&order=desc&pageNo=1&pageSize=10&_t=1772693397998
-export const getQuartzJobList = (params): Promise<QuartzJobListResponse> => {
+export const getQuartzJobList = (params): Promise<commonListResponse> => {
   return request('sys/quartzJob/list', { params: params })
 }
 // 编辑定时任务
@@ -130,4 +130,73 @@ export const deleteQuartzJob = (params) => {
 // 立即执行定时任务
 export const runQuartzJob = (params) => {
   return request('sys/quartzJob/execute', 'get', { params, joinTimeStamp: true })
+}
+/**
+ * 字典管理
+ * @param params
+ * @returns
+ */
+export const getDictLits = (params): Promise<commonListResponse> => {
+  return request('sys/dict/list', { params: params })
+}
+/**
+ * 新增字典
+ * @param data
+ * @returns
+ */
+export const addDict = (data) => {
+  return request('/sys/dict/add', 'post', { data })
+}
+/**
+ * 编辑字典
+ * @param data
+ * @returns
+ */
+export const editDict = (data) => {
+  return request('/sys/dict/edit', 'post', { data })
+}
+/**
+ * 删除字典
+ * @param params
+ * @returns
+ */
+export const deleteDict = (params) => {
+  return request('/sys/dict/delete', 'delete', { params, joinTimeStamp: true, resolve: 'data' })
+}
+/**
+ * 导出字典
+ */
+export const exportDict = (params) => {
+  return request('/sys/dict/exportXls', 'get', {
+    params,
+    joinTimeStamp: true,
+    download: true,
+    fileName: '数据字典列表.xlsx',
+  })
+}
+/**
+ * 刷新仪表盘缓存
+ */
+export const refreshDragCache = () => {
+  return request('/drag/page/refreshCache', 'get', {joinTimeStamp: true, resolve: 'data' })
+}
+/**
+ * 刷新字典
+ */
+export const refreshDict = () => {
+  return request('/sys/dict/refleshCache', 'get', {joinTimeStamp: true, resolve: 'data' })
+}
+/**
+ * 获取所有字典项
+ */
+export const getAllDictItems = () => {
+  return request('/sys/dict/queryAllDictItems', 'get', {joinTimeStamp: true, resolve: 'data' })
+}
+/**
+ * 获取字典回收站列表
+ * @param params 
+ * @returns 
+ */
+export const getAllRecycleList = () => {
+  return request('/sys/dict/deleteList', 'get', { joinTimeStamp: true, resolve: 'data' })
 }

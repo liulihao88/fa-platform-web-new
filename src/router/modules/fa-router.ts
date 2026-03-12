@@ -68,6 +68,15 @@ export default [
           // showParent: true
         },
       },
+      {
+        path: '/system/dict',
+        name: 'Dict',
+        component: () => import('@/views/system/index.vue'),
+        meta: {
+          title: '数据字典',
+          // showParent: true
+        },
+      },
     ],
   },
   {
