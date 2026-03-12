@@ -2,22 +2,16 @@
 import { ref, getCurrentInstance } from 'vue'
 import addDictDialog from '../fund/addDictDialog.vue'
 import dictRecycleDialog from '../fund/dictRecycleDialog.vue'
-import {
-  getDictLits,
-  refreshDict,
-  getAllDictItems,
-  resumeQuartzJob,
-  pauseQuartzJob,
-  deleteDict,
-  runQuartzJob,
-  refreshDragCache,
-} from '@/api/analysis'
-import { getType, $toast } from '@oeos-components/utils'
-import { exportDict } from '@/api/analysis'
+import dictDetailDrawer from '../fund/dictDetailDrawer.vue'
+import { getDictLits, deleteDict, refreshDict, refreshDragCache, getAllDictItems } from '@/api/analysis'
+import { $toast } from '@oeos-components/utils'
+import { exportDict, deleteBatchDict } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
 // import { removeAuthCache, setAuthCache } from '@/utils/auth';
 import { useUserStore } from '@/store/modules/user'
-const userStore = useUserStore()
+// const userStore = useUserStore()
+import { useCommonHook } from '@/store'
+const { setCommonItems } = useCommonHook()
 const items = [
   {
     label: '字典名称',
@@ -32,6 +26,7 @@ const items = [
     placeholder: '请输入字典编码',
   },
 ]
+const dictDetailDrawerRef = ref()
 const selectIds = ref([])
 const { proxy } = getCurrentInstance()
 const headerRef = ref()
@@ -80,18 +75,20 @@ const columns = [
       },
       {
         content: '字典配置',
+        handler: (value, row) => {
+          dictDetailDrawerRef.value.open(value)
+        },
       },
       {
         content: '删除',
         type: 'danger',
+        reConfirm: !proxy.$dev,
         handler: (value, row) => {
-          proxy.confirm('确定删除吗?').then(() => {
-            deleteDict({ id: value.id }).then((res) => {
-              if (res?.code == 200) {
-                $toast.success('操作成功')
-                init()
-              }
-            })
+          deleteDict({ id: value.id }).then((res) => {
+            if (res?.code == 200) {
+              $toast.success('操作成功')
+              init()
+            }
           })
         },
       },
@@ -138,24 +135,19 @@ const handleSelectionChange = (val) => {
   console.log(val)
   selectIds.value = val.map((item) => item.id)
 }
+
 const refreshCache = async () => {
-  // const result = await refreshDict()
-  // const dragRes = await refreshDragCache()
-  // console.log('dragRes', dragRes)
-  // console.log('result', result)
-  // if (result.success) {
-  //   const res = await getAllDictItems();
-  //   const DB_DICT_DATA_KEY = 'UI_CACHE_DB_DICT_DATA';
-  //   removeAuthCache(DB_DICT_DATA_KEY);
-  //   setAuthCache(DB_DICT_DATA_KEY, res.result);
-  //   // update-begin--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
-  //   $toast.success('刷新缓存成功')
-  //   // update-end--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
-  //   // update-begin--author:wangshuai---date:20241112---for：【issues/7433】vue3 数据字典优化建议
-  //   userStore.setAllDictItems(res.result);
-  //   // update-end--author:wangshuai---date:20241112---for：【issues/7433】vue3 数据字典优化建议
-  // } else {
-  // }
+  const result = await refreshDict()
+  const dragRes = await refreshDragCache()
+  console.log('dragRes', dragRes)
+  console.log('result', result)
+  if (result?.code == 0) {
+    const res = await getAllDictItems()
+    if (res?.code == 200) {
+      setCommonItems('sysAllDictItems', res?.result)
+      $toast.success('刷新缓存成功')
+    }
+  }
 }
 
 const recycleBin = async () => {
@@ -167,6 +159,49 @@ const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageSize = pageSize
   handleSearch({})
 }
+const moreBtns = [
+  {
+    content: '新增',
+    type: 'primary',
+    icon: 'el-icon-plus',
+    handler: () => editRow({}),
+  },
+  {
+    content: '导入',
+    type: 'primary',
+    icon: 'el-icon-upload',
+    handler: onImportXls,
+  },
+  {
+    content: '导出',
+    type: 'primary',
+    icon: 'el-icon-download',
+    handler: onExportXls,
+  },
+  {
+    content: '刷新缓存',
+    type: 'primary',
+    icon: 'el-icon-refresh',
+    handler: refreshCache,
+  },
+  {
+    content: '回收站',
+    type: 'primary',
+    icon: 'el-icon-folder-delete',
+    handler: recycleBin,
+  },
+  {
+    content: '批量删除',
+    type: 'primary',
+    reConfirm: !proxy.$dev,
+    handler: async () => {
+      const ids = selectIds.value.join(',')
+      await deleteBatchDict(ids)
+      handleSearch({})
+    },
+    visible: () => selectIds.value.length > 0,
+  },
+]
 const init = async () => {
   let res = await getDictLits(baseSearch)
   data.value = res?.records
@@ -180,12 +215,8 @@ proxy.$initTableHeight(headerRef, true)
   <div>
     <div ref="headerRef">
       <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <div class="mb-2">
-        <el-button type="primary" icon="el-icon-plus" @click="editRow({})">新增</el-button>
-        <el-button type="primary" icon="el-icon-upload" @click="onImportXls">导入</el-button>
-        <el-button type="primary" icon="el-icon-download" @click="onExportXls">导出</el-button>
-        <el-button type="primary" icon="el-icon-refresh" @click="refreshCache">刷新缓存</el-button>
-        <el-button type="primary" icon="el-icon-folder-delete" @click="recycleBin">回收站</el-button>
+      <div class="mb-2 flex items-center">
+        <g-more-button :btns="moreBtns" :show-num="5" mode="opt" trigger="hover" />
       </div>
     </div>
     <o-table
@@ -204,6 +235,7 @@ proxy.$initTableHeight(headerRef, true)
       </template>
     </o-table>
     <addDictDialog ref="dictDialogRef" @success="init" />
-    <dictRecycleDialog ref="dictRecycleDialogRef" @success="init" />
+    <dictRecycleDialog ref="dictRecycleDialogRef" @refresh="init" />
+    <dictDetailDrawer ref="dictDetailDrawerRef" @refresh="init" />
   </div>
 </template>

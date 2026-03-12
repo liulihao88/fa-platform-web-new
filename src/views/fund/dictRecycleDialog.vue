@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { getAllRecycleList } from '@/api/analysis'
+import {
+  getAllRecycleList,
+  backDict,
+  deleteDictPermanently,
+  deleteBatchDictPermanently,
+  backBatchDict,
+} from '@/api/analysis'
 import { ref, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
-const baseSearch = {
-  pageNo: 1,
-  pageSize: 30,
-}
+const emits = defineEmits(['refresh'])
 const isShow = ref(false)
-const dialogRef = ref()
-const tableRef = ref()
-
-const deleteRow = (row) => {
-  console.log('deleteRow', row)
-}
 const columns = [
+  {
+    type: 'selection',
+  },
   {
     label: '字典名称',
     prop: 'dictName',
@@ -34,25 +34,60 @@ const columns = [
     btns: [
       {
         content: '取回',
+        type: 'primary',
+        title: '确认取回吗？',
+        reConfirm: !proxy.$dev,
+        handler: async (value, row) => {
+          await backDict(value.id)
+          handleSearch()
+          emits('refresh')
+        },
       },
       {
         content: '彻底删除',
-        reConfirm: proxy.$dev,
-        handler: deleteRow,
+        type: 'danger',
+        title: '确认彻底删除吗？',
+        reConfirm: !proxy.$dev,
+        handler: async (value, row) => {
+          await deleteDictPermanently(value.id)
+          handleSearch()
+          emits('refresh')
+        },
       },
     ],
   },
 ]
 
 const data = ref([])
-const total = ref(0)
+const selectIds = ref([])
+const btns = [
+  {
+    content: '批量取回',
+    type: 'primary',
+    handler: async () => {
+      const ids = selectIds.value.join(',')
+      await backBatchDict(ids)
+      handleSearch()
+      emits('refresh')
+    },
+    visible: () => selectIds.value.length > 0,
+  },
+  {
+    content: '批量删除',
+    type: 'danger',
+    handler: async () => {
+      const ids = selectIds.value.join(',')
+      await deleteBatchDictPermanently(ids)
+      handleSearch()
+    },
+    visible: () => selectIds.value.length > 0,
+  },
+]
 const handleSelectionChange = (val) => {
-  data.value = val
+  selectIds.value = val.map((item) => item.id)
 }
 const handleSearch = async () => {
   const res = await getAllRecycleList()
-  console.log(res)
-
   if (res.code === 0) {
     data.value = res.result
   }
@@ -69,6 +104,7 @@ defineExpose({
 
 <template>
   <o-dialog ref="dialogRef" v-model="isShow" title="字典回收站" width="800px" :showConfirm="false">
+    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2"></g-more-button>
     <o-table
       ref="tableRef"
       height="300px"

@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
 import TaskDialog from '@/views/fund/taskDialog.vue'
-import { getQuartzJobList, resumeQuartzJob, pauseQuartzJob, deleteQuartzJob, runQuartzJob } from '@/api/analysis'
+import {
+  getQuartzJobList,
+  resumeQuartzJob,
+  pauseQuartzJob,
+  deleteQuartzJob,
+  runQuartzJob,
+  deleteBatchQuartzJob,
+} from '@/api/analysis'
 import { getType, $toast } from '@oeos-components/utils'
 import { exportQuartzJob } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
@@ -83,19 +90,22 @@ const columns = [
           }
         },
         type: 'primary',
-        // handler: edit,
+        reConfirm: !proxy.$dev,
+        title: (value, row) => {
+          if (value?.status == '-1') {
+            return '确认启动吗？'
+          } else {
+            return '确认停止吗？'
+          }
+        },
         handler: (value, row) => {
           if (value?.status == '-1') {
-            proxy.confirm('确定启动吗?').then(() => {
-              resumeQuartzJob({ id: value.id }).then((res) => {
-                init()
-              })
+            resumeQuartzJob({ id: value.id }).then((res) => {
+              init()
             })
           } else {
-            proxy.confirm('确定停止吗?').then(() => {
-              pauseQuartzJob({ id: value.id }).then((res) => {
-                init()
-              })
+            pauseQuartzJob({ id: value.id }).then((res) => {
+              init()
             })
           }
         },
@@ -107,22 +117,21 @@ const columns = [
       {
         content: '删除',
         type: 'danger',
+        reConfirm: !proxy.$dev,
         handler: (value, row) => {
-          proxy.confirm('确定删除吗?').then(() => {
-            deleteQuartzJob({ id: value.id }).then((res) => {
-              init()
-            })
+          deleteQuartzJob({ id: value.id }).then((res) => {
+            init()
           })
         },
       },
       {
         content: '立即执行',
         type: 'primary',
+        reConfirm: !proxy.$dev,
+        title: '确认立即执行吗？',
         handler: (value, row) => {
-          proxy.confirm('确定立即执行吗?').then(() => {
-            runQuartzJob({ id: value.id }).then((res) => {
-              init()
-            })
+          runQuartzJob({ id: value.id }).then((res) => {
+            init()
           })
         },
       },
@@ -180,6 +189,36 @@ const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageSize = pageSize
   handleSearch({})
 }
+const moreBtns = [
+  {
+    content: '新增',
+    type: 'primary',
+    icon: 'el-icon-plus',
+    handler: () => editRow({}),
+  },
+  {
+    content: '导入',
+    type: 'primary',
+    icon: 'el-icon-upload',
+    handler: onImportXls,
+  },
+  {
+    content: '导出',
+    type: 'primary',
+    icon: 'el-icon-download',
+    handler: onExportXls,
+  },
+  {
+    content: '批量删除',
+    type: 'primary',
+    handler: async () => {
+      const ids = selectIds.value.join(',')
+      await deleteBatchQuartzJob(ids)
+      handleSearch({})
+    },
+    visible: () => selectIds.value.length > 0,
+  },
+]
 const init = async () => {
   let res = await getQuartzJobList(baseSearch)
   data.value = res?.records
@@ -193,11 +232,7 @@ proxy.$initTableHeight(headerRef, true)
   <div>
     <div ref="headerRef">
       <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <div class="mb-2">
-        <el-button type="primary" icon="el-icon-plus" @click="editRow({})">新增</el-button>
-        <el-button icon="el-icon-upload" @click="onImportXls">导入</el-button>
-        <el-button icon="el-icon-download" @click="onExportXls">导出</el-button>
-      </div>
+      <g-more-button :btns="moreBtns" :show-num="3" mode="opt" trigger="hover" class="mb-2" />
     </div>
     <o-table
       ref="tableRef"
