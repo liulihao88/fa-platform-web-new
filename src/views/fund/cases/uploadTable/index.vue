@@ -6,6 +6,9 @@ import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
 import { getStorage } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
 
+import { useDetail } from '@/hooks'
+const { toDetail } = useDetail()
+
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
@@ -71,12 +74,13 @@ function translateRow(row) {
   console.log(`37 row`, row)
 }
 function textRow(row) {
-  router.push({
-    path: '/fund/textMapping',
-    query: {
-      fileId: row.id,
-    },
-  })
+  // router.push({
+  //   path: '/fund/textMapping',
+  //   query: {
+  //     fileId: row.id,
+  //   },
+  // })
+  toDetail('TextMapping', { fileId: row.id })
 }
 
 async function deleteRow(row) {

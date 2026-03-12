@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getAllRecycleList } from '@/api/analysis'
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
+const { proxy } = getCurrentInstance()
 const baseSearch = {
   pageNo: 1,
   pageSize: 30,
@@ -8,6 +9,10 @@ const baseSearch = {
 const isShow = ref(false)
 const dialogRef = ref()
 const tableRef = ref()
+
+const deleteRow = (row) => {
+  console.log('deleteRow', row)
+}
 const columns = [
   {
     label: '字典名称',
@@ -32,10 +37,13 @@ const columns = [
       },
       {
         content: '彻底删除',
+        reConfirm: proxy.$dev,
+        handler: deleteRow,
       },
     ],
   },
 ]
+
 const data = ref([])
 const total = ref(0)
 const handleSelectionChange = (val) => {
@@ -69,7 +77,7 @@ defineExpose({
       :showPage="false"
       :showIndex="false"
       @selection-change="handleSelectionChange"
-    ></o-table>
+    />
   </o-dialog>
 </template>
 

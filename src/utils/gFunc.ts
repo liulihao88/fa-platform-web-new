@@ -468,19 +468,6 @@ export function calculatePrometheusStep(start, end, desiredDataPoints = 1000, mi
   return step
 }
 
-export function confirm2(message, options) {
-  const resolvedMessage = typeof message === 'function' ? message() : message
-  const mergeOptions = {
-    title: '提示',
-    draggable: true,
-    showCancelButton: false,
-    confirmButtonText: '确定',
-    dangerouslyUseHTMLString: true, // 允许 HTML
-    ...options,
-  }
-  return ElMessageBox.confirm(resolvedMessage, mergeOptions)
-}
-
 // 根据tenantId前缀去清除本地缓存
 export function _clearCacheWithPrefix() {
   const storage = window.localStorage // 或者 window.sessionStorage
@@ -496,4 +483,21 @@ export function _clearCacheWithPrefix() {
       }
     }
   })
+}
+
+export function confirm2(message, options = {}) {
+  const resolvedMessage = typeof message === 'function' ? message() : message
+  // 关键点：直接访问 Element Plus 内部维护的全局上下文
+  const elContext =
+    ElMessageBox.install?.context || ElMessageBox._context || document.querySelector('#app')?._vue_app?._context
+  const mergeOptions = {
+    title: '提示',
+    draggable: true,
+    showCancelButton: false,
+    confirmButtonText: '确定',
+    dangerouslyUseHTMLString: true, // 允许 HTML
+    appContext: elContext, // 强制注入 Element Plus 的上下文
+    ...options,
+  }
+  return ElMessageBox.confirm(resolvedMessage, mergeOptions)
 }

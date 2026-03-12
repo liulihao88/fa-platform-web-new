@@ -35,7 +35,8 @@ export default [
         component: () => import('@/views/fund/cases/index.vue'),
         meta: {
           title: '数据处理',
-          showLink: true,
+          showLink: false,
+          activePath: '/fund/analysis',
           // showParent: true
         },
       },
@@ -46,6 +47,19 @@ export default [
         meta: {
           title: '字段映射',
           showLink: false,
+          activePath: '/fund/cases',
+          // showParent: true
+        },
+      },
+      // /fund/fundsAnalysis
+      {
+        path: '/fund/fundsAnalysis',
+        name: 'FundsAnalysis',
+        component: () => import('@/views/fund/fundsAnalysis/index.vue'),
+        meta: {
+          title: '智能筛查',
+          showLink: false,
+          activePath: '/fund/analysis',
           // showParent: true
         },
       },

@@ -8,6 +8,8 @@ const { proxy } = getCurrentInstance()
 const route = useRoute()
 import { useCommonHook } from '@/store'
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
+import { useDetail } from '@/hooks'
+const { toDetail } = useDetail()
 
 const baseSearch = {
   order: 'desc',
@@ -120,7 +122,7 @@ const columns = [
       },
       {
         content: '智能筛查',
-        handler: handleRow,
+        handler: filterRow,
       },
       {
         content: '编辑',
@@ -150,13 +152,17 @@ const parseProcess = (text) => {
 }
 async function handleRow(row) {
   console.log(`81 row`, row)
-  router.push({
-    path: '/fund/cases',
-    query: {
-      caseId: row.id,
-    },
-  })
+  // router.push({
+  //   name: 'Cases',
+  //   query: {
+  //     caseId: row.id,
+  //   },
+  // })
+  toDetail('Cases', { caseId: row.id })
   setStorage('caseId', row.id)
+}
+async function filterRow(row) {
+  toDetail('FundsAnalysis', { caseId: row.id })
 }
 
 const init = async () => {
