@@ -85,10 +85,7 @@ const columns = [
         reConfirm: !proxy.$dev,
         handler: (value, row) => {
           deleteDict({ id: value.id }).then((res) => {
-            if (res?.code == 200) {
-              $toast.success('操作成功')
-              init()
-            }
+            init()
           })
         },
       },

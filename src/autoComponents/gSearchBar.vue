@@ -6,13 +6,13 @@
           <o-input
             v-if="item.type === 'input'"
             v-model="form[item.prop]"
-            :placeholder="item.placeholder"
+            :placeholder="item.placeholder||`请输入${item.label}`"
             :clearable="item.clearable || true"
           />
           <o-select
             v-else-if="item.type === 'select'"
             v-model="form[item.prop]"
-            :placeholder="item.placeholder"
+            :placeholder="item.placeholder||`请选择${item.label}`"
             :clearable="item.clearable || true"
             :options="getItemOptions(item)"
           />
@@ -20,7 +20,7 @@
             v-else-if="item.type === 'date'"
             v-model="form[item.prop]"
             :type="item.dateType || 'date'"
-            :placeholder="item.placeholder"
+            :placeholder="item.placeholder||`请选择${item.label}`"
             style="width: 100%"
           />
         </el-form-item>
