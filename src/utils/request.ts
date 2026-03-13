@@ -177,7 +177,11 @@ instance.interceptors.response.use(
         return Promise.reject(response.data)
       } else {
         // 返回正常数据
-        const resolveData = response.config.resolve ? response[response.config.resolve] : response.data.result
+        const resolveData = response.config.resolve
+          ? response[response.config.resolve]
+          : response.data.result || response.data.message
+        console.log(resolveData, 'resolveData', response.config.resolve, 'response.config.resolve')
+
         if (getType(resolveData) === 'string' && response.data.message && response.config.showMessage) {
           $toast(response.data.message)
         }

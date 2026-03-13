@@ -211,6 +211,7 @@ const moreBtns = [
   {
     content: '批量删除',
     type: 'primary',
+    reConfirm: !proxy.$dev,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchQuartzJob(ids)

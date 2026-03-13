@@ -8,7 +8,7 @@
         :size="btn.size"
         :icon="btn.icon"
         :disabled="btn.disabled"
-        @click="btn.handler && btn.handler()"
+        @click="handleButtonClick(btn)"
         class="mr-2"
       >
         {{ btn.content }}
@@ -24,12 +24,7 @@
         <el-dropdown-menu>
           <!-- 从btns配置生成的按钮 -->
           <el-dropdown-item v-for="(btn, index) in moreButtons" :key="index" :class="{ hidden: !btn.content }">
-            <el-button
-              type="text"
-              :disabled="btn.disabled"
-              @click="btn.handler && btn.handler()"
-              class="w-full text-left"
-            >
+            <el-button type="text" :disabled="btn.disabled" @click="handleButtonClick(btn)" class="w-full text-left">
               {{ btn.content }}
             </el-button>
           </el-dropdown-item>
@@ -55,6 +50,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { ElMessageBox } from 'element-plus'
 
 interface ButtonConfig {
   content: string
@@ -62,17 +58,19 @@ interface ButtonConfig {
   size?: 'large' | 'default' | 'small'
   icon?: string
   disabled?: boolean
-  handler?: () => void
+  handler?: (...args: any[]) => void
   tag?: boolean
-  visible?: () => boolean
+  visible?: boolean | (() => boolean)
+  reConfirm?: boolean | (() => boolean)
+  confirmMsg?: string
 }
 
 const props = defineProps<{
-  showNum?: number
-  showIndex?: number[]
-  trigger?: 'hover' | 'click' | 'contextmenu'
-  btns?: ButtonConfig[]
-  mode?: 'opt' | 'more'
+  showNum?: number // 最多显示的基础按钮数量
+  showIndex?: number[] // 显示的基础按钮索引数组
+  trigger?: 'hover' | 'click' | 'contextmenu' // 触发方式
+  btns?: ButtonConfig[] // 按钮配置数组
+  mode?: 'opt' | 'more' // 模式（opt：批量操作，more：列表更多操作）
 }>()
 
 const slots = defineSlots()
@@ -112,6 +110,40 @@ const moreSlotButtons = computed(() => {
 const appendDom = computed(() => {
   return slots.append ? slots.append() : []
 })
+
+// 检查是否需要确认
+function shouldConfirm(btn: ButtonConfig): boolean {
+  if (typeof btn.reConfirm === 'function') {
+    return btn.reConfirm()
+  }
+  return btn.reConfirm === true
+}
+
+// 处理按钮点击
+async function handleButtonClick(btn: ButtonConfig, ...args: any[]) {
+  if (btn.disabled) return
+
+  if (shouldConfirm(btn)) {
+    try {
+      await ElMessageBox.confirm(btn.confirmMsg || `您确定${btn.content}吗？`, '确认操作', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+      // 用户确认后执行
+      if (btn.handler) {
+        btn.handler(...args)
+      }
+    } catch (error) {
+      // 用户取消，不执行操作
+    }
+  } else {
+    // 不需要确认，直接执行
+    if (btn.handler) {
+      btn.handler(...args)
+    }
+  }
+}
 </script>
 
 <style scoped></style>

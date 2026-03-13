@@ -175,7 +175,7 @@ export const editDict = (data) => {
  * @returns
  */
 export const deleteDict = (params) => {
-  return request('/sys/dict/delete', 'delete', { params, joinTimeStamp: true, resolve: 'data' })
+  return request('/sys/dict/delete', 'delete', { params, joinTimeStamp: true })
 }
 /**
  * 导出字典

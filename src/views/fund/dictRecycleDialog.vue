@@ -64,6 +64,7 @@ const btns = [
   {
     content: '批量取回',
     type: 'primary',
+    reConfirm: !proxy.$dev,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await backBatchDict(ids)
@@ -75,6 +76,7 @@ const btns = [
   {
     content: '批量删除',
     type: 'danger',
+    reConfirm: !proxy.$dev,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchDictPermanently(ids)
