@@ -29,7 +29,6 @@ const save = async () => {
     await editDict(form.value)
   }
   isShow.value = false
-  $toast('保存成功')
   emits('success')
 }
 

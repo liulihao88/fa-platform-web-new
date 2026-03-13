@@ -81,7 +81,7 @@ const columns = [
 const data = ref([])
 const dictItemDialogRef = ref(null)
 const edit = (row) => {
-  dictItemDialogRef.value.open(row, row.dictId ? '编辑' : '新增')
+  dictItemDialogRef.value.open(row, row.id ? '编辑' : '新增')
 }
 const handleSearch = (form) => {
   baseSearch.itemText = form?.itemText
