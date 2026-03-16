@@ -13,11 +13,28 @@ interface commonListResponse {
 export const getFaCaseInfoList = (params) => {
   return request('fa/faCaseInfo/list', { params: params })
 }
-
 /**
- * 数据处理
+ * 新增案件
+ */   
+export const addFaCase = (data) => {
+  return request('fa/faCaseInfo/add', 'post', {
+    data: data,
+  })
+}
+/**
+ * 修改案件
  */
-
+export const editFaCase = (data) => {
+  return request('fa/faCaseInfo/edit', 'post', {
+    data: data,
+  })
+}
+/**
+ * 删除案件
+ */
+export const deleteFaCase = (id) => {
+  return request(`fa/faCaseInfo/delete?id=${id}`, 'delete', {})
+}
 // 案件详情
 export const getCaseInfoById = (data) => {
   return request('fa/faCaseInfo/getCaseInfoById', 'post', {

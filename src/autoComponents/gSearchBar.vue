@@ -6,21 +6,25 @@
           <o-input
             v-if="item.type === 'input'"
             v-model="form[item.prop]"
-            :placeholder="item.placeholder||`请输入${item.label}`"
+            :placeholder="item.placeholder || `请输入${item.label}`"
             :clearable="item.clearable || true"
+            style="width: 100%"
           />
           <o-select
             v-else-if="item.type === 'select'"
+            style="width: 100%"
             v-model="form[item.prop]"
-            :placeholder="item.placeholder||`请选择${item.label}`"
+            :placeholder="item.placeholder || `请选择${item.label}`"
             :clearable="item.clearable || true"
             :options="getItemOptions(item)"
           />
           <el-date-picker
             v-else-if="item.type === 'date'"
             v-model="form[item.prop]"
+            :value-format="item.valueFormat || 'YYYY-MM-DD'"
+            :format="item.format || 'YYYY-MM-DD'"
             :type="item.dateType || 'date'"
-            :placeholder="item.placeholder||`请选择${item.label}`"
+            :placeholder="item.placeholder || `请选择${item.label}`"
             style="width: 100%"
           />
         </el-form-item>
@@ -47,6 +51,8 @@ interface FormItem {
   clearable?: boolean
   options?: { label: string; value: any }[]
   dateType?: 'date' | 'datetime' | 'daterange' | 'datetimerange'
+  valueFormat?: 'YYYY-MM-DD' | 'YYYY-MM-DD HH:mm:ss' | 'x'
+  format?: 'YYYY/MM/DD'
   dict?: string
   stringToNumber?: boolean
 }
@@ -125,7 +131,6 @@ const handleReset = () => {
 .search-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .form-row {

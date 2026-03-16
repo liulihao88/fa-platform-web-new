@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
-import { getFaCaseInfoList } from '@/api/analysis'
+import addCaseDoc from './addCaseDoc.vue'
+import { deleteFaCase, getFaCaseInfoList } from '@/api/analysis'
 import { useRouter, useRoute } from 'vue-router'
 import { $toast, getStorage, setStorage } from '@oeos-components/utils'
 const router = useRouter()
@@ -16,13 +17,62 @@ const baseSearch = {
   pageNo: 1,
   pageSize: 10,
   column: 'createTime',
+  caseCode: '',
+  caseReason: '',
+  sysOrgCode: '',
+  processStatus: '',
+  processDate: '',
 }
 const data = ref([])
 const total = ref(0)
 const headerRef = ref()
-
-const editRow = (row) => {}
-
+const addCaseDocRef = ref()
+const editRow = (row) => {
+  addCaseDocRef.value.open(row, row.id ? '编辑' : '新增')
+}
+const deleteRow = async (row) => {
+  await deleteFaCase(row.id)
+  init()
+}
+const items = [
+  {
+    label: '案件名称',
+    prop: 'caseCode',
+    type: 'input',
+  },
+  {
+    label: '案由',
+    prop: 'caseReason',
+    type: 'input',
+  },
+  {
+    label: '部门受案号',
+    prop: 'sysOrgCode',
+    type: 'input',
+  },
+  {
+    label: '案件处理状态',
+    prop: 'processStatus',
+    type: 'select',
+    dict: 'fa_case_process_status',
+  },
+  {
+    label: '受理时间',
+    prop: 'processDate',
+    type: 'date',
+    valueFormat: 'YYYY-MM-DD',
+  },
+]
+const moreBtns = [
+  {
+    content: '新增',
+    type: 'primary',
+    icon: 'el-icon-plus',
+    handler: () => {
+      editRow({})
+    },
+  },
+]
 const columns = [
   {
     label: '案件名称',
@@ -40,46 +90,15 @@ const columns = [
   {
     label: '受理时间',
     prop: 'createTime',
+    width: 100,
   },
   {
     label: '文件处理状态',
     prop: 'processStatus',
-
     filter: (value) => {
       return getDictItems('fa_case_process_status').find((v) => v.value === value).label
     },
   },
-  /**
-   *  {
-    title: '处理进度',
-    align:"center",
-    resizable: true,
-    dataIndex: 'processStatus',
-    customRender: ({ text }) => {
-      // 进度条显示规则
-      const progressMap = {
-        '000': 0,
-        '001': 20,
-        '010': 40,
-        '002': 60,
-        '003': 80,
-        '004': 100
-      };
-
-      const percent = progressMap[text] || 0;
-
-      return h('div', { style: 'display: flex; align-items: center;' }, [
-        h('div', {
-          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
-        }, [
-          h('div', {
-            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
-          }, `${percent}%`)
-        ])
-      ]);
-    }
-  },
-   */
   {
     label: '处理进度',
     prop: 'processStatus',
@@ -114,7 +133,7 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 200,
+    width: 240,
     btns: [
       {
         content: '数据处理',
@@ -126,12 +145,12 @@ const columns = [
       },
       {
         content: '编辑',
-        comp: 'o-icon',
-        attrs: {
-          name: 'edit',
-          content: '编辑',
-        },
         handler: editRow,
+      },
+      {
+        content: '删除',
+        handler: deleteRow,
+        reConfirm: !proxy.$dev,
       },
     ],
   },
@@ -152,19 +171,25 @@ const parseProcess = (text) => {
 }
 async function handleRow(row) {
   console.log(`81 row`, row)
-  // router.push({
-  //   name: 'Cases',
-  //   query: {
-  //     caseId: row.id,
-  //   },
-  // })
   toDetail('Cases', { caseId: row.id })
   setStorage('caseId', row.id)
 }
 async function filterRow(row) {
   toDetail('FundsAnalysis', { caseId: row.id })
 }
-
+const handleUpdate = (pageNo, pageSize) => {
+  baseSearch.pageNo = pageNo
+  baseSearch.pageSize = pageSize
+  handleSearch({})
+}
+const handleSearch = (form) => {
+  baseSearch.caseCode = form?.caseCode
+  baseSearch.caseReason = form?.caseReason
+  baseSearch.sysOrgCode = form?.sysOrgCode
+  baseSearch.processStatus = form?.processStatus
+  baseSearch.processDate = form?.processDate
+  init()
+}
 const init = async () => {
   let res = await getFaCaseInfoList(baseSearch)
   console.log(`02 res`, res)
@@ -177,11 +202,22 @@ proxy.$initTableHeight(headerRef, true)
 
 <template>
   <div>
-    <div ref="headerRef">我是头部</div>
-    <o-table ref="tableRef" :columns="columns" :data="data" :total="total" :height="$tableHeight.value">
+    <div ref="headerRef">
+      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
+      <g-more-button :btns="moreBtns" :show-num="1" mode="opt" trigger="hover" class="mb-2" />
+    </div>
+    <o-table
+      ref="tableRef"
+      :columns="columns"
+      :data="data"
+      :total="total"
+      :height="$tableHeight.value"
+      @update="handleUpdate"
+    >
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>
     </o-table>
+    <addCaseDoc ref="addCaseDocRef" @success="init" />
   </div>
 </template>

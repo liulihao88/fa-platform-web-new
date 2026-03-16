@@ -25,8 +25,12 @@ const form = ref({
 })
 
 const save = async () => {
+  console.log(form.value)
+
   await validForm(formRef.value)
   if (title.value === '新增任务') {
+    console.log(form.value)
+
     await addQuartzJob(form.value)
   } else {
     await editQuartzJob(form.value)
@@ -50,7 +54,7 @@ const title = ref('编辑任务')
 const open = async (row: any = {}, dialogTitle = '编辑任务') => {
   title.value = dialogTitle
   row.status = row.status ? row.status.toString() : '0'
-  if (!isEmpty(row)) {
+  if (title.value === '编辑任务') {
     form.value = clone(row)
   } else {
     form.value = clone(baseForm)
@@ -75,7 +79,7 @@ defineExpose({
           <o-input v-model="form.jobClassName" />
         </el-form-item>
         <el-form-item label="Cron表达式" prop="cronExpression">
-          <JEasyCron v-model:value="form.cronExpression" v-model="form.cronExpression" class="w-100%" />
+          <JEasyCron v-model="form.cronExpression" class="w-100%" />
         </el-form-item>
         <el-form-item label="参数类型" prop="paramterType">
           <o-select
