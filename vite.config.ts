@@ -16,6 +16,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     // 服务端渲染
     server: {
       host: true,
+      open: true,
       port: VITE_PORT,
       // 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
       proxy: createProxy(JSON.parse(VITE_PROXY ?? '[]')),

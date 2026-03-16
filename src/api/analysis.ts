@@ -15,7 +15,7 @@ export const getFaCaseInfoList = (params) => {
 }
 /**
  * 新增案件
- */   
+ */
 export const addFaCase = (data) => {
   return request('fa/faCaseInfo/add', 'post', {
     data: data,

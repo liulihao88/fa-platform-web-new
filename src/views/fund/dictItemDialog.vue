@@ -24,7 +24,7 @@ const baseForm: Form = {
   description: '',
   sortOrder: 0,
   status: 1,
-  id:''
+  id: '',
 }
 
 const form = ref({
