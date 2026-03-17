@@ -35,13 +35,43 @@ export const editFaCase = (data) => {
 export const deleteFaCase = (id) => {
   return request(`fa/faCaseInfo/delete?id=${id}`, 'delete', {})
 }
+/**
+ * 获取智能查询条件列表
+ */
+export const getSmartSearchList = (id) => {
+  return request('fa/faQueryRecord/getQueryRecordList', 'post', { data: { caseId: id } })
+}
+/**
+ * 新增智能查询条件
+ */
+export const addSmartSearch = (data) => {
+  return request('fa/faQueryRecord/add', 'post', {
+    data: data,
+  })
+}
 // 案件详情
 export const getCaseInfoById = (data) => {
   return request('fa/faCaseInfo/getCaseInfoById', 'post', {
     data: data,
   })
 }
-
+/**
+ * 获取智能筛查数据列表
+ */
+export const getTransList = (data) => {
+  return request('fa/caseStandardData/transList', 'post', {
+    data: data,
+  })
+}
+/**
+ * 导出数据
+ */
+export const exportTransListData = (data) => {
+  return request('fa/caseStandardData/exportXls', 'post', {
+    data: data,
+    download: true,
+  })
+}
 // fa_case_process_status 上传文件状态列表
 export const getCommonDictionary = (key) => {
   return request(`sys/dict/getDictItems/${key}`)
