@@ -55,6 +55,7 @@ const fileInfo: any = ref({})
 const orgCode = ref('')
 const pageId = ref('')
 const orgDisabled = ref(false)
+const saveDisabled = ref(false)
 
 const initPayList = async () => {
   let params = {
@@ -66,6 +67,16 @@ const initPayList = async () => {
   payOptions.value = res.records
 }
 
+const handleSaveDisabled = () => {
+  const pages = fileInfo.value?.filePages ?? []
+  if (!pages.length) {
+    saveDisabled.value = true
+    return
+  }
+  let res = pages.some((v) => v.configureStatus !== '1')
+  saveDisabled.value = res
+}
+
 const init = async () => {
   let sendParams = {
     fileId: fileId.value,
@@ -73,6 +84,7 @@ const init = async () => {
   Promise.all([getCaseFileTransInfo(sendParams), queryFilePropertyByFileId(sendParams)]).then(async (res) => {
     fileInfo.value = res[0]
     pageId.value = fileInfo.value.filePages[0].pageId
+    handleSaveDisabled()
     orgCode.value = res[1].orgCd
     orgDisabled.value = res[1].configFlag === true
     await initPayList()
@@ -140,8 +152,8 @@ defineExpose({
               width="300"
             />
             <div>
-              <o-button type="primary">保存配置</o-button>
-              <o-button>暂存为草稿</o-button>
+              <o-button type="primary" :disabled="saveDisabled">保存配置</o-button>
+              <o-button :disabled="saveDisabled">暂存为草稿</o-button>
             </div>
           </o-row>
           <TextMappingTable ref="textMappingTableRef" :orgCode="orgCode" :pageId="pageId" />

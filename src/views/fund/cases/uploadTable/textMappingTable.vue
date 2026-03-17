@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, computed } from 'vue'
+import TextMappingTableDialog from '@/views/fund/cases/uploadTable/textMappingTableDialog.vue'
 import { Edit } from '@element-plus/icons-vue'
 
 import { casefileFileConfigData } from '@/api/analysis'
@@ -8,6 +9,7 @@ const { proxy } = getCurrentInstance()
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
+const textMappingTableDialogRef = ref()
 
 const props = defineProps({
   orgCode: {
@@ -44,6 +46,7 @@ const columns = [
   },
 ]
 
+const sourceColumns = ref([])
 const init = async () => {
   let sendParams = {
     pageId: props.pageId,
@@ -52,11 +55,8 @@ const init = async () => {
   let res = await casefileFileConfigData(sendParams)
   console.log(`06 res`, res)
   data.value = res[0]
+  sourceColumns.value = data.value.dataBlockStucts ?? []
 }
-
-const sourceColumns = computed(() => {
-  return data.value.dataBlockStucts ?? []
-})
 
 const noMappingFields = computed(() => {
   return (
@@ -86,6 +86,8 @@ const tableData = computed(() => {
 const handleColumnHeader = async (column, idx) => {
   console.log(`68 idx`, idx)
   console.log(`21 column`, column)
+  console.log(`21 column.value`, column.value)
+  textMappingTableDialogRef.value.open(column.faFileParameter.newMetaData, idx)
 }
 
 const headerCellStyle = ({ column }) => {
@@ -99,6 +101,17 @@ const headerCellStyle = ({ column }) => {
   return {
     fontWeight: 600,
   }
+}
+
+const success = (metaData, idx) => {
+  console.log(`38 idx`, idx)
+  console.log(`79 metaData`, metaData)
+  console.log(`45 sourceColumns.value`, sourceColumns.value)
+  sourceColumns.value[idx].faFileParameter.newMetaData = metaData
+  console.log(
+    `07 sourceColumns.value[idx].faFileParameter.newMetaData`,
+    sourceColumns.value[idx].faFileParameter.newMetaData,
+  )
 }
 
 defineExpose({
@@ -161,6 +174,8 @@ defineExpose({
         </el-table-column>
       </el-table>
     </div>
+
+    <TextMappingTableDialog ref="textMappingTableDialogRef" @success="success" />
   </div>
 </template>
 

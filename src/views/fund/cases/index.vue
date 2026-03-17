@@ -76,14 +76,14 @@ const tabsOptions = [
     label: '上传文件',
     value: UPLOAD,
   },
-  {
-    label: '涉案人管理',
-    value: MANAGE,
-  },
-  {
-    label: '涉案人交易查询',
-    value: SEARCH,
-  },
+  // {
+  //   label: '涉案人管理',
+  //   value: MANAGE,
+  // },
+  // {
+  //   label: '涉案人交易查询',
+  //   value: SEARCH,
+  // },
   {
     label: '标准数据查看',
     value: STANDARD_VIEW,
