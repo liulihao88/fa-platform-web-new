@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed, useTemplateRef } from 'vue'
+import { ref, getCurrentInstance, computed, useTemplateRef, nextTick } from 'vue'
 import OrgTableDIalog from '@/views/fund/cases/uploadTable/orgTableDIalog.vue'
 import TextMappingTable from '@/views/fund/cases/uploadTable/textMappingTable.vue'
 import TextMappingInfo from '@/views/fund/cases/uploadTable/textMappingInfo.vue'
@@ -7,10 +7,9 @@ import {
   getCaseFileTransInfo,
   queryFilePropertyByFileId,
   faOrgsConfigureList,
-  casefileFileConfigData,
   faOrgsConfigureAllList,
 } from '@/api/analysis.ts'
-import { $toast, getStorage } from '@oeos-components/utils'
+import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
 const { proxy } = getCurrentInstance()
 
@@ -56,6 +55,7 @@ const orgCode = ref('')
 const pageId = ref('')
 const orgDisabled = ref(false)
 const saveDisabled = ref(false)
+const activePageIndex = ref(0)
 
 const initPayList = async () => {
   let params = {
@@ -67,34 +67,70 @@ const initPayList = async () => {
   payOptions.value = res.records
 }
 
-const handleSaveDisabled = () => {
-  const pages = fileInfo.value?.filePages ?? []
-  if (!pages.length) {
-    saveDisabled.value = true
-    return
-  }
-  let res = pages.some((v) => v.configureStatus !== '1')
-  saveDisabled.value = res
+const queryBankInit = async () => {
+  let res = await queryFilePropertyByFileId({
+    fileId: fileId.value,
+  })
+  orgCode.value = res.orgCd
+  orgDisabled.value = res.configFlag === true
 }
 
 const init = async () => {
   let sendParams = {
     fileId: fileId.value,
   }
-  Promise.all([getCaseFileTransInfo(sendParams), queryFilePropertyByFileId(sendParams)]).then(async (res) => {
-    fileInfo.value = res[0]
-    pageId.value = fileInfo.value.filePages[0].pageId
-    handleSaveDisabled()
-    orgCode.value = res[1].orgCd
-    orgDisabled.value = res[1].configFlag === true
-    await initPayList()
-    textMappingTableRef.value.init()
-  })
+  let res = await getCaseFileTransInfo(sendParams)
+  console.log(`51 res`, res)
+  fileInfo.value = res
+  const pages = fileInfo.value.filePages ?? []
+  if (!pages.length) {
+    activePageIndex.value = 0
+    pageId.value = ''
+  } else {
+    if (activePageIndex.value >= pages.length) {
+      activePageIndex.value = 0
+    }
+    pageId.value = pages[activePageIndex.value]?.pageId ?? ''
+  }
+  await queryBankInit()
+  await initPayList()
+  if (pageId.value) {
+    await nextTick()
+    textMappingTableRef.value?.init()
+  }
 }
 init()
 
+const handlePageClick = async (index) => {
+  if (activePageIndex.value === index) {
+    return
+  }
+
+  activePageIndex.value = index
+  pageId.value = fileInfo.value?.filePages?.[index]?.pageId ?? ''
+
+  if (pageId.value) {
+    await nextTick()
+    textMappingTableRef.value?.init()
+  }
+}
+
+const save = () => {
+  $toast('保存')
+}
+
 const selectOrg = () => {
   orgTableDIalogRef.value.open()
+}
+
+const textMappingTableInit = (emitTableData) => {
+  const pages = fileInfo.value?.filePages ?? []
+  if (isEmpty(pages) || isEmpty(emitTableData)) {
+    saveDisabled.value = true
+    return
+  }
+  let res = pages.some((v) => v.configureStatus !== '1')
+  saveDisabled.value = res
 }
 
 const dialogTitle = computed(() => {
@@ -110,6 +146,7 @@ defineExpose({
 
 <template>
   <div class="h-100%">
+    {{ saveDisabled }}
     <el-card ref="headerRef" size="small" class="mb2">
       <o-title :title="fileInfo.fileName">
         <TextMappingInfo />
@@ -133,7 +170,13 @@ defineExpose({
     <o-row :col="[3, 21]" :gutter="16" :style="{ height: $tableHeight.value + 'px' }">
       <o-basic-layout title="文件sheet" class="h-100%">
         <div class="bg-white">
-          <o-flex v-for="(v, i) in fileInfo.filePages" :key="i">
+          <o-flex
+            v-for="(v, i) in fileInfo.filePages"
+            :key="i"
+            class="sheet-item"
+            :class="{ 'sheet-item--active': activePageIndex === i }"
+            @click="handlePageClick(i)"
+          >
             <div>{{ v.pageName }}</div>
             <el-tag v-if="v.configureStatus === '1'">已配置</el-tag>
           </o-flex>
@@ -152,11 +195,21 @@ defineExpose({
               width="300"
             />
             <div>
-              <o-button type="primary" :disabled="saveDisabled">保存配置</o-button>
-              <o-button :disabled="saveDisabled">暂存为草稿</o-button>
+              <el-button type="primary" :disabled="saveDisabled" @click="save">
+                保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
+              </el-button>
+              <!-- <el-button :disabled="!!saveDisabled">
+                暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
+              </el-button> -->
             </div>
           </o-row>
-          <TextMappingTable ref="textMappingTableRef" :orgCode="orgCode" :pageId="pageId" />
+          <TextMappingTable
+            v-if="notEmpty(fileInfo)"
+            ref="textMappingTableRef"
+            :orgCode="orgCode"
+            :pageId="pageId"
+            @textMappingTableInit="textMappingTableInit"
+          />
         </o-basic-layout>
       </div>
     </o-row>
@@ -164,3 +217,26 @@ defineExpose({
     <OrgTableDIalog ref="orgTableDIalogRef" />
   </div>
 </template>
+
+<style scoped lang="scss">
+.sheet-item {
+  justify-content: space-between;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.sheet-item:hover {
+  background: #f5f9ff;
+  border-color: #409eff;
+}
+
+.sheet-item--active {
+  background: #ecf5ff;
+  border-color: #409eff;
+  box-shadow: inset 0 0 0 1px #409eff;
+}
+</style>

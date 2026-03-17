@@ -2,14 +2,18 @@
 import { ref, getCurrentInstance, computed } from 'vue'
 import TextMappingTableDialog from '@/views/fund/cases/uploadTable/textMappingTableDialog.vue'
 import { Edit } from '@element-plus/icons-vue'
+import { $toast, isEmpty } from '@oeos-components/utils'
 
 import { casefileFileConfigData } from '@/api/analysis'
+
+const emits = defineEmits(['textMappingTableInit'])
 
 const { proxy } = getCurrentInstance()
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const textMappingTableDialogRef = ref()
+const dataIsEmpty = ref(false)
 
 const props = defineProps({
   orgCode: {
@@ -53,7 +57,13 @@ const init = async () => {
     orgCode: props.orgCode,
   }
   let res = await casefileFileConfigData(sendParams)
-  console.log(`06 res`, res)
+  emits('textMappingTableInit', res)
+  if (isEmpty(res)) {
+    dataIsEmpty.value = true
+    return
+  } else {
+    dataIsEmpty.value = false
+  }
   data.value = res[0]
   sourceColumns.value = data.value.dataBlockStucts ?? []
 }
@@ -134,6 +144,7 @@ defineExpose({
 
     <div class="mapping-table-wrapper">
       <el-table
+        v-if="!dataIsEmpty"
         :data="tableData"
         border
         stripe
@@ -173,6 +184,7 @@ defineExpose({
           </el-table-column>
         </el-table-column>
       </el-table>
+      <o-empty v-else description="暂无数据" height="100%" />
     </div>
 
     <TextMappingTableDialog ref="textMappingTableDialogRef" @success="success" />
