@@ -133,6 +133,14 @@ export const casefileFileConfigData = (data) => {
   })
 }
 
+// 获取table配置列列表 /jeecgboot/fa/casefile/getFileConfigPageList
+
+export const getFileConfigPageList = (params) => {
+  return request(`fa/casefile/getFileConfigPageList`, {
+    params: params,
+  })
+}
+
 /**
  *
  * 定时任务
