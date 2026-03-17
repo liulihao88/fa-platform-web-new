@@ -1,6 +1,6 @@
 <template>
   <div class="search-bar" :style="{ '--items-per-row': itemsPerRow }">
-    <el-form :model="form" :inline="false" class="search-form" label-suffix=":">
+    <el-form :model="form" :inline="false" class="search-form" label-suffix=":" @keyup.enter="handleSearch">
       <div v-for="(row, rowIndex) in formRows" :key="rowIndex" class="form-row">
         <el-form-item v-for="(item, index) in row" :key="index" :label="item.label" :prop="item.prop">
           <o-input
@@ -9,6 +9,7 @@
             :placeholder="item.placeholder || `请输入${item.label}`"
             :clearable="item.clearable || true"
             style="width: 100%"
+            @keyup.enter="handleSearch"
           />
           <o-select
             v-else-if="item.type === 'select'"
@@ -17,6 +18,7 @@
             :placeholder="item.placeholder || `请选择${item.label}`"
             :clearable="item.clearable || true"
             :options="getItemOptions(item)"
+            @change="handleSearch"
           />
           <el-date-picker
             v-else-if="item.type === 'date'"
@@ -26,6 +28,7 @@
             :type="item.dateType || 'date'"
             :placeholder="item.placeholder || `请选择${item.label}`"
             style="width: 100%"
+            @change="handleSearch"
           />
         </el-form-item>
         <div v-if="rowIndex === formRows.length - 1" class="form-actions">
