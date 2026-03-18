@@ -1,17 +1,43 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
 import { getFileConfigPageList } from '@/api/analysis'
 import { $toast, notEmpty } from '@oeos-components/utils'
 
 const emits = defineEmits(['success'])
 
+const props = defineProps({
+  orgCode: {
+    type: String,
+    required: true,
+  },
+  mappingTitle: {
+    type: String,
+    required: true,
+  },
+})
+
 const isShow = ref(false)
 const total = ref(0)
 const data = ref([])
+const baseSearch = ref({
+  pageNo: 1,
+  pageSize: 10,
+  metaData: '',
+  orgCode: props.orgCode,
+  mappingTitle: props.mappingTitle,
+})
 
 const pageNo = ref(1)
 const pageSize = ref(10)
+
+const items = [
+  {
+    label: '案件名称',
+    prop: 'metaData',
+    type: 'input',
+  },
+]
 
 const editRow = (row) => {}
 const tableRef = ref(null)
@@ -48,7 +74,7 @@ const columns = [
 ]
 
 const _handleRowClick = () => {
-  let clickIdx = 0
+  let clickIdx = -1
   if (data.value.length === 0) {
     reset()
     return
@@ -58,9 +84,15 @@ const _handleRowClick = () => {
     let taskNameIdx = data.value.findIndex((item) => {
       return item.metaData === oriMetaData.value
     })
-    clickIdx = taskNameIdx === -1 ? 0 : taskNameIdx
+    clickIdx = taskNameIdx
   }
-  tableRef.value.$refs.tableRef.setCurrentRow(data.value[clickIdx])
+  console.log(`89 clickIdx`, clickIdx)
+  if (clickIdx === -1) {
+    selectRow.value = {}
+    tableRef.value.$refs.tableRef.setCurrentRow(null)
+  } else {
+    tableRef.value.$refs.tableRef.setCurrentRow(data.value[clickIdx])
+  }
 }
 
 const reset = () => {
@@ -72,16 +104,15 @@ const init = async () => {
   let sendParams = {
     pageNo: 1,
     pageSize: 10,
-    orgCode: 10000000013,
-    mappingTitle: '账号,户名,币种,业务日期,交易方向,交易金额,对方账号,对方户名,对方机构,归属机构,交易种类',
   }
-  let res = await getFileConfigPageList(sendParams)
+  let res = await getFileConfigPageList(baseSearch.value)
   data.value = res.records
   total.value = res.total
   _handleRowClick()
 }
 
 const handleCurrentChange = async (currentRow, oldCurrentRow) => {
+  console.log(`86 currentRow`, currentRow)
   if (notEmpty(currentRow)) {
     selectRow.value = currentRow
     oriMetaData.value = currentRow.metaData
@@ -101,13 +132,36 @@ const confirm = () => {
   isShow.value = false
 }
 
+const handleSearch = (form) => {
+  baseSearch.value.metaData = form?.metaData
+  init()
+}
+const update = async (no, size) => {
+  console.log(`47 no`, no)
+  baseSearch.value.pageNo = no
+  baseSearch.value.pageSize = size
+  init()
+}
+
+watch(
+  () => props.mappingTitle,
+  (val) => {
+    baseSearch.value.mappingTitle = val
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+)
+
 defineExpose({
   open,
 })
 </script>
 
 <template>
-  <o-dialog ref="dialogRef" v-model="isShow" title="修改配置列" width="1000" @confirm="confirm">
+  <o-dialog ref="dialogRef" v-model="isShow" title="修改配置列" width="1000" :enableConfirm="false" @confirm="confirm">
+    <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
     <o-table
       ref="tableRef"
       size="small"
@@ -116,7 +170,10 @@ defineExpose({
       :total="total"
       highlight-current-row
       :showIndex="false"
+      height="400"
+      :page-size="baseSearch.pageSize"
       @current-change="handleCurrentChange"
+      @update="update"
     >
       <template #radio="{ value, row }">
         <div class="f-ct-ct w-100%">

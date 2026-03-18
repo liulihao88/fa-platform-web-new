@@ -136,7 +136,6 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   // request('info/overview', { showLoading: true, cancel: (c)=>{ setTimeout(() => {c()}, 100); } }) 取消请求
   config.cancelToken = new CancelToken(function executor(c) {
-    console.log(`73 c`, c)
     if (config.cancel) {
       return config.cancel(c)
     }
@@ -180,7 +179,6 @@ instance.interceptors.response.use(
         const resolveData = response.config.resolve
           ? response[response.config.resolve]
           : response.data.result || response.data.message
-        console.log(resolveData, 'resolveData', response.config.resolve, 'response.config.resolve')
 
         if (getType(resolveData) === 'string' && response.data.message && response.config.showMessage) {
           $toast(response.data.message)
@@ -346,7 +344,6 @@ export function uploadFile<T = any>(options: {
             data: options.data,
             headers: options.headers,
           })
-          console.log(result, 'result')
 
           // 隐藏加载动画
           if (options.showLoading) {
@@ -360,8 +357,6 @@ export function uploadFile<T = any>(options: {
           resolve(result as unknown as T)
         }
       } catch (error) {
-        console.log(error, 'err')
-
         // 隐藏加载动画
         if (options.showLoading) {
           loadingFalse(options.showLoading)
@@ -426,7 +421,6 @@ function uploadSingleFile<T = any>(params: {
       resolve: 'data',
     } as CustomRequestConfig)
     .then((res: any) => {
-      console.log(res, 'res')
       if (res.code === 0 || res.code === 200) {
         $toast(res.message || '上传成功', 's', { closeAll: true })
       } else {

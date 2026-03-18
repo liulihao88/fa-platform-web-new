@@ -188,7 +188,12 @@ defineExpose({
       <o-empty v-else description="暂无数据" height="100%" />
     </div>
 
-    <TextMappingTableDialog ref="textMappingTableDialogRef" @success="success" />
+    <TextMappingTableDialog
+      ref="textMappingTableDialogRef"
+      :mappingTitle="data.mappingTitle"
+      :orgCode="orgCode"
+      @success="success"
+    />
   </div>
 </template>
 

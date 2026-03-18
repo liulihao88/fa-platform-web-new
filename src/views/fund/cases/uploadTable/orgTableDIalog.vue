@@ -7,17 +7,29 @@ import { faOrgsConfigureAllList } from '@/api/analysis.ts'
 const emits = defineEmits(['success'])
 
 const isShow = ref(false)
-const pageNo = ref(1)
-const pageSize = ref(10)
 const total = ref(0)
 const orgId = ref('')
 const selectRow = ref({})
 const tableRef = ref(null)
 
+const baseSearch = ref({
+  pageNo: 1,
+  pageSize: 10,
+  orgName: '',
+})
+
 const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
-  return (pageNo.value - 1) * pageSize.value + index + 1
+  return (baseSearch.value.pageNo - 1) * baseSearch.value.pageSize + index + 1
 }
+
+const items = [
+  {
+    label: '机构名称',
+    prop: 'orgName',
+    type: 'input',
+  },
+]
 
 const columns = [
   {
@@ -45,11 +57,7 @@ const columns = [
 const data = ref([])
 
 const init = async () => {
-  let sendParams = {
-    pageNo: pageNo.value,
-    pageSize: pageSize.value,
-  }
-  const res = await faOrgsConfigureAllList(sendParams)
+  const res = await faOrgsConfigureAllList(baseSearch.value)
   data.value = res.records
   total.value = res.total
   _handleRowClick()
@@ -80,6 +88,18 @@ const reset = () => {
   tableRef.value.$refs.tableRef.setCurrentRow(null)
 }
 
+const handleSearch = (form) => {
+  baseSearch.value.orgName = form?.orgName
+  init()
+}
+
+const update = async (no, size) => {
+  console.log(`47 no`, no)
+  baseSearch.value.pageNo = no
+  baseSearch.value.pageSize = size
+  init()
+}
+
 const open = async (sendOrgId = '') => {
   orgId.value = sendOrgId
   init()
@@ -101,16 +121,27 @@ defineExpose({
 
 <template>
   <div>
-    <o-dialog ref="dialogRef" v-model="isShow" title="银行机构选择" width="1000" @confirm="confirm">
+    <o-dialog
+      ref="dialogRef"
+      v-model="isShow"
+      title="银行机构选择"
+      width="1000"
+      :enableConfirm="false"
+      @confirm="confirm"
+    >
       {{ orgId }}
+      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
       <o-table
         ref="tableRef"
         size="small"
         :columns="columns"
         :data="data"
         :total="total"
+        height="400"
         highlight-current-row
+        :page-size="baseSearch.pageSize"
         :showIndex="false"
+        @update="update"
         @current-change="handleCurrentChange"
       >
         <template #radio="{ value, row }">
