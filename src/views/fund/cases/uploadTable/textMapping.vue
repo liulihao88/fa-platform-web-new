@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance, computed, useTemplateRef, nextTick } from 'vue'
-import OrgTableDIalog from '@/views/fund/cases/uploadTable/orgTableDIalog.vue'
+import OrgTableDialog from '@/views/fund/cases/uploadTable/orgTableDialog.vue'
 import TextMappingTable from '@/views/fund/cases/uploadTable/textMappingTable.vue'
 import TextMappingInfo from '@/views/fund/cases/uploadTable/textMappingInfo.vue'
 import {
@@ -21,7 +21,7 @@ const textMappingTableRef = ref()
 const fileId = ref(route.query.fileId)
 
 const payOptions: any = ref([])
-const orgTableDIalogRef = ref()
+const orgTableDialogRef = ref()
 const headerRef = useTemplateRef('headerRef')
 
 const adjForm = ref({
@@ -72,6 +72,10 @@ const queryBankInit = async () => {
   })
   orgCode.value = res.orgCd
   orgDisabled.value = res.configFlag === true
+  if (res.configFlag === false) {
+    $toast('先选择所属银行/支付公司', 'w')
+    return Promise.reject()
+  }
 }
 
 const init = async () => {
@@ -119,13 +123,12 @@ const save = () => {
 }
 
 const selectOrg = () => {
-  orgTableDIalogRef.value.open()
+  orgTableDialogRef.value.open()
 }
 
 const textMappingTableInit = (emitTableData) => {
   const pages = fileInfo.value?.filePages ?? []
-  let res = pages.some((v) => v.configureStatus !== '1')
-  if (res) {
+  if (pages[activePageIndex.value].configureStatus !== '1') {
     return true
   }
   if (isEmpty(pages) || isEmpty(emitTableData)) {
@@ -138,6 +141,15 @@ const textMappingTableInit = (emitTableData) => {
 const dialogTitle = computed(() => {
   return '字段映射 - ' + fileInfo.value.fileName
 })
+
+const orgTableDialogSuccess = async (orgId) => {
+  orgCode.value = orgId
+  await initPayList()
+  if (pageId.value) {
+    await nextTick()
+    textMappingTableRef.value?.init()
+  }
+}
 
 proxy.$initTableHeight(headerRef)
 
@@ -214,6 +226,7 @@ defineExpose({
                   content="当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可"
                   :disabled="!saveDisabled"
                 >
+                  <span class="mr cl-65">多个数据块配置后一起保存</span>
                   <el-button type="primary" :disabled="saveDisabled" @click="save">
                     保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
                   </el-button>
@@ -224,7 +237,7 @@ defineExpose({
               </div>
             </o-flex>
             <TextMappingTable
-              v-if="notEmpty(fileInfo)"
+              v-if="notEmpty(fileInfo) && orgCode"
               ref="textMappingTableRef"
               :orgCode="orgCode"
               :pageId="pageId"
@@ -235,7 +248,7 @@ defineExpose({
       </el-col>
     </el-row>
 
-    <OrgTableDIalog ref="orgTableDIalogRef" />
+    <OrgTableDialog ref="orgTableDialogRef" @success="orgTableDialogSuccess" />
   </div>
 </template>
 

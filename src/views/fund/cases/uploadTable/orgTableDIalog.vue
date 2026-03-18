@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
-import { $toast, notEmpty } from '@oeos-components/utils'
+import { $toast, notEmpty, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-const isShow = ref(false)
 
+const emits = defineEmits(['success'])
+
+const isShow = ref(false)
 const pageNo = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
@@ -61,18 +63,16 @@ const handleCurrentChange = async (currentRow, oldCurrentRow) => {
 }
 
 const _handleRowClick = () => {
-  let clickIdx = 0
   if (data.value.length === 0) {
     reset()
     return
   }
   if (orgId.value) {
     let taskNameIdx = data.value.findIndex((item) => {
-      return item.value === orgId.value
+      return item.orgCd === orgId.value
     })
-    clickIdx = taskNameIdx === -1 ? 0 : taskNameIdx
+    tableRef.value.$refs.tableRef.setCurrentRow(data.value[taskNameIdx])
   }
-  tableRef.value.$refs.tableRef.setCurrentRow(data.value[clickIdx])
 }
 
 const reset = () => {
@@ -86,6 +86,14 @@ const open = async (sendOrgId = '') => {
   isShow.value = true
 }
 
+const confirm = () => {
+  if (isEmpty(orgId.value)) {
+    return $toast('必须选择一个所属银行/支付公司', 'e')
+  }
+  isShow.value = false
+  emits('success', orgId.value)
+}
+
 defineExpose({
   open,
 })
@@ -93,8 +101,10 @@ defineExpose({
 
 <template>
   <div>
-    <o-dialog ref="dialogRef" v-model="isShow" title="银行机构选择" width="1000">
+    <o-dialog ref="dialogRef" v-model="isShow" title="银行机构选择" width="1000" @confirm="confirm">
+      {{ orgId }}
       <o-table
+        ref="tableRef"
         size="small"
         :columns="columns"
         :data="data"
