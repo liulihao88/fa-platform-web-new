@@ -63,7 +63,7 @@ const handleCurrentChange = async (currentRow, oldCurrentRow) => {
 }
 
 const _handleRowClick = () => {
-  if (data.value.length === 0) {
+  if (data.value.length === 0 || isEmpty(orgId.value)) {
     reset()
     return
   }

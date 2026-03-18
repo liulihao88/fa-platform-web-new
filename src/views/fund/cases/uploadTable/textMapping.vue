@@ -123,7 +123,7 @@ const save = () => {
 }
 
 const selectOrg = () => {
-  orgTableDialogRef.value.open()
+  orgTableDialogRef.value.open(orgCode.value)
 }
 
 const textMappingTableInit = (emitTableData) => {
