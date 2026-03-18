@@ -193,7 +193,7 @@ defineExpose({
 
 <style scoped lang="scss">
 .mapping-table-page {
-  padding: 16px;
+  padding: 16px 0;
   background: #fff;
 }
 

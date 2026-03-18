@@ -24,11 +24,10 @@ const payOptions: any = ref([])
 const orgTableDIalogRef = ref()
 const headerRef = useTemplateRef('headerRef')
 
-const caseInfo = ref({})
 const adjForm = ref({
-  adjTransAmt: caseInfo.value?.adjTransAmt,
-  adjCreditAmt: caseInfo.value?.adjCreditAmt,
-  adjSettlementAmt: caseInfo.value?.adjSettlementAmt,
+  adjTransAmt: '否',
+  adjCreditAmt: '否',
+  adjSettlementAmt: '否',
 })
 
 /**
@@ -125,12 +124,15 @@ const selectOrg = () => {
 
 const textMappingTableInit = (emitTableData) => {
   const pages = fileInfo.value?.filePages ?? []
+  let res = pages.some((v) => v.configureStatus !== '1')
+  if (res) {
+    return true
+  }
   if (isEmpty(pages) || isEmpty(emitTableData)) {
     saveDisabled.value = true
     return
   }
-  let res = pages.some((v) => v.configureStatus !== '1')
-  saveDisabled.value = res
+  return false
 }
 
 const dialogTitle = computed(() => {
@@ -146,6 +148,9 @@ defineExpose({
 
 <template>
   <div class="h-100%">
+    <el-button type="primary" :disabled="saveDisabled" @click="save">
+      保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
+    </el-button>
     {{ saveDisabled }}
     <el-card ref="headerRef" size="small" class="mb2">
       <o-title :title="fileInfo.fileName">
@@ -167,52 +172,68 @@ defineExpose({
       </o-title>
     </el-card>
 
-    <o-row :col="[3, 21]" :gutter="16" :style="{ height: $tableHeight.value + 'px' }">
-      <o-basic-layout title="文件sheet" class="h-100%">
-        <div class="bg-white">
-          <o-flex
-            v-for="(v, i) in fileInfo.filePages"
-            :key="i"
-            class="sheet-item"
-            :class="{ 'sheet-item--active': activePageIndex === i }"
-            @click="handlePageClick(i)"
-          >
-            <div>{{ v.pageName }}</div>
-            <el-tag v-if="v.configureStatus === '1'">已配置</el-tag>
-          </o-flex>
-        </div>
-      </o-basic-layout>
-
-      <div class="bg-white h-100%">
-        <o-basic-layout>
-          <o-row :col="6">
-            <o-select v-model="adjForm.adjTransAmt" title="交易金额调整项" :options="BOOLEAN_OPTIONS" width="300" />
-            <o-select v-model="adjForm.adjCreditAmt" title="贷款金额调整项" :options="BOOLEAN_OPTIONS" width="300" />
-            <o-select
-              v-model="adjForm.adjSettlementAmt"
-              title="结算金额调整项"
-              :options="BOOLEAN_OPTIONS"
-              width="300"
-            />
-            <div>
-              <el-button type="primary" :disabled="saveDisabled" @click="save">
-                保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
-              </el-button>
-              <!-- <el-button :disabled="!!saveDisabled">
-                暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
-              </el-button> -->
-            </div>
-          </o-row>
-          <TextMappingTable
-            v-if="notEmpty(fileInfo)"
-            ref="textMappingTableRef"
-            :orgCode="orgCode"
-            :pageId="pageId"
-            @textMappingTableInit="textMappingTableInit"
-          />
+    <el-row :gutter="16" :style="{ height: $tableHeight.value + 'px' }">
+      <el-col :span="3">
+        <o-basic-layout title="文件sheet" class="h-100%">
+          <div class="bg-white">
+            <o-flex
+              v-for="(v, i) in fileInfo.filePages"
+              :key="i"
+              class="sheet-item"
+              :class="{ 'sheet-item--active': activePageIndex === i }"
+              @click="handlePageClick(i)"
+            >
+              <div>{{ v.pageName }}</div>
+              <el-tag v-if="v.configureStatus === '1'">已配置</el-tag>
+            </o-flex>
+          </div>
         </o-basic-layout>
-      </div>
-    </o-row>
+      </el-col>
+
+      <el-col :span="21">
+        <div class="bg-white h-100%">
+          <o-basic-layout>
+            <o-flex justify="space-between">
+              <o-flex :gap="16">
+                <o-select v-model="adjForm.adjTransAmt" title="交易金额调整项" :options="BOOLEAN_OPTIONS" width="200" />
+                <o-select
+                  v-model="adjForm.adjCreditAmt"
+                  title="贷款金额调整项"
+                  :options="BOOLEAN_OPTIONS"
+                  width="200"
+                />
+                <o-select
+                  v-model="adjForm.adjSettlementAmt"
+                  title="结算金额调整项"
+                  :options="BOOLEAN_OPTIONS"
+                  width="200"
+                />
+              </o-flex>
+              <div>
+                <o-tooltip
+                  content="当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可"
+                  :disabled="!saveDisabled"
+                >
+                  <el-button type="primary" :disabled="saveDisabled" @click="save">
+                    保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
+                  </el-button>
+                </o-tooltip>
+                <!-- <el-button :disabled="!!saveDisabled">
+                  暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
+                </el-button> -->
+              </div>
+            </o-flex>
+            <TextMappingTable
+              v-if="notEmpty(fileInfo)"
+              ref="textMappingTableRef"
+              :orgCode="orgCode"
+              :pageId="pageId"
+              @textMappingTableInit="textMappingTableInit"
+            />
+          </o-basic-layout>
+        </div>
+      </el-col>
+    </el-row>
 
     <OrgTableDIalog ref="orgTableDIalogRef" />
   </div>
