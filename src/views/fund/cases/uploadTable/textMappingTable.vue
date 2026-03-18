@@ -126,6 +126,7 @@ const success = (metaData, idx) => {
 
 defineExpose({
   init,
+  sourceColumns,
 })
 </script>
 

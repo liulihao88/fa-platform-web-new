@@ -141,6 +141,11 @@ export const getFileConfigPageList = (params) => {
   })
 }
 
+// 保存配置 /fa/casefile/updateFileConfig
+export const updateFaFileConfig = (data) => {
+  return request('fa/casefile/updateFileConfig', 'post', { data })
+}
+
 /**
  *
  * 定时任务

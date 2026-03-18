@@ -8,6 +8,7 @@ import {
   queryFilePropertyByFileId,
   faOrgsConfigureList,
   faOrgsConfigureAllList,
+  updateFaFileConfig,
 } from '@/api/analysis.ts'
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
@@ -118,8 +119,29 @@ const handlePageClick = async (index) => {
   }
 }
 
-const save = () => {
-  $toast('保存')
+const save = async () => {
+  await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
+    title: '确认操作',
+  })
+  if (!orgCode.value) {
+    return proxy.$toast('请先选择所属银行/支付公司', 'e')
+  }
+  // 准备请求参数
+  const sendData = {
+    // faFileParameters: titleConfigData.value.result.flatMap((dataBlock) =>
+    //   dataBlock.dataBlockStucts.map((struct) => struct.faFileParameter),
+    // ),
+    faFileParameters: textMappingTableRef.value.sourceColumns.map((struct) => struct.faFileParameter),
+    orgCode: orgCode.value,
+    pageId: pageId.value,
+    adjTransAmt: adjForm.value.adjTransAmt,
+    adjCreditAmt: adjForm.value.adjCreditAmt,
+    adjSettlementAmt: adjForm.value.adjSettlementAmt,
+  }
+
+  // // 调用API保存配置
+  await updateFaFileConfig(sendData)
+  $toast('保存成功')
 }
 
 const selectOrg = () => {
@@ -128,8 +150,9 @@ const selectOrg = () => {
 
 const textMappingTableInit = (emitTableData) => {
   const pages = fileInfo.value?.filePages ?? []
-  if (pages[activePageIndex.value].configureStatus !== '1') {
-    return true
+  if (pages[activePageIndex.value].configureStatus === '1') {
+    saveDisabled.value = true
+    return
   }
   if (isEmpty(pages) || isEmpty(emitTableData)) {
     saveDisabled.value = true
@@ -222,15 +245,14 @@ defineExpose({
                 />
               </o-flex>
               <div>
-                <o-tooltip
-                  content="当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可"
-                  :disabled="!saveDisabled"
-                >
-                  <span class="mr cl-65">多个数据块配置后一起保存</span>
-                  <el-button type="primary" :disabled="saveDisabled" @click="save">
-                    保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
-                  </el-button>
-                </o-tooltip>
+                <span class="mr cl-65">
+                  {{
+                    saveDisabled
+                      ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
+                      : '多个数据块配置后一起保存'
+                  }}
+                </span>
+                <el-button type="primary" :disabled="saveDisabled" @click="save">保存配置</el-button>
                 <!-- <el-button :disabled="!!saveDisabled">
                   暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
                 </el-button> -->
