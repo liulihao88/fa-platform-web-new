@@ -3,7 +3,7 @@ import { ref, getCurrentInstance } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
 import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
-import { getStorage } from '@oeos-components/utils'
+import { getStorage, $toast } from '@oeos-components/utils'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
@@ -15,6 +15,15 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+const baseSearch = {
+  status: '',
+  pageNo: 1,
+  pageSize: 10,
+  caseId: getStorage('caseId'),
+  fileName: '',
+  folder: '',
+}
+
 // 进度条显示规则
 const progressMap = {
   '000': 0,
@@ -25,17 +34,44 @@ const progressMap = {
   '102': 100,
 }
 
+const items = [
+  // {
+  //   label: '文件名称',
+  //   prop: 'fileName',
+  //   type: 'input',
+  // },
+  {
+    label: '文件名称/文件夹',
+    prop: 'folder',
+    type: 'input',
+  },
+  {
+    label: '状态',
+    prop: 'status',
+    type: 'select',
+    dict: 'fa_file_process_status',
+  },
+]
+
+const handleSearch = (form) => {
+  console.log(`07 form`, form)
+  baseSearch.status = form?.status
+  baseSearch.folder = form?.folder
+  baseSearch.fileName = form?.fileName
+  init()
+}
+
 const total = ref(0)
 const data = ref([])
 const init = async () => {
-  let params = {
-    pageNo: 1,
-    pageSize: 10,
-    caseId: getStorage('caseId'),
-    folder: '',
-    fileName: '',
-  }
-  let res = await getCasefileList(params)
+  // let params = {
+  //   pageNo: 1,
+  //   pageSize: 10,
+  //   caseId: getStorage('caseId'),
+  //   folder: '',
+  //   fileName: '',
+  // }
+  let res = await getCasefileList(baseSearch)
   data.value = res.records ?? []
   total.value = res.total
 }
@@ -128,6 +164,7 @@ const columns = [
       {
         content: '删除',
         handler: deleteRow,
+        reConfirm: !proxy.$dev,
         comp: 'o-icon',
         attrs: {
           name: 'delete',
@@ -139,8 +176,32 @@ const columns = [
   },
 ]
 
-function translateRow(row) {
-  console.log(`37 row`, row)
+function translateRow(record) {
+  // 定义可打开模态框的状态
+  const validStatuses = ['101', '102']
+  // 定义配置中的状态
+  const configStatuses = ['003']
+  // 定义加载中的状态
+  const loadingStatuses = ['000', '100', '001', '002', '004', '005']
+  // 定义错误状态
+  const errorStatuses = ['900', '901', '902', '904', '999']
+
+  if (validStatuses.includes(record.status)) {
+    // // 状态允许打开模态框
+    // editFile(record)
+  } else if (configStatuses.includes(record.status)) {
+    // 文件正在配置中
+    $toast('请配置完成后操作', 'w')
+  } else if (loadingStatuses.includes(record.status)) {
+    // 文件正在加载中
+    $toast('文件数据正在解析中，请稍后', 'w')
+  } else if (errorStatuses.includes(record.status)) {
+    // 文件加载错误
+    $toast('文件加载错误，请修改后再运行', 'e')
+  } else {
+    // 其他状态默认提示
+    $toast('当前状态不支持转换查看', 'w')
+  }
 }
 function textRow(row) {
   toDetail('TextMapping', { fileId: row.id })
@@ -154,6 +215,9 @@ async function deleteRow(row) {
 
 <template>
   <CaseUploadFile class="mb" @close="init" />
+  <div>
+    <g-search-bar :items="items" :itemsPerRow="4" @search="handleSearch" @reset="handleSearch" />
+  </div>
   <o-table ref="tableRef" :columns="columns" :data="data" :total="total">
     <template #status="{ row, value }">
       <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
