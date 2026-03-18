@@ -8,3 +8,8 @@ export const BOOLEAN_OPTIONS = [
     value: '否',
   },
 ]
+
+export const TIME_WIDTH_ATTRS = {
+  width: 180,
+  align: 'center',
+}
