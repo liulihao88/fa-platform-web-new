@@ -118,7 +118,9 @@ export function useNav() {
 
   /** 获取`logo` */
   function getLogo() {
-    return new URL('/logo.svg', import.meta.url).href
+    const buildTime =
+      document.querySelector('meta[name="buildTime"]')?.getAttribute('content') ?? __APP_INFO__.pkg.version
+    return `/logo.svg?v=${encodeURIComponent(buildTime)}`
   }
 
   return {

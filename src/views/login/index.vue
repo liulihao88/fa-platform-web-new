@@ -40,7 +40,7 @@ initStorage()
 
 const { dataTheme, overallStyle, dataThemeChange } = useDataThemeChange()
 dataThemeChange(overallStyle.value)
-const { title } = useNav()
+const { title, getLogo } = useNav()
 
 const formData = reactive({
   username: 'admin',
@@ -168,7 +168,7 @@ useEventListener(document, 'keydown', ({ code }) => {
       <div class="login-box">
         <div class="login-form">
           <!-- <avatar class="avatar" /> -->
-          <img src="/logo.svg" class="w-80" />
+          <img :src="getLogo()" class="w-80" />
           <Motion>
             <h2 class="outline-hidden">{{ title }}</h2>
           </Motion>
