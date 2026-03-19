@@ -14,10 +14,18 @@ import removeConsole from 'vite-plugin-remove-console'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import { vitePluginFakeServer } from 'vite-plugin-fake-server'
+import { createHtmlPlugin } from 'vite-plugin-html'
 
 export function getPluginsList(VITE_CDN: boolean, VITE_COMPRESSION: ViteCompression): PluginOption[] {
   const lifecycle = process.env.npm_lifecycle_event
   return [
+    createHtmlPlugin({
+      inject: {
+        data: {
+          productBuildTime: new Date().toLocaleString(),
+        },
+      },
+    }),
     tailwindcss(),
     vue(),
     // jsx、tsx语法支持
