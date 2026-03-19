@@ -26,7 +26,7 @@ export default [
         component: () => import('@/views/fund/analysis.vue'),
         meta: {
           title: '案件文件管理',
-          showParent: false,
+          // showParent: false,
         },
       },
       {

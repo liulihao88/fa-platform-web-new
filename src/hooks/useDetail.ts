@@ -43,7 +43,7 @@ export function useDetail() {
         query: parameter,
         meta: {
           title,
-          dynamicLevel: 2,
+          dynamicLevel: 1,
         },
       })
       // 路由跳转

@@ -13,8 +13,8 @@ import {
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
 import { useDetail } from '@/hooks'
-const { initToDetail } = useDetail()
-initToDetail()
+// const { initToDetail } = useDetail()
+// initToDetail()
 const { proxy } = getCurrentInstance()
 
 import { useRouter, useRoute } from 'vue-router'

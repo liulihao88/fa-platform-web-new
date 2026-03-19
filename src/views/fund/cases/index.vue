@@ -12,8 +12,8 @@ import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
 import { useRouter, useRoute } from 'vue-router'
 import { useDetail } from '@/hooks'
-const { initToDetail } = useDetail()
-initToDetail()
+// const { initToDetail } = useDetail()
+// initToDetail()
 const { proxy } = getCurrentInstance()
 
 const router = useRouter()
