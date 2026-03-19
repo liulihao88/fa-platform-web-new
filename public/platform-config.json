@@ -3,7 +3,7 @@
   "Title": "资金分析平台",
   "FixedHeader": true,
   "HiddenSideBar": false,
-  "MultiTagsCache": false,
+  "MultiTagsCache": true,
   "KeepAlive": true,
   "Layout": "vertical",
   "Theme": "light",

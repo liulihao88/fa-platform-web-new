@@ -167,7 +167,8 @@ useEventListener(document, 'keydown', ({ code }) => {
       </div>
       <div class="login-box">
         <div class="login-form">
-          <avatar class="avatar" />
+          <!-- <avatar class="avatar" /> -->
+          <img src="/logo.svg" class="w-80" />
           <Motion>
             <h2 class="outline-hidden">{{ title }}</h2>
           </Motion>
