@@ -170,7 +170,6 @@ const parseProcess = (text) => {
   return percent
 }
 async function handleRow(row) {
-  console.log(`81 row`, row)
   toDetail('Cases', { caseId: row.id })
   setStorage('caseId', row.id)
 }
@@ -192,7 +191,6 @@ const handleSearch = (form) => {
 }
 const init = async () => {
   let res = await getFaCaseInfoList(baseSearch)
-  console.log(`02 res`, res)
   data.value = res.records
   total.value = res.total
 }

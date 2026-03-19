@@ -87,7 +87,6 @@ const init = async () => {
     fileId: fileId.value,
   }
   let res = await getCaseFileTransInfo(sendParams)
-  console.log(`51 res`, res)
   fileInfo.value = res
   const pages = fileInfo.value.filePages ?? []
   if (!pages.length) {

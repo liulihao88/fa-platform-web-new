@@ -18,9 +18,7 @@ const { proxy } = getCurrentInstance()
 
 const router = useRouter()
 const route = useRoute()
-console.log(`91 route`, route)
 const caseId = route.query.caseId
-console.log(`83 caseId`, caseId)
 const caseDetails: any = ref({})
 const caseStatusOptions: any = ref([])
 
@@ -28,7 +26,6 @@ const init = async () => {
   Promise.allSettled([getCaseInfoById({ caseId: caseId }), getCommonDictionary('fa_case_process_status')]).then(
     (results) =>
       results.forEach((result, idx) => {
-        console.log(`96 result, idx`, result, idx)
         if (result.status === 'fulfilled') {
           if (idx === 0) {
             caseDetails.value = result.value
