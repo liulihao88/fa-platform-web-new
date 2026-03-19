@@ -10,9 +10,12 @@ import { ref, getCurrentInstance, computed } from 'vue'
 import { getCaseInfoById, getCommonDictionary } from '@/api/analysis.ts'
 import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
+import { useRouter, useRoute } from 'vue-router'
+import { useDetail } from '@/hooks'
+const { initToDetail } = useDetail()
+initToDetail()
 const { proxy } = getCurrentInstance()
 
-import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 console.log(`91 route`, route)

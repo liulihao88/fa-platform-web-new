@@ -17,7 +17,7 @@ export default [
     component: Layout,
     redirect: '/fund/analysis',
     meta: {
-      title: '资金分析',
+      title: '案件文件管理',
     },
     children: [
       {
@@ -26,7 +26,7 @@ export default [
         component: () => import('@/views/fund/analysis.vue'),
         meta: {
           title: '案件文件管理',
-          // showParent: true
+          showParent: false,
         },
       },
       {

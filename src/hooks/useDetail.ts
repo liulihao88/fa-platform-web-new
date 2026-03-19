@@ -4,6 +4,7 @@ const { toDetail } = useDetail();
 
  */
 
+import { ref } from 'vue'
 import { isString, isEmpty } from '@oeos-components/utils'
 import { useMultiTagsStoreHook } from '@/store/modules/multiTags'
 import { useRouter, useRoute, type LocationQueryRaw, type RouteParamsRaw } from 'vue-router'
@@ -11,11 +12,12 @@ import { useRouter, useRoute, type LocationQueryRaw, type RouteParamsRaw } from 
 export function useDetail() {
   const route = useRoute()
   const router = useRouter()
+  const getQueryName = ref('')
   const getParameter = isEmpty(route.params) ? route.query : route.params
 
   function getRouteTitleByName(name: string) {
     const targetRoute = router.getRoutes().find((item) => item.name === name)
-    const title = targetRoute?.meta?.title
+    const title = targetRoute?.meta?.title || route.meta.title
 
     if (isString(title)) return title
     if (title && typeof title === 'object') return title.zh ?? title.en ?? ''
@@ -32,14 +34,16 @@ export function useDetail() {
       }
     })
     if (model === 'query') {
-      const title = getRouteTitleByName(queryName) || '详情信息'
+      const title = getRouteTitleByName(queryName)
+      getQueryName.value = title
+
       // 保存信息到标签页
       useMultiTagsStoreHook().handleTags('push', {
         name: queryName,
         query: parameter,
         meta: {
           title,
-          dynamicLevel: 1,
+          dynamicLevel: 2,
         },
       })
       // 路由跳转
@@ -62,5 +66,10 @@ export function useDetail() {
     }
   }
 
-  return { toDetail, getParameter, getRouteTitleByName, router }
+  // 用于页面刷新，重新获取浏览器地址栏参数并保存到标签页
+  const initToDetail = (model: 'query' | 'params' = 'query') => {
+    if (getParameter) toDetail(getQueryName.value, getParameter, model)
+  }
+
+  return { toDetail, getParameter, getRouteTitleByName, router, initToDetail }
 }
