@@ -76,7 +76,7 @@ const queryBankInit = async () => {
   })
   orgCode.value = res.orgCd
   orgDisabled.value = res.configFlag === true
-  if (res.configFlag === false) {
+  if (isEmpty(res.orgCd)) {
     $toast('先选择所属银行/支付公司', 'w')
     return Promise.reject()
   }
@@ -139,6 +139,7 @@ const save = async () => {
     adjTransAmt: adjForm.value.adjTransAmt,
     adjCreditAmt: adjForm.value.adjCreditAmt,
     adjSettlementAmt: adjForm.value.adjSettlementAmt,
+    // saveType: 1, 保存,  2,  暂存, 3, 更新
   }
 
   // // 调用API保存配置
