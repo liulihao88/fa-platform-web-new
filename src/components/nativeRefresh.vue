@@ -9,8 +9,11 @@ import { ref, getCurrentInstance, nextTick, onMounted } from 'vue'
 import { $toast, setStorage } from '@oeos-components/utils'
 import useNativeRefresh from '@/store/nativeRefresh'
 import { useNav } from '@/layout/hooks/useNav'
+import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
 
 const { logout } = useNav()
+
+const { onReset } = useDataThemeChange()
 
 const { proxy } = getCurrentInstance()
 const instance = getCurrentInstance()
@@ -54,7 +57,11 @@ defineExpose({
     </el-button>
   </o-tooltip>
 
-  <o-tooltip class="po-f t-8 r-550" style="right: calc(50% - 150px); z-index: 999">
+  <o-tooltip class="po-f t-8 r-550" style="right: calc(50% - 150px); z-index: 999" content="清空缓存并返回登录页">
+    <el-button id="nativeRefreshBtn " type="primary" class="o-6" size="small" @click="onReset">缓存</el-button>
+  </o-tooltip>
+
+  <o-tooltip class="po-f t-8 r-550" style="right: calc(50% - 200px); z-index: 999">
     <el-button id="nativeRefreshBtn " type="primary" class="o-6" size="small" @click="logout">退出</el-button>
   </o-tooltip>
 </template>
