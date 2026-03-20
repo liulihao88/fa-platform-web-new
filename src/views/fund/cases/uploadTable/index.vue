@@ -189,6 +189,7 @@ function translateRow(record) {
   if (validStatuses.includes(record.status)) {
     // // 状态允许打开模态框
     // editFile(record)
+    toDetail('TranslateView', { fileId: record.id })
   } else if (configStatuses.includes(record.status)) {
     // 文件正在配置中
     $toast('请配置完成后操作', 'w')

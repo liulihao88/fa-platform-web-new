@@ -107,7 +107,17 @@ const init = async () => {
 }
 init()
 
+const validSelectBankCompay = async () => {
+  if (orgCode.value) {
+    return Promise.resolve(true)
+  } else {
+    proxy.$toast('请先选择所属银行/支付公司', 'e')
+    return Promise.reject()
+  }
+}
+
 const handlePageClick = async (index) => {
+  await validSelectBankCompay()
   if (activePageIndex.value === index) {
     return
   }
@@ -122,12 +132,10 @@ const handlePageClick = async (index) => {
 }
 
 const save = async () => {
+  await validSelectBankCompay()
   await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
     title: '确认操作',
   })
-  if (!orgCode.value) {
-    return proxy.$toast('请先选择所属银行/支付公司', 'e')
-  }
   // 准备请求参数
   const sendData = {
     // faFileParameters: titleConfigData.value.result.flatMap((dataBlock) =>

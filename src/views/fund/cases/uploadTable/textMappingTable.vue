@@ -14,6 +14,8 @@ const router = useRouter()
 const route = useRoute()
 const textMappingTableDialogRef = ref()
 const dataIsEmpty = ref(false)
+const currentIndex = ref(0)
+const tabsOptions = ref([])
 
 const props = defineProps({
   orgCode: {
@@ -27,6 +29,7 @@ const props = defineProps({
 })
 
 const data = ref({})
+const allData = ref([])
 const editRow = (row) => {}
 const columns = [
   {
@@ -58,13 +61,24 @@ const init = async () => {
   }
   let res = await casefileFileConfigData(sendParams)
   emits('textMappingTableInit', res)
+  allData.value = res
   if (isEmpty(res)) {
     dataIsEmpty.value = true
     return
   } else {
     dataIsEmpty.value = false
   }
-  data.value = res[0]
+  handleDataByCurrentIndex()
+  tabsOptions.value = allData.value.map((v, i) => {
+    return {
+      label: `数据块${i + 1}`,
+      value: i,
+    }
+  })
+}
+
+const handleDataByCurrentIndex = () => {
+  data.value = allData.value[currentIndex.value]
   sourceColumns.value = data.value.dataBlockStucts ?? []
 }
 
@@ -143,6 +157,7 @@ defineExpose({
       </div>
     </div>
 
+    <o-tabs v-model="currentIndex" :options="tabsOptions" @change="handleDataByCurrentIndex()" />
     <div class="mapping-table-wrapper">
       <el-table
         v-if="!dataIsEmpty"

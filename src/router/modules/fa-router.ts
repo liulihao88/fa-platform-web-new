@@ -51,6 +51,17 @@ export default [
           // showParent: true
         },
       },
+      {
+        path: '/fund/translateView',
+        name: 'TranslateView',
+        component: () => import('@/views/fund/cases/translateView/index.vue'),
+        meta: {
+          title: '转换查看',
+          showLink: false,
+          activePath: '/fund/cases',
+          // showParent: true
+        },
+      },
       // /fund/fundsAnalysis
       {
         path: '/fund/fundsAnalysis',
