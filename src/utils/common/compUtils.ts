@@ -1,50 +1,50 @@
-import { useGlobSetting } from '/@/hooks/setting';
-import { merge, random } from 'lodash-es';
-import { isArray } from '/@/utils/is';
-import { FormSchema } from '/@/components/Form';
-import { reactive } from "vue";
-import { getTenantId, getToken } from "/@/utils/auth";
-import { useUserStoreWithOut } from "/@/store/modules/user";
-import dayjs from 'dayjs';
-import Big from 'big.js';
+import { useGlobSetting } from '/@/hooks/setting'
+import { merge, random } from 'lodash-es'
+import { isArray } from '/@/utils/is'
+import { FormSchema } from '/@/components/Form'
+import { reactive } from 'vue'
+import { getTenantId, getToken } from '/@/utils/auth'
+import { useUserStoreWithOut } from '/@/store/modules/user'
+import dayjs from 'dayjs'
+import Big from 'big.js'
 
-import { Modal } from "ant-design-vue";
-import { defHttp } from "@/utils/http/axios";
-import { useI18n } from "@/hooks/web/useI18n";
+import { Modal } from 'ant-design-vue'
+import { defHttp } from '@/utils/http/axios'
+import { useI18n } from '@/hooks/web/useI18n'
 
-const globSetting = useGlobSetting();
-const baseApiUrl = globSetting.domainUrl;
+const globSetting = useGlobSetting()
+const baseApiUrl = globSetting.domainUrl
 /**
  *  获取文件服务访问路径
  * @param fileUrl 文件路径
  * @param prefix(默认http)  文件路径前缀 http/https
  */
 export const getFileAccessHttpUrl = (fileUrl, prefix = 'http') => {
-  let result = fileUrl;
+  let result = fileUrl
   try {
     if (fileUrl && fileUrl.length > 0 && !fileUrl.startsWith(prefix)) {
       //判断是否是数组格式
-      let isArray = fileUrl.indexOf('[') != -1;
+      let isArray = fileUrl.indexOf('[') != -1
       if (!isArray) {
-        let prefix = `${baseApiUrl}/sys/common/static/`;
+        let prefix = `${baseApiUrl}/sys/common/static/`
         // 判断是否已包含前缀
         if (!fileUrl.startsWith(prefix)) {
-          result = `${prefix}${fileUrl}`;
+          result = `${prefix}${fileUrl}`
         }
       }
     }
   } catch (err) {}
-  return result;
-};
+  return result
+}
 
 /**
  * 触发 window.resize
  */
 export function triggerWindowResizeEvent() {
-  let event: any = document.createEvent('HTMLEvents');
-  event.initEvent('resize', true, true);
-  event.eventType = 'message';
-  window.dispatchEvent(event);
+  let event: any = document.createEvent('HTMLEvents')
+  event.initEvent('resize', true, true)
+  event.eventType = 'message'
+  window.dispatchEvent(event)
 }
 
 /**
@@ -52,8 +52,8 @@ export function triggerWindowResizeEvent() {
  *  @param length 数字位数
  */
 export const getRandom = (length: number = 1) => {
-  return '-' + parseInt(String(Math.random() * 10000 + 1), length);
-};
+  return '-' + parseInt(String(Math.random() * 10000 + 1), length)
+}
 
 /**
  * 随机生成字符串
@@ -62,17 +62,17 @@ export const getRandom = (length: number = 1) => {
  * @return string 生成的字符串
  */
 export function randomString(length: number, chats?: string) {
-  if (!length) length = 1;
+  if (!length) length = 1
   if (!chats) {
     // noinspection SpellCheckingInspection
-    chats = '0123456789qwertyuioplkjhgfdsazxcvbnm';
+    chats = '0123456789qwertyuioplkjhgfdsazxcvbnm'
   }
-  let str = '';
+  let str = ''
   for (let i = 0; i < length; i++) {
-    let num = random(0, chats.length - 1);
-    str += chats[num];
+    let num = random(0, chats.length - 1)
+    str += chats[num]
   }
-  return str;
+  return str
 }
 
 /**
@@ -90,12 +90,12 @@ export const listToTree = (array, opt, startPid) => {
     currentDept: opt.currentDept || 0,
     maxDept: opt.maxDept || 100,
     childKey: opt.childKey || 'children',
-  };
-  if (startPid) {
-    obj.startPid = startPid;
   }
-  return toTree(array, obj.startPid, obj.currentDept, obj);
-};
+  if (startPid) {
+    obj.startPid = startPid
+  }
+  return toTree(array, obj.startPid, obj.currentDept, obj)
+}
 /**
  *  递归构建tree
  * @param list
@@ -106,36 +106,36 @@ export const listToTree = (array, opt, startPid) => {
  */
 export const toTree = (array, startPid, currentDept, opt) => {
   if (opt.maxDept < currentDept) {
-    return [];
+    return []
   }
-  let child = [];
+  let child = []
   if (array && array.length > 0) {
     child = array
       .map((item) => {
         // 筛查符合条件的数据（主键 = startPid）
         if (typeof item[opt.parentKey] !== 'undefined' && item[opt.parentKey] === startPid) {
           // 满足条件则递归
-          const nextChild = toTree(array, item[opt.primaryKey], currentDept + 1, opt);
+          const nextChild = toTree(array, item[opt.primaryKey], currentDept + 1, opt)
           // 节点信息保存
           if (nextChild.length > 0) {
-            item['isLeaf'] = false;
-            item[opt.childKey] = nextChild;
+            item['isLeaf'] = false
+            item[opt.childKey] = nextChild
           } else {
-            item['isLeaf'] = true;
+            item['isLeaf'] = true
           }
-          item['title'] = item[opt.titleKey];
-          item['label'] = item[opt.titleKey];
-          item['key'] = item[opt.primaryKey];
-          item['value'] = item[opt.primaryKey];
-          return item;
+          item['title'] = item[opt.titleKey]
+          item['label'] = item[opt.titleKey]
+          item['key'] = item[opt.primaryKey]
+          item['value'] = item[opt.primaryKey]
+          return item
         }
       })
       .filter((item) => {
-        return item !== undefined;
-      });
+        return item !== undefined
+      })
   }
-  return child;
-};
+  return child
+}
 
 /**
  * 表格底部合计工具方法
@@ -143,24 +143,24 @@ export const toTree = (array, startPid, currentDept, opt) => {
  * @param fieldKeys 要计算合计的列字段
  */
 export function mapTableTotalSummary(tableData: Recordable[], fieldKeys: string[]) {
-  let totals: any = { _row: '合计', _index: '合计' };
+  let totals: any = { _row: '合计', _index: '合计' }
   fieldKeys.forEach((key) => {
     totals[key] = tableData.reduce((prev, next) => {
       // update-begin--author:liaozhiyang---date:20240118---for：【QQYUN-7891】PR 合计工具方法，转换为Nuber类型再计算
-      const value = Number(next[key]);
+      const value = Number(next[key])
       if (!Number.isNaN(value)) {
         // update-begin--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
-        prev = Big(prev).plus(value).toString();
+        prev = Big(prev).plus(value).toString()
         // update-end--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
       }
       // update-end--author:liaozhiyang---date:20240118---for：【issues/7830】PR 合计工具方法，转换为Nuber类型再计算
-      return prev;
-    }, 0);
+      return prev
+    }, 0)
     // update-begin--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
-    totals[key] = +totals[key];
+    totals[key] = +totals[key]
     // update-end--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
-  });
-  return totals;
+  })
+  return totals
 }
 
 /**
@@ -175,17 +175,17 @@ export function mapTableTotalSummary(tableData: Recordable[], fieldKeys: string[
  * @returns {Function}
  */
 export function simpleDebounce(fn, delay = 100) {
-  let timer: any | null = null;
+  let timer: any | null = null
   return function () {
-    let args = arguments;
+    let args = arguments
     if (timer) {
-      clearTimeout(timer);
+      clearTimeout(timer)
     }
     timer = setTimeout(() => {
       // @ts-ignore
-      fn.apply(this, args);
-    }, delay);
-  };
+      fn.apply(this, args)
+    }, delay)
+  }
 }
 
 /**
@@ -195,10 +195,10 @@ export function simpleDebounce(fn, delay = 100) {
  */
 export function dateFormat(date, block) {
   if (!date) {
-    return '';
+    return ''
   }
-  let format = block || 'yyyy-MM-dd';
-  date = new Date(date);
+  let format = block || 'yyyy-MM-dd'
+  date = new Date(date)
   const map = {
     M: date.getMonth() + 1, // 月份
     d: date.getDate(), // 日
@@ -207,24 +207,24 @@ export function dateFormat(date, block) {
     s: date.getSeconds(), // 秒
     q: Math.floor((date.getMonth() + 3) / 3), // 季度
     S: date.getMilliseconds(), // 毫秒
-  };
+  }
   format = format.replace(/([yMdhmsqS])+/g, (all, t) => {
-    let v = map[t];
+    let v = map[t]
     if (v !== undefined) {
       if (all.length > 1) {
-        v = `0${v}`;
-        v = v.substr(v.length - 2);
+        v = `0${v}`
+        v = v.substr(v.length - 2)
       }
-      return v;
+      return v
     } else if (t === 'y') {
       return date
         .getFullYear()
         .toString()
-        .substr(4 - all.length);
+        .substr(4 - all.length)
     }
-    return all;
-  });
-  return format;
+    return all
+  })
+  return format
 }
 
 /**
@@ -232,27 +232,27 @@ export function dateFormat(date, block) {
  * 目前使用的地方：JVxeTable Span模式
  */
 export function getEventPath(event) {
-  let target = event.target;
-  let path = (event.composedPath && event.composedPath()) || event.path;
+  let target = event.target
+  let path = (event.composedPath && event.composedPath()) || event.path
 
   if (path != null) {
-    return path.indexOf(window) < 0 ? path.concat(window) : path;
+    return path.indexOf(window) < 0 ? path.concat(window) : path
   }
 
   if (target === window) {
-    return [window];
+    return [window]
   }
 
   let getParents = (node, memo) => {
-    const parentNode = node.parentNode;
+    const parentNode = node.parentNode
 
     if (!parentNode) {
-      return memo;
+      return memo
     } else {
-      return getParents(parentNode, memo.concat(parentNode));
+      return getParents(parentNode, memo.concat(parentNode))
     }
-  };
-  return [target].concat(getParents(target, []), window);
+  }
+  return [target].concat(getParents(target, []), window)
 }
 
 /**
@@ -265,13 +265,13 @@ export function getEventPath(event) {
 export function pushIfNotExist(array, value, key?) {
   for (let item of array) {
     if (key && item[key] === value[key]) {
-      return false;
+      return false
     } else if (item === value) {
-      return false;
+      return false
     }
   }
-  array.push(value);
-  return true;
+  array.push(value)
+  return true
 }
 /**
  * 过滤对象中为空的属性
@@ -280,15 +280,15 @@ export function pushIfNotExist(array, value, key?) {
  */
 export function filterObj(obj) {
   if (!(typeof obj == 'object')) {
-    return;
+    return
   }
 
   for (let key in obj) {
     if (obj.hasOwnProperty(key) && (obj[key] == null || obj[key] == undefined || obj[key] === '')) {
-      delete obj[key];
+      delete obj[key]
     }
   }
-  return obj;
+  return obj
 }
 
 /**
@@ -296,7 +296,7 @@ export function filterObj(obj) {
  * @param string
  */
 export function underLine2CamelCase(string: string) {
-  return string.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+  return string.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
 }
 
 /**
@@ -307,19 +307,19 @@ export function underLine2CamelCase(string: string) {
  */
 export function findTree(treeList: any[], fn: Fn, childrenKey = 'children') {
   for (let i = 0; i < treeList.length; i++) {
-    let item = treeList[i];
+    let item = treeList[i]
     if (fn(item, i, treeList)) {
-      return item;
+      return item
     }
-    let children = item[childrenKey];
+    let children = item[childrenKey]
     if (isArray(children)) {
-      let findResult = findTree(children, fn, childrenKey);
+      let findResult = findTree(children, fn, childrenKey)
       if (findResult) {
-        return findResult;
+        return findResult
       }
     }
   }
-  return null;
+  return null
 }
 
 /** 获取 mapFormSchema 方法 */
@@ -330,9 +330,9 @@ export function bindMapFormSchema<T>(spanMap, spanTypeDef: T) {
         disabledLabelWidth: true,
       } as FormSchema,
       spanMap[spanType],
-      s
-    );
-  };
+      s,
+    )
+  }
 }
 
 /**
@@ -342,7 +342,7 @@ export function bindMapFormSchema<T>(spanMap, spanTypeDef: T) {
  */
 export function stringIsNull(str) {
   // 两个 == 可以同时判断 null 和 undefined
-  return str == null || str === 'null' || str === 'undefined';
+  return str == null || str === 'null' || str === 'undefined'
 }
 
 /**
@@ -373,16 +373,16 @@ export function getAutoScrollContainer(node: HTMLElement) {
  * 判断子菜单是否全部隐藏
  * @param menuTreeItem
  */
-export  function checkChildrenHidden(menuTreeItem){
+export function checkChildrenHidden(menuTreeItem) {
   //是否是聚合路由
-  let alwaysShow=menuTreeItem.alwaysShow;
-  if(alwaysShow){
-    return false;
-  }
-  if(!menuTreeItem.children){
+  let alwaysShow = menuTreeItem.alwaysShow
+  if (alwaysShow) {
     return false
   }
-  return menuTreeItem.children?.find((item) => item.hideMenu == false) != null;
+  if (!menuTreeItem.children) {
+    return false
+  }
+  return menuTreeItem.children?.find((item) => item.hideMenu == false) != null
 }
 
 /**
@@ -392,65 +392,65 @@ export  function checkChildrenHidden(menuTreeItem){
  * @return 返回大小及后缀
  */
 export function calculateFileSize(fileSize, unit?) {
-  let unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  let unitArr = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   if (unit && unit.length > 0) {
-    unitArr = unit;
+    unitArr = unit
   }
-  let size = fileSize;
-  let unitIndex = 0;
+  let size = fileSize
+  let unitIndex = 0
   while (size >= 1024 && unitIndex < unitArr.length - 1) {
-    size /= 1024;
-    unitIndex++;
+    size /= 1024
+    unitIndex++
   }
   //保留两位小数，四舍五入
-  size = Math.round(size * 100) / 100;
-  return size + unitArr[unitIndex];
+  size = Math.round(size * 100) / 100
+  return size + unitArr[unitIndex]
 }
 
 /**
  * 获取上传header
  */
 export function getHeaders() {
-  let tenantId = getTenantId();
+  let tenantId = getTenantId()
   return reactive({
     'X-Access-Token': getToken(),
     'X-Tenant-Id': tenantId ? tenantId : '0',
-  });
+  })
 }
 
 /** 根据表达式获取相应的用户信息 */
 export function getUserInfoByExpression(expression) {
   if (!expression) {
-    return expression;
+    return expression
   }
   // 当前日期
   if (expression === 'sys_date' || expression === 'sysDate') {
-    return dayjs().format('YYYY-MM-DD');
+    return dayjs().format('YYYY-MM-DD')
   }
   // 当前时间
   if (expression === 'sys_time' || expression === 'sysTime') {
-    return dayjs().format('HH:mm:ss');
+    return dayjs().format('HH:mm:ss')
   }
-  const userStore = useUserStoreWithOut();
-  let userInfo = userStore.getUserInfo;
+  const userStore = useUserStoreWithOut()
+  let userInfo = userStore.getUserInfo
   if (userInfo) {
     switch (expression) {
       case 'sysUserId':
-        return userInfo.id;
+        return userInfo.id
       // 当前登录用户登录账号
       case 'sysUserCode':
       case 'sys_user_code':
-        return userInfo.username;
+        return userInfo.username
       // 当前登录用户真实名称
       case 'sysUserName':
-        return userInfo.realname;
+        return userInfo.realname
       // 当前登录用户部门编号
       case 'sysOrgCode':
       case 'sys_org_code':
-        return userInfo.orgCode;
+        return userInfo.orgCode
     }
   }
-  return expression;
+  return expression
 }
 
 /**
@@ -459,77 +459,77 @@ export function getUserInfoByExpression(expression) {
  */
 export function replaceUserInfoByExpression(expression: string | any[]) {
   if (!expression) {
-    return expression;
+    return expression
   }
-  const isString = typeof expression === 'string';
+  const isString = typeof expression === 'string'
   const isArray = Array.isArray(expression)
   if (!isString && !isArray) {
-    return expression;
+    return expression
   }
-  const reg = /#{(.*?)}/g;
+  const reg = /#{(.*?)}/g
   const replace = (str) => {
     if (typeof str !== 'string') {
-      return str;
+      return str
     }
-    let result = str.match(reg);
+    let result = str.match(reg)
     if (result && result.length > 0) {
       result.forEach((item) => {
-        let userInfo = getUserInfoByExpression(item.substring(2, item.length - 1));
-        str = str.replace(item, userInfo);
-      });
+        let userInfo = getUserInfoByExpression(item.substring(2, item.length - 1))
+        str = str.replace(item, userInfo)
+      })
     }
-    return str;
-  };
+    return str
+  }
   // @ts-ignore
-  return isString ? replace(expression) : expression.map(replace);
+  return isString ? replace(expression) : expression.map(replace)
 }
 
 /**
  * 设置租户缓存，当租户退出的时候
- * 
+ *
  * @param tenantId
  */
-export async function userExitChangeLoginTenantId(tenantId){
-  const userStore = useUserStoreWithOut();
+export async function userExitChangeLoginTenantId(tenantId) {
+  const userStore = useUserStoreWithOut()
   //step 1 获取用户租户
   const url = '/sys/tenant/getCurrentUserTenant'
-  let currentTenantId = null;
-  const data = await defHttp.get({ url });
-  if(data && data.list){
-    let arr = data.list;
-    if(arr.length>0){
+  let currentTenantId = null
+  const data = await defHttp.get({ url })
+  if (data && data.list) {
+    let arr = data.list
+    if (arr.length > 0) {
       //step 2.判断当前id是否存在用户租户中
-      let filterTenantId = arr.filter((item) => item.id == tenantId);
+      let filterTenantId = arr.filter((item) => item.id == tenantId)
       //存在说明不是退出的不是当前租户，还用用来的租户即可
-      if(filterTenantId && filterTenantId.length>0){
-        currentTenantId = tenantId;
-      }else{
+      if (filterTenantId && filterTenantId.length > 0) {
+        currentTenantId = tenantId
+      } else {
         //不存在默认第一个
         currentTenantId = arr[0].id
       }
     }
   }
-  let loginTenantId = getTenantId();
-  userStore.setTenant(currentTenantId);
+  let loginTenantId = getTenantId()
+  userStore.setTenant(currentTenantId)
 
   //update-begin---author:wangshuai---date:2023-11-07---for:【QQYUN-7005】退租户，判断退出的租户ID与当前租户ID一致，再刷新---
   //租户为空，说明没有租户了，需要刷新页面。或者当前租户和退出的租户一致则需要刷新浏览器
-  if(!currentTenantId || tenantId == loginTenantId){
-    window.location.reload();
+  if (!currentTenantId || tenantId == loginTenantId) {
+    window.location.reload()
   }
   //update-end---author:wangshuai---date:2023-11-07---for:【QQYUN-7005】退租户，判断退出的租户ID与当前租户ID一致，再刷新---
 }
 
 /**
  * 我的租户模块需要开启多租户提示
- * 
+ *
  * @param title 标题
  */
-export function tenantSaasMessage(title){
-  let tenantId = getTenantId();
-  if(!tenantId){
+export function tenantSaasMessage(title) {
+  let tenantId = getTenantId()
+  if (!tenantId) {
     Modal.confirm({
-      title:title,
+      title: title,
       content: '此菜单需要在多租户模式下使用，否则数据会出现混乱',
       okText: '确认',
       okType: 'danger',
@@ -545,28 +545,27 @@ export function tenantSaasMessage(title){
  */
 export function sameDay(dateStr) {
   if (!dateStr) {
-    return false;
+    return false
   }
   // 获取当前日期
-  let currentDate = new Date();
-  let currentDay = currentDate.getDate();
-  let currentMonth = currentDate.getMonth();
-  let currentYear = currentDate.getFullYear();
+  let currentDate = new Date()
+  let currentDay = currentDate.getDate()
+  let currentMonth = currentDate.getMonth()
+  let currentYear = currentDate.getFullYear()
 
   //创建另一个日期进行比较
-  let otherDate = new Date(dateStr);
-  let otherDay = otherDate.getDate();
-  let otherMonth = otherDate.getMonth();
-  let otherYear = otherDate.getFullYear();
+  let otherDate = new Date(dateStr)
+  let otherDay = otherDate.getDate()
+  let otherMonth = otherDate.getMonth()
+  let otherYear = otherDate.getFullYear()
 
   //比较日期
   if (currentDay === otherDay && currentMonth === otherMonth && currentYear === otherYear) {
-    return true;
+    return true
   } else {
-    return false;
+    return false
   }
 }
-
 
 /**
  * 翻译菜单名称
@@ -576,19 +575,19 @@ export function sameDay(dateStr) {
  */
 export function translateTitle(data) {
   if (data?.length) {
-    const { t } = useI18n();
+    const { t } = useI18n()
     data.forEach((item) => {
       if (item.slotTitle) {
         if (item.slotTitle.includes("t('") && t) {
-          item.slotTitle = new Function('t', `return ${item.slotTitle}`)(t);
+          item.slotTitle = new Function('t', `return ${item.slotTitle}`)(t)
         }
       }
       if (item.children?.length) {
-        translateTitle(item.children);
+        translateTitle(item.children)
       }
-    });
+    })
   }
-  return data;
+  return data
 }
 
 /**
@@ -599,9 +598,9 @@ export function translateTitle(data) {
 export function freezeDeep(obj: Recordable | Recordable[]) {
   if (obj != null) {
     if (Array.isArray(obj)) {
-      obj.forEach(item => freezeDeep(item))
+      obj.forEach((item) => freezeDeep(item))
     } else if (typeof obj === 'object') {
-      Object.values(obj).forEach(value => {
+      Object.values(obj).forEach((value) => {
         freezeDeep(value)
       })
     }

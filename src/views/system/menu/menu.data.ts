@@ -1,14 +1,14 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { h } from 'vue';
-import { Icon } from '/@/components/Icon';
-import { duplicateCheck } from '../user/user.api';
-import { ajaxGetDictItems ,checkPermDuplication } from './menu.api';
-import { render } from '/@/utils/common/renderUtils';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { h } from 'vue'
+import { Icon } from '/@/components/Icon'
+import { duplicateCheck } from '../user/user.api'
+import { ajaxGetDictItems, checkPermDuplication } from './menu.api'
+import { render } from '/@/utils/common/renderUtils'
 
-const isDir = (type) => type === 0;
-const isMenu = (type) => type === 1;
-const isButton = (type) => type === 2;
+const isDir = (type) => type === 0
+const isMenu = (type) => type === 1
+const isButton = (type) => type === 2
 
 // 定义可选择的组件类型
 export enum ComponentTypes {
@@ -28,7 +28,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'menuType',
     width: 150,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'menu_type');
+      return render.renderDict(text, 'menu_type')
     },
   },
   {
@@ -36,7 +36,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'icon',
     width: 50,
     customRender: ({ record }) => {
-      return h(Icon, { icon: record.icon });
+      return h(Icon, { icon: record.icon })
     },
   },
   {
@@ -56,7 +56,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'sortNo',
     width: 50,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -65,7 +65,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 8 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -87,10 +87,10 @@ export const formSchema: FormSchema[] = [
           { label: '按钮/权限', value: 2 },
         ],
         onChange: (e) => {
-          const { updateSchema, clearValidate } = formActionType;
-          const label = isButton(e) ? '按钮/权限' : '菜单名称';
+          const { updateSchema, clearValidate } = formActionType
+          const label = isButton(e) ? '按钮/权限' : '菜单名称'
           //清除校验
-          clearValidate();
+          clearValidate()
           updateSchema([
             {
               field: 'name',
@@ -100,14 +100,18 @@ export const formSchema: FormSchema[] = [
               field: 'url',
               required: !isButton(e),
             },
-          ]);
+          ])
           //update-begin---author:wangshuai ---date:20220729  for：[VUEN-1834]只有一级菜单，才默认值，子菜单的时候，清空------------
-          if (isMenu(e) && !formModel.id && (formModel.component=='layouts/default/index' || formModel.component=='layouts/RouteView')) {
-            formModel.component = '';
+          if (
+            isMenu(e) &&
+            !formModel.id &&
+            (formModel.component == 'layouts/default/index' || formModel.component == 'layouts/RouteView')
+          ) {
+            formModel.component = ''
           }
           //update-end---author:wangshuai ---date:20220729  for：[VUEN-1834]只有一级菜单，才默认值，子菜单的时候，清空------------
         },
-      };
+      }
     },
   },
   {
@@ -144,8 +148,8 @@ export const formSchema: FormSchema[] = [
     //update-begin-author:liusq date:2023-06-06 for: [issues/5008]子表数据权限设置不生效
     ifShow: ({ values }) => !(values.component === ComponentTypes.IFrame && values.internalOrExternal),
     //update-begin-author:zyf date:2022-11-02 for: 聚合路由允许路径重复
-     dynamicRules: ({ model, schema,values }) => {
-       return checkPermDuplication(model, schema,  values.menuType !== 2?true:false);
+    dynamicRules: ({ model, schema, values }) => {
+      return checkPermDuplication(model, schema, values.menuType !== 2 ? true : false)
     },
     //update-end-author:zyf date:2022-11-02 for: 聚合路由允许路径重复
     //update-end-author:liusq date:2022-06-06 for:  [issues/5008]子表数据权限设置不生效
@@ -157,7 +161,7 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入前端组件',
     },
-    defaultValue:'layouts/default/index',
+    defaultValue: 'layouts/default/index',
     required: true,
     ifShow: ({ values }) => !isButton(values.menuType),
   },
@@ -256,7 +260,7 @@ export const formSchema: FormSchema[] = [
     component: 'IconPicker',
     ifShow: ({ values }) => !isButton(values.menuType),
     componentProps: {
-      allowClear: true
+      allowClear: true,
     },
   },
   {
@@ -332,7 +336,7 @@ export const formSchema: FormSchema[] = [
     },
     ifShow: ({ values }) => !isButton(values.menuType),
   },
-];
+]
 
 export const dataRuleColumns: BasicColumn[] = [
   {
@@ -350,7 +354,7 @@ export const dataRuleColumns: BasicColumn[] = [
     dataIndex: 'ruleValue',
     width: 100,
   },
-];
+]
 
 export const dataRuleSearchFormSchema: FormSchema[] = [
   {
@@ -365,7 +369,7 @@ export const dataRuleSearchFormSchema: FormSchema[] = [
     component: 'Input',
     // colProps: { span: 6 },
   },
-];
+]
 
 export const dataRuleFormSchema: FormSchema[] = [
   {
@@ -385,8 +389,8 @@ export const dataRuleFormSchema: FormSchema[] = [
     label: '规则字段',
     component: 'Input',
     ifShow: ({ values }) => {
-      const ruleConditions = Array.isArray(values.ruleConditions) ? values.ruleConditions[0] : values.ruleConditions;
-      return ruleConditions !== 'USE_SQL_RULES';
+      const ruleConditions = Array.isArray(values.ruleConditions) ? values.ruleConditions[0] : values.ruleConditions
+      return ruleConditions !== 'USE_SQL_RULES'
     },
   },
   {
@@ -458,4 +462,4 @@ export const dataRuleFormSchema: FormSchema[] = [
       ],
     },
   },
-];
+]

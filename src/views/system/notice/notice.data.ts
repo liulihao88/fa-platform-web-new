@@ -1,7 +1,7 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
-import { h } from 'vue';
-import { Tinymce } from '@/components/Tinymce';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { render } from '/@/utils/common/renderUtils'
+import { h } from 'vue'
+import { Tinymce } from '@/components/Tinymce'
 
 export const columns: BasicColumn[] = [
   {
@@ -14,7 +14,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'msgCategory',
     width: 100,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'msg_category');
+      return render.renderDict(text, 'msg_category')
     },
   },
   {
@@ -27,8 +27,8 @@ export const columns: BasicColumn[] = [
     dataIndex: 'priority',
     width: 70,
     customRender: ({ text }) => {
-      const color = text == 'L' ? 'blue' : text == 'M' ? 'yellow' : 'red';
-      return render.renderTag(render.renderDict(text, 'priority'), color);
+      const color = text == 'L' ? 'blue' : text == 'M' ? 'yellow' : 'red'
+      return render.renderTag(render.renderDict(text, 'priority'), color)
     },
   },
   {
@@ -36,7 +36,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'msgType',
     width: 100,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'msg_type');
+      return render.renderDict(text, 'msg_type')
     },
   },
   {
@@ -44,8 +44,8 @@ export const columns: BasicColumn[] = [
     dataIndex: 'sendStatus',
     width: 70,
     customRender: ({ text }) => {
-      const color = text == '0' ? 'red' : text == '1' ? 'green' : 'gray';
-      return render.renderTag(render.renderDict(text, 'send_status'), color);
+      const color = text == '0' ? 'red' : text == '1' ? 'green' : 'gray'
+      return render.renderTag(render.renderDict(text, 'send_status'), color)
     },
   },
   {
@@ -58,7 +58,7 @@ export const columns: BasicColumn[] = [
     width: 100,
     dataIndex: 'cancelTime',
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -67,7 +67,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'JInput',
     colProps: { span: 8 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -118,13 +118,13 @@ export const formSchema: FormSchema[] = [
           validator: (_, value) => {
             return new Promise<void>((resolve, reject) => {
               if (value.length > 100) {
-                reject('最长100个字符');
+                reject('最长100个字符')
               }
-              resolve();
-            });
+              resolve()
+            })
           },
         },
-      ];
+      ]
     },
     // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
   },
@@ -241,7 +241,7 @@ export const formSchema: FormSchema[] = [
     colProps: { span: 24 },
     render: render.renderTinymce,
   },
-];
+]
 
 /**
  * 流程表单调用这个方法获取formSchema
@@ -298,13 +298,13 @@ export function getBpmFormSchema(_formData): FormSchema[] {
             validator: (_, value) => {
               return new Promise<void>((resolve, reject) => {
                 if (value.length > 100) {
-                  reject('最长100个字符');
+                  reject('最长100个字符')
                 }
-                resolve();
-              });
+                resolve()
+              })
             },
           },
-        ];
+        ]
       },
       // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
     },
@@ -391,9 +391,9 @@ export function getBpmFormSchema(_formData): FormSchema[] {
           height: 300,
           value: model[field],
           onChange: (value: string) => {
-            model[field] = value;
+            model[field] = value
           },
-        });
+        })
       },
     },
     {
@@ -404,5 +404,5 @@ export function getBpmFormSchema(_formData): FormSchema[] {
       ifShow: ({}) => _formData.disabled !== false,
       slot: 'msgContent',
     },
-  ];
+  ]
 }

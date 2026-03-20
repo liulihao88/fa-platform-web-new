@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -27,7 +27,7 @@ export const columns: BasicColumn[] = [
     sorter: true,
     width: 200,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -42,4 +42,4 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 8 },
   },
-];
+]

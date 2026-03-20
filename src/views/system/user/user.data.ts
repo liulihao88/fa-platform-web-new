@@ -1,8 +1,8 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { getAllRolesListNoByTenant, getAllTenantList } from './user.api';
-import { rules } from '/@/utils/helper/validator';
-import { render } from '/@/utils/common/renderUtils';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { getAllRolesListNoByTenant, getAllTenantList } from './user.api'
+import { rules } from '/@/utils/helper/validator'
+import { render } from '/@/utils/common/renderUtils'
 export const columns: BasicColumn[] = [
   {
     title: '用户账号',
@@ -26,7 +26,7 @@ export const columns: BasicColumn[] = [
     width: 80,
     sorter: true,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'sex');
+      return render.renderDict(text, 'sex')
     },
   },
   {
@@ -54,7 +54,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'status_dictText',
     width: 80,
   },
-];
+]
 
 export const recycleColumns: BasicColumn[] = [
   {
@@ -79,10 +79,10 @@ export const recycleColumns: BasicColumn[] = [
     width: 80,
     sorter: true,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'sex');
+      return render.renderDict(text, 'sex')
     },
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -95,7 +95,7 @@ export const searchFormSchema: FormSchema[] = [
     label: '名字',
     field: 'realname',
     component: 'JInput',
-   //colProps: { span: 6 },
+    //colProps: { span: 6 },
   },
   {
     label: '性别',
@@ -123,9 +123,9 @@ export const searchFormSchema: FormSchema[] = [
       placeholder: '请选择状态',
       stringToNumber: true,
     },
-   //colProps: { span: 6 },
+    //colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -140,7 +140,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     required: true,
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
     dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_user', 'username', model, schema, true),
   },
@@ -148,7 +148,7 @@ export const formSchema: FormSchema[] = [
     label: '登录密码',
     field: 'password',
     component: 'StrengthMeter',
-    componentProps:{
+    componentProps: {
       autocomplete: 'new-password',
     },
     rules: [
@@ -213,24 +213,25 @@ export const formSchema: FormSchema[] = [
         defaultExpandLevel: 2,
 
         onSelect: (options, values) => {
-          const { updateSchema } = formActionType;
+          const { updateSchema } = formActionType
           //所属部门修改后更新负责部门下拉框数据
           updateSchema([
             {
               field: 'departIds',
               componentProps: { options },
             },
-          ]);
+          ])
           //update-begin---author:wangshuai---date:2024-05-11---for:【issues/1222】用户编辑界面“所属部门”与“负责部门”联动出错整---
-          if(!values){
-            formModel.departIds = [];
-            return;
+          if (!values) {
+            formModel.departIds = []
+            return
           }
           //update-end---author:wangshuai---date:2024-05-11---for:【issues/1222】用户编辑界面“所属部门”与“负责部门”联动出错整---
           //所属部门修改后更新负责部门数据
-          formModel.departIds && (formModel.departIds = formModel.departIds.filter((item) => values.value.indexOf(item) > -1));
+          formModel.departIds &&
+            (formModel.departIds = formModel.departIds.filter((item) => values.value.indexOf(item) > -1))
         },
-      };
+      }
     },
   },
   {
@@ -238,9 +239,9 @@ export const formSchema: FormSchema[] = [
     field: 'relTenantIds',
     component: 'JSearchSelect',
     componentProps: {
-      dict:"sys_tenant,name,id",
+      dict: 'sys_tenant,name,id',
       async: true,
-      multiple: true
+      multiple: true,
     },
   },
   {
@@ -255,9 +256,9 @@ export const formSchema: FormSchema[] = [
           { label: '上级', value: 2, key: '2' },
         ],
         onChange: () => {
-          formModel.userIdentity == 1 && (formModel.departIds = []);
+          formModel.userIdentity == 1 && (formModel.departIds = [])
         },
-      };
+      }
     },
   },
   {
@@ -301,7 +302,7 @@ export const formSchema: FormSchema[] = [
       return [
         { ...rules.duplicateCheckRule('sys_user', 'email', model, schema, true)[0], trigger: 'blur' },
         { ...rules.rule('email', false)[0], trigger: 'blur' },
-      ];
+      ]
     },
   },
   {
@@ -313,7 +314,7 @@ export const formSchema: FormSchema[] = [
       return [
         { ...rules.duplicateCheckRule('sys_user', 'phone', model, schema, true)[0], trigger: 'blur' },
         { pattern: /^1[3456789]\d{9}$/, message: '手机号码格式有误', trigger: 'blur' },
-      ];
+      ]
     },
   },
   {
@@ -333,7 +334,7 @@ export const formSchema: FormSchema[] = [
       stringToNumber: true,
     },
   },
-];
+]
 
 export const formPasswordSchema: FormSchema[] = [
   {
@@ -366,7 +367,7 @@ export const formPasswordSchema: FormSchema[] = [
     component: 'InputPassword',
     dynamicRules: ({ values }) => rules.confirmPassword(values, true),
   },
-];
+]
 
 export const formAgentSchema: FormSchema[] = [
   {
@@ -429,7 +430,7 @@ export const formAgentSchema: FormSchema[] = [
       type: 'radioButton',
     },
   },
-];
+]
 
 export const formQuitAgentSchema: FormSchema[] = [
   {
@@ -492,7 +493,7 @@ export const formQuitAgentSchema: FormSchema[] = [
       type: 'radioButton',
     },
   },
-];
+]
 
 //租户用户列表
 export const userTenantColumns: BasicColumn[] = [
@@ -528,15 +529,15 @@ export const userTenantColumns: BasicColumn[] = [
     width: 80,
     customRender: ({ text }) => {
       if (text === '1') {
-        return '正常';
+        return '正常'
       } else if (text === '3') {
-        return '审批中';
+        return '审批中'
       } else {
-        return '已拒绝';
+        return '已拒绝'
       }
     },
   },
-];
+]
 
 //用户租户搜索表单
 export const userTenantFormSchema: FormSchema[] = [
@@ -563,4 +564,4 @@ export const userTenantFormSchema: FormSchema[] = [
     },
     colProps: { span: 6 },
   },
-];
+]

@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { getMenuListResultModel } from './model/menuModel';
+import { defHttp } from '/@/utils/http/axios'
+import { getMenuListResultModel } from './model/menuModel'
 
 enum Api {
   GetMenuList = '/sys/permission/getUserPermissionByToken',
@@ -16,25 +16,25 @@ export const getMenuList = () => {
     //为了兼容mock和接口数据
     defHttp.get<getMenuListResultModel>({ url: Api.GetMenuList }).then((res) => {
       if (Array.isArray(res)) {
-        resolve(res);
+        resolve(res)
       } else {
-        resolve(res['menu']);
+        resolve(res['menu'])
       }
-    });
-  });
-};
+    })
+  })
+}
 
 /**
  * @description: 获取后台菜单权限和按钮权限
  */
 export function getBackMenuAndPerms() {
-  return defHttp.get({ url: Api.GetMenuList });
+  return defHttp.get({ url: Api.GetMenuList })
 }
 
 /**
  * 切换成vue3菜单
  */
- // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8487】注释掉判断菜单是否vue2版本逻辑代码
+// update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8487】注释掉判断菜单是否vue2版本逻辑代码
 // export const switchVue3Menu = () => {
 //   return new Promise((resolve) => {
 //     defHttp.get({ url: Api.SwitchVue3Menu });

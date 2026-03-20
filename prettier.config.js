@@ -1,21 +1,8 @@
 module.exports = {
-  printWidth: 150,
-  tabWidth: 2,
-  useTabs: false,
-  semi: true, //语句末尾使用分号
-  vueIndentScriptAndStyle: true,
-  singleQuote: true, // 使用单引号
-  quoteProps: 'as-needed',
-  bracketSpacing: true,
+  singleQuote: true,
+  semi: false,
+  printWidth: 120,
   trailingComma: 'all',
-  jsxBracketSameLine: false,
-  jsxSingleQuote: false,
-  arrowParens: 'always',
-  insertPragma: false,
-  requirePragma: false,
-  proseWrap: 'never',
   htmlWhitespaceSensitivity: 'ignore',
-  endOfLine: 'auto', // 自动处理换行符（LF/CRLF）
-  rangeStart: 0,
   bracketSpacing: true,
-};
+}

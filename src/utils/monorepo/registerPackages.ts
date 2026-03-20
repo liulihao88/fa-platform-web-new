@@ -1,28 +1,28 @@
-import type { App } from 'vue';
-import { warn } from '/@/utils/log';
-import { registerDynamicRouter } from '/@/utils/monorepo/dynamicRouter';
+import type { App } from 'vue'
+import { warn } from '/@/utils/log'
+import { registerDynamicRouter } from '/@/utils/monorepo/dynamicRouter'
 // 引入模块
-import PACKAGE_JEECG_ONLINE from '@jeecg/online';
-import PACKAGE_JEECG_AIFLOW from '@jeecg/aiflow';
+import PACKAGE_JEECG_ONLINE from '@jeecg/online'
+import PACKAGE_JEECG_AIFLOW from '@jeecg/aiflow'
 
 export function registerPackages(app: App) {
-  use(app, PACKAGE_JEECG_ONLINE);
-  use(app, PACKAGE_JEECG_AIFLOW);
+  use(app, PACKAGE_JEECG_ONLINE)
+  use(app, PACKAGE_JEECG_AIFLOW)
 }
 
 // noinspection JSUnusedGlobalSymbols
 const installOptions = {
   baseImport,
-};
+}
 
 /** 注册模块 */
 function use(app: App, pkg) {
-  app.use(pkg, installOptions);
-  registerDynamicRouter(pkg.getViews);
+  app.use(pkg, installOptions)
+  registerDynamicRouter(pkg.getViews)
 }
 
 // 模块里可使用的import
-const importGlobs = [import.meta.glob('../../utils/**/*.{ts,js,tsx}'), import.meta.glob('../../hooks/**/*.{ts,js,tsx}')];
+const importGlobs = [import.meta.glob('../../utils/**/*.{ts,js,tsx}'), import.meta.glob('../../hooks/**/*.{ts,js,tsx}')]
 
 /**
  * 基础项目导包
@@ -35,15 +35,15 @@ const importGlobs = [import.meta.glob('../../utils/**/*.{ts,js,tsx}'), import.me
 async function baseImport(path: string) {
   if (path) {
     // 将 /@/ 替换成 ../../
-    path = path.replace(/^\/@\//, '../../');
+    path = path.replace(/^\/@\//, '../../')
     for (const glob of importGlobs) {
       for (const key of Object.keys(glob)) {
         if (path === key || `${path}.ts` === key || `${path}.tsx` === key) {
-          return glob[key]();
+          return glob[key]()
         }
       }
     }
-    warn(`引入失败：${path} 不存在`);
+    warn(`引入失败：${path} 不存在`)
   }
-  return null;
+  return null
 }

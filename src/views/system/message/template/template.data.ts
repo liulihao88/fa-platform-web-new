@@ -1,6 +1,6 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { rules } from '/@/utils/helper/validator';
-import { filterDictTextByCache } from '/@/utils/dict/JDictSelectUtil';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { rules } from '/@/utils/helper/validator'
+import { filterDictTextByCache } from '/@/utils/dict/JDictSelectUtil'
 
 export const columns: BasicColumn[] = [
   {
@@ -30,13 +30,13 @@ export const columns: BasicColumn[] = [
     width: 90,
     customRender: function ({ text }) {
       if (text == '1') {
-        return '是';
+        return '是'
       } else {
-        return '否';
+        return '否'
       }
     },
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -57,7 +57,7 @@ export const searchFormSchema: FormSchema[] = [
       dictCode: 'msgType',
     },
   },
-];
+]
 
 export const formSchemas: FormSchema[] = [
   {
@@ -77,7 +77,7 @@ export const formSchemas: FormSchema[] = [
     field: 'templateCode',
     component: 'Input',
     dynamicRules: ({ model, schema }) => {
-      return [ ...rules.duplicateCheckRule('sys_sms_template', 'template_code', model, schema, true)];
+      return [...rules.duplicateCheckRule('sys_sms_template', 'template_code', model, schema, true)]
     },
     // 编辑模式下不可修改编码
     dynamicDisabled: (params) => !!params.values.id,
@@ -101,7 +101,7 @@ export const formSchemas: FormSchema[] = [
     componentProps: {
       dictCode: 'msgCategory',
       placeholder: '请选择模板分类',
-    }
+    },
   },
   {
     label: '是否应用',
@@ -122,7 +122,7 @@ export const formSchemas: FormSchema[] = [
       },
     },
     ifShow: ({ values }) => {
-      return !['2', '4', '5'].includes(values.templateType);
+      return !['2', '4', '5'].includes(values.templateType)
     },
   },
 
@@ -131,7 +131,7 @@ export const formSchemas: FormSchema[] = [
     field: 'templateContent',
     component: 'JEditor',
     ifShow: ({ values }) => {
-      return ['2', '4'].includes(values.templateType);
+      return ['2', '4'].includes(values.templateType)
     },
   },
   {
@@ -139,10 +139,10 @@ export const formSchemas: FormSchema[] = [
     field: 'templateContent',
     component: 'JMarkdownEditor',
     ifShow: ({ values }) => {
-      return ['5'].includes(values.templateType);
+      return ['5'].includes(values.templateType)
     },
   },
-];
+]
 
 export const sendTestFormSchemas: FormSchema[] = [
   {
@@ -180,8 +180,8 @@ export const sendTestFormSchemas: FormSchema[] = [
     field: 'msgType',
     component: 'JDictSelectTag',
     required: true,
-    defaultValue:'system',
-    componentProps: { dictCode: 'messageType',type:'radio' },
+    defaultValue: 'system',
+    componentProps: { dictCode: 'messageType', type: 'radio' },
   },
   {
     label: '消息接收方',
@@ -193,4 +193,4 @@ export const sendTestFormSchemas: FormSchema[] = [
       rowKey: 'username',
     },
   },
-];
+]

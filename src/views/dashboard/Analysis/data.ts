@@ -1,11 +1,11 @@
 export interface GrowCardItem {
-  icon: string;
-  title: string;
-  value?: number;
-  total: number;
-  color?: string;
-  action?: string;
-  footer?: string;
+  icon: string
+  title: string
+  value?: number
+  total: number
+  color?: string
+  action?: string
+  footer?: string
 }
 
 export const growCardList: GrowCardItem[] = [
@@ -41,7 +41,7 @@ export const growCardList: GrowCardItem[] = [
     color: 'purple',
     action: '年',
   },
-];
+]
 
 export const chartCardList: GrowCardItem[] = [
   {
@@ -72,7 +72,7 @@ export const chartCardList: GrowCardItem[] = [
     icon: 'transaction|svg',
     total: 78,
   },
-];
+]
 export const bdcCardList: GrowCardItem[] = [
   {
     title: '受理量',
@@ -104,7 +104,7 @@ export const bdcCardList: GrowCardItem[] = [
     value: 7,
     footer: '用户今日办结量',
   },
-];
+]
 
 export const table = {
   dataSource: [
@@ -114,11 +114,32 @@ export const table = {
     { reBizCode: '4', type: '转移登记', acceptBy: '赵楼', acceptDate: '2019-11-22', curNode: '部门审核', flowRate: 80 },
     { reBizCode: '5', type: '转移登记', acceptBy: '钱就', acceptDate: '2019-12-12', curNode: '任务分派', flowRate: 90 },
     { reBizCode: '6', type: '转移登记', acceptBy: '孙吧', acceptDate: '2019-03-06', curNode: '任务处理', flowRate: 10 },
-    { reBizCode: '7', type: '抵押登记', acceptBy: '周大', acceptDate: '2019-04-13', curNode: '任务分派', flowRate: 100 },
+    {
+      reBizCode: '7',
+      type: '抵押登记',
+      acceptBy: '周大',
+      acceptDate: '2019-04-13',
+      curNode: '任务分派',
+      flowRate: 100,
+    },
     { reBizCode: '8', type: '抵押登记', acceptBy: '吴二', acceptDate: '2019-05-09', curNode: '任务上报', flowRate: 50 },
     { reBizCode: '9', type: '抵押登记', acceptBy: '郑爽', acceptDate: '2019-07-12', curNode: '任务处理', flowRate: 63 },
-    { reBizCode: '20', type: '抵押登记', acceptBy: '林有', acceptDate: '2019-12-12', curNode: '任务打回', flowRate: 59 },
-    { reBizCode: '11', type: '转移登记', acceptBy: '码云', acceptDate: '2019-09-10', curNode: '任务签收', flowRate: 87 },
+    {
+      reBizCode: '20',
+      type: '抵押登记',
+      acceptBy: '林有',
+      acceptDate: '2019-12-12',
+      curNode: '任务打回',
+      flowRate: 59,
+    },
+    {
+      reBizCode: '11',
+      type: '转移登记',
+      acceptBy: '码云',
+      acceptDate: '2019-09-10',
+      curNode: '任务签收',
+      flowRate: 87,
+    },
   ],
   columns: [
     {
@@ -157,26 +178,103 @@ export const table = {
     pageSize: 5,
     pageSizeOptions: ['10', '20', '30'],
     showTotal: (total, range) => {
-      return range[0] + '-' + range[1] + ' 共' + total + '条';
+      return range[0] + '-' + range[1] + ' 共' + total + '条'
     },
     showQuickJumper: true,
     showSizeChanger: true,
     total: 0,
   },
-};
+}
 export const table1 = {
   dataSource: [
-    { reBizCode: 'A001', type: '转移登记', acceptBy: '张四', acceptDate: '2019-01-22', curNode: '任务分派', flowRate: 12 },
-    { reBizCode: 'A002', type: '抵押登记', acceptBy: '李吧', acceptDate: '2019-01-23', curNode: '任务签收', flowRate: 3 },
-    { reBizCode: 'A003', type: '转移登记', acceptBy: '王三', acceptDate: '2019-01-25', curNode: '任务处理', flowRate: 24 },
-    { reBizCode: 'A004', type: '转移登记', acceptBy: '赵二', acceptDate: '2019-11-22', curNode: '部门审核', flowRate: 10 },
-    { reBizCode: 'A005', type: '转移登记', acceptBy: '钱大', acceptDate: '2019-12-12', curNode: '任务签收', flowRate: 8 },
-    { reBizCode: 'A006', type: '转移登记', acceptBy: '孙就', acceptDate: '2019-03-06', curNode: '任务处理', flowRate: 10 },
-    { reBizCode: 'A007', type: '抵押登记', acceptBy: '周晕', acceptDate: '2019-04-13', curNode: '部门审核', flowRate: 24 },
-    { reBizCode: 'A008', type: '抵押登记', acceptBy: '吴有', acceptDate: '2019-05-09', curNode: '部门审核', flowRate: 30 },
-    { reBizCode: 'A009', type: '抵押登记', acceptBy: '郑武', acceptDate: '2019-07-12', curNode: '任务分派', flowRate: 1 },
-    { reBizCode: 'A0010', type: '抵押登记', acceptBy: '林爽', acceptDate: '2019-12-12', curNode: '部门审核', flowRate: 16 },
-    { reBizCode: 'A0011', type: '转移登记', acceptBy: '码楼', acceptDate: '2019-09-10', curNode: '部门审核', flowRate: 7 },
+    {
+      reBizCode: 'A001',
+      type: '转移登记',
+      acceptBy: '张四',
+      acceptDate: '2019-01-22',
+      curNode: '任务分派',
+      flowRate: 12,
+    },
+    {
+      reBizCode: 'A002',
+      type: '抵押登记',
+      acceptBy: '李吧',
+      acceptDate: '2019-01-23',
+      curNode: '任务签收',
+      flowRate: 3,
+    },
+    {
+      reBizCode: 'A003',
+      type: '转移登记',
+      acceptBy: '王三',
+      acceptDate: '2019-01-25',
+      curNode: '任务处理',
+      flowRate: 24,
+    },
+    {
+      reBizCode: 'A004',
+      type: '转移登记',
+      acceptBy: '赵二',
+      acceptDate: '2019-11-22',
+      curNode: '部门审核',
+      flowRate: 10,
+    },
+    {
+      reBizCode: 'A005',
+      type: '转移登记',
+      acceptBy: '钱大',
+      acceptDate: '2019-12-12',
+      curNode: '任务签收',
+      flowRate: 8,
+    },
+    {
+      reBizCode: 'A006',
+      type: '转移登记',
+      acceptBy: '孙就',
+      acceptDate: '2019-03-06',
+      curNode: '任务处理',
+      flowRate: 10,
+    },
+    {
+      reBizCode: 'A007',
+      type: '抵押登记',
+      acceptBy: '周晕',
+      acceptDate: '2019-04-13',
+      curNode: '部门审核',
+      flowRate: 24,
+    },
+    {
+      reBizCode: 'A008',
+      type: '抵押登记',
+      acceptBy: '吴有',
+      acceptDate: '2019-05-09',
+      curNode: '部门审核',
+      flowRate: 30,
+    },
+    {
+      reBizCode: 'A009',
+      type: '抵押登记',
+      acceptBy: '郑武',
+      acceptDate: '2019-07-12',
+      curNode: '任务分派',
+      flowRate: 1,
+    },
+    {
+      reBizCode: 'A0010',
+      type: '抵押登记',
+      acceptBy: '林爽',
+      acceptDate: '2019-12-12',
+      curNode: '部门审核',
+      flowRate: 16,
+    },
+    {
+      reBizCode: 'A0011',
+      type: '转移登记',
+      acceptBy: '码楼',
+      acceptDate: '2019-09-10',
+      curNode: '部门审核',
+      flowRate: 7,
+    },
   ],
   columns: [
     {
@@ -210,10 +308,10 @@ export const table1 = {
     pageSize: 5,
     pageSizeOptions: ['10', '20', '30'],
     showTotal: (total, range) => {
-      return range[0] + '-' + range[1] + ' 共' + total + '条';
+      return range[0] + '-' + range[1] + ' 共' + total + '条'
     },
     showQuickJumper: true,
     showSizeChanger: true,
     total: 0,
   },
-};
+}

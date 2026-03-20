@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/sys/role/list',
@@ -29,30 +29,30 @@ enum Api {
 /**
  * 导出api
  */
-export const getExportUrl = Api.exportXls;
+export const getExportUrl = Api.exportXls
 /**
  * 导入api
  */
-export const getImportUrl = Api.importExcel;
+export const getImportUrl = Api.importExcel
 /**
  * 系统角色列表
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 /**
  * 租户角色列表
  * @param params
  */
-export const listByTenant = (params) => defHttp.get({ url: Api.listByTenant, params });
+export const listByTenant = (params) => defHttp.get({ url: Api.listByTenant, params })
 
 /**
  * 删除角色
  */
 export const deleteRole = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteRole, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除角色
  * @param params
@@ -65,89 +65,89 @@ export const batchDeleteRole = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新角色
  * @param params
  */
 export const saveOrUpdateRole = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.edit : Api.save
+  return defHttp.post({ url: url, params })
+}
 /**
  * 编码校验
  * @param params
  */
 // update-begin--author:liaozhiyang---date:20231215---for：【QQYUN-7415】表单调用接口进行校验的添加防抖
-let timer;
+let timer
 export const isRoleExist = (params) => {
   return new Promise((resolve, rejected) => {
-    clearTimeout(timer);
+    clearTimeout(timer)
     timer = setTimeout(() => {
       defHttp
         .get({ url: Api.isRoleExist, params }, { isTransformResponse: false })
         .then((res) => {
-          resolve(res);
+          resolve(res)
         })
         .catch((error) => {
-          rejected(error);
-        });
-    }, 500);
-  });
-};
+          rejected(error)
+        })
+    }, 500)
+  })
+}
 // update-end--author:liaozhiyang---date:20231215---for：【QQYUN-7415】表单调用接口进行校验的添加防抖
 /**
  * 根据角色查询树信息
  */
-export const queryTreeListForRole = () => defHttp.get({ url: Api.queryTreeListForRole });
+export const queryTreeListForRole = () => defHttp.get({ url: Api.queryTreeListForRole })
 /**
  * 查询角色权限
  */
-export const queryRolePermission = (params) => defHttp.get({ url: Api.queryRolePermission, params });
+export const queryRolePermission = (params) => defHttp.get({ url: Api.queryRolePermission, params })
 /**
  * 保存角色权限
  */
-export const saveRolePermission = (params) => defHttp.post({ url: Api.saveRolePermission, params });
+export const saveRolePermission = (params) => defHttp.post({ url: Api.saveRolePermission, params })
 /**
  * 查询角色数据规则
  */
 export const queryDataRule = (params) =>
-  defHttp.get({ url: `${Api.queryDataRule}/${params.functionId}/${params.roleId}` }, { isTransformResponse: false });
+  defHttp.get({ url: `${Api.queryDataRule}/${params.functionId}/${params.roleId}` }, { isTransformResponse: false })
 /**
  * 保存角色数据规则
  */
-export const saveDataRule = (params) => defHttp.post({ url: Api.queryDataRule, params });
+export const saveDataRule = (params) => defHttp.post({ url: Api.queryDataRule, params })
 /**
  * 获取表单数据
  * @return List<Map>
  */
-export const getParentDesignList = () => defHttp.get({ url: Api.getParentDesignList });
+export const getParentDesignList = () => defHttp.get({ url: Api.getParentDesignList })
 /**
  * 获取角色表单数据
  * @return List<Map>
  */
-export const getRoleDegisnList = (params) => defHttp.get({ url: Api.getRoleDegisnList, params });
+export const getRoleDegisnList = (params) => defHttp.get({ url: Api.getRoleDegisnList, params })
 /**
  * 提交角色工单信息
  */
-export const saveRoleDesign = (params) => defHttp.post({ url: Api.saveRoleDesign, params });
+export const saveRoleDesign = (params) => defHttp.post({ url: Api.saveRoleDesign, params })
 /**
  * 角色列表接口
  * @param params
  */
-export const userList = (params) => defHttp.get({ url: Api.userList, params });
+export const userList = (params) => defHttp.get({ url: Api.userList, params })
 /**
  * 删除角色用户
  */
 export const deleteUserRole = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteUserRole, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除角色用户
  * @param params
@@ -160,30 +160,31 @@ export const batchDeleteUserRole = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.batchDeleteUserRole, params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 添加已有用户
  */
 export const addUserRole = (params, handleSuccess) => {
   return defHttp.post({ url: Api.addUserRole, params }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 保存或者更新
  * @param params
  * @param isUpdate 是否是更新数据
  */
 export const saveOrUpdateRoleIndex = (params, isUpdate) => {
-  let url = isUpdate ? Api.editRoleIndex : Api.saveRoleIndex;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.editRoleIndex : Api.saveRoleIndex
+  return defHttp.post({ url: url, params })
+}
 /**
  * 根据code查询首页配置
  * @param params
  */
-export const queryIndexByCode = (params) => defHttp.get({ url: Api.queryIndexByCode, params }, { isTransformResponse: false });
+export const queryIndexByCode = (params) =>
+  defHttp.get({ url: Api.queryIndexByCode, params }, { isTransformResponse: false })

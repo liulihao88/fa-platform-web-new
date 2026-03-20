@@ -4,9 +4,9 @@
       <a-space size="middle">
         <a-button @click="showData" type="primary">获取数据</a-button>
         <RadioGroup button-style="solid" v-model:value="modeValue" @change="handleModeChange">
-          <RadioButton value="application/json"> json数据 </RadioButton>
-          <RadioButton value="htmlmixed"> html代码 </RadioButton>
-          <RadioButton value="javascript"> javascript代码 </RadioButton>
+          <RadioButton value="application/json">json数据</RadioButton>
+          <RadioButton value="htmlmixed">html代码</RadioButton>
+          <RadioButton value="javascript">javascript代码</RadioButton>
         </RadioGroup>
       </a-space>
     </template>
@@ -14,15 +14,15 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { defineComponent, ref } from 'vue';
-  import { CodeEditor } from '/@/components/CodeEditor';
-  import { PageWrapper } from '/@/components/Page';
-  import { Radio, Space, Modal } from 'ant-design-vue';
+import { defineComponent, ref } from 'vue'
+import { CodeEditor } from '/@/components/CodeEditor'
+import { PageWrapper } from '/@/components/Page'
+import { Radio, Space, Modal } from 'ant-design-vue'
 
-  const jsonData =
-    '{"name":"BeJson","url":"http://www.xxx.com","page":88,"isNonProfit":true,"address":{"street":"科技园路.","city":"江苏苏州","country":"中国"},"links":[{"name":"Google","url":"http://www.xxx.com"},{"name":"Baidu","url":"http://www.xxx.com"},{"name":"SoSo","url":"http://www.xxx.com"}]}';
+const jsonData =
+  '{"name":"BeJson","url":"http://www.xxx.com","page":88,"isNonProfit":true,"address":{"street":"科技园路.","city":"江苏苏州","country":"中国"},"links":[{"name":"Google","url":"http://www.xxx.com"},{"name":"Baidu","url":"http://www.xxx.com"},{"name":"SoSo","url":"http://www.xxx.com"}]}'
 
-  const jsData = `
+const jsData = `
       (() => {
         var htmlRoot = document.getElementById('htmlRoot');
         var theme = window.localStorage.getItem('__APP__DARK__MODE__');
@@ -31,9 +31,9 @@
           theme = htmlRoot = null;
         }
       })();
-  `;
+  `
 
-  const htmlData = `
+const htmlData = `
      <!DOCTYPE html>
 <html lang="en" id="htmlRoot">
   <head>
@@ -52,40 +52,40 @@
     </div>
   </body>
 </html>
-  `;
-  export default defineComponent({
-    components: {
-      CodeEditor,
-      PageWrapper,
-      RadioButton: Radio.Button,
-      RadioGroup: Radio.Group,
-      ASpace: Space,
-    },
-    setup() {
-      const modeValue = ref('application/json');
-      const value = ref(jsonData);
+  `
+export default defineComponent({
+  components: {
+    CodeEditor,
+    PageWrapper,
+    RadioButton: Radio.Button,
+    RadioGroup: Radio.Group,
+    ASpace: Space,
+  },
+  setup() {
+    const modeValue = ref('application/json')
+    const value = ref(jsonData)
 
-      function handleModeChange(e: ChangeEvent) {
-        const mode = e.target.value;
-        if (mode === 'application/json') {
-          value.value = jsonData;
-          return;
-        }
-        if (mode === 'htmlmixed') {
-          value.value = htmlData;
-          return;
-        }
-        if (mode === 'javascript') {
-          value.value = jsData;
-          return;
-        }
+    function handleModeChange(e: ChangeEvent) {
+      const mode = e.target.value
+      if (mode === 'application/json') {
+        value.value = jsonData
+        return
       }
-
-      function showData() {
-        Modal.info({ title: '编辑器当前值', content: value.value });
+      if (mode === 'htmlmixed') {
+        value.value = htmlData
+        return
       }
+      if (mode === 'javascript') {
+        value.value = jsData
+        return
+      }
+    }
 
-      return { value, modeValue, handleModeChange, showData };
-    },
-  });
+    function showData() {
+      Modal.info({ title: '编辑器当前值', content: value.value })
+    }
+
+    return { value, modeValue, handleModeChange, showData }
+  },
+})
 </script>

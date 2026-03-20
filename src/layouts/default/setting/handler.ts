@@ -1,18 +1,18 @@
-import { HandlerEnum, tabsThemeOptions} from './enum';
-import { updateHeaderBgColor, updateSidebarBgColor } from '/@/logics/theme/updateBackground';
-import { updateColorWeak } from '/@/logics/theme/updateColorWeak';
-import { updateGrayMode } from '/@/logics/theme/updateGrayMode';
+import { HandlerEnum, tabsThemeOptions } from './enum'
+import { updateHeaderBgColor, updateSidebarBgColor } from '/@/logics/theme/updateBackground'
+import { updateColorWeak } from '/@/logics/theme/updateColorWeak'
+import { updateGrayMode } from '/@/logics/theme/updateGrayMode'
 
-import { useAppStore } from '/@/store/modules/app';
-import { ProjectConfig } from '/#/config';
-import { changeTheme } from '/@/logics/theme';
-import { updateDarkTheme } from '/@/logics/theme/dark';
-import { useRootSetting } from '/@/hooks/setting/useRootSetting';
-import { MenuModeEnum, MenuTypeEnum } from '/@/enums/menuEnum';
-import { HEADER_PRESET_BG_COLOR_LIST, APP_PRESET_COLOR_LIST, SIDE_BAR_BG_COLOR_LIST } from '/@/settings/designSetting';
-import { isObject } from '/@/utils/is';
-import { ThemeEnum } from '/@/enums/appEnum';
-import { APP__THEME__COLOR } from '/@/enums/cacheEnum';
+import { useAppStore } from '/@/store/modules/app'
+import { ProjectConfig } from '/#/config'
+import { changeTheme } from '/@/logics/theme'
+import { updateDarkTheme } from '/@/logics/theme/dark'
+import { useRootSetting } from '/@/hooks/setting/useRootSetting'
+import { MenuModeEnum, MenuTypeEnum } from '/@/enums/menuEnum'
+import { HEADER_PRESET_BG_COLOR_LIST, APP_PRESET_COLOR_LIST, SIDE_BAR_BG_COLOR_LIST } from '/@/settings/designSetting'
+import { isObject } from '/@/utils/is'
+import { ThemeEnum } from '/@/enums/appEnum'
+import { APP__THEME__COLOR } from '/@/enums/cacheEnum'
 
 /**
  *  2024-04-07
@@ -20,71 +20,72 @@ import { APP__THEME__COLOR } from '/@/enums/cacheEnum';
  *  切换导航栏模式都走这个方法，每个模式都会有固定的顶部和菜单颜色搭配。暗黑模式则不走固定搭配
  * */
 export function layoutHandler(event: HandlerEnum, value: any) {
-  const isHTopMenu = isObject(value) && value.type == MenuTypeEnum.TOP_MENU && value.mode == MenuModeEnum.HORIZONTAL;
-  const isMixMenu = isObject(value) && value.type == MenuTypeEnum.MIX && value.mode == MenuModeEnum.INLINE;
-  const isMixSidebarMenu = isObject(value) && value.type == MenuTypeEnum.MIX_SIDEBAR && value.mode == MenuModeEnum.INLINE;
-  const appStore = useAppStore();
-  const darkMode = appStore.getDarkMode === ThemeEnum.DARK;
+  const isHTopMenu = isObject(value) && value.type == MenuTypeEnum.TOP_MENU && value.mode == MenuModeEnum.HORIZONTAL
+  const isMixMenu = isObject(value) && value.type == MenuTypeEnum.MIX && value.mode == MenuModeEnum.INLINE
+  const isMixSidebarMenu =
+    isObject(value) && value.type == MenuTypeEnum.MIX_SIDEBAR && value.mode == MenuModeEnum.INLINE
+  const appStore = useAppStore()
+  const darkMode = appStore.getDarkMode === ThemeEnum.DARK
   if (isHTopMenu) {
-    baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[2]);
-    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[2]);
+    baseHandler(event, value)
+    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[2])
+    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[2])
     if (darkMode) {
-      updateHeaderBgColor();
-      updateSidebarBgColor();
+      updateHeaderBgColor()
+      updateSidebarBgColor()
     }
-    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
+    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value)
   } else if (isMixMenu) {
-    baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[3]);
+    baseHandler(event, value)
+    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4])
+    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[3])
     if (darkMode) {
-      updateHeaderBgColor();
-      updateSidebarBgColor();
+      updateHeaderBgColor()
+      updateSidebarBgColor()
     }
-    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1]);
-    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
+    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1])
+    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value)
   } else if (isMixSidebarMenu) {
-    baseHandler(event, value);
-    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1]);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[0]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[0]);
+    baseHandler(event, value)
+    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1])
+    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[0])
+    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[0])
     if (darkMode) {
-      updateHeaderBgColor();
-      updateSidebarBgColor();
+      updateHeaderBgColor()
+      updateSidebarBgColor()
     }
-    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
+    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value)
   } else {
-    baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[7]);
+    baseHandler(event, value)
+    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4])
+    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[7])
     if (darkMode) {
-      updateHeaderBgColor();
-      updateSidebarBgColor();
+      updateHeaderBgColor()
+      updateSidebarBgColor()
     }
-    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1]);
-    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
+    baseHandler(HandlerEnum.CHANGE_THEME_COLOR, APP_PRESET_COLOR_LIST[1])
+    baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value)
   }
 }
 
 export function baseHandler(event: HandlerEnum, value: any) {
-  const appStore = useAppStore();
-  const config = handler(event, value);
-  appStore.setProjectConfig(config);
+  const appStore = useAppStore()
+  const config = handler(event, value)
+  appStore.setProjectConfig(config)
   if (event === HandlerEnum.CHANGE_THEME) {
-    updateHeaderBgColor();
-    updateSidebarBgColor();
+    updateHeaderBgColor()
+    updateSidebarBgColor()
   }
 }
 
 export function handler(event: HandlerEnum, value: any): DeepPartial<ProjectConfig> {
-  const appStore = useAppStore();
+  const appStore = useAppStore()
 
-  const { getThemeColor, getDarkMode } = useRootSetting();
+  const { getThemeColor, getDarkMode } = useRootSetting()
   switch (event) {
     case HandlerEnum.CHANGE_LAYOUT:
-      const { mode, type, split } = value;
-      const splitOpt = split === undefined ? { split } : {};
+      const { mode, type, split } = value
+      const splitOpt = split === undefined ? { split } : {}
 
       return {
         menuSetting: {
@@ -95,147 +96,147 @@ export function handler(event: HandlerEnum, value: any): DeepPartial<ProjectConf
           hidden: false,
           ...splitOpt,
         },
-      };
+      }
 
     case HandlerEnum.CHANGE_THEME_COLOR:
       if (getThemeColor.value === value) {
-        return {};
+        return {}
       }
       // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8925】系统主题颜色（供页面加载使用）
-      localStorage.setItem(APP__THEME__COLOR, value);
+      localStorage.setItem(APP__THEME__COLOR, value)
       // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8925】系统主题颜色（供页面加载使用）
-      changeTheme(value);
+      changeTheme(value)
 
-      return { themeColor: value };
+      return { themeColor: value }
 
     case HandlerEnum.CHANGE_THEME:
       if (getDarkMode.value === value) {
-        return {};
+        return {}
       }
-      updateDarkTheme(value);
+      updateDarkTheme(value)
 
-      return {};
+      return {}
 
     case HandlerEnum.MENU_HAS_DRAG:
-      return { menuSetting: { canDrag: value } };
+      return { menuSetting: { canDrag: value } }
 
     case HandlerEnum.MENU_ACCORDION:
-      return { menuSetting: { accordion: value } };
+      return { menuSetting: { accordion: value } }
 
     case HandlerEnum.MENU_TRIGGER:
-      return { menuSetting: { trigger: value } };
+      return { menuSetting: { trigger: value } }
 
     case HandlerEnum.MENU_TOP_ALIGN:
-      return { menuSetting: { topMenuAlign: value } };
+      return { menuSetting: { topMenuAlign: value } }
 
     case HandlerEnum.MENU_COLLAPSED:
-      return { menuSetting: { collapsed: value } };
+      return { menuSetting: { collapsed: value } }
 
     case HandlerEnum.MENU_WIDTH:
-      return { menuSetting: { menuWidth: value } };
+      return { menuSetting: { menuWidth: value } }
 
     case HandlerEnum.MENU_SHOW_SIDEBAR:
-      return { menuSetting: { show: value } };
+      return { menuSetting: { show: value } }
 
     case HandlerEnum.MENU_COLLAPSED_SHOW_TITLE:
-      return { menuSetting: { collapsedShowTitle: value } };
+      return { menuSetting: { collapsedShowTitle: value } }
 
     case HandlerEnum.MENU_THEME:
-      updateSidebarBgColor(value);
-      return { menuSetting: { bgColor: value } };
+      updateSidebarBgColor(value)
+      return { menuSetting: { bgColor: value } }
 
     case HandlerEnum.MENU_SPLIT:
-      return { menuSetting: { split: value } };
+      return { menuSetting: { split: value } }
 
     case HandlerEnum.MENU_CLOSE_MIX_SIDEBAR_ON_CHANGE:
-      return { menuSetting: { closeMixSidebarOnChange: value } };
+      return { menuSetting: { closeMixSidebarOnChange: value } }
 
     case HandlerEnum.MENU_FIXED:
-      return { menuSetting: { fixed: value } };
+      return { menuSetting: { fixed: value } }
 
     case HandlerEnum.MENU_TRIGGER_MIX_SIDEBAR:
-      return { menuSetting: { mixSideTrigger: value } };
+      return { menuSetting: { mixSideTrigger: value } }
 
     case HandlerEnum.MENU_FIXED_MIX_SIDEBAR:
-      return { menuSetting: { mixSideFixed: value } };
+      return { menuSetting: { mixSideFixed: value } }
 
     // ============transition==================
     case HandlerEnum.OPEN_PAGE_LOADING:
-      appStore.setPageLoading(false);
-      return { transitionSetting: { openPageLoading: value } };
+      appStore.setPageLoading(false)
+      return { transitionSetting: { openPageLoading: value } }
 
     case HandlerEnum.ROUTER_TRANSITION:
-      return { transitionSetting: { basicTransition: value } };
+      return { transitionSetting: { basicTransition: value } }
 
     case HandlerEnum.OPEN_ROUTE_TRANSITION:
-      return { transitionSetting: { enable: value } };
+      return { transitionSetting: { enable: value } }
 
     case HandlerEnum.OPEN_PROGRESS:
-      return { transitionSetting: { openNProgress: value } };
+      return { transitionSetting: { openNProgress: value } }
     // ============root==================
 
     case HandlerEnum.LOCK_TIME:
-      return { lockTime: value };
+      return { lockTime: value }
 
     case HandlerEnum.FULL_CONTENT:
-      return { fullContent: value };
+      return { fullContent: value }
 
     case HandlerEnum.CONTENT_MODE:
-      return { contentMode: value };
+      return { contentMode: value }
 
     case HandlerEnum.SHOW_BREADCRUMB:
-      return { showBreadCrumb: value };
+      return { showBreadCrumb: value }
 
     case HandlerEnum.SHOW_BREADCRUMB_ICON:
-      return { showBreadCrumbIcon: value };
+      return { showBreadCrumbIcon: value }
 
     case HandlerEnum.GRAY_MODE:
-      updateGrayMode(value);
-      return { grayMode: value };
+      updateGrayMode(value)
+      return { grayMode: value }
 
     case HandlerEnum.SHOW_FOOTER:
-      return { showFooter: value };
+      return { showFooter: value }
 
     case HandlerEnum.COLOR_WEAK:
-      updateColorWeak(value);
-      return { colorWeak: value };
+      updateColorWeak(value)
+      return { colorWeak: value }
     // update-begin--author:liaozhiyang---date:20250407---for：【QQYUN-10952】AI助手支持通过设置来配置是否显示
     case HandlerEnum.AI_ICON_SHOW:
-      return { aiIconShow: value };
+      return { aiIconShow: value }
     // update-end--author:liaozhiyang---date:20250407---for：【QQYUN-10952】AI助手支持通过设置来配置是否显示
     case HandlerEnum.SHOW_LOGO:
-      return { showLogo: value };
+      return { showLogo: value }
 
     // ============tabs==================
     case HandlerEnum.TABS_SHOW_QUICK:
-      return { multiTabsSetting: { showQuick: value } };
+      return { multiTabsSetting: { showQuick: value } }
 
     case HandlerEnum.TABS_SHOW:
-      return { multiTabsSetting: { show: value } };
+      return { multiTabsSetting: { show: value } }
 
     case HandlerEnum.TABS_SHOW_REDO:
-      return { multiTabsSetting: { showRedo: value } };
+      return { multiTabsSetting: { showRedo: value } }
 
     case HandlerEnum.TABS_SHOW_FOLD:
-      return { multiTabsSetting: { showFold: value } };
+      return { multiTabsSetting: { showFold: value } }
 
     case HandlerEnum.TABS_THEME:
-      return { multiTabsSetting: { theme: value } };
+      return { multiTabsSetting: { theme: value } }
 
     // ============header==================
     case HandlerEnum.HEADER_THEME:
-      updateHeaderBgColor(value);
-      return { headerSetting: { bgColor: value } };
+      updateHeaderBgColor(value)
+      return { headerSetting: { bgColor: value } }
 
     case HandlerEnum.HEADER_SEARCH:
-      return { headerSetting: { showSearch: value } };
+      return { headerSetting: { showSearch: value } }
 
     case HandlerEnum.HEADER_FIXED:
-      return { headerSetting: { fixed: value } };
+      return { headerSetting: { fixed: value } }
 
     case HandlerEnum.HEADER_SHOW:
-      return { headerSetting: { show: value } };
+      return { headerSetting: { show: value } }
     default:
-      return {};
+      return {}
   }
 }

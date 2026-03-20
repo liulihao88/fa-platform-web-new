@@ -15,41 +15,41 @@
 </template>
 
 <script lang="ts" setup>
-  import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { BasicForm, useForm } from '/@/components/Form/index';
-  import { checkRuleInput } from '/@/views/system/checkRule/check.rule.data';
-  import { ref } from 'vue';
-  let realTestValue = ref('');
-  const okButtonProps = {
-    style: { display: 'none' },
-  };
-  const [registerForm, { resetFields, setFieldsValue, validate, getFieldsValue }] = useForm({
-    schemas: checkRuleInput,
-    showActionButtonGroup: false,
-    labelCol: {
-      span: 24,
-    },
-    wrapperCol: {
-      span: 24,
-    },
-  });
+import { BasicModal, useModalInner } from '/@/components/Modal'
+import { BasicForm, useForm } from '/@/components/Form/index'
+import { checkRuleInput } from '/@/views/system/checkRule/check.rule.data'
+import { ref } from 'vue'
+let realTestValue = ref('')
+const okButtonProps = {
+  style: { display: 'none' },
+}
+const [registerForm, { resetFields, setFieldsValue, validate, getFieldsValue }] = useForm({
+  schemas: checkRuleInput,
+  showActionButtonGroup: false,
+  labelCol: {
+    span: 24,
+  },
+  wrapperCol: {
+    span: 24,
+  },
+})
 
-  //表单赋值
-  const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
-    //重置表单
-    await resetFields();
-    realTestValue.value = '';
-    setModalProps({
-      confirmLoading: false,
-      cancelText: '关闭',
-      title: '功能测试',
-      width: '1000px',
-    });
-    await setFieldsValue({
-      ruleCode: data.ruleCode,
-      testValue: realTestValue,
-    });
-  });
+//表单赋值
+const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
+  //重置表单
+  await resetFields()
+  realTestValue.value = ''
+  setModalProps({
+    confirmLoading: false,
+    cancelText: '关闭',
+    title: '功能测试',
+    width: '1000px',
+  })
+  await setFieldsValue({
+    ruleCode: data.ruleCode,
+    testValue: realTestValue,
+  })
+})
 </script>
 
 <style scoped></style>

@@ -1,18 +1,18 @@
-import { defHttp } from '/@/utils/http/axios';
-import { useMessage } from '/@/hooks/web/useMessage';
-import { useGlobSetting } from '/@/hooks/setting';
+import { defHttp } from '/@/utils/http/axios'
+import { useMessage } from '/@/hooks/web/useMessage'
+import { useGlobSetting } from '/@/hooks/setting'
 
-const { createMessage, createWarningModal } = useMessage();
-const glob = useGlobSetting();
+const { createMessage, createWarningModal } = useMessage()
+const glob = useGlobSetting()
 
 /**
  * 导出文件xlsx的mime-type
  */
-export const XLSX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+export const XLSX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 /**
  * 导出文件xlsx的文件后缀
  */
-export const XLSX_FILE_SUFFIX = '.xlsx';
+export const XLSX_FILE_SUFFIX = '.xlsx'
 
 export function useMethods() {
   /**
@@ -20,36 +20,39 @@ export function useMethods() {
    * @param name
    * @param url
    */
-  async function exportXls(name, url, params, isXlsx = false, method = 'get')  {
+  async function exportXls(name, url, params, isXlsx = false, method = 'get') {
     //update-begin---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
-    const data = await defHttp[method]({ url: url, params: params, responseType: 'blob', timeout: 60000 }, { isTransformResponse: false });
+    const data = await defHttp[method](
+      { url: url, params: params, responseType: 'blob', timeout: 60000 },
+      { isTransformResponse: false },
+    )
     //update-end---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
     if (!data) {
-      createMessage.warning('文件下载失败');
-      return;
+      createMessage.warning('文件下载失败')
+      return
     }
     //update-begin---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
     let reader = new FileReader()
     reader.readAsText(data, 'utf-8')
     reader.onload = async () => {
-      if(reader.result){
-        if(reader.result.toString().indexOf("success") !=-1){
+      if (reader.result) {
+        if (reader.result.toString().indexOf('success') != -1) {
           // update-begin---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
           try {
-            const { success, message } = JSON.parse(reader.result.toString());
+            const { success, message } = JSON.parse(reader.result.toString())
             if (!success) {
-              createMessage.warning('导出失败，失败原因：' + message);
+              createMessage.warning('导出失败，失败原因：' + message)
             } else {
-              exportExcel(name, isXlsx, data);
+              exportExcel(name, isXlsx, data)
             }
-            return;
+            return
           } catch (error) {
-            exportExcel(name, isXlsx, data);
+            exportExcel(name, isXlsx, data)
           }
           // update-end---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
         }
       }
-      exportExcel(name, isXlsx, data);
+      exportExcel(name, isXlsx, data)
       //update-end---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
     }
   }
@@ -67,8 +70,8 @@ export function useMethods() {
           let {
             message,
             result: { msg, fileUrl, fileName },
-          } = fileInfo;
-          let href = glob.uploadUrl + fileUrl;
+          } = fileInfo
+          let href = glob.uploadUrl + fileUrl
           createWarningModal({
             title: message,
             centered: false,
@@ -76,28 +79,29 @@ export function useMethods() {
                                 <span>${msg}</span><br/> 
                                 <span>具体详情请<a href = ${href} download = ${fileName}> 点击下载 </a> </span> 
                               </div>`,
-          });
+          })
           //update-begin---author:wangshuai ---date:20221121  for：[VUEN-2827]导入无权限，提示图标错误------------
         } else if (fileInfo.code === 500 || fileInfo.code === 510) {
-          createMessage.error(fileInfo.message || `${data.file.name} 导入失败`);
+          createMessage.error(fileInfo.message || `${data.file.name} 导入失败`)
           //update-end---author:wangshuai ---date:20221121  for：[VUEN-2827]导入无权限，提示图标错误------------
         } else {
-          createMessage.success(fileInfo.message || `${data.file.name} 文件上传成功`);
+          createMessage.success(fileInfo.message || `${data.file.name} 文件上传成功`)
         }
       } catch (error) {
-        console.log('导入的数据异常', error);
+        console.log('导入的数据异常', error)
       } finally {
-        typeof success === 'function' ? success(fileInfo) : '';
+        typeof success === 'function' ? success(fileInfo) : ''
       }
-    };
-    await defHttp.uploadFile({ url }, { file: data.file }, { success: isReturn });
+    }
+    await defHttp.uploadFile({ url }, { file: data.file }, { success: isReturn })
   }
 
   return {
-    handleExportXls: (name: string, url: string, params?: object, method?:string) => exportXls(name, url, params, false, method),
+    handleExportXls: (name: string, url: string, params?: object, method?: string) =>
+      exportXls(name, url, params, false, method),
     handleImportXls: (data, url, success) => importXls(data, url, success),
     handleExportXlsx: (name: string, url: string, params?: object) => exportXls(name, url, params, true),
-  };
+  }
 
   /**
    * 导出excel
@@ -107,26 +111,26 @@ export function useMethods() {
    */
   function exportExcel(name, isXlsx, data) {
     if (!name || typeof name != 'string') {
-      name = '导出文件';
+      name = '导出文件'
     }
-    let blobOptions = { type: 'application/vnd.ms-excel' };
-    let fileSuffix = '.xls';
+    let blobOptions = { type: 'application/vnd.ms-excel' }
+    let fileSuffix = '.xls'
     if (isXlsx) {
-      blobOptions['type'] = XLSX_MIME_TYPE;
-      fileSuffix = XLSX_FILE_SUFFIX;
+      blobOptions['type'] = XLSX_MIME_TYPE
+      fileSuffix = XLSX_FILE_SUFFIX
     }
     if (typeof window.navigator.msSaveBlob !== 'undefined') {
-      window.navigator.msSaveBlob(new Blob([data], blobOptions), name + fileSuffix);
+      window.navigator.msSaveBlob(new Blob([data], blobOptions), name + fileSuffix)
     } else {
-      let url = window.URL.createObjectURL(new Blob([data], blobOptions));
-      let link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = url;
-      link.setAttribute('download', name + fileSuffix);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link); //下载完成移除元素
-      window.URL.revokeObjectURL(url); //释放掉blob对象
+      let url = window.URL.createObjectURL(new Blob([data], blobOptions))
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url
+      link.setAttribute('download', name + fileSuffix)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link) //下载完成移除元素
+      window.URL.revokeObjectURL(url) //释放掉blob对象
     }
   }
 }

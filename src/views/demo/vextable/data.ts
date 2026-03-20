@@ -1,7 +1,7 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { usePermission } from '/@/hooks/web/usePermission';
-import { JVxeColumn, JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
-const { isDisabledAuth, hasPermission, initBpmFormData} = usePermission();
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { usePermission } from '/@/hooks/web/usePermission'
+import { JVxeColumn, JVxeTypes } from '/@/components/jeecg/JVxeTable/types'
+const { isDisabledAuth, hasPermission, initBpmFormData } = usePermission()
 
 export const columns: BasicColumn[] = [
   {
@@ -35,29 +35,29 @@ export const columns: BasicColumn[] = [
     dataIndex: 'bpmStatus',
     customRender: ({ text }) => {
       if (!text || text == '1') {
-        return '待提交';
+        return '待提交'
       } else if (text == '2') {
-        return '处理中';
+        return '处理中'
       } else if (text == '2') {
-        return '已完成';
+        return '已完成'
       } else {
-        return text;
+        return text
       }
     },
   },
-];
+]
 
 export function getBpmFormSchema(formData) {
   //注入流程节点表单权限
-  initBpmFormData(formData);
-  
+  initBpmFormData(formData)
+
   const formSchema2: FormSchema[] = [
     {
       label: '订单号',
       field: 'orderCode',
       component: 'Input',
       show: ({ values }) => {
-        return hasPermission('order:orderCode');
+        return hasPermission('order:orderCode')
       },
     },
     {
@@ -92,21 +92,21 @@ export function getBpmFormSchema(formData) {
       field: 'content',
       component: 'Input',
     },
-  ];
-  return formSchema2;
+  ]
+  return formSchema2
 }
 
 export function getOrderCustomerFormSchema(formData) {
   //注入流程节点表单权限
-  initBpmFormData(formData);
-  
+  initBpmFormData(formData)
+
   const formSchema2: FormSchema[] = [
     {
       label: '客户名',
       field: 'name',
       component: 'Input',
       dynamicDisabled: ({ values }) => {
-        return isDisabledAuth('order:name');
+        return isDisabledAuth('order:name')
       },
     },
     {
@@ -130,8 +130,8 @@ export function getOrderCustomerFormSchema(formData) {
       field: 'telphone',
       component: 'Input',
     },
-  ];
-  return formSchema2;
+  ]
+  return formSchema2
 }
 
 export const jeecgOrderTicketColumns: JVxeColumn[] = [
@@ -151,4 +151,4 @@ export const jeecgOrderTicketColumns: JVxeColumn[] = [
     placeholder: '请选择${title}',
     defaultValue: '',
   },
-];
+]

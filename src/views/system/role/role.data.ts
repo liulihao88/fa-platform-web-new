@@ -1,5 +1,5 @@
-import { FormSchema } from '/@/components/Table';
-import { isRoleExist } from './role.api';
+import { FormSchema } from '/@/components/Table'
+import { isRoleExist } from './role.api'
 export const columns = [
   {
     title: '角色名称',
@@ -16,7 +16,7 @@ export const columns = [
     dataIndex: 'createTime',
     width: 100,
   },
-];
+]
 /**
  * 角色用户Columns
  */
@@ -34,7 +34,7 @@ export const userColumns = [
     dataIndex: 'status_dictText',
     width: 80,
   },
-];
+]
 export const searchFormSchema: FormSchema[] = [
   {
     field: 'roleName',
@@ -48,7 +48,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 6 },
   },
-];
+]
 /**
  * 角色用户搜索form
  */
@@ -60,7 +60,7 @@ export const searchUserFormSchema: FormSchema[] = [
     colProps: { span: 12 },
     labelWidth: 74,
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -81,32 +81,32 @@ export const formSchema: FormSchema[] = [
     required: true,
     component: 'Input',
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
     dynamicRules: ({ values, model }) => {
-      console.log('values:', values);
+      console.log('values:', values)
       return [
         {
           required: true,
           validator: (_, value) => {
             if (!value) {
-              return Promise.reject('请输入角色编码');
+              return Promise.reject('请输入角色编码')
             }
             if (values) {
               return new Promise((resolve, reject) => {
                 isRoleExist({ id: model.id, roleCode: value })
                   .then((res) => {
-                    res.success ? resolve() : reject(res.message || '校验失败');
+                    res.success ? resolve() : reject(res.message || '校验失败')
                   })
                   .catch((err) => {
-                    reject(err.message || '验证失败');
-                  });
-              });
+                    reject(err.message || '验证失败')
+                  })
+              })
             }
-            return Promise.resolve();
+            return Promise.resolve()
           },
         },
-      ];
+      ]
     },
   },
   {
@@ -114,7 +114,7 @@ export const formSchema: FormSchema[] = [
     field: 'description',
     component: 'InputTextArea',
   },
-];
+]
 
 export const formDescSchema = [
   {
@@ -129,7 +129,7 @@ export const formDescSchema = [
     label: '备注',
     field: 'description',
   },
-];
+]
 
 export const roleIndexFormSchema: FormSchema[] = [
   {
@@ -166,7 +166,7 @@ export const roleIndexFormSchema: FormSchema[] = [
     label: '是否路由菜单',
     helpMessage: '非路由菜单设置成首页，需开启',
     component: 'Switch',
-    defaultValue: true
+    defaultValue: true,
   },
   {
     label: '优先级',
@@ -181,4 +181,4 @@ export const roleIndexFormSchema: FormSchema[] = [
       options: ['1', '0'],
     },
   },
-];
+]

@@ -10,7 +10,10 @@
 
             <a-col :span="24">
               <div style="width: 100%; margin-top: 15px">
-                <a-button @click="saveDataRuleForRole" type="primary" size="small"> <Icon icon="ant-design:save-outlined"></Icon>点击保存</a-button>
+                <a-button @click="saveDataRuleForRole" type="primary" size="small">
+                  <Icon icon="ant-design:save-outlined"></Icon>
+                  点击保存
+                </a-button>
               </div>
             </a-col>
           </a-row>
@@ -21,65 +24,65 @@
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
-  import { ref, unref } from 'vue';
-  import { BasicDrawer, useDrawerInner } from '/src/components/Drawer';
-  import { useMessage } from '/src/hooks/web/useMessage';
-  import { queryDataRule, saveDataRule } from '../role.api';
-  // 声明Emits
-  const emit = defineEmits(['success', 'register']);
-  const { createMessage } = useMessage();
-  // 声明数据
-  const functionId = ref('');
-  const roleId = ref('');
-  const dataRuleList = ref([]);
-  const dataRuleChecked = ref([]);
+import { ref, unref } from 'vue'
+import { BasicDrawer, useDrawerInner } from '/src/components/Drawer'
+import { useMessage } from '/src/hooks/web/useMessage'
+import { queryDataRule, saveDataRule } from '../role.api'
+// 声明Emits
+const emit = defineEmits(['success', 'register'])
+const { createMessage } = useMessage()
+// 声明数据
+const functionId = ref('')
+const roleId = ref('')
+const dataRuleList = ref([])
+const dataRuleChecked = ref([])
 
-  /**
-   * 数据
-   */
-  const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
-    await reset();
-    setDrawerProps({ confirmLoading: false });
-    //权限的id
-    functionId.value = data.functionId;
-    //角色的id
-    roleId.value = data.roleId;
-    //查询数据
-    const res = await queryDataRule({ functionId: unref(functionId), roleId: unref(roleId) });
-    if (res.success) {
-      dataRuleList.value = res.result.datarule;
-      if (res.result.drChecked) {
-        dataRuleChecked.value = res.result.drChecked.split(',');
-      }
+/**
+ * 数据
+ */
+const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
+  await reset()
+  setDrawerProps({ confirmLoading: false })
+  //权限的id
+  functionId.value = data.functionId
+  //角色的id
+  roleId.value = data.roleId
+  //查询数据
+  const res = await queryDataRule({ functionId: unref(functionId), roleId: unref(roleId) })
+  if (res.success) {
+    dataRuleList.value = res.result.datarule
+    if (res.result.drChecked) {
+      dataRuleChecked.value = res.result.drChecked.split(',')
     }
-  });
-
-  /**
-   * 重置
-   */
-  function reset() {
-    functionId.value = '';
-    roleId.value = '';
-    dataRuleList.value = [];
-    dataRuleChecked.value = [];
   }
+})
 
-  /**
-   * 提交
-   */
-  async function saveDataRuleForRole() {
-    if (!unref(dataRuleChecked) || unref(dataRuleChecked).length == 0) {
-      createMessage.warning('请注意，现未勾选任何数据权限!');
-    }
-    let params = {
-      permissionId: unref(functionId),
-      roleId: unref(roleId),
-      dataRuleIds: unref(dataRuleChecked).join(','),
-    };
-    await saveDataRule(params);
-    //关闭弹窗
-    closeDrawer();
-    //刷新列表
-    emit('success');
+/**
+ * 重置
+ */
+function reset() {
+  functionId.value = ''
+  roleId.value = ''
+  dataRuleList.value = []
+  dataRuleChecked.value = []
+}
+
+/**
+ * 提交
+ */
+async function saveDataRuleForRole() {
+  if (!unref(dataRuleChecked) || unref(dataRuleChecked).length == 0) {
+    createMessage.warning('请注意，现未勾选任何数据权限!')
   }
+  let params = {
+    permissionId: unref(functionId),
+    roleId: unref(roleId),
+    dataRuleIds: unref(dataRuleChecked).join(','),
+  }
+  await saveDataRule(params)
+  //关闭弹窗
+  closeDrawer()
+  //刷新列表
+  emit('success')
+}
 </script>

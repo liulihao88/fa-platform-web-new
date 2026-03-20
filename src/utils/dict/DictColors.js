@@ -34,16 +34,16 @@ export const NONE_COLOR = ['#e9e9e9', blackColor]
  * @returns {{getIndex: function, next: function}}
  */
 export function getColorIterator(initIndex = 0) {
-  let index = initIndex;
+  let index = initIndex
   if (index < 0 || index >= Colors.length) {
-    index = 0;
+    index = 0
   }
   return {
     getIndex: () => index,
     next() {
-      const color = Colors[index];
-      index = (index + 1) % Colors.length;
-      return color;
+      const color = Colors[index]
+      index = (index + 1) % Colors.length
+      return color
     },
   }
 }
@@ -52,14 +52,14 @@ export function getColorIterator(initIndex = 0) {
  * 根据颜色获取当前坐标和颜色
  */
 export function getItemColor(color) {
-  if(!color){
-    return NONE_COLOR[1];
+  if (!color) {
+    return NONE_COLOR[1]
   }
-  let colorIndex = Colors.findIndex((value)=>{
-    return value[0] === color;
+  let colorIndex = Colors.findIndex((value) => {
+    return value[0] === color
   })
-  if(colorIndex === -1){
-    return NONE_COLOR[1];
+  if (colorIndex === -1) {
+    return NONE_COLOR[1]
   }
-  return Colors[colorIndex][1];
+  return Colors[colorIndex][1]
 }

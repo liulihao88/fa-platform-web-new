@@ -1,8 +1,8 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { dictItemCheck } from './dict.api';
-import { rules } from '/@/utils/helper/validator';
-import { h } from "vue";
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { dictItemCheck } from './dict.api'
+import { rules } from '/@/utils/helper/validator'
+import { h } from 'vue'
 
 export const columns: BasicColumn[] = [
   {
@@ -20,7 +20,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'description',
     // width: 120
   },
-];
+]
 
 export const recycleBincolumns: BasicColumn[] = [
   {
@@ -38,7 +38,7 @@ export const recycleBincolumns: BasicColumn[] = [
     dataIndex: 'description',
     width: 120,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -53,7 +53,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'JInput',
     colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -73,7 +73,7 @@ export const formSchema: FormSchema[] = [
     field: 'dictCode',
     component: 'Input',
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
     dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_dict', 'dict_code', model, schema, true),
   },
@@ -82,7 +82,7 @@ export const formSchema: FormSchema[] = [
     field: 'description',
     component: 'Input',
   },
-];
+]
 
 export const dictItemColumns: BasicColumn[] = [
   {
@@ -99,14 +99,14 @@ export const dictItemColumns: BasicColumn[] = [
     title: '字典颜色',
     dataIndex: 'itemColor',
     width: 80,
-    align:'center',
-    customRender:({ text }) => {
+    align: 'center',
+    customRender: ({ text }) => {
       return h('div', {
-        style: {"background": text, "width":"18px","height":"18px","border-radius":"50%","margin":"0 auto"}
+        style: { background: text, width: '18px', height: '18px', 'border-radius': '50%', margin: '0 auto' },
       })
-    }
+    },
   },
-];
+]
 
 export const dictItemSearchFormSchema: FormSchema[] = [
   {
@@ -123,7 +123,7 @@ export const dictItemSearchFormSchema: FormSchema[] = [
       stringToNumber: true,
     },
   },
-];
+]
 
 export const itemFormSchema: FormSchema[] = [
   {
@@ -148,35 +148,35 @@ export const itemFormSchema: FormSchema[] = [
           required: true,
           validator: (_, value) => {
             if (!value) {
-              return Promise.reject('请输入数据值');
+              return Promise.reject('请输入数据值')
             }
             if (new RegExp("[`~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]").test(value)) {
-              return Promise.reject('数据值不能包含特殊字符！');
+              return Promise.reject('数据值不能包含特殊字符！')
             }
             return new Promise<void>((resolve, reject) => {
               let params = {
                 dictId: values.dictId,
                 id: model.id,
                 itemValue: value,
-              };
+              }
               dictItemCheck(params)
                 .then((res) => {
-                  res.success ? resolve() : reject(res.message || '校验失败');
+                  res.success ? resolve() : reject(res.message || '校验失败')
                 })
                 .catch((err) => {
-                  reject(err.message || '验证失败');
-                });
-            });
+                  reject(err.message || '验证失败')
+                })
+            })
           },
         },
-      ];
+      ]
     },
   },
   {
     label: '颜色值',
     field: 'itemColor',
     component: 'Input',
-    slot:'itemColor'
+    slot: 'itemColor',
   },
   {
     label: '描述',
@@ -200,4 +200,4 @@ export const itemFormSchema: FormSchema[] = [
       stringToNumber: true,
     },
   },
-];
+]

@@ -1,4 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
+import { BasicColumn } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -16,4 +16,4 @@ export const columns: BasicColumn[] = [
     dataIndex: 'value',
     width: 80,
   },
-];
+]

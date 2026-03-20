@@ -1,14 +1,14 @@
 export interface BasicPageParams {
-  page: number;
-  pageSize: number;
+  page: number
+  pageSize: number
 }
 
 export interface BasicFetchResult<T extends any> {
-  items: T[];
-  total: number;
+  items: T[]
+  total: number
 }
 
 export interface BasicResult<T extends any> {
-  records: T[];
-  total: number;
+  records: T[]
+  total: number
 }

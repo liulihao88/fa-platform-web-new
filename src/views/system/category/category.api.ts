@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/sys/category/rootList',
@@ -17,25 +17,25 @@ enum Api {
  * 导出api
  * @param params
  */
-export const getExportUrl = Api.exportXls;
+export const getExportUrl = Api.exportXls
 /**
  * 导入api
  * @param params
  */
-export const getImportUrl = Api.importExcel;
+export const getImportUrl = Api.importExcel
 /**
  * 列表接口
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 /**
  * 删除
  */
 export const deleteCategory = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteCategory, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除
  * @param params
@@ -48,31 +48,32 @@ export const batchDeleteCategory = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新
  * @param params
  */
 export const saveOrUpdateDict = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.edit : Api.save
+  return defHttp.post({ url: url, params })
+}
 /**
  * 查询全部树形节点数据
  * @param params
  */
-export const loadTreeData = (params) => defHttp.get({ url: Api.loadTreeData, params });
+export const loadTreeData = (params) => defHttp.get({ url: Api.loadTreeData, params })
 /**
  * 查询子节点数据
  * @param params
  */
-export const getChildList = (params) => defHttp.get({ url: Api.getChildList, params });
+export const getChildList = (params) => defHttp.get({ url: Api.getChildList, params })
 /**
  * 批量查询子节点数据
  * @param params
  */
-export const getChildListBatch = (params) => defHttp.get({ url: Api.getChildListBatch, params }, { isTransformResponse: false });
+export const getChildListBatch = (params) =>
+  defHttp.get({ url: Api.getChildListBatch, params }, { isTransformResponse: false })

@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Image } from 'ant-design-vue';
-import { BasicModal } from '/@/components/Modal';
-import support1Image from '@/assets/images/filedesc/support1.png';
-import support2Image from '@/assets/images/filedesc/support2.png';
-import support3Image from '@/assets/images/filedesc/support3.png';
-import support4Image from '@/assets/images/filedesc/support4.png';
-import unSupport1Image from '@/assets/images/filedesc/unSupport1.png';
-import unSupport2Image from '@/assets/images/filedesc/unSupport2.png';
+import { ref } from 'vue'
+import { Image } from 'ant-design-vue'
+import { BasicModal } from '/@/components/Modal'
+import support1Image from '@/assets/images/filedesc/support1.png'
+import support2Image from '@/assets/images/filedesc/support2.png'
+import support3Image from '@/assets/images/filedesc/support3.png'
+import support4Image from '@/assets/images/filedesc/support4.png'
+import unSupport1Image from '@/assets/images/filedesc/unSupport1.png'
+import unSupport2Image from '@/assets/images/filedesc/unSupport2.png'
 
-const isShow = ref(false);
+const isShow = ref(false)
 const open = () => {
-  isShow.value = true;
-};
+  isShow.value = true
+}
 const confirm = async () => {
-  isShow.value = false;
-};
+  isShow.value = false
+}
 
 defineExpose({
-  open
-});
+  open,
+})
 </script>
 
 <template>
@@ -41,23 +41,23 @@ defineExpose({
           <g-title title="二丶支持的格式"></g-title>
           <div class="title-1">1) 横向表格</div>
           <Image :src="support1Image" />
-          <div  class="title-1">2) 纵向表格</div>
+          <div class="title-1">2) 纵向表格</div>
           <Image :src="support2Image" />
-          <div  class="title-1">3) 横表+纵表 任意组合</div>
+          <div class="title-1">3) 横表+纵表 任意组合</div>
           <Image :src="support3Image" />
         </a-col>
         <a-col :span="12" class="r">
-           <g-title title="三丶不支持的文件种类"></g-title>
-           <div  class="title-1">图片：PDF文件如果内容是图片，则不能识别</div>
-           <div  class="title-1">表格的表头错行  或者没有表格，则不能识别</div>
-           <div  class="title-1">文件没有表格，只有文字，则不能识别</div>
-           <div  class="title-1">对于不能识别的文件，请用WPS转换成可以识别的文件类型，或者调整文件格式为可识别的格式</div>
-           <div  class="title-1">1) 没有表格</div>
-           <Image :src="unSupport2Image" />
-           <div  class="title-1">2) 表格错行</div>
-           <Image :src="unSupport1Image" />
-           <div  class="title-1">3) 只有文字</div>
-           <Image :src="support4Image" />
+          <g-title title="三丶不支持的文件种类"></g-title>
+          <div class="title-1">图片：PDF文件如果内容是图片，则不能识别</div>
+          <div class="title-1">表格的表头错行 或者没有表格，则不能识别</div>
+          <div class="title-1">文件没有表格，只有文字，则不能识别</div>
+          <div class="title-1">对于不能识别的文件，请用WPS转换成可以识别的文件类型，或者调整文件格式为可识别的格式</div>
+          <div class="title-1">1) 没有表格</div>
+          <Image :src="unSupport2Image" />
+          <div class="title-1">2) 表格错行</div>
+          <Image :src="unSupport1Image" />
+          <div class="title-1">3) 只有文字</div>
+          <Image :src="support4Image" />
         </a-col>
       </a-row>
     </BasicModal>
@@ -65,31 +65,31 @@ defineExpose({
 </template>
 
 <style lang="scss" scoped>
-.row-box{
+.row-box {
   height: 100%;
 }
- .l{
+.l {
   height: 100%;
   overflow: auto;
   border: 1px solid #ccc;
   margin-right: 8px;
   padding: 8px;
- }
- .r{
-   flex: 1;
-   height: 100%;
-   overflow: auto;
-   border: 1px solid #ccc;
-   margin-left: 8px;
-   padding: 8px;
- }
- .title-1{
+}
+.r {
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  border: 1px solid #ccc;
+  margin-left: 8px;
+  padding: 8px;
+}
+.title-1 {
   font-size: 16px;
   padding-left: 24px;
   margin-top: 8px;
- }
- .title-2{
+}
+.title-2 {
   padding-left: 40px;
   font-size: 14px;
- }
+}
 </style>

@@ -1,4 +1,4 @@
-import { FormSchema } from '/@/components/Form';
+import { FormSchema } from '/@/components/Form'
 
 // 部门基础表单
 export function useBasicFormSchema() {
@@ -80,8 +80,8 @@ export function useBasicFormSchema() {
       component: 'Input',
       show: false,
     },
-  ];
-  return { basicFormSchema };
+  ]
+  return { basicFormSchema }
 }
 
 // 机构类型选项
@@ -93,4 +93,4 @@ export const orgCategoryOptions = {
     { value: '2', label: '部门' },
     { value: '3', label: '岗位' },
   ],
-};
+}

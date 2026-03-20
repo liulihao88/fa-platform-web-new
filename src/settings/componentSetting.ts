@@ -1,6 +1,6 @@
 // 用于配置某些组件的常规配置，而无需修改组件
 
-import type { SorterResult } from '../components/Table';
+import type { SorterResult } from '../components/Table'
 
 export default {
   // 表格配置
@@ -26,18 +26,18 @@ export default {
     // 默认排序方法
     defaultSortFn: (sortInfo: SorterResult) => {
       //update-begin-author:taoyan date:2022-10-21 for: VUEN-2199【表单设计器】多字段排序
-      if(sortInfo instanceof Array){
-        let sortInfoArray:any[] = []
-        for(let item of sortInfo){
-          let info = getSort(item);
-          if(info){
+      if (sortInfo instanceof Array) {
+        let sortInfoArray: any[] = []
+        for (let item of sortInfo) {
+          let info = getSort(item)
+          if (info) {
             sortInfoArray.push(info)
           }
         }
         return {
-          sortInfoString: JSON.stringify(sortInfoArray)
+          sortInfoString: JSON.stringify(sortInfoArray),
         }
-      }else{
+      } else {
         let info = getSort(sortInfo)
         return info || {}
       }
@@ -45,7 +45,7 @@ export default {
     },
     // 自定义过滤方法
     defaultFilterFn: (data: Partial<Recordable<string[]>>) => {
-      return data;
+      return data
     },
     // update-begin--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
     scrollToFirstRowOnChange: false,
@@ -72,22 +72,22 @@ export default {
     //表单默认冒号
     colon: true,
   },
-};
+}
 
 /**
  * 获取排序信息
  * @param item
  */
-function getSort(item){
-  const { field, order } = item;
+function getSort(item) {
+  const { field, order } = item
   if (field && order) {
-    let sortType = 'ascend' == order ? 'asc' : 'desc';
+    let sortType = 'ascend' == order ? 'asc' : 'desc'
     return {
       // 排序字段
       column: field,
       // 排序方式 asc/desc
       order: sortType,
-    };
+    }
   }
   return ''
 }

@@ -1,11 +1,17 @@
-import type { AppRouteRecordRaw } from '/@/router/types';
-import { t } from '/@/hooks/web/useI18n';
-import { REDIRECT_NAME, LAYOUT, EXCEPTION_COMPONENT, PAGE_NOT_FOUND_NAME, PAGE_NOT_FOUND_NAME_404 } from '/@/router/constant';
+import type { AppRouteRecordRaw } from '/@/router/types'
+import { t } from '/@/hooks/web/useI18n'
+import {
+  REDIRECT_NAME,
+  LAYOUT,
+  EXCEPTION_COMPONENT,
+  PAGE_NOT_FOUND_NAME,
+  PAGE_NOT_FOUND_NAME_404,
+} from '/@/router/constant'
 
 // 404 on a page
 export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
   path: '/:path(.*)*',
- 
+
   name: PAGE_NOT_FOUND_NAME,
   component: LAYOUT,
   meta: {
@@ -27,7 +33,7 @@ export const PAGE_NOT_FOUND_ROUTE: AppRouteRecordRaw = {
       },
     },
   ],
-};
+}
 
 export const REDIRECT_ROUTE: AppRouteRecordRaw = {
   path: '/redirect',
@@ -49,7 +55,7 @@ export const REDIRECT_ROUTE: AppRouteRecordRaw = {
       },
     },
   ],
-};
+}
 
 export const ERROR_LOG_ROUTE: AppRouteRecordRaw = {
   path: '/error-log',
@@ -73,4 +79,4 @@ export const ERROR_LOG_ROUTE: AppRouteRecordRaw = {
       },
     },
   ],
-};
+}

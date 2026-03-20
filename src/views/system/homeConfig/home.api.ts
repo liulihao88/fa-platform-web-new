@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/sys/sysRoleIndex/list',
@@ -13,16 +13,16 @@ enum Api {
  * 系统角色列表
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 
 /**
  * 删除角色
  */
 export const deleteIndex = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteIndex, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除角色
  * @param params
@@ -35,21 +35,22 @@ export const batchDelete = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新首页配置
  * @param params
  */
 export const saveOrUpdate = (params, isUpdate) => {
-  const url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
-};
+  const url = isUpdate ? Api.edit : Api.save
+  return defHttp.post({ url: url, params })
+}
 /**
  * 查询首页配置
  * @param params
  */
-export const queryIndexByCode = (params) => defHttp.get({ url: Api.queryIndexByCode, params }, { isTransformResponse: false });
+export const queryIndexByCode = (params) =>
+  defHttp.get({ url: Api.queryIndexByCode, params }, { isTransformResponse: false })

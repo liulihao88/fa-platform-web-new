@@ -1,6 +1,6 @@
-import { FormSchema } from '/@/components/Form';
+import { FormSchema } from '/@/components/Form'
 
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 
 export const schemas: FormSchema[] = [
   {
@@ -29,7 +29,7 @@ export const schemas: FormSchema[] = [
     component: 'InputSearch',
     componentProps: {
       onSearch: (value) => {
-        console.log(value);
+        console.log(value)
       },
     },
   },
@@ -237,13 +237,13 @@ export const schemas: FormSchema[] = [
       showToday: true,
       //不可选择日期
       disabledDate: (currentDate) => {
-        let date = dayjs(currentDate).format('YYYY-MM-DD');
-        let nowDate = dayjs(new Date()).format('YYYY-MM-DD');
+        let date = dayjs(currentDate).format('YYYY-MM-DD')
+        let nowDate = dayjs(new Date()).format('YYYY-MM-DD')
         //当天不可选择
         if (date == nowDate) {
-          return true;
+          return true
         }
-        return false;
+        return false
       },
     },
   },
@@ -254,13 +254,13 @@ export const schemas: FormSchema[] = [
     componentProps: {
       //不可选择日期
       disabledDate: (currentDate) => {
-        let date = dayjs(currentDate).format('YYYY-MM');
-        let nowDate = dayjs(new Date()).format('YYYY-MM');
+        let date = dayjs(currentDate).format('YYYY-MM')
+        let nowDate = dayjs(new Date()).format('YYYY-MM')
         //当天不可选择
         if (date == nowDate) {
-          return true;
+          return true
         }
-        return false;
+        return false
       },
     },
   },
@@ -390,4 +390,4 @@ export const schemas: FormSchema[] = [
       type: 'horizontal',
     },
   },
-];
+]

@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 export enum Api {
   list = '/airag/ocr/list',
@@ -15,8 +15,8 @@ export enum Api {
  * @param params
  */
 export const list = (params) => {
-  return defHttp.get({ url: Api.list, params });
-};
+  return defHttp.get({ url: Api.list, params })
+}
 
 /**
  * 添加Orc
@@ -24,8 +24,8 @@ export const list = (params) => {
  * @param handleSuccess
  */
 export const addOcr = (params) => {
-  return defHttp.post({ url: Api.add, params });
-};
+  return defHttp.post({ url: Api.add, params })
+}
 
 /**
  * 编辑Orc
@@ -33,8 +33,8 @@ export const addOcr = (params) => {
  * @param handleSuccess
  */
 export const editOcr = (params) => {
-  return defHttp.put({ url: Api.edit, params });
-};
+  return defHttp.put({ url: Api.edit, params })
+}
 
 /**
  * 根据id删除 Orc
@@ -42,5 +42,5 @@ export const editOcr = (params) => {
  * @param handleSuccess
  */
 export const deleteOcrById = (params) => {
-  return defHttp.delete({ url: Api.deleteById, params });
-};
+  return defHttp.delete({ url: Api.deleteById, params })
+}

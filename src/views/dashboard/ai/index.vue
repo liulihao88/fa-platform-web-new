@@ -7,18 +7,17 @@
 </template>
 
 <script setup>
-  import AiChat from '/@/views/super/airag/aiapp/chat/AiChat.vue';
-  
+import AiChat from '/@/views/super/airag/aiapp/chat/AiChat.vue'
 </script>
 
 <style lang="less" scoped>
-  .wrap {
-    height: 100%;
+.wrap {
+  height: 100%;
+  width: 100%;
+  .content {
+    background: #fff;
     width: 100%;
-    .content {
-      background: #fff;
-      width: 100%;
-      height: 100%;
-    }
+    height: 100%;
   }
+}
 </style>

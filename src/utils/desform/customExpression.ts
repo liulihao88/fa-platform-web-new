@@ -16,15 +16,15 @@
 /** 字段默认值官方示例：获取地址 */
 export function demoFieldDefVal_getAddress(arg) {
   if (!arg) {
-    arg = '朝阳区';
+    arg = '朝阳区'
   }
-  return `北京市 ${arg}`;
+  return `北京市 ${arg}`
 }
 
 /** 自定义JS函数示例 */
 export function sayHi(name) {
   if (!name) {
-    name = '张三';
+    name = '张三'
   }
-  return `您好，我叫： ${name}`;
+  return `您好，我叫： ${name}`
 }

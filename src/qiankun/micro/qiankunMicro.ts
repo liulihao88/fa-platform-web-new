@@ -1,21 +1,21 @@
 /*
-* 【JEECG作为乾坤子应用】
-*/
-import type {App} from 'vue';
-import type {MainAppProps} from "#/main";
+ * 【JEECG作为乾坤子应用】
+ */
+import type { App } from 'vue'
+import type { MainAppProps } from '#/main'
 
-import {destroyStore} from "@/store";
-import {destroyRouter} from "@/router";
-import {clearComponent} from "@/components/jeecg/JVxeTable/src/componentMap";
+import { destroyStore } from '@/store'
+import { destroyRouter } from '@/router'
+import { clearComponent } from '@/components/jeecg/JVxeTable/src/componentMap'
 
-import {renderWithQiankun} from 'vite-plugin-qiankun/dist/helper';
+import { renderWithQiankun } from 'vite-plugin-qiankun/dist/helper'
 
 /**
  * 以乾坤子应用模式运行
  * @param render
  */
 export async function useQiankunMicroApp(render: (props?: MainAppProps) => Promise<App>) {
-  let instance: Nullable<App> = null;
+  let instance: Nullable<App> = null
 
   // 注册乾坤子应用生命周期函数
   renderWithQiankun({
@@ -26,28 +26,28 @@ export async function useQiankunMicroApp(render: (props?: MainAppProps) => Promi
         hideSider: props.hideSider,
         hideHeader: props.hideHeader,
         hideMultiTabs: props.hideMultiTabs,
-      });
+      })
     },
     bootstrap() {
-      console.debug('[qiankun-micro] bootstrap');
+      console.debug('[qiankun-micro] bootstrap')
     },
     update(props) {
-      console.debug('[qiankun-micro] update: ', props);
+      console.debug('[qiankun-micro] update: ', props)
     },
     unmount(props) {
-      console.debug('[qiankun-micro] unmount: ', props);
+      console.debug('[qiankun-micro] unmount: ', props)
 
-      destroyStore();
-      destroyRouter();
+      destroyStore()
+      destroyRouter()
 
       if (instance) {
-        clearComponent();
-        instance.unmount();
-        instance._container.innerHTML = '';
-        instance = null;
+        clearComponent()
+        instance.unmount()
+        instance._container.innerHTML = ''
+        instance = null
       }
     },
-  });
+  })
 
   return instance!
 }

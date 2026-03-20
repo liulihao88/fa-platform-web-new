@@ -16,75 +16,75 @@
 </template>
 
 <script lang="ts" setup>
-  //引入依赖
-  import { useForm, BasicForm, FormSchema } from '/@/components/Form';
-  import JEditor from '/@/components/Form/src/jeecg/components/JEditor.vue';
-  import { h } from 'vue';
-  import { Input } from 'ant-design-vue';
+//引入依赖
+import { useForm, BasicForm, FormSchema } from '/@/components/Form'
+import JEditor from '/@/components/Form/src/jeecg/components/JEditor.vue'
+import { h } from 'vue'
+import { Input } from 'ant-design-vue'
 
-  //自定义表单字段
-  const formSchemas: FormSchema[] = [
-    {
-      field: 'productName',
-      label: '商品名称',
-      component: 'Input',
+//自定义表单字段
+const formSchemas: FormSchema[] = [
+  {
+    field: 'productName',
+    label: '商品名称',
+    component: 'Input',
+  },
+  {
+    field: 'price',
+    label: '价格',
+    component: 'InputNumber',
+  },
+  {
+    field: 'buyNums',
+    label: '购买个数',
+    component: 'InputNumber',
+    //model 单签表单对象，field 当前字段
+    render: ({ model, field }) => {
+      //渲染自定义组件，以Input为例
+      return h(Input, {
+        placeholder: '请输入购买个数',
+        value: model[field],
+        style: { width: '100%' },
+        type: 'number',
+        onChange: (e: ChangeEvent) => {
+          model[field] = e.target.value
+        },
+      })
     },
-    {
-      field: 'price',
-      label: '价格',
-      component: 'InputNumber',
+  },
+  {
+    field: 'describe',
+    label: '描述',
+    component: 'Input',
+    componentProps: {
+      disabled: true,
     },
-    {
-      field: 'buyNums',
-      label: '购买个数',
-      component: 'InputNumber',
-      //model 单签表单对象，field 当前字段
-      render: ({ model, field }) => {
-        //渲染自定义组件，以Input为例
-        return h(Input, {
-          placeholder: '请输入购买个数',
-          value: model[field],
-          style: { width: '100%' },
-          type: 'number',
-          onChange: (e: ChangeEvent) => {
-            model[field] = e.target.value;
-          },
-        });
-      },
+    //渲染 values当前表单所有值
+    render: ({ values }) => {
+      let productName = values.productName ? values.productName : ''
+      let price = values.price ? values.price : 0
+      let buyNums = values.buyNums ? values.buyNums : 0
+      return '购买商品名称：' + productName + ', 总价格: ' + price * buyNums + '元'
     },
-    {
-      field: 'describe',
-      label: '描述',
-      component: 'Input',
-      componentProps: {
-        disabled: true,
-      },
-      //渲染 values当前表单所有值
-      render: ({ values }) => {
-        let productName = values.productName?values.productName:'';
-        let price = values.price ? values.price : 0;
-        let buyNums = values.buyNums ? values.buyNums : 0;
-        return '购买商品名称：' + productName + ', 总价格: ' + price * buyNums + '元';
-      },
-    },
-  ];
+  },
+]
 
-  /**
-   * BasicForm绑定注册;
-   */
-  const [registerForm] = useForm({
-    //注册表单列
-    schemas: formSchemas,
-    showResetButton: false,
-    labelWidth: '150px',
-    submitButtonOptions: { text: '提交', preIcon: '' },
-    actionColOptions: { span: 17 },
-  });
+/**
+ * BasicForm绑定注册;
+ */
+const [registerForm] = useForm({
+  //注册表单列
+  schemas: formSchemas,
+  showResetButton: false,
+  labelWidth: '150px',
+  submitButtonOptions: { text: '提交', preIcon: '' },
+  actionColOptions: { span: 17 },
+})
 </script>
 
 <style scoped>
-  /** 数字输入框样式 */
-  :deep(.ant-input-number) {
-    width: 100%;
-  }
+/** 数字输入框样式 */
+:deep(.ant-input-number) {
+  width: 100%;
+}
 </style>

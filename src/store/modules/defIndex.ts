@@ -1,10 +1,10 @@
-import {store} from '/@/store';
-import {defineStore} from 'pinia';
-import {defHttp} from "@/utils/http/axios";
+import { store } from '/@/store'
+import { defineStore } from 'pinia'
+import { defHttp } from '@/utils/http/axios'
 
 interface DefIndexState {
   // 首页url
-  url: string,
+  url: string
   // 首页组件
   component: string
 }
@@ -21,9 +21,9 @@ export const useDefIndexStore = defineStore({
      * 查询默认主页配置
      */
     async query() {
-      const config = await defIndexApi.query();
-      this.url = config.url;
-      this.component = config.component;
+      const config = await defIndexApi.query()
+      this.url = config.url
+      this.component = config.component
     },
     /**
      * 更新默认主页配置
@@ -32,19 +32,19 @@ export const useDefIndexStore = defineStore({
      * @param isRoute 是否是路由
      */
     async update(url: string, component: string, isRoute: boolean) {
-      await defIndexApi.update(url, component, isRoute);
+      await defIndexApi.update(url, component, isRoute)
       await this.query()
     },
 
     check(url: string) {
-      return url === this.url;
-    }
-  }
-});
+      return url === this.url
+    },
+  },
+})
 
 // Need to be used outside the setup
 export function useDefIndexStoreWithOut() {
-  return useDefIndexStore(store);
+  return useDefIndexStore(store)
 }
 
 /**
@@ -56,7 +56,7 @@ export const defIndexApi = {
    */
   async query() {
     const url = '/sys/sysRoleIndex/queryDefIndex'
-    return await defHttp.get({url});
+    return await defHttp.get({ url })
   },
   /**
    * 更新默认首页配置
@@ -71,7 +71,6 @@ export const defIndexApi = {
     apiUrl += '&component=' + encodeURIComponent(component)
     //update-end-author:liusq---date:2025-07-04--for: 设置默认首页接口传参修改,增加encodeURIComponent，防止{{ window._CONFIG['domianURL'] }}/**保存不上
     apiUrl += '&isRoute=' + isRoute
-    return await defHttp.put({url: apiUrl});
+    return await defHttp.put({ url: apiUrl })
   },
-
 }

@@ -1,32 +1,32 @@
-import type { TabContentProps } from './types';
-import type { DropMenu } from '/@/components/Dropdown';
-import type { ComputedRef } from 'vue';
+import type { TabContentProps } from './types'
+import type { DropMenu } from '/@/components/Dropdown'
+import type { ComputedRef } from 'vue'
 
-import { computed, unref, reactive } from 'vue';
-import { MenuEventEnum } from './types';
-import { useMultipleTabStore } from '/@/store/modules/multipleTab';
-import { RouteLocationNormalized, useRouter } from 'vue-router';
-import { useTabs } from '/@/hooks/web/useTabs';
-import { useI18n } from '/@/hooks/web/useI18n';
-import { useHideHomeDesign } from './useHideHomeDesign';
+import { computed, unref, reactive } from 'vue'
+import { MenuEventEnum } from './types'
+import { useMultipleTabStore } from '/@/store/modules/multipleTab'
+import { RouteLocationNormalized, useRouter } from 'vue-router'
+import { useTabs } from '/@/hooks/web/useTabs'
+import { useI18n } from '/@/hooks/web/useI18n'
+import { useHideHomeDesign } from './useHideHomeDesign'
 
 export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: ComputedRef<boolean>) {
   const state = reactive({
     current: null as Nullable<RouteLocationNormalized>,
     currentIndex: 0,
-  });
+  })
 
-  const { t } = useI18n();
-  const tabStore = useMultipleTabStore();
-  const { currentRoute } = useRouter();
-  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight, changeDesign } = useTabs();
+  const { t } = useI18n()
+  const tabStore = useMultipleTabStore()
+  const { currentRoute } = useRouter()
+  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight, changeDesign } = useTabs()
 
   const getTargetTab = computed((): RouteLocationNormalized => {
-    return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute);
-  });
+    return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute)
+  })
   // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
   // 隐藏下拉菜单中的门户设计项
-  const { getHideHomeDesign, isHideHomeDesign } = useHideHomeDesign(currentRoute);
+  const { getHideHomeDesign, isHideHomeDesign } = useHideHomeDesign(currentRoute)
   // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
 
   /**
@@ -34,45 +34,45 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
    */
   const getDropMenuList = computed(() => {
     if (!unref(getTargetTab)) {
-      return;
+      return
     }
-    const { meta } = unref(getTargetTab);
-    const { path } = unref(currentRoute);
+    const { meta } = unref(getTargetTab)
+    const { path } = unref(currentRoute)
 
     // Refresh button
-    const curItem = state.current;
+    const curItem = state.current
 
-    const isCurItem = curItem ? curItem.path === path : false;
-    const index = state.currentIndex;
-    const refreshDisabled = !isCurItem;
+    const isCurItem = curItem ? curItem.path === path : false
+    const index = state.currentIndex
+    const refreshDisabled = !isCurItem
     // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
     // Close left
     const closeLeftDisabled = () => {
       if (index === 0) {
-        return true;
+        return true
       } else {
         // 【TV360X-1039】当只有首页和另一个tab页时关闭左侧禁用
-        const validTabList = tabStore.getTabList.filter((item) => !item?.meta?.affix);
-        return validTabList[0].path === state.current?.path;
+        const validTabList = tabStore.getTabList.filter((item) => !item?.meta?.affix)
+        return validTabList[0].path === state.current?.path
       }
-    };
+    }
     // Close other
     const closeOtherDisabled = () => {
       if (tabStore.getTabList.length === 1) {
-        return true;
+        return true
       } else {
         // 【TV360X-1039】当只有首页和另一个tab页时关闭其它禁用
-        const validTabList = tabStore.getTabList.filter((item) => !item?.meta?.affix);
-        return validTabList.length == 1;
+        const validTabList = tabStore.getTabList.filter((item) => !item?.meta?.affix)
+        return validTabList.length == 1
       }
-    };
+    }
 
     // Close right
-    const closeRightDisabled = index === tabStore.getTabList.length - 1 && tabStore.getLastDragEndIndex >= 0;
+    const closeRightDisabled = index === tabStore.getTabList.length - 1 && tabStore.getLastDragEndIndex >= 0
     // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
     // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
     // 隐藏下拉菜单中的门户设计项
-    getHideHomeDesign(isCurItem, path);
+    getHideHomeDesign(isCurItem, path)
     // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
     const dropMenuList: DropMenu[] = [
       {
@@ -126,66 +126,66 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
       //   text: t('layout.multipleTab.closeAll'),
       //   disabled: disabled,
       // },
-    ];
+    ]
 
-    return dropMenuList;
-  });
+    return dropMenuList
+  })
 
   function handleContextMenu(tabItem: RouteLocationNormalized) {
     return (e: Event) => {
       if (!tabItem) {
-        return;
+        return
       }
-      e?.preventDefault();
-      const index = tabStore.getTabList.findIndex((tab) => tab.path === tabItem.path);
-      state.current = tabItem;
-      state.currentIndex = index;
-    };
+      e?.preventDefault()
+      const index = tabStore.getTabList.findIndex((tab) => tab.path === tabItem.path)
+      state.current = tabItem
+      state.currentIndex = index
+    }
   }
 
   // Handle right click event
   function handleMenuEvent(menu: DropMenu): void {
-    const { event } = menu;
+    const { event } = menu
     switch (event) {
       case MenuEventEnum.REFRESH_PAGE:
         // refresh page
-        refreshPage();
-        break;
+        refreshPage()
+        break
       // Close current
       case MenuEventEnum.CLOSE_CURRENT:
-        close(tabContentProps.tabItem);
-        break;
+        close(tabContentProps.tabItem)
+        break
       // Close left
       case MenuEventEnum.CLOSE_LEFT:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        closeLeft(state.current);
+        closeLeft(state.current)
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        break;
+        break
       // Close right
       case MenuEventEnum.CLOSE_RIGHT:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        closeRight(state.current);
+        closeRight(state.current)
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        break;
+        break
       // Close other
       case MenuEventEnum.CLOSE_OTHER:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        closeOther(state.current);
+        closeOther(state.current)
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        break;
+        break
       // Close all
       case MenuEventEnum.CLOSE_ALL:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        closeAll(state.current);
+        closeAll(state.current)
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        break;
+        break
       // Close all
       case MenuEventEnum.HOME_DESIGN:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        changeDesign();
+        changeDesign()
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
-        break;
+        break
     }
   }
-  return { getDropMenuList, handleMenuEvent, handleContextMenu };
+  return { getDropMenuList, handleMenuEvent, handleContextMenu }
 }

@@ -1,8 +1,8 @@
-import { ThemeEnum } from '../enums/appEnum';
+import { ThemeEnum } from '../enums/appEnum'
 
-export const prefixCls = 'jeecg';
+export const prefixCls = 'jeecg'
 
-export const darkMode = ThemeEnum.LIGHT;
+export const darkMode = ThemeEnum.LIGHT
 
 // app theme preset color
 export const APP_PRESET_COLOR_LIST: string[] = [
@@ -17,7 +17,7 @@ export const APP_PRESET_COLOR_LIST: string[] = [
   '#0096c7',
   '#9c27b0',
   '#ff9800',
-];
+]
 
 // header preset color
 export const HEADER_PRESET_BG_COLOR_LIST: string[] = [
@@ -32,7 +32,7 @@ export const HEADER_PRESET_BG_COLOR_LIST: string[] = [
   '#394664',
   '#faad14',
   '#383f45',
-];
+]
 
 // sider preset color
 export const SIDE_BAR_BG_COLOR_LIST: string[] = [
@@ -50,7 +50,7 @@ export const SIDE_BAR_BG_COLOR_LIST: string[] = [
   // '#344058',
   '#e74c3c',
   '#383f45',
-];
+]
 
 // sider logo line preset color [logo����ɫ]
 export const SIDER_LOGO_BG_COLOR_LIST: string[] = [
@@ -68,4 +68,4 @@ export const SIDER_LOGO_BG_COLOR_LIST: string[] = [
   // 'linear-gradient(180deg, #344058, #374560)',
   'linear-gradient(180deg, #e83723, #e52611)',
   'linear-gradient(180deg, #383f45, #3b434b)',
-];
+]

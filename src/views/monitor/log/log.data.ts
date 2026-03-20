@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -38,7 +38,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'clientType_dictText',
     width: 60,
   },
-];
+]
 
 /**
  * 操作日志需要操作类型
@@ -50,7 +50,7 @@ export const operationLogColumn: BasicColumn[] = [
     dataIndex: 'operateType_dictText',
     width: 40,
   },
-];
+]
 
 export const exceptionColumns: BasicColumn[] = [
   {
@@ -74,12 +74,12 @@ export const exceptionColumns: BasicColumn[] = [
     dataIndex: 'username',
     width: 60,
     customRender: ({ record }) => {
-      let pname = record.username;
-      let pid = record.userid;
-      if(!pname && !pid){
-        return "";
+      let pname = record.username
+      let pid = record.userid
+      if (!pname && !pid) {
+        return ''
       }
-      return pname + " (账号: "+ pid + " )";
+      return pname + ' (账号: ' + pid + ' )'
     },
   },
   {
@@ -98,7 +98,7 @@ export const exceptionColumns: BasicColumn[] = [
     dataIndex: 'clientType_dictText',
     width: 60,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -118,7 +118,7 @@ export const searchFormSchema: FormSchema[] = [
       span: 6,
     },
   },
-];
+]
 
 export const operationSearchFormSchema: FormSchema[] = [
   ...searchFormSchema,
@@ -131,4 +131,4 @@ export const operationSearchFormSchema: FormSchema[] = [
       dictCode: 'operate_type',
     },
   },
-];
+]

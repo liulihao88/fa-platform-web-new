@@ -1,27 +1,28 @@
-import type { RouteRecordRaw } from 'vue-router';
-import type { App } from 'vue';
+import type { RouteRecordRaw } from 'vue-router'
+import type { App } from 'vue'
 
-import { $electron } from "@/electron";
-import { basicRoutes } from './routes';
-import {createRouter as createVueRouter, destroyRouter, router} from './router'
+import { $electron } from '@/electron'
+import { basicRoutes } from './routes'
+import { createRouter as createVueRouter, destroyRouter, router } from './router'
 
 // 白名单应该包含基本静态路由
-const WHITE_NAME_LIST: string[] = [];
+const WHITE_NAME_LIST: string[] = []
 const getRouteNames = (array: any[]) =>
   array.forEach((item) => {
-    WHITE_NAME_LIST.push(item.name);
-    getRouteNames(item.children || []);
-  });
-getRouteNames(basicRoutes);
+    WHITE_NAME_LIST.push(item.name)
+    getRouteNames(item.children || [])
+  })
+getRouteNames(basicRoutes)
 
 /**
  * 创建路由实例
  */
 export function createRouter() {
-  let router = createVueRouter({
+  let router = createVueRouter(
+    {
       routes: basicRoutes as unknown as RouteRecordRaw[],
       strict: true,
-      scrollBehavior: () => ({left: 0, top: 0}),
+      scrollBehavior: () => ({ left: 0, top: 0 }),
     },
     // 如果是 Electron 环境，则使用 hash 路由
     $electron.isElectron(),
@@ -34,26 +35,23 @@ export function createRouter() {
     //console.warn('from', from);
     //console.warn('to', to);
     //console.groupEnd();
-    next();
-  });
+    next()
+  })
 }
 
 // reset router
 export function resetRouter() {
   router.getRoutes().forEach((route) => {
-    const { name } = route;
+    const { name } = route
     if (name && !WHITE_NAME_LIST.includes(name as string)) {
-      router.hasRoute(name) && router.removeRoute(name);
+      router.hasRoute(name) && router.removeRoute(name)
     }
-  });
+  })
 }
 
 // config router
 export function setupRouter(app: App<Element>) {
-  app.use(router);
+  app.use(router)
 }
 
-export {
-  router,
-  destroyRouter,
-}
+export { router, destroyRouter }

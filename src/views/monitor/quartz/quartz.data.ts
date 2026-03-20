@@ -1,6 +1,6 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
-import { JCronValidator } from '/@/components/Form';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { render } from '/@/utils/common/renderUtils'
+import { JCronValidator } from '/@/components/Form'
 
 export const columns: BasicColumn[] = [
   {
@@ -29,11 +29,11 @@ export const columns: BasicColumn[] = [
     dataIndex: 'status',
     width: 100,
     customRender: ({ text }) => {
-      const color = text == '0' ? 'green' : text == '-1' ? 'red' : 'gray';
-      return render.renderTag(render.renderDict(text, 'quartz_status'), color);
+      const color = text == '0' ? 'green' : text == '-1' ? 'red' : 'gray'
+      return render.renderTag(render.renderDict(text, 'quartz_status'), color)
     },
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -52,7 +52,7 @@ export const searchFormSchema: FormSchema[] = [
     },
     colProps: { span: 8 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -91,7 +91,7 @@ export const formSchema: FormSchema[] = [
     label: '参数',
     component: 'InputTextArea',
     ifShow: ({ values }) => {
-      return values.paramterType == 'string';
+      return values.paramterType == 'string'
     },
   },
   {
@@ -100,7 +100,7 @@ export const formSchema: FormSchema[] = [
     component: 'JAddInput',
     helpMessage: '键值对形式填写',
     ifShow: ({ values }) => {
-      return values.paramterType == 'json';
+      return values.paramterType == 'json'
     },
   },
   {
@@ -121,4 +121,4 @@ export const formSchema: FormSchema[] = [
     label: '描述',
     component: 'InputTextArea',
   },
-];
+]

@@ -1,4 +1,4 @@
-import { FormSchema } from '/@/components/Table';
+import { FormSchema } from '/@/components/Table'
 
 //列配置
 export const columns = [
@@ -30,7 +30,7 @@ export const columns = [
     slots: { customRender: 'status' },
     width: 60,
   },
-];
+]
 //查询配置
 export const searchFormSchema: FormSchema[] = [
   {
@@ -48,7 +48,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Switch',
     show: false,
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -126,4 +126,4 @@ export const formSchema: FormSchema[] = [
       options: ['1', '0'],
     },
   },
-];
+]

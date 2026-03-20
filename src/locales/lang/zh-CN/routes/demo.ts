@@ -204,4 +204,4 @@ export default {
   jeecg: {
     JAreaLinkage: '区域选择',
   },
-};
+}

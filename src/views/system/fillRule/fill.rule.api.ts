@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/sys/fillRule/list',
@@ -15,19 +15,19 @@ enum Api {
 /**
  * 导出地址
  */
-export const exportUrl = Api.exportXls;
+export const exportUrl = Api.exportXls
 /**
  * 导入地址
  */
-export const importUrl = Api.importExcel;
+export const importUrl = Api.importExcel
 
 /**
  * 列表查询
  * @param params
  */
 export const getFillRuleList = (params) => {
-  return defHttp.get({ url: Api.list, params });
-};
+  return defHttp.get({ url: Api.list, params })
+}
 
 /**
  * 删除
@@ -36,9 +36,9 @@ export const getFillRuleList = (params) => {
  */
 export const deleteFillRule = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 
 /**
  * 批量删除
@@ -52,32 +52,32 @@ export const batchDeleteFillRule = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 
 /**
  * 规则功能测试
  * @param params
  */
 export const handleTest = (params) => {
-  return defHttp.get({ url: Api.test, params }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.test, params }, { isTransformResponse: false })
+}
 
 /**
  * 保存
  * @param params
  */
 export const saveFillRule = (params) => {
-  return defHttp.post({ url: Api.save, params });
-};
+  return defHttp.post({ url: Api.save, params })
+}
 
 /**
  * 更新
  * @param params
  */
 export const updateFillRule = (params) => {
-  return defHttp.put({ url: Api.edit, params });
-};
+  return defHttp.put({ url: Api.edit, params })
+}

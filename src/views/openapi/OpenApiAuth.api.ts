@@ -1,16 +1,16 @@
-import { defHttp } from '/@/utils/http/axios';
-import { useMessage } from "/@/hooks/web/useMessage";
+import { defHttp } from '/@/utils/http/axios'
+import { useMessage } from '/@/hooks/web/useMessage'
 
-const { createConfirm } = useMessage();
+const { createConfirm } = useMessage()
 
 enum Api {
   list = '/openapi/auth/list',
-  save='/openapi/auth/add',
-  edit='/openapi/auth/edit',
-  apiList= '/openapi/list',
+  save = '/openapi/auth/add',
+  edit = '/openapi/auth/edit',
+  apiList = '/openapi/list',
   genAKSK = '/openapi/auth/genAKSK',
-  permissionList='/openapi/permission/getOpenApi',
-  permissionAdd='/openapi/permission/add',
+  permissionList = '/openapi/permission/getOpenApi',
+  permissionAdd = '/openapi/permission/add',
   deleteOne = '/openapi/auth/delete',
   deleteBatch = '/openapi/auth/deleteBatch',
   importExcel = '/openapi/auth/importExcel',
@@ -21,44 +21,44 @@ enum Api {
  * 获取API
  * @param params
  */
-export const apiList = Api.apiList;
+export const apiList = Api.apiList
 /**
  * 权限添加
  * @param params
  */
-export const permissionAdd = Api.permissionAdd;
+export const permissionAdd = Api.permissionAdd
 /**
  * 生成AKSK
  * @param params
  */
-export const genAKSK = Api.genAKSK;
+export const genAKSK = Api.genAKSK
 
 /**
  * 导出api
  * @param params
  */
-export const getExportUrl = Api.exportXls;
+export const getExportUrl = Api.exportXls
 
 /**
  * 导入api
  */
-export const getImportUrl = Api.importExcel;
+export const getImportUrl = Api.importExcel
 
 /**
  * 列表接口
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 
 /**
  * 删除单个
  * @param params
  * @param handleSuccess
  */
-export const deleteOne = (params,handleSuccess) => {
-  return defHttp.delete({url: Api.deleteOne, params}, {joinParamsToUrl: true}).then(() => {
-    handleSuccess();
-  });
+export const deleteOne = (params, handleSuccess) => {
+  return defHttp.delete({ url: Api.deleteOne, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess()
+  })
 }
 
 /**
@@ -74,11 +74,11 @@ export const batchDelete = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({url: Api.deleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
-        handleSuccess();
-      });
-    }
-  });
+      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
+        handleSuccess()
+      })
+    },
+  })
 }
 
 /**
@@ -88,29 +88,29 @@ export const batchDelete = (params, handleSuccess) => {
  */
 export const saveOrUpdate = (params, isUpdate) => {
   if (isUpdate) {
-    return defHttp.put({ url: Api.edit, params }, { isTransformResponse: false });
+    return defHttp.put({ url: Api.edit, params }, { isTransformResponse: false })
   }
-  return defHttp.post({ url: Api.save, params }, { isTransformResponse: false });
+  return defHttp.post({ url: Api.save, params }, { isTransformResponse: false })
 }
 
 /**
  * 全部权限列表接口
  * @param params
  */
-export const getApiList = (params) => defHttp.get({ url: Api.apiList, params }, { isTransformResponse: false });
+export const getApiList = (params) => defHttp.get({ url: Api.apiList, params }, { isTransformResponse: false })
 
 /**
  * 获取已授权项目的接口
  * @param params
  */
-export const getPermissionList = (params) => defHttp.get({ url: Api.permissionList, params });
+export const getPermissionList = (params) => defHttp.get({ url: Api.permissionList, params })
 /**
  * 授权保存方法
  * @param params
  * @param isUpdate
  */
 export const permissionAddFunction = (params) => {
-  return defHttp.post({ url: Api.permissionAdd, params }, { isTransformResponse: false });
+  return defHttp.post({ url: Api.permissionAdd, params }, { isTransformResponse: false })
 }
 /**
  * 授权保存方法
@@ -118,5 +118,5 @@ export const permissionAddFunction = (params) => {
  * @param isUpdate
  */
 export const getGenAKSK = (params) => {
-  return defHttp.get({ url: Api.genAKSK, params });
+  return defHttp.get({ url: Api.genAKSK, params })
 }

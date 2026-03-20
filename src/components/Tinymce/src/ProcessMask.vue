@@ -7,63 +7,63 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { computed, ref } from 'vue';
-  import {useDesign} from "@/hooks/web/useDesign";
+import { computed, ref } from 'vue'
+import { useDesign } from '@/hooks/web/useDesign'
 
-  const props = defineProps({
-    backColor: {
-      type: [String],
-      default: 'white',
-    },
-    processColor: {
-      type: String,
-      default: '#018FFB',
-    },
-    show: {
-      type: Boolean,
-      default: false,
-    },
-  });
-  const { prefixCls } = useDesign('tinymce-process-mask');
+const props = defineProps({
+  backColor: {
+    type: [String],
+    default: 'white',
+  },
+  processColor: {
+    type: String,
+    default: '#018FFB',
+  },
+  show: {
+    type: Boolean,
+    default: false,
+  },
+})
+const { prefixCls } = useDesign('tinymce-process-mask')
 
-  //显示遮罩
-  const showMask = ref(false);
-  //进度值占比
-  const progressValue = ref<any>(0);
-  //当前数量
-  const currentNum = ref(0);
-  // 计算进度条宽度的计算属性
-  const progressBarWidth = computed(() => {
-    return progressValue.value > 0 ? `${progressValue.value}px` : '0px';
-  });
-  // 计算进度条百分比
-  const percentage = computed(() => {
-    return `${progressValue.value}%`;
-  });
-  // 进度色
-  const frontColor = computed(() => {
-    return props.processColor;
-  });
-  // 后置背景色
-  const rearColor = computed(() => {
-    return props.backColor;
-  });
-  function calcProcess(totalNum) {
-    !showMask.value && (showMask.value = true);
-    currentNum.value += 1;
-    progressValue.value = ((currentNum.value / totalNum) * 100).toFixed(2);
-    console.log('currentNum.value', currentNum.value);
-    console.log('totalNum.value', totalNum);
-    if (currentNum.value == totalNum) {
-      showMask.value = false;
-      currentNum.value = 0;
-      progressValue.value = 0;
-    }
+//显示遮罩
+const showMask = ref(false)
+//进度值占比
+const progressValue = ref<any>(0)
+//当前数量
+const currentNum = ref(0)
+// 计算进度条宽度的计算属性
+const progressBarWidth = computed(() => {
+  return progressValue.value > 0 ? `${progressValue.value}px` : '0px'
+})
+// 计算进度条百分比
+const percentage = computed(() => {
+  return `${progressValue.value}%`
+})
+// 进度色
+const frontColor = computed(() => {
+  return props.processColor
+})
+// 后置背景色
+const rearColor = computed(() => {
+  return props.backColor
+})
+function calcProcess(totalNum) {
+  !showMask.value && (showMask.value = true)
+  currentNum.value += 1
+  progressValue.value = ((currentNum.value / totalNum) * 100).toFixed(2)
+  console.log('currentNum.value', currentNum.value)
+  console.log('totalNum.value', totalNum)
+  if (currentNum.value == totalNum) {
+    showMask.value = false
+    currentNum.value = 0
+    progressValue.value = 0
   }
-  defineExpose({
-    calcProcess,
-    showMask,
-  });
+}
+defineExpose({
+  calcProcess,
+  showMask,
+})
 </script>
 
 <style lang="less">
@@ -71,7 +71,6 @@
 @prefix-cls: ~'@{namespace}-tinymce-process-mask';
 
 .@{prefix-cls} {
-
   & {
     position: absolute; /* 或者使用固定定位等其他方式 */
     top: 0;
@@ -106,5 +105,4 @@
     font-weight: 600;
   }
 }
-
 </style>

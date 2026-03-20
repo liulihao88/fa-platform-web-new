@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
   list = '/sys/oss/file/list',
@@ -11,23 +11,23 @@ enum Api {
  * oss上传
  * @param params
  */
-export const getOssUrl = Api.ossUpload;
+export const getOssUrl = Api.ossUpload
 /**
  * minio上传
  * @param params
  */
-export const getMinioUrl = Api.minioUpload;
+export const getMinioUrl = Api.minioUpload
 /**
  * 列表接口
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 
 /**
  * 删除用户
  */
 export const deleteFile = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteFile, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}

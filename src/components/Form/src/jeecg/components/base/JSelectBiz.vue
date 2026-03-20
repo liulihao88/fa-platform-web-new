@@ -39,120 +39,120 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, inject, reactive, watch } from 'vue';
-  import { propTypes } from '/@/utils/propTypes';
-  import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { LoadingOutlined } from '@ant-design/icons-vue';
+import { defineComponent, ref, inject, reactive, watch } from 'vue'
+import { propTypes } from '/@/utils/propTypes'
+import { useAttrs } from '/@/hooks/core/useAttrs'
+import { LoadingOutlined } from '@ant-design/icons-vue'
 
-  export default defineComponent({
-    name: 'JSelectBiz',
-    components: { LoadingOutlined },
-    inheritAttrs: false,
-    props: {
-      showButton: propTypes.bool.def(true),
-      buttonText: propTypes.string.def('选择'),
-      disabled: propTypes.bool.def(false),
-      selectDisabled: {
-        type: Boolean,
-        default: false,
-      },
-      placeholder: {
-        type: String,
-        default: '请选择',
-      },
-      // 是否支持多选，默认 true
-      multiple: {
-        type: String,
-        default: 'multiple',
-      },
-      // 是否正在加载
-      loading: propTypes.bool.def(false),
-      // 最多显示多少个 tag
-      maxTagCount: propTypes.number,
-      // buttonIcon
-      buttonIcon: propTypes.string.def(''),
-      // 【TV360X-1002】是否是详情模式
-      isDetailsMode: propTypes.bool.def(false),
+export default defineComponent({
+  name: 'JSelectBiz',
+  components: { LoadingOutlined },
+  inheritAttrs: false,
+  props: {
+    showButton: propTypes.bool.def(true),
+    buttonText: propTypes.string.def('选择'),
+    disabled: propTypes.bool.def(false),
+    selectDisabled: {
+      type: Boolean,
+      default: false,
     },
-    emits: ['handleOpen', 'change'],
-    setup(props, { emit, refs }) {
-      //接收下拉框选项
-      const options = inject('selectOptions') || ref([]);
-      //接收选择的值
-      const selectValues = inject('selectValues') || ref({});
-      const attrs = useAttrs();
-      const detailStr = ref('');
-      /**
-       * 打开弹出框
-       */
-      function openModal(isButton) {
-        if (props.showButton && isButton) {
-          emit('handleOpen');
-        }
-        if (!props.showButton && !isButton) {
-          emit('handleOpen');
-        }
+    placeholder: {
+      type: String,
+      default: '请选择',
+    },
+    // 是否支持多选，默认 true
+    multiple: {
+      type: String,
+      default: 'multiple',
+    },
+    // 是否正在加载
+    loading: propTypes.bool.def(false),
+    // 最多显示多少个 tag
+    maxTagCount: propTypes.number,
+    // buttonIcon
+    buttonIcon: propTypes.string.def(''),
+    // 【TV360X-1002】是否是详情模式
+    isDetailsMode: propTypes.bool.def(false),
+  },
+  emits: ['handleOpen', 'change'],
+  setup(props, { emit, refs }) {
+    //接收下拉框选项
+    const options = inject('selectOptions') || ref([])
+    //接收选择的值
+    const selectValues = inject('selectValues') || ref({})
+    const attrs = useAttrs()
+    const detailStr = ref('')
+    /**
+     * 打开弹出框
+     */
+    function openModal(isButton) {
+      if (props.showButton && isButton) {
+        emit('handleOpen')
       }
-
-      /**
-       * 下拉框值改变事件
-       */
-      function handleChange(value) {
-        selectValues.value = value ?? []
-        selectValues.change = true;
-        emit('change', value);
+      if (!props.showButton && !isButton) {
+        emit('handleOpen')
       }
+    }
 
-      // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
-      watch(
-        [selectValues, options],
-        () => {
-          if (props.isDetailsMode) {
-            if (Array.isArray(selectValues.value) && Array.isArray(options.value)) {
-              const result = options.value.map((item) => item.label);
-              detailStr.value = result.join(',');
-            }
+    /**
+     * 下拉框值改变事件
+     */
+    function handleChange(value) {
+      selectValues.value = value ?? []
+      selectValues.change = true
+      emit('change', value)
+    }
+
+    // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
+    watch(
+      [selectValues, options],
+      () => {
+        if (props.isDetailsMode) {
+          if (Array.isArray(selectValues.value) && Array.isArray(options.value)) {
+            const result = options.value.map((item) => item.label)
+            detailStr.value = result.join(',')
           }
-        },
-        { immediate: true }
-      );
-      // -update-end--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
+        }
+      },
+      { immediate: true },
+    )
+    // -update-end--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
 
-      return {
-        attrs,
-        selectValues,
-        options,
-        handleChange,
-        openModal,
-        detailStr,
-      };
-    },
-  });
+    return {
+      attrs,
+      selectValues,
+      options,
+      handleChange,
+      openModal,
+      detailStr,
+    }
+  },
+})
 </script>
 <style lang="less" scoped>
-  .j-select-row {
-    @width: 82px;
+.j-select-row {
+  @width: 82px;
 
-    .left {
-      width: calc(100% - @width - 8px);
-    }
-
-    .right {
-      width: @width;
-    }
-
-    .full {
-      width: 100%;
-    }
-
-    :deep(.ant-select-search__field) {
-      display: none !important;
-    }
+  .left {
+    width: calc(100% - @width - 8px);
   }
-  .detailStr {
-    margin: 0;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+
+  .right {
+    width: @width;
   }
+
+  .full {
+    width: 100%;
+  }
+
+  :deep(.ant-select-search__field) {
+    display: none !important;
+  }
+}
+.detailStr {
+  margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

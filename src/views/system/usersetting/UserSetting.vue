@@ -5,14 +5,14 @@
         <template v-for="item in componentList" :key="item.key">
           <TabPane>
             <template #tab>
-                <span style="display:flex;align-items: center;cursor: pointer">
-                  <!--<Icon :icon="item.icon" class="icon-font-color"/>-->
-                  <span style="width: 30px">
-                    <img v-if="activeKey === item.key || isDark" :src="item.img2" style="height: 18px"/>
-                    <img v-else :src="item.img1" style="height: 16px"/>
-                  </span>
-                  {{item.name}}
+              <span style="display: flex; align-items: center; cursor: pointer">
+                <!--<Icon :icon="item.icon" class="icon-font-color"/>-->
+                <span style="width: 30px">
+                  <img v-if="activeKey === item.key || isDark" :src="item.img2" style="height: 18px" />
+                  <img v-else :src="item.img1" style="height: 16px" />
                 </span>
+                {{ item.name }}
+              </span>
             </template>
             <component :is="item.component" v-if="activeKey === item.key && !item.isSlot" />
             <slot name="component" v-if="activeKey === item.key && item.isSlot" />
@@ -24,18 +24,18 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, provide, computed } from "vue";
-import { Tabs } from "ant-design-vue";
-import { ScrollContainer } from "/@/components/Container";
-import { settingList } from "./UserSetting.data";
-import BaseSetting from "./BaseSetting.vue";
-import AccountSetting from "./AccountSetting.vue";
-import TenantSetting from "./TenantSetting.vue";
-import WeChatDingSetting from './WeChatDingSetting.vue';
-import { useRouter } from "vue-router";
-import { useDesign } from '/@/hooks/web/useDesign';
-import {useRootSetting} from "/@/hooks/setting/useRootSetting";
-import {ThemeEnum} from "/@/enums/appEnum";
+import { ref, defineComponent, onMounted, provide, computed } from 'vue'
+import { Tabs } from 'ant-design-vue'
+import { ScrollContainer } from '/@/components/Container'
+import { settingList } from './UserSetting.data'
+import BaseSetting from './BaseSetting.vue'
+import AccountSetting from './AccountSetting.vue'
+import TenantSetting from './TenantSetting.vue'
+import WeChatDingSetting from './WeChatDingSetting.vue'
+import { useRouter } from 'vue-router'
+import { useDesign } from '/@/hooks/web/useDesign'
+import { useRootSetting } from '/@/hooks/setting/useRootSetting'
+import { ThemeEnum } from '/@/enums/appEnum'
 export default defineComponent({
   components: {
     ScrollContainer,
@@ -46,27 +46,27 @@ export default defineComponent({
     TenantSetting,
     WeChatDingSetting,
   },
-  props:{
-    componentList:{
-      type:Array,
-      default:settingList
-    }
+  props: {
+    componentList: {
+      type: Array,
+      default: settingList,
+    },
   },
   setup() {
-    const { prefixCls } = useDesign('user-account-setting-container');
-    const { getDarkMode} = useRootSetting();
-    const isDark = computed(() => getDarkMode.value === ThemeEnum.DARK);
-    const activeKey = ref<string>('1');
+    const { prefixCls } = useDesign('user-account-setting-container')
+    const { getDarkMode } = useRootSetting()
+    const isDark = computed(() => getDarkMode.value === ThemeEnum.DARK)
+    const activeKey = ref<string>('1')
     //是否为vip
-    const showVip = ref<boolean>(false);
+    const showVip = ref<boolean>(false)
     //vip编码
-    const vipCode = ref<string>('');
-    const router = useRouter();
-    const componentList = computed(()=>{
-      if(showVip.value){
-        return settingList;
+    const vipCode = ref<string>('')
+    const router = useRouter()
+    const componentList = computed(() => {
+      if (showVip.value) {
+        return settingList
       }
-      return settingList.filter((item)=> item.component != 'MyVipSetting');
+      return settingList.filter((item) => item.component != 'MyVipSetting')
     })
 
     /**
@@ -74,36 +74,36 @@ export default defineComponent({
      * @param key
      */
     function componentClick(key) {
-      activeKey.value = key;
+      activeKey.value = key
     }
 
-    function goToMyTeantPage(){
+    function goToMyTeantPage() {
       //update-begin---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
       //如果请求参数包含我的租户，直接跳转过去
-      let query = router.currentRoute.value.query;
-      if(query && query.page === 'tenantSetting'){
-        activeKey.value = "2";
+      let query = router.currentRoute.value.query
+      if (query && query.page === 'tenantSetting') {
+        activeKey.value = '2'
       }
       //update-end---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
     }
-    
-    onMounted(()=>{
-      goToMyTeantPage();
+
+    onMounted(() => {
+      goToMyTeantPage()
     })
-    
+
     return {
       prefixCls,
       settingList,
       tabBarStyle: {
-        width: "220px",
-        marginBottom: "200px"
+        width: '220px',
+        marginBottom: '200px',
       },
       componentClick,
       activeKey,
-      isDark
-    };
-  }
-});
+      isDark,
+    }
+  },
+})
 </script>
 <style lang="less" scoped>
 .user-account-setting {
@@ -114,47 +114,47 @@ export default defineComponent({
   }
 
   //tabs弹窗左边样式
-  :deep(.ant-tabs-nav){
+  :deep(.ant-tabs-nav) {
     height: 260px;
   }
   //tabs弹窗右边边样式
-  :deep(.ant-tabs-content-holder){
+  :deep(.ant-tabs-content-holder) {
     position: relative;
     left: 12px;
     height: auto !important;
   }
 }
 //tab点击样式
-:deep(.ant-tabs-tab-active){
+:deep(.ant-tabs-tab-active) {
   border-radius: 0 20px 20px 0;
-  background-color: #1294f7!important;
-  color: #fff!important;
-  .icon-font-color{
+  background-color: #1294f7 !important;
+  color: #fff !important;
+  .icon-font-color {
     color: #fff;
   }
 }
-:deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn){
+:deep(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn) {
   color: white !important;
 }
-:deep(.ant-tabs-ink-bar){
+:deep(.ant-tabs-ink-bar) {
   visibility: hidden;
 }
-:deep(.ant-tabs-nav-list){
-  padding-top:14px;
-  padding-right:14px;
+:deep(.ant-tabs-nav-list) {
+  padding-top: 14px;
+  padding-right: 14px;
 }
 
-.vip-height{
+.vip-height {
   //tabs弹窗左边样式
-  :deep(.ant-tabs-nav){
+  :deep(.ant-tabs-nav) {
     height: 310px !important;
   }
 }
-.vip-background{
-  :deep(.ant-tabs-content-holder){
+.vip-background {
+  :deep(.ant-tabs-content-holder) {
     background: transparent;
   }
-  :deep(.ant-tabs-tabpane){
+  :deep(.ant-tabs-tabpane) {
     padding-left: 0 !important;
   }
 }
@@ -168,11 +168,11 @@ export default defineComponent({
     background-color: @item-active-bg;
   }
   //tabs弹窗左边样式
- .ant-tabs-nav{
+  .ant-tabs-nav {
     background-color: @component-background;
   }
   //tabs弹窗右边边样式
-  .ant-tabs-content-holder{
+  .ant-tabs-content-holder {
     background: @component-background;
   }
 }

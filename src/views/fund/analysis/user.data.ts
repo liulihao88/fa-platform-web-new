@@ -1,69 +1,69 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
 export const columns: BasicColumn[] = [
   {
     title: '序号',
     dataIndex: 'id',
-    resizable: true
+    resizable: true,
   },
   {
     title: '案件名称',
     dataIndex: 'caseName',
-    resizable: true
+    resizable: true,
   },
   {
     title: '案由',
     dataIndex: 'caseReason',
-    resizable: true
+    resizable: true,
   },
   {
     title: '部门受案号',
     dataIndex: 'departmentCaseNumber',
     width: 80,
-    resizable: true
+    resizable: true,
   },
   {
     title: '卷宗是否同步',
     dataIndex: 'dossierSync',
-    resizable: true
+    resizable: true,
   },
   {
     title: '文件数量',
     dataIndex: 'fileCount',
-    resizable: true
+    resizable: true,
   },
   {
     title: '发票数量',
     dataIndex: 'invoiceCount',
-    resizable: true
+    resizable: true,
   },
   {
     title: '文件处理状态',
     dataIndex: 'fileProcessStatus',
-    resizable: true
+    resizable: true,
   },
   {
     title: '文件导入次数',
     dataIndex: 'fileImportCount',
-    resizable: true
+    resizable: true,
   },
   {
     title: '导入行数',
     dataIndex: 'importCount',
-    resizable: true
+    resizable: true,
   },
   {
     title: '去重次数',
     dataIndex: 'deduplicationCount',
-    resizable: true
+    resizable: true,
   },
   {
     title: '受理时间',
     dataIndex: 'acceptTime',
     width: 80,
-    resizable: true
+    resizable: true,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -93,19 +93,16 @@ export const searchFormSchema: FormSchema[] = [
       placeholder: '请选择状态',
       stringToNumber: true,
     },
-   colProps: { span: 6 },
+    colProps: { span: 6 },
   },
   {
     label: '受理时间',
     field: 'fieldTime',
     component: 'RangeDate',
     componentProps: {
-      datetime:true,
+      datetime: true,
       valueType: 'Date',
     },
     colProps: { span: 6 },
   },
-];
-
-
-
+]

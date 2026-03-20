@@ -1,19 +1,19 @@
 export interface ListItem {
-  id: string;
-  avatar: string;
+  id: string
+  avatar: string
   // 通知的标题内容
-  title: string;
+  title: string
   // 是否在标题上显示删除线
-  titleDelete?: boolean;
-  datetime: string;
-  type: string;
-  read?: boolean;
-  description: string;
-  clickClose?: boolean;
-  extra?: string;
-  color?: string;
+  titleDelete?: boolean
+  datetime: string
+  type: string
+  read?: boolean
+  description: string
+  clickClose?: boolean
+  extra?: string
+  color?: string
   // 优先级
-  priority?: string;
+  priority?: string
 }
 
 export enum PriorityTypes {
@@ -26,11 +26,11 @@ export enum PriorityTypes {
 }
 
 export interface TabItem {
-  key: string;
-  name: string;
-  list: ListItem[];
-  unreadlist?: ListItem[];
-  count: number;
+  key: string
+  name: string
+  list: ListItem[]
+  unreadlist?: ListItem[]
+  count: number
 }
 
 export const tabListData: TabItem[] = [
@@ -74,7 +74,8 @@ export const tabListData: TabItem[] = [
       {
         id: '000000005',
         avatar: 'https://gw.alipayobjects.com/zos/rmsportal/GvqBnKhFgObvnSGkDsje.png',
-        title: '标题可以设置自动显示省略号，本例中标题行数已设为1行，如果内容超过1行将自动截断并支持tooltip显示完整标题。',
+        title:
+          '标题可以设置自动显示省略号，本例中标题行数已设为1行，如果内容超过1行将自动截断并支持tooltip显示完整标题。',
         description: '',
         datetime: '2017-08-07',
         type: '1',
@@ -203,4 +204,4 @@ export const tabListData: TabItem[] = [
   //     },
   //   ],
   // },
-];
+]

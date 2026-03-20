@@ -1,10 +1,10 @@
-import type { App } from 'vue';
-import { Icon } from './Icon';
-import AIcon from '/@/components/jeecg/AIcon.vue';
+import type { App } from 'vue'
+import { Icon } from './Icon'
+import AIcon from '/@/components/jeecg/AIcon.vue'
 //Tinymce富文本
- import Editor from '/@/components/Tinymce/src/Editor.vue'
+import Editor from '/@/components/Tinymce/src/Editor.vue'
 
-import { Button, JUploadButton } from './Button';
+import { Button, JUploadButton } from './Button'
 
 // 按需注册antd的组件
 import {
@@ -57,18 +57,17 @@ import {
   Skeleton,
   Cascader,
   Rate,
-  Progress
-} from 'ant-design-vue';
-const compList = [AntButton.Group, Icon, AIcon, JUploadButton];
-
+  Progress,
+} from 'ant-design-vue'
+const compList = [AntButton.Group, Icon, AIcon, JUploadButton]
 
 export function registerGlobComp(app: App) {
   compList.forEach((comp) => {
-    app.component(comp.name || comp.displayName, comp);
-  });
-  
+    app.component(comp.name || comp.displayName, comp)
+  })
+
   //仪表盘依赖Tinymce，需要提前加载（没办法按需加载了）
-  app.component(Editor.name, Editor);
+  app.component(Editor.name, Editor)
   // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8241】Tinymce异步加载
   // app.component(
   //   'Tinymce',
@@ -77,7 +76,8 @@ export function registerGlobComp(app: App) {
   //   })
   // );
   // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8241】Tinymce异步加载
-  app.use(Select)
+  app
+    .use(Select)
     .use(Alert)
     .use(Button)
     .use(Breadcrumb)
@@ -125,6 +125,6 @@ export function registerGlobComp(app: App) {
     .use(Skeleton)
     .use(Cascader)
     .use(Rate)
-    .use(Progress);
-    console.log("---初始化---， 全局注册Antd、仪表盘、流程设计器、online、流程等组件--------------")
+    .use(Progress)
+  console.log('---初始化---， 全局注册Antd、仪表盘、流程设计器、online、流程等组件--------------')
 }

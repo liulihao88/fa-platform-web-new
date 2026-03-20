@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
   actuatorList = '/actuator/jeecghttptrace/',
@@ -8,5 +8,5 @@ enum Api {
  * 追踪信息
  */
 export const getActuatorList = (query: String, order: String) => {
-  return defHttp.get({ url: Api.actuatorList + query + '/' + order }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.actuatorList + query + '/' + order }, { isTransformResponse: false })
+}

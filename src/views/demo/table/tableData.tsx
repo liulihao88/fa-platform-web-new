@@ -1,5 +1,5 @@
-import { FormProps, FormSchema } from '/@/components/Table';
-import { BasicColumn } from '/@/components/Table/src/types/table';
+import { FormProps, FormSchema } from '/@/components/Table'
+import { BasicColumn } from '/@/components/Table/src/types/table'
 
 export function getBasicColumns(): BasicColumn[] {
   return [
@@ -42,7 +42,7 @@ export function getBasicColumns(): BasicColumn[] {
       sorter: true,
       dataIndex: 'endTime',
     },
-  ];
+  ]
 }
 
 export function getBasicShortColumns(): BasicColumn[] {
@@ -68,7 +68,7 @@ export function getBasicShortColumns(): BasicColumn[] {
       dataIndex: 'no',
       width: 80,
     },
-  ];
+  ]
 }
 
 export function getMultipleHeaderColumns(): BasicColumn[] {
@@ -110,7 +110,7 @@ export function getMultipleHeaderColumns(): BasicColumn[] {
         },
       ],
     },
-  ];
+  ]
 }
 
 export function getCustomHeaderColumns(): BasicColumn[] {
@@ -153,20 +153,20 @@ export function getCustomHeaderColumns(): BasicColumn[] {
       dataIndex: 'endTime',
       width: 120,
     },
-  ];
+  ]
 }
 const renderContent = (filed) => {
   return (record, rowIndex) => {
     const obj: any = {
       children: record[filed],
       attrs: {},
-    };
-    if (rowIndex === 9) {
-      obj.attrs.colSpan = 0;
     }
-    return obj;
-  };
-};
+    if (rowIndex === 9) {
+      obj.attrs.colSpan = 0
+    }
+    return obj
+  }
+}
 export function getMergeHeaderColumns(): BasicColumn[] {
   return [
     {
@@ -191,14 +191,14 @@ export function getMergeHeaderColumns(): BasicColumn[] {
         const obj: any = {
           children: record['address'],
           attrs: {},
-        };
+        }
         if (rowIndex === 2) {
-          obj.attrs.rowSpan = 2;
+          obj.attrs.rowSpan = 2
         }
         if (rowIndex === 3) {
-          obj.attrs.colSpan = 0;
+          obj.attrs.colSpan = 0
         }
-        return obj;
+        return obj
       },
     },
     {
@@ -223,10 +223,10 @@ export function getMergeHeaderColumns(): BasicColumn[] {
       width: 200,
       customCell: renderContent('endTime'),
     },
-  ];
+  ]
 }
 export const getAdvanceSchema = (itemNumber = 6): FormSchema[] => {
-  const arr: any = [];
+  const arr: any = []
   for (let index = 0; index < itemNumber; index++) {
     arr.push({
       field: `field${index}`,
@@ -236,10 +236,10 @@ export const getAdvanceSchema = (itemNumber = 6): FormSchema[] => {
         xl: 12,
         xxl: 8,
       },
-    });
+    })
   }
-  return arr;
-};
+  return arr
+}
 export function getFormConfig(): Partial<FormProps> {
   return {
     labelWidth: 100,
@@ -256,11 +256,11 @@ export function getFormConfig(): Partial<FormProps> {
         },
       },
     ],
-  };
+  }
 }
 export function getBasicData() {
   const data: any = (() => {
-    const arr: any = [];
+    const arr: any = []
     for (let index = 0; index < 40; index++) {
       arr.push({
         id: `${index}`,
@@ -270,16 +270,16 @@ export function getBasicData() {
         address: 'New York No. 1 Lake ParkNew York No. 1 Lake Park',
         beginTime: new Date().toLocaleString(),
         endTime: new Date().toLocaleString(),
-      });
+      })
     }
-    return arr;
-  })();
-  return data;
+    return arr
+  })()
+  return data
 }
 
 export function getTreeTableData() {
   const data: any = (() => {
-    const arr: any = [];
+    const arr: any = []
     for (let index = 0; index < 40; index++) {
       arr.push({
         id: `${index}`,
@@ -309,10 +309,10 @@ export function getTreeTableData() {
             endTime: new Date().toLocaleString(),
           },
         ],
-      });
+      })
     }
-    return arr;
-  })();
+    return arr
+  })()
 
-  return data;
+  return data
 }

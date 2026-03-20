@@ -1,23 +1,23 @@
-import type { AppRouteRecordRaw, AppRouteModule } from '/@/router/types';
+import type { AppRouteRecordRaw, AppRouteModule } from '/@/router/types'
 
-import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
+import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic'
 
-import { mainOutRoutes } from './mainOut';
-import { PageEnum } from '/@/enums/pageEnum';
-import { t } from '/@/hooks/web/useI18n';
+import { mainOutRoutes } from './mainOut'
+import { PageEnum } from '/@/enums/pageEnum'
+import { t } from '/@/hooks/web/useI18n'
 
-const modules = import.meta.glob('./modules/**/*.ts', { eager: true });
+const modules = import.meta.glob('./modules/**/*.ts', { eager: true })
 
-const routeModuleList: AppRouteModule[] = [];
+const routeModuleList: AppRouteModule[] = []
 
 // 加入到路由集合中
 Object.keys(modules).forEach((key) => {
-  const mod = (modules as Recordable)[key].default || {};
-  const modList = Array.isArray(mod) ? [...mod] : [mod];
-  routeModuleList.push(...modList);
-});
+  const mod = (modules as Recordable)[key].default || {}
+  const modList = Array.isArray(mod) ? [...mod] : [mod]
+  routeModuleList.push(...modList)
+})
 
-export const asyncRoutes = [PAGE_NOT_FOUND_ROUTE, ...routeModuleList];
+export const asyncRoutes = [PAGE_NOT_FOUND_ROUTE, ...routeModuleList]
 
 export const RootRoute: AppRouteRecordRaw = {
   path: '/',
@@ -26,7 +26,7 @@ export const RootRoute: AppRouteRecordRaw = {
   meta: {
     title: 'Root',
   },
-};
+}
 
 export const LoginRoute: AppRouteRecordRaw = {
   path: '/login',
@@ -37,7 +37,7 @@ export const LoginRoute: AppRouteRecordRaw = {
   meta: {
     title: t('routes.basic.login'),
   },
-};
+}
 
 //update-begin---author:wangshuai ---date:20220629  for：auth2登录页面路由------------
 export const Oauth2LoginRoute: AppRouteRecordRaw = {
@@ -49,7 +49,7 @@ export const Oauth2LoginRoute: AppRouteRecordRaw = {
   meta: {
     title: t('routes.oauth2.login'),
   },
-};
+}
 //update-end---author:wangshuai ---date:20220629  for：auth2登录页面路由------------
 
 /**
@@ -63,7 +63,7 @@ export const TokenLoginRoute: AppRouteRecordRaw = {
     title: '带token登录页面',
     ignoreAuth: true,
   },
-};
+}
 
 // SSO异常页面路由
 export const SsoExceptionRoute: AppRouteRecordRaw = {
@@ -74,7 +74,16 @@ export const SsoExceptionRoute: AppRouteRecordRaw = {
     title: '单点登录',
     ignoreAuth: true,
   },
-};
+}
 
 // Basic routing without permission
-export const basicRoutes = [LoginRoute, RootRoute, ...mainOutRoutes, REDIRECT_ROUTE, PAGE_NOT_FOUND_ROUTE, TokenLoginRoute, Oauth2LoginRoute, SsoExceptionRoute];
+export const basicRoutes = [
+  LoginRoute,
+  RootRoute,
+  ...mainOutRoutes,
+  REDIRECT_ROUTE,
+  PAGE_NOT_FOUND_ROUTE,
+  TokenLoginRoute,
+  Oauth2LoginRoute,
+  SsoExceptionRoute,
+]

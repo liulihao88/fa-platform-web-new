@@ -7,11 +7,11 @@
           <a-form-item label="涉案人种类" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }">
             <a-select v-model:value="formState.involvedKind" placeholder="请选择涉案人种类">
               <a-select-option
-                  v-for="item in props.involvedKindOptions"
-                  :key="item.value"
-                  :value="parseInt(item.value)"
+                v-for="item in props.involvedKindOptions"
+                :key="item.value"
+                :value="parseInt(item.value)"
               >
-                {{item.label}}
+                {{ item.label }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -32,15 +32,21 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <BasicTable 
-    :columns="columns" 
-    :dataSource="dataSource" 
-    :loading="tableLoading" 
-    bordered 
+  <BasicTable
+    :columns="columns"
+    :dataSource="dataSource"
+    :loading="tableLoading"
+    bordered
     size="small"
     :canResize="true"
     :showTableSetting="true"
-    :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-involved-person' }"
+    :tableSetting="{
+      redo: false,
+      size: true,
+      setting: true,
+      fullScreen: true,
+      cacheKey: 'fund-analysis-tab2-involved-person',
+    }"
     @register="registerTable"
   >
     <template #bodyCell="{ column, record, index }">
@@ -68,16 +74,17 @@
   </BasicTable>
 
   <!-- 调整关系弹窗 -->
-  <BasicModal v-model:visible="adjustModalVisible" title="调整关系" @ok="handleAdjustOk" :confirm-loading="adjustConfirmLoading">
+  <BasicModal
+    v-model:visible="adjustModalVisible"
+    title="调整关系"
+    @ok="handleAdjustOk"
+    :confirm-loading="adjustConfirmLoading"
+  >
     <a-form :model="adjustFormState" :label-col="{ span: 6 }" :wrapper-col="{ span: 16 }">
       <a-form-item label="关系" required>
         <a-select v-model:value="adjustFormState.involvedKind" placeholder="请选择关系">
-          <a-select-option
-              v-for="item in props.involvedKindOptions"
-              :key="item.value"
-              :value="item.value"
-          >
-            {{item.label}}
+          <a-select-option v-for="item in props.involvedKindOptions" :key="item.value" :value="item.value">
+            {{ item.label }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -89,16 +96,22 @@
     <a-card>
       <h3>涉案人【{{ currentRecord.involvedName }}】相关方关系：</h3>
       <a-button type="primary" class="add-btn" @click="addNewRelation">新增关系</a-button>
-      <BasicTable 
-        :columns="detailColumns" 
-        :dataSource="detailData" 
-        bordered 
-        size="small" 
-        class="relation-table" 
+      <BasicTable
+        :columns="detailColumns"
+        :dataSource="detailData"
+        bordered
+        size="small"
+        class="relation-table"
         :pagination="false"
         :canResize="true"
         :showTableSetting="true"
-        :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-tab2-relation-detail' }"
+        :tableSetting="{
+          redo: false,
+          size: true,
+          setting: true,
+          fullScreen: true,
+          cacheKey: 'fund-analysis-tab2-relation-detail',
+        }"
         @register="registerDetailTable"
       >
         <template #bodyCell="{ column, record, index }">
@@ -113,18 +126,13 @@
               <div v-if="!record.editing" class="editable-cell-value-wrap">
                 {{ getRelatedText(record.relation) }}
               </div>
-              <a-select
-                  v-else
-                  v-model:value="record.relation"
-                  style="width: 100%"
-                  placeholder="请选择关系"
-              >
+              <a-select v-else v-model:value="record.relation" style="width: 100%" placeholder="请选择关系">
                 <a-select-option
-                    v-for="item in props.involvedRelateOptions"
-                    :key="item.value"
-                    :value="parseInt(item.value)"
+                  v-for="item in props.involvedRelateOptions"
+                  :key="item.value"
+                  :value="parseInt(item.value)"
                 >
-                  {{item.label}}
+                  {{ item.label }}
                 </a-select-option>
               </a-select>
             </div>
@@ -134,18 +142,9 @@
               <div v-if="!record.editing" class="editable-cell-value-wrap">
                 {{ getRelatedPersonText(record.relatedPersonCode) }}
               </div>
-              <a-select
-                  v-else
-                  v-model:value="record.relatedPersonCode"
-                  style="width: 100%"
-                  placeholder="请选择相关方"
-              >
-                <a-select-option
-                    v-for="item in relatedPersonList"
-                    :key="item.id"
-                    :value="item.id"
-                >
-                  {{item.customerName}}
+              <a-select v-else v-model:value="record.relatedPersonCode" style="width: 100%" placeholder="请选择相关方">
+                <a-select-option v-for="item in relatedPersonList" :key="item.id" :value="item.id">
+                  {{ item.customerName }}
                 </a-select-option>
               </a-select>
             </div>
@@ -166,32 +165,33 @@
   </BasicModal>
 
   <!-- 企业详情抽屉 -->
-  <a-drawer
-      v-model:visible="companyDrawerVisible"
-      title="企业详情"
-      width="700px"
-      placement="right"
-  >
+  <a-drawer v-model:visible="companyDrawerVisible" title="企业详情" width="700px" placement="right">
     <div v-if="currentCompanyDetail">
       <a-card title="企业基本信息">
         <a-descriptions bordered :column="1">
-          <a-descriptions-item label="营业执照">{{ currentCompanyDetail.enterpriseLicenseNum || '-' }}</a-descriptions-item>
-          <a-descriptions-item label="法人">{{ currentCompanyDetail.enterpriseLegalPersonName || '-' }}</a-descriptions-item>
-          <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentCompanyDetail.idType)}}</a-descriptions-item>
+          <a-descriptions-item label="营业执照">
+            {{ currentCompanyDetail.enterpriseLicenseNum || '-' }}
+          </a-descriptions-item>
+          <a-descriptions-item label="法人">
+            {{ currentCompanyDetail.enterpriseLegalPersonName || '-' }}
+          </a-descriptions-item>
+          <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentCompanyDetail.idType) }}</a-descriptions-item>
           <a-descriptions-item label="证件号">{{ currentCompanyDetail.idNum || '-' }}</a-descriptions-item>
           <a-descriptions-item label="电话">{{ currentCompanyDetail.teleNum || '-' }}</a-descriptions-item>
         </a-descriptions>
       </a-card>
       <a-card title="人物关系信息" class="mt4">
         <div v-for="(relation, index) in currentCompanyDetail.relationPersons" :key="index">
-          <p>和 {{ relation.customerNameRel }} - {{getRelatedText(relation.customerRelation) }}</p>
+          <p>和 {{ relation.customerNameRel }} - {{ getRelatedText(relation.customerRelation) }}</p>
         </div>
       </a-card>
 
       <a-card title="账户信息" class="mt4">
         <div v-for="(account, index) in currentCompanyDetail.accounts" :key="index">
-          <p><strong>{{ account.bank }}</strong></p>
-          <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
+          <p>
+            <strong>{{ account.bank }}</strong>
+          </p>
+          <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px">
             {{ item.type }} {{ item.number }}
           </p>
         </div>
@@ -201,29 +201,26 @@
   </a-drawer>
 
   <!-- 个人详情抽屉 -->
-  <a-drawer
-      v-model:visible="personDrawerVisible"
-      title="个人详情"
-      width="700px"
-      placement="right"
-  >
+  <a-drawer v-model:visible="personDrawerVisible" title="个人详情" width="700px" placement="right">
     <a-card v-if="currentPersonDetail">
       <h3>人员基本信息</h3>
       <a-descriptions bordered :column="1">
-        <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentPersonDetail.idType)}}</a-descriptions-item>
+        <a-descriptions-item label="证件种类">{{ getTdTypeDesc(currentPersonDetail.idType) }}</a-descriptions-item>
         <a-descriptions-item label="证件号">{{ currentPersonDetail.idNum || '-' }}</a-descriptions-item>
         <a-descriptions-item label="电话">{{ currentPersonDetail.teleNum || '-' }}</a-descriptions-item>
       </a-descriptions>
 
-      <h3 style="margin-top: 20px;">人物关系信息</h3>
+      <h3 style="margin-top: 20px">人物关系信息</h3>
       <div v-for="(relation, index) in currentPersonDetail.relationPersons" :key="index">
         <p>和 {{ relation.name }} - {{ relation.type }}</p>
       </div>
 
-      <h3 style="margin-top: 20px;">账户信息</h3>
+      <h3 style="margin-top: 20px">账户信息</h3>
       <div v-for="(account, index) in currentPersonDetail.relationPersons" :key="index">
-        <p><strong>{{ account.bank }}</strong></p>
-        <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px;">
+        <p>
+          <strong>{{ account.bank }}</strong>
+        </p>
+        <p v-for="(item, idx) in account.items" :key="idx" style="margin-left: 20px">
           {{ item.type }} {{ item.number }}
         </p>
       </div>
@@ -233,178 +230,178 @@
 </template>
 
 <script lang="ts" name="tab1" setup>
-import {ref, reactive, onMounted, defineProps} from 'vue';
-import { message } from 'ant-design-vue';
-import { useRoute } from "vue-router";
+import { ref, reactive, onMounted, defineProps } from 'vue'
+import { message } from 'ant-design-vue'
+import { useRoute } from 'vue-router'
 import {
   involvedPersonListApi,
   updatePersonRelationApi,
   getInvolvedRelationApi,
   getInvolvedPersonApi,
   updateInvolvedPersonApi,
-  getCompanyOrPersonDetailApi
-} from "@/views/fund/analysis/user.api";
-import { BasicTable, useTable, TableAction } from '/@/components/Table';
-import {BasicModal, useModalInner} from '/@/components/Modal';
+  getCompanyOrPersonDetailApi,
+} from '@/views/fund/analysis/user.api'
+import { BasicTable, useTable, TableAction } from '/@/components/Table'
+import { BasicModal, useModalInner } from '/@/components/Modal'
 
-const { query } = useRoute();
+const { query } = useRoute()
 const formState = reactive({
   involvedKind: undefined,
-  involvedName: ''
-});
+  involvedName: '',
+})
 
 interface InvolvedPerson {
-  id: string;
-  involvedName: string;
-  involvedKind: number;
-  relationCount: number;
-  [key: string]: any;
+  id: string
+  involvedName: string
+  involvedKind: number
+  relationCount: number
+  [key: string]: any
 }
 
 interface DetailRecord {
-  id: string;
-  relation: number;
-  relatedPersonCode: string;
-  editing: boolean;
-  originalData: any;
-  key: string;
-  index: number;
-  [key: string]: any;
+  id: string
+  relation: number
+  relatedPersonCode: string
+  editing: boolean
+  originalData: any
+  key: string
+  index: number
+  [key: string]: any
 }
 
 interface RelatedPerson {
-  id: string;
-  customerName: string;
-  [key: string]: any;
+  id: string
+  customerName: string
+  [key: string]: any
 }
 
 interface CompanyDetail {
-  enterpriseLicenseNum: string;
-  enterpriseLegalPersonName: string;
-  idType: string;
-  idNum: string;
-  teleNum: string;
-  relationPersons: any[];
-  accounts: any[];
-  [key: string]: any;
+  enterpriseLicenseNum: string
+  enterpriseLegalPersonName: string
+  idType: string
+  idNum: string
+  teleNum: string
+  relationPersons: any[]
+  accounts: any[]
+  [key: string]: any
 }
 
 interface PersonDetail {
-  idType: string;
-  idNum: string;
-  teleNum: string;
-  relationPersons: any[];
-  [key: string]: any;
+  idType: string
+  idNum: string
+  teleNum: string
+  relationPersons: any[]
+  [key: string]: any
 }
 
 interface Props {
-  involvedRelateOptions: Array<{value: string, label: string}>;
-  involvedKindOptions: Array<{value: string, label: string}>;
-  idCardTypeOptions: Array<{value: string, label: string}>;
+  involvedRelateOptions: Array<{ value: string; label: string }>
+  involvedKindOptions: Array<{ value: string; label: string }>
+  idCardTypeOptions: Array<{ value: string; label: string }>
 }
 
-const props = defineProps<Props>();
-const tableLoading = ref(false);
-const searchLoading = ref(false);
+const props = defineProps<Props>()
+const tableLoading = ref(false)
+const searchLoading = ref(false)
 // 调整关系弹窗相关状态
-const adjustModalVisible = ref(false);
-const adjustConfirmLoading = ref(false);
+const adjustModalVisible = ref(false)
+const adjustConfirmLoading = ref(false)
 
-const relatedPersonList = ref<RelatedPerson[]>([]);
-const detailData = ref<DetailRecord[]>([]);
+const relatedPersonList = ref<RelatedPerson[]>([])
+const detailData = ref<DetailRecord[]>([])
 
 const adjustFormState = reactive({
-  id: "",
+  id: '',
   involvedKind: undefined,
-  involvedName: "",
-  involvedKindCode: 0
-});
+  involvedName: '',
+  involvedKindCode: 0,
+})
 
 // 查看详情弹窗相关状态
-const detailModalVisible = ref(false);
+const detailModalVisible = ref(false)
 const currentRecord = reactive<InvolvedPerson>({
   id: '',
   involvedName: '',
   involvedKind: 0,
-  relationCount: 0
-});
+  relationCount: 0,
+})
 // 添加详情抽屉相关状态
-const companyDrawerVisible = ref(false);
-const personDrawerVisible = ref(false);
-const currentCompanyDetail = ref<CompanyDetail | null>(null);
-const currentPersonDetail = ref<PersonDetail | null>(null);
+const companyDrawerVisible = ref(false)
+const personDrawerVisible = ref(false)
+const currentCompanyDetail = ref<CompanyDetail | null>(null)
+const currentPersonDetail = ref<PersonDetail | null>(null)
 
 const detailColumns = ref([
   {
     title: '序号',
     key: 'index',
     width: 100,
-    resizable: true
+    resizable: true,
   },
   {
     title: '相关方',
     dataIndex: 'involvedName',
     key: 'involvedName',
     width: 200,
-    resizable: true
+    resizable: true,
   },
   {
     title: '关系',
     dataIndex: 'relation',
     key: 'relation',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '相关方',
     dataIndex: 'relatedPersonCode',
     key: 'relatedPersonCode',
     width: 200,
-    resizable: true
+    resizable: true,
   },
   {
     title: '操作',
     key: 'operation',
     width: 150,
-    resizable: true
-  }
-]);
+    resizable: true,
+  },
+])
 
 const columns = ref([
   {
     title: '序号',
     key: 'index',
     width: 80,
-    resizable: true
+    resizable: true,
   },
   {
     title: '涉案人种类',
     dataIndex: 'involvedKind',
     width: 120,
-    resizable: true
+    resizable: true,
   },
   {
     title: '涉案人',
     dataIndex: 'involvedName',
     width: 200,
-    resizable: true
+    resizable: true,
   },
   {
     title: '关系数量',
     dataIndex: 'relationCount',
     key: 'relationCount',
     width: 100,
-    resizable: true
+    resizable: true,
   },
   {
     title: '操作',
     key: 'operation',
     width: 200,
-    resizable: true
-  }
-]);
+    resizable: true,
+  },
+])
 
-const dataSource = ref([]);
+const dataSource = ref([])
 
 const [registerTable] = useTable({
   columns: columns.value,
@@ -414,14 +411,14 @@ const [registerTable] = useTable({
   size: 'small',
   canResize: true,
   showTableSetting: true,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
-    size: true, 
-    setting: false, 
+    size: true,
+    setting: false,
     fullScreen: true,
-    cacheKey: 'fund-analysis-tab2-involved-person'
-  }
-});
+    cacheKey: 'fund-analysis-tab2-involved-person',
+  },
+})
 
 const [registerDetailTable] = useTable({
   columns: detailColumns.value,
@@ -431,140 +428,147 @@ const [registerDetailTable] = useTable({
   pagination: false,
   canResize: true,
   showTableSetting: true,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
-    size: true, 
-    setting: false, 
+    size: true,
+    setting: false,
     fullScreen: true,
-    cacheKey: 'fund-analysis-tab2-relation-detail'
-  }
-});
+    cacheKey: 'fund-analysis-tab2-relation-detail',
+  },
+})
 
 // 页面初始化时调用接口
 onMounted(() => {
-  fetchInvolvedList();
-});
+  fetchInvolvedList()
+})
 
 // 获取涉案人列表
 const fetchInvolvedList = async () => {
   try {
-    tableLoading.value = true;
+    tableLoading.value = true
 
     const params = {
       caseId: query.caseId,
       involvedName: formState.involvedName,
       involvedKind: formState.involvedKind,
-    };
+    }
 
-    const response = await involvedPersonListApi(params);
-    dataSource.value = response;
+    const response = await involvedPersonListApi(params)
+    dataSource.value = response
   } catch (error) {
-    message.error('获取涉案人列表失败');
+    message.error('获取涉案人列表失败')
   } finally {
-    tableLoading.value = false;
-    searchLoading.value = false;
+    tableLoading.value = false
+    searchLoading.value = false
   }
-};
+}
 
 const onSearch = () => {
-  searchLoading.value = true;
-  fetchInvolvedList();
-};
+  searchLoading.value = true
+  fetchInvolvedList()
+}
 
 const adjustRelation = (record) => {
-  Object.assign(adjustFormState, record);
-  adjustModalVisible.value = true;
-};
+  Object.assign(adjustFormState, record)
+  adjustModalVisible.value = true
+}
 
 const handleAdjustOk = () => {
-  adjustConfirmLoading.value = true;
+  adjustConfirmLoading.value = true
 
   const params = {
     id: adjustFormState.id,
     involvedKindCode: Number(adjustFormState.involvedKind),
-  };
+  }
 
-  updatePersonRelationApi(params).then(() => {
-    adjustConfirmLoading.value = false;
-    adjustModalVisible.value = false;
-    message.success('调整成功');
-    fetchInvolvedList();
-  }).catch(() => {
-    adjustConfirmLoading.value = false;
-    message.error('调整失败');
-  })
-};
+  updatePersonRelationApi(params)
+    .then(() => {
+      adjustConfirmLoading.value = false
+      adjustModalVisible.value = false
+      message.success('调整成功')
+      fetchInvolvedList()
+    })
+    .catch(() => {
+      adjustConfirmLoading.value = false
+      message.error('调整失败')
+    })
+}
 
 // 添加显示涉案人详情的方法
 const showPersonDetail = async (record) => {
   try {
-    const response = await getCompanyOrPersonDetailApi({ involvedId: record.id });
-    const {customerType} = response // 1企业 2个人
-    if(customerType == 1 || customerType == '企业' ){
-      currentCompanyDetail.value = response;
-      companyDrawerVisible.value = true;
-    }else if(customerType == 2 || customerType == '个人'){
-      currentPersonDetail.value = response;
-      personDrawerVisible.value = true;
+    const response = await getCompanyOrPersonDetailApi({ involvedId: record.id })
+    const { customerType } = response // 1企业 2个人
+    if (customerType == 1 || customerType == '企业') {
+      currentCompanyDetail.value = response
+      companyDrawerVisible.value = true
+    } else if (customerType == 2 || customerType == '个人') {
+      currentPersonDetail.value = response
+      personDrawerVisible.value = true
     }
   } catch (error) {
-    message.error('获取详情失败');
+    message.error('获取详情失败')
   }
-};
+}
 
 // getInvolvedPersonApi
 const getRelationPersonListByInvolvedId = (record) => {
   const params = {
     involvedId: record.id,
-  };
-  getInvolvedPersonApi(params).then((res) => {
-    // 为每条数据添加编辑状态和原始数据备份
-    relatedPersonList.value = res || []
-  }).catch(() => {
-    message.error('获取关联人员列表失败');
-  })
-};
+  }
+  getInvolvedPersonApi(params)
+    .then((res) => {
+      // 为每条数据添加编辑状态和原始数据备份
+      relatedPersonList.value = res || []
+    })
+    .catch(() => {
+      message.error('获取关联人员列表失败')
+    })
+}
 
 const viewDetails = (record) => {
-  if(relatedPersonList.value.length == 0){ // 查询关联的涉案人的关联人下拉选
+  if (relatedPersonList.value.length == 0) {
+    // 查询关联的涉案人的关联人下拉选
     getRelationPersonListByInvolvedId(record)
   }
-  Object.assign(currentRecord, record);
+  Object.assign(currentRecord, record)
   const params = {
     involvedId: record.id,
-  };
+  }
 
-  getInvolvedRelationApi(params).then((res) => {
-    // 为每条数据添加编辑状态和原始数据备份
-    detailData.value = res.map((item, index) => ({
-      ...item,
-      key: item.id || `temp-${index}`,
-      index: index + 1,
-      editing: false,
-      originalData: { ...item }
-    }));
-    detailModalVisible.value = true;
-  }).catch(() => {
-    message.error('获取详情失败');
-  })
-};
+  getInvolvedRelationApi(params)
+    .then((res) => {
+      // 为每条数据添加编辑状态和原始数据备份
+      detailData.value = res.map((item, index) => ({
+        ...item,
+        key: item.id || `temp-${index}`,
+        index: index + 1,
+        editing: false,
+        originalData: { ...item },
+      }))
+      detailModalVisible.value = true
+    })
+    .catch(() => {
+      message.error('获取详情失败')
+    })
+}
 
 const editRelation = (record) => {
   // 先取消其他正在编辑的行
-  detailData.value.forEach(item => {
+  detailData.value.forEach((item) => {
     if (item.editing && item.key !== record.key) {
-      cancelEdit(item);
+      cancelEdit(item)
     }
-  });
+  })
 
-  record.editing = true;
-};
+  record.editing = true
+}
 
 const saveRelation = async (record) => {
   // 验证数据
   if (!record.relatedPersonCode || !record.relation) {
-    message.error('请填写完整信息');
-    return;
+    message.error('请填写完整信息')
+    return
   }
 
   try {
@@ -573,45 +577,45 @@ const saveRelation = async (record) => {
       involvedId: currentRecord.id,
       relationCode: record.relation,
       relatedPersonId: record.relatedPersonCode,
-    };
+    }
 
-    await updateInvolvedPersonApi(params);
-    record.editing = false;
+    await updateInvolvedPersonApi(params)
+    record.editing = false
     // 刷新数据
     const refreshParams = {
       involvedId: currentRecord.id,
-    };
-    const res = await getInvolvedRelationApi(refreshParams);
+    }
+    const res = await getInvolvedRelationApi(refreshParams)
     detailData.value = res.map((item, index) => ({
       ...item,
       key: item.id || `temp-${index}`,
       index: index + 1,
       editing: false,
-      originalData: { ...item }
-    }));
+      originalData: { ...item },
+    }))
   } catch (error) {
-    message.error('保存失败');
+    message.error('保存失败')
   }
-};
+}
 
 const cancelEdit = (record) => {
   // 恢复原始数据
   if (record.originalData) {
-    Object.assign(record, record.originalData);
+    Object.assign(record, record.originalData)
   }
-  record.editing = false;
-};
+  record.editing = false
+}
 
 const deleteRelation = async (record) => {
   try {
     // 这里应该调用删除API
     // await deleteInvolvedRelationApi(record.id);
-    detailData.value = detailData.value.filter(item => item.key !== record.key);
-    message.success('删除成功');
+    detailData.value = detailData.value.filter((item) => item.key !== record.key)
+    message.success('删除成功')
   } catch (error) {
-    message.error('删除失败');
+    message.error('删除失败')
   }
-};
+}
 
 const addNewRelation = () => {
   const newRecord: DetailRecord = {
@@ -622,61 +626,60 @@ const addNewRelation = () => {
     relatedPersonCode: '',
     relation: 0,
     editing: true,
-    originalData: null
-  };
+    originalData: null,
+  }
 
-  detailData.value.push(newRecord);
-};
+  detailData.value.push(newRecord)
+}
 
 const getKindColor = (kind) => {
   const colors = {
     1: 'green',
     2: 'red',
-    3: 'orange'
-  };
-  return colors[kind] || 'default';
-};
+    3: 'orange',
+  }
+  return colors[kind] || 'default'
+}
 
 const getKindText = (kind) => {
   if (!props.involvedKindOptions || !Array.isArray(props.involvedKindOptions)) {
-    return '未知';
+    return '未知'
   }
-  const option = props.involvedKindOptions.find(opt => parseInt(opt.value) == kind);
-  return option ? option.label : '未知';
-};
+  const option = props.involvedKindOptions.find((opt) => parseInt(opt.value) == kind)
+  return option ? option.label : '未知'
+}
 
 const resetSearch = () => {
-  formState.involvedKind = undefined;
-  formState.involvedName = '';
+  formState.involvedKind = undefined
+  formState.involvedName = ''
   fetchInvolvedList()
-};
+}
 
 const getTdTypeDesc = (statusValue) => {
   if (!props.idCardTypeOptions || !Array.isArray(props.idCardTypeOptions)) {
-    return '未知';
+    return '未知'
   }
-  const option = props.idCardTypeOptions.find(opt => opt.value === statusValue);
-  return option ? option.label : '未知';
-};
+  const option = props.idCardTypeOptions.find((opt) => opt.value === statusValue)
+  return option ? option.label : '未知'
+}
 
 const getRelatedText = (statusValue) => {
   if (!props.involvedRelateOptions || !Array.isArray(props.involvedRelateOptions)) {
-    return '未知';
+    return '未知'
   }
-  const option = props.involvedRelateOptions.find(opt => parseInt(opt.value) === statusValue);
-  return option ? option.label : '未知';
-};
+  const option = props.involvedRelateOptions.find((opt) => parseInt(opt.value) === statusValue)
+  return option ? option.label : '未知'
+}
 
 const getRelatedPersonText = (id) => {
-  console.info('1111111111111----->',id)
-  console.info('22222222222222222------>',relatedPersonList.value)
+  console.info('1111111111111----->', id)
+  console.info('22222222222222222------>', relatedPersonList.value)
   if (!relatedPersonList.value || !Array.isArray(relatedPersonList.value)) {
-    return '未知';
+    return '未知'
   }
-  const person = relatedPersonList.value.find(item => item.id === id);
-  return person ? person.customerName : '未知';
-};
-
+  const person = relatedPersonList.value.find((item) => item.id === id)
+  return person ? person.customerName : '未知'
+}
 </script>
 
 <style scoped>
@@ -696,7 +699,7 @@ const getRelatedPersonText = (id) => {
   width: 100%;
 }
 
-.search-card :deep(.ant-card-body){
+.search-card :deep(.ant-card-body) {
   padding-bottom: 0px !important;
 }
 

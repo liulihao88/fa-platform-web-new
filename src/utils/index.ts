@@ -1,23 +1,23 @@
-import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
-import type { App, Plugin } from 'vue';
-import type { FormSchema, FormActionType } from "@/components/Form";
+import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router'
+import type { App, Plugin } from 'vue'
+import type { FormSchema, FormActionType } from '@/components/Form'
 
-import { unref } from 'vue';
-import { isObject, isFunction, isString } from '/@/utils/is';
-import Big from 'big.js';
-import dayjs from "dayjs";
-import {getDictItems} from "@/api/common/api";
+import { unref } from 'vue'
+import { isObject, isFunction, isString } from '/@/utils/is'
+import Big from 'big.js'
+import dayjs from 'dayjs'
+import { getDictItems } from '@/api/common/api'
 // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
-export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`;
+export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`
 // update-end--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 
-export const noop = () => {};
+export const noop = () => {}
 
 /**
  * @description:  Set ui mount node
  */
 export function getPopupContainer(node?: HTMLElement): HTMLElement {
-  return (node?.parentNode as HTMLElement) ?? document.body;
+  return (node?.parentNode as HTMLElement) ?? document.body
 }
 
 /**
@@ -31,65 +31,68 @@ export function getPopupContainer(node?: HTMLElement): HTMLElement {
  *  ==>www.baidu.com?a=3&b=4
  */
 export function setObjToUrlParams(baseUrl: string, obj: any): string {
-  let parameters = '';
+  let parameters = ''
   for (const key in obj) {
-    parameters += key + '=' + encodeURIComponent(obj[key]) + '&';
+    parameters += key + '=' + encodeURIComponent(obj[key]) + '&'
   }
-  parameters = parameters.replace(/&$/, '');
-  return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters;
+  parameters = parameters.replace(/&$/, '')
+  return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters
 }
 
 export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
-  let key: string;
+  let key: string
   for (key in target) {
     // update-begin--author:liaozhiyang---date:20240329---for：【QQYUN-7872】online表单label较长优化
     if (isObject(src[key]) && isObject(target[key])) {
-      src[key] = deepMerge(src[key], target[key]);
+      src[key] = deepMerge(src[key], target[key])
     } else {
       // update-begin--author:liaozhiyang---date:20250318---for：【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
       try {
         if (isFunction(src[key]) && isObject(src[key]()) && isObject(target[key])) {
           // src[key]是函数且返回对象，且target[key]是对象
-          src[key] = deepMerge(src[key](), target[key]);
+          src[key] = deepMerge(src[key](), target[key])
         } else if (isObject(src[key]) && isFunction(target[key]) && isObject(target[key]())) {
           // target[key]是函数且返回对象，且src[key]是对象
-          src[key] = deepMerge(src[key], target[key]());
+          src[key] = deepMerge(src[key], target[key]())
         } else if (isFunction(src[key]) && isFunction(target[key]) && isObject(src[key]()) && isObject(target[key]())) {
           // src[key]是函数且返回对象，target[key]是函数且返回对象
-          src[key] = deepMerge(src[key](), target[key]());
+          src[key] = deepMerge(src[key](), target[key]())
         } else {
-          src[key] = target[key];
+          src[key] = target[key]
         }
       } catch (error) {
-        src[key] = target[key];
+        src[key] = target[key]
       }
       // update-end--author:liaozhiyang---date:20250318---for：【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
     }
     // update-end--author:liaozhiyang---date:20240329---for：【QQYUN-7872】online表单label较长优化
   }
-  return src;
+  return src
 }
 
-export function openWindow(url: string, opt?: { target?: TargetContext | string; noopener?: boolean; noreferrer?: boolean }) {
-  const { target = '__blank', noopener = true, noreferrer = true } = opt || {};
-  const feature: string[] = [];
+export function openWindow(
+  url: string,
+  opt?: { target?: TargetContext | string; noopener?: boolean; noreferrer?: boolean },
+) {
+  const { target = '__blank', noopener = true, noreferrer = true } = opt || {}
+  const feature: string[] = []
 
-  noopener && feature.push('noopener=yes');
-  noreferrer && feature.push('noreferrer=yes');
+  noopener && feature.push('noopener=yes')
+  noreferrer && feature.push('noreferrer=yes')
 
-  window.open(url, target, feature.join(','));
+  window.open(url, target, feature.join(','))
 }
 
 // dynamic use hook props
 export function getDynamicProps<T, U>(props: T): Partial<U> {
-  const ret: Recordable = {};
+  const ret: Recordable = {}
 
   // @ts-ignore
   Object.keys(props).map((key) => {
-    ret[key] = unref((props as Recordable)[key]);
-  });
+    ret[key] = unref((props as Recordable)[key])
+  })
 
-  return ret as Partial<U>;
+  return ret as Partial<U>
 }
 
 /**
@@ -99,13 +102,14 @@ export function getDynamicProps<T, U>(props: T): Partial<U> {
  * @updateBy:zyf
  */
 export function getValueType(props, field) {
-  let formSchema = unref(unref(props)?.schemas);
-  let valueType = 'string';
+  let formSchema = unref(unref(props)?.schemas)
+  let valueType = 'string'
   if (formSchema) {
-    let schema = formSchema.filter((item) => item.field === field)[0];
-    valueType = schema && schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
+    let schema = formSchema.filter((item) => item.field === field)[0]
+    valueType =
+      schema && schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType
   }
-  return valueType;
+  return valueType
 }
 
 /**
@@ -114,19 +118,19 @@ export function getValueType(props, field) {
  * @param formAction
  */
 export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionType) {
-  let valueType = 'string';
+  let valueType = 'string'
   if (schema) {
-    const componentProps = formAction.getSchemaComponentProps(schema);
+    const componentProps = formAction.getSchemaComponentProps(schema)
     // update-begin--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
     if (isFunction(componentProps)) {
-      const result = componentProps(schema);
-      valueType = result?.valueType ?? valueType;
+      const result = componentProps(schema)
+      valueType = result?.valueType ?? valueType
     } else {
-      valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+      valueType = componentProps?.valueType ? componentProps?.valueType : valueType
     }
     // update-end--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
   }
-  return valueType;
+  return valueType
 }
 
 /**
@@ -136,7 +140,7 @@ export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionT
  */
 export function getDateByPicker(data, picker) {
   if (!data || !picker) {
-    return data;
+    return data
   }
   /**
    * 需要把年、年月、设置成这段时间内的第一天（[年季度]不需要处理antd回传的就是该季度的第一天，[年周]也不处理）
@@ -144,18 +148,18 @@ export function getDateByPicker(data, picker) {
    * 例如日期格式是年月（选择了202502），传给数据库的时间必须是20250201
    */
   if (picker === 'year') {
-    return dayjs(data).set('month', 0).set('date', 1).format('YYYY-MM-DD');
+    return dayjs(data).set('month', 0).set('date', 1).format('YYYY-MM-DD')
   } else if (picker === 'month') {
-    return dayjs(data).set('date', 1).format('YYYY-MM-DD');
+    return dayjs(data).set('date', 1).format('YYYY-MM-DD')
   } else if (picker === 'week') {
-    return dayjs(data).startOf('week').format('YYYY-MM-DD');
+    return dayjs(data).startOf('week').format('YYYY-MM-DD')
   }
-  return data;
+  return data
 }
 
 export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormalized {
-  if (!route) return route;
-  const { matched, ...opt } = route;
+  if (!route) return route
+  const { matched, ...opt } = route
   return {
     ...opt,
     matched: (matched
@@ -165,7 +169,7 @@ export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormal
           path: item.path,
         }))
       : undefined) as RouteRecordNormalized[],
-  };
+  }
 }
 /**
  * 深度克隆对象、数组
@@ -173,45 +177,45 @@ export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormal
  * @return 克隆后的对象
  */
 export function cloneObject(obj) {
-  return JSON.parse(JSON.stringify(obj));
+  return JSON.parse(JSON.stringify(obj))
 }
 
 export const withInstall = <T>(component: T, alias?: string) => {
   //console.log("---初始化---", component)
 
-  const comp = component as any;
+  const comp = component as any
   comp.install = (app: App) => {
     // @ts-ignore
-    app.component(comp.name || comp.displayName, component);
+    app.component(comp.name || comp.displayName, component)
     if (alias) {
-      app.config.globalProperties[alias] = component;
+      app.config.globalProperties[alias] = component
     }
-  };
-  return component as T & Plugin;
-};
+  }
+  return component as T & Plugin
+}
 
 /**
  * 获取url地址参数
  * @param paraName
  */
 export function getUrlParam(paraName) {
-  let url = document.location.toString();
-  let arrObj = url.split('?');
+  let url = document.location.toString()
+  let arrObj = url.split('?')
 
   if (arrObj.length > 1) {
-    let arrPara = arrObj[1].split('&');
-    let arr;
+    let arrPara = arrObj[1].split('&')
+    let arr
 
     for (let i = 0; i < arrPara.length; i++) {
-      arr = arrPara[i].split('=');
+      arr = arrPara[i].split('=')
 
       if (arr != null && arr[0] == paraName) {
-        return arr[1];
+        return arr[1]
       }
     }
-    return '';
+    return ''
   } else {
-    return '';
+    return ''
   }
 }
 
@@ -224,10 +228,10 @@ export function getUrlParam(paraName) {
 export function sleep(ms: number, fn?: Fn) {
   return new Promise<void>((resolve) =>
     setTimeout(() => {
-      fn && fn();
-      resolve();
-    }, ms)
-  );
+      fn && fn()
+      resolve()
+    }, ms),
+  )
 }
 
 /**
@@ -238,12 +242,12 @@ export function sleep(ms: number, fn?: Fn) {
  * @returns {String} 替换后的字符串
  */
 export function replaceAll(text, checker, replacer) {
-  let lastText = text;
-  text = text.replace(checker, replacer);
+  let lastText = text
+  text = text.replace(checker, replacer)
   if (lastText !== text) {
-    return replaceAll(text, checker, replacer);
+    return replaceAll(text, checker, replacer)
   }
-  return text;
+  return text
 }
 
 /**
@@ -251,19 +255,19 @@ export function replaceAll(text, checker, replacer) {
  * @param url
  */
 export function getQueryVariable(url) {
-  if (!url) return;
+  if (!url) return
 
   var t,
     n,
     r,
     i = url.split('?')[1],
-    s = {};
-  (t = i.split('&')), (r = null), (n = null);
+    s = {}
+  ;((t = i.split('&')), (r = null), (n = null))
   for (var o in t) {
-    var u = t[o].indexOf('=');
-    u !== -1 && ((r = t[o].substr(0, u)), (n = t[o].substr(u + 1)), (s[r] = n));
+    var u = t[o].indexOf('=')
+    u !== -1 && ((r = t[o].substr(0, u)), (n = t[o].substr(u + 1)), (s[r] = n))
   }
-  return s;
+  return s
 }
 /**
  * 判断是否显示办理按钮
@@ -272,9 +276,9 @@ export function getQueryVariable(url) {
  */
 export function showDealBtn(bpmStatus) {
   if (bpmStatus != '1' && bpmStatus != '3' && bpmStatus != '4') {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 /**
  * 数字转大写
@@ -283,94 +287,93 @@ export function showDealBtn(bpmStatus) {
  */
 export function numToUpper(value) {
   if (value != '') {
-    let unit = new Array('仟', '佰', '拾', '', '仟', '佰', '拾', '', '角', '分');
+    let unit = new Array('仟', '佰', '拾', '', '仟', '佰', '拾', '', '角', '分')
     const toDx = (n) => {
       switch (n) {
         case '0':
-          return '零';
+          return '零'
         case '1':
-          return '壹';
+          return '壹'
         case '2':
-          return '贰';
+          return '贰'
         case '3':
-          return '叁';
+          return '叁'
         case '4':
-          return '肆';
+          return '肆'
         case '5':
-          return '伍';
+          return '伍'
         case '6':
-          return '陆';
+          return '陆'
         case '7':
-          return '柒';
+          return '柒'
         case '8':
-          return '捌';
+          return '捌'
         case '9':
-          return '玖';
+          return '玖'
       }
-    };
-    let lth = value.toString().length;
+    }
+    let lth = value.toString().length
     // update-begin--author:liaozhiyang---date:20241202---for：【issues/7493】numToUpper方法返回解决错误
-    value = new Big(value).times(100);
+    value = new Big(value).times(100)
     // update-end--author:liaozhiyang---date:20241202---for：【issues/7493】numToUpper方法返回解决错误
-    value += '';
-    let length = value.length;
+    value += ''
+    let length = value.length
     if (lth <= 8) {
-      let result = '';
+      let result = ''
       for (let i = 0; i < length; i++) {
         if (i == 2) {
-          result = '元' + result;
+          result = '元' + result
         } else if (i == 6) {
-          result = '万' + result;
+          result = '万' + result
         }
         if (value.charAt(length - i - 1) == 0) {
           if (i != 0 && i != 1) {
             if (result.charAt(0) != '零' && result.charAt(0) != '元' && result.charAt(0) != '万') {
-              result = '零' + result;
+              result = '零' + result
             }
           }
-          continue;
+          continue
         }
-        result = toDx(value.charAt(length - i - 1)) + unit[unit.length - i - 1] + result;
+        result = toDx(value.charAt(length - i - 1)) + unit[unit.length - i - 1] + result
       }
-      result += result.charAt(result.length - 1) == '元' ? '整' : '';
-      return result;
+      result += result.charAt(result.length - 1) == '元' ? '整' : ''
+      return result
     } else {
-      return null;
+      return null
     }
   }
-  return null;
+  return null
 }
 
 //update-begin-author:taoyan date:2022-6-8 for:解决老的vue2动态导入文件语法 vite不支持的问题
-const allModules = import.meta.glob('../views/**/*.vue');
+const allModules = import.meta.glob('../views/**/*.vue')
 export function importViewsFile(path): Promise<any> {
   if (path.startsWith('/')) {
-    path = path.substring(1);
+    path = path.substring(1)
   }
-  let page = '';
+  let page = ''
   if (path.endsWith('.vue')) {
-    page = `../views/${path}`;
+    page = `../views/${path}`
   } else {
-    page = `../views/${path}.vue`;
+    page = `../views/${path}.vue`
   }
   return new Promise((resolve, reject) => {
-    let flag = true;
+    let flag = true
     for (const path in allModules) {
       if (path == page) {
-        flag = false;
+        flag = false
         allModules[path]().then((mod) => {
-          console.log(path, mod);
-          resolve(mod);
-        });
+          console.log(path, mod)
+          resolve(mod)
+        })
       }
     }
     if (flag) {
-      reject('该文件不存在:' + page);
+      reject('该文件不存在:' + page)
     }
-  });
+  })
 }
 //update-end-author:taoyan date:2022-6-8 for:解决老的vue2动态导入文件语法 vite不支持的问题
-
 
 /**
  * 跳转至积木报表的 预览页面
@@ -397,7 +400,6 @@ export function goJmReportViewPage(url, id, token) {
  * 获取随机颜色
  */
 export function getRandomColor(index?) {
-
   const colors = [
     'rgb(100, 181, 246)',
     'rgb(77, 182, 172)',
@@ -419,23 +421,23 @@ export function getRandomColor(index?) {
     'rgb(252, 128, 58)',
     'rgb(254, 161, 172)',
     'rgb(194, 163, 205)',
-  ];
-  return index && index < 19 ? colors[index] : colors[Math.floor((Math.random()*(colors.length-1)))];
+  ]
+  return index && index < 19 ? colors[index] : colors[Math.floor(Math.random() * (colors.length - 1))]
 }
 
 export function getRefPromise(componentRef) {
   return new Promise((resolve) => {
-    (function next() {
-      const ref = componentRef.value;
+    ;(function next() {
+      const ref = componentRef.value
       if (ref) {
-        resolve(ref);
+        resolve(ref)
       } else {
         setTimeout(() => {
-          next();
-        }, 100);
+          next()
+        }, 100)
       }
-    })();
-  });
+    })()
+  })
 }
 
 /**
@@ -444,7 +446,7 @@ export function getRefPromise(componentRef) {
  * 用new Function替换eval
  */
 export function _eval(str: string) {
- return new Function(`return ${str}`)();
+  return new Function(`return ${str}`)()
 }
 
 /**
@@ -455,26 +457,26 @@ export function _eval(str: string) {
 export function getWeekMonthQuarterYear(date) {
   // 获取 ISO 周数的函数
   const getISOWeek = (date) => {
-    const jan4 = new Date(date.getFullYear(), 0, 4);
-    const oneDay = 86400000; // 一天的毫秒数
-    return Math.ceil(((date - jan4.getTime()) / oneDay + jan4.getDay() + 1) / 7);
-  };
+    const jan4 = new Date(date.getFullYear(), 0, 4)
+    const oneDay = 86400000 // 一天的毫秒数
+    return Math.ceil(((date - jan4.getTime()) / oneDay + jan4.getDay() + 1) / 7)
+  }
   // 将时间戳转换为日期对象
-  const dateObj = new Date(date);
+  const dateObj = new Date(date)
   // 计算周
-  const week = getISOWeek(dateObj);
+  const week = getISOWeek(dateObj)
   // 计算月
-  const month = dateObj.getMonth() + 1; // 月份是从0开始的，所以要加1
+  const month = dateObj.getMonth() + 1 // 月份是从0开始的，所以要加1
   // 计算季度
-  const quarter = Math.floor(dateObj.getMonth() / 3) + 1;
+  const quarter = Math.floor(dateObj.getMonth() / 3) + 1
   // 计算年
-  const year = dateObj.getFullYear();
+  const year = dateObj.getFullYear()
   return {
     year: `${year}`,
     month: `${year}-${month.toString().padStart(2, '0')}`,
     week: `${year}-${week}周`,
     quarter: `${year}-Q${quarter}`,
-  };
+  }
 }
 
 /**
@@ -484,34 +486,34 @@ export function getWeekMonthQuarterYear(date) {
  */
 export const setPopContainer = (node, selector) => {
   if (typeof selector === 'string') {
-    const targetEles = Array.from(document.querySelectorAll(selector));
+    const targetEles = Array.from(document.querySelectorAll(selector))
     if (targetEles.length > 1) {
       const retrospect = (node, elems) => {
-        let ele = node.parentNode;
+        let ele = node.parentNode
         while (ele) {
-          const findParentNode = elems.find(item => item === ele);
+          const findParentNode = elems.find((item) => item === ele)
           if (findParentNode) {
-            ele = null;
-            return findParentNode;
+            ele = null
+            return findParentNode
           } else {
-            ele = ele.parentNode;
+            ele = ele.parentNode
           }
         }
-        return null;
-      };
-      const elem = retrospect(node, targetEles);
+        return null
+      }
+      const elem = retrospect(node, targetEles)
       if (elem) {
-        return elem;
+        return elem
       } else {
-        return document.querySelector(selector);
+        return document.querySelector(selector)
       }
     } else {
-      return document.querySelector(selector);
+      return document.querySelector(selector)
     }
   } else {
-    return selector;
+    return selector
   }
-};
+}
 
 /**
  * 2024-06-14
@@ -520,11 +522,10 @@ export const setPopContainer = (node, selector) => {
  * label、value通用，title、val给权限管理用的
  */
 export function useConditionFilter() {
-
   // 通用条件
   const commonConditionOptions = [
-    {label: '为空', value: 'empty', val: 'EMPTY'},
-    {label: '不为空', value: 'not_empty', val: 'NOT_EMPTY'},
+    { label: '为空', value: 'empty', val: 'EMPTY' },
+    { label: '不为空', value: 'not_empty', val: 'NOT_EMPTY' },
   ]
 
   // 数值、日期
@@ -537,7 +538,7 @@ export function useConditionFilter() {
     { label: '小于', value: 'lt', val: '<' },
     { label: '小于等于', value: 'le', val: '<=' },
     ...commonConditionOptions,
-  ];
+  ]
 
   // 文本、密码、多行文本、富文本、markdown
   const inputConditionOptions = [
@@ -548,7 +549,7 @@ export function useConditionFilter() {
     { label: '在...中', value: 'in', val: 'IN', title: '包含' },
     { label: '不等于', value: 'ne', val: '!=' },
     ...commonConditionOptions,
-  ];
+  ]
 
   // 下拉、单选、多选、开关、用户、部门、关联记录、省市区、popup、popupDict、下拉多选、下拉搜索、分类字典、自定义树
   const selectConditionOptions = [
@@ -556,7 +557,7 @@ export function useConditionFilter() {
     { label: '在...中', value: 'in', val: 'IN', title: '包含' },
     { label: '不等于', value: 'ne', val: '!=' },
     ...commonConditionOptions,
-  ];
+  ]
 
   const def = [
     { label: '等于', value: 'eq', val: '=' },
@@ -570,24 +571,24 @@ export function useConditionFilter() {
     { label: '小于', value: 'lt', val: '<' },
     { label: '小于等于', value: 'le', val: '<=' },
     ...commonConditionOptions,
-  ];
+  ]
 
   const filterCondition = (data) => {
     if (data.view == 'text' && data.fieldType == 'number') {
-      data.view = 'number';
+      data.view = 'number'
     }
     switch (data.view) {
       case 'file':
       case 'image':
       case 'password':
-        return commonConditionOptions;
+        return commonConditionOptions
       case 'text':
       case 'textarea':
       case 'umeditor':
       case 'markdown':
       case 'pca':
       case 'popup':
-        return inputConditionOptions;
+        return inputConditionOptions
       case 'list':
       case 'radio':
       case 'checkbox':
@@ -600,36 +601,36 @@ export function useConditionFilter() {
       case 'sel_search':
       case 'cat_tree':
       case 'sel_tree':
-        return selectConditionOptions;
+        return selectConditionOptions
       case 'date':
       // number是虚拟的
       case 'number':
-        return numberConditionOptions;
+        return numberConditionOptions
       default:
-        return def;
+        return def
     }
-  };
-  return { filterCondition };
+  }
+  return { filterCondition }
 }
 // 获取url中的参数
 export const getUrlParams = (url) => {
   const result = {
     url: '',
     params: {},
-  };
-  const list = url.split('?');
-  result.url = list[0];
-  const params = list[1];
-  if (params) {
-    const list = params.split('&');
-    list.forEach((ele) => {
-      const dic = ele.split('=');
-      const label = dic[0];
-      result.params[label] = dic[1];
-    });
   }
-  return result;
-};
+  const list = url.split('?')
+  result.url = list[0]
+  const params = list[1]
+  if (params) {
+    const list = params.split('&')
+    list.forEach((ele) => {
+      const dic = ele.split('=')
+      const label = dic[0]
+      result.params[label] = dic[1]
+    })
+  }
+  return result
+}
 
 /* 20250325
  * liaozhiyang
@@ -638,46 +639,52 @@ export const getUrlParams = (url) => {
  * */
 export const split = (str) => {
   if (isString(str)) {
-    const text = str.trim();
+    const text = str.trim()
     if (text.startsWith('http')) {
-      const parts = str.split(',');
-      const urls: any = [];
-      let currentUrl = '';
+      const parts = str.split(',')
+      const urls: any = []
+      let currentUrl = ''
       for (const part of parts) {
         if (part.startsWith('http://') || part.startsWith('https://')) {
           // 如果遇到新的URL开头，保存当前URL并开始新的URL
           if (currentUrl) {
-            urls.push(currentUrl);
+            urls.push(currentUrl)
           }
-          currentUrl = part;
+          currentUrl = part
         } else {
           // 否则，是当前URL的一部分（如参数）
-          currentUrl += ',' + part;
+          currentUrl += ',' + part
         }
       }
       // 添加最后一个URL
       if (currentUrl) {
-        urls.push(currentUrl);
+        urls.push(currentUrl)
       }
-      return urls;
+      return urls
     } else {
-      return str.split(',');
+      return str.split(',')
     }
   }
-  return str;
-};
-export const getCommonDictionary = async(key)=>{
-  return new Promise((resolve,reject)=>{
-    getDictItems(key).then((res) => {
-      if (res && res.length) {
-        const resArr = res.map((item) => ({value: item.value, label: item.text, title: item.text, color: item.color}));
-        resolve(resArr)
-      }else{
+  return str
+}
+export const getCommonDictionary = async (key) => {
+  return new Promise((resolve, reject) => {
+    getDictItems(key)
+      .then((res) => {
+        if (res && res.length) {
+          const resArr = res.map((item) => ({
+            value: item.value,
+            label: item.text,
+            title: item.text,
+            color: item.color,
+          }))
+          resolve(resArr)
+        } else {
+          resolve([])
+        }
+      })
+      .catch(() => {
         resolve([])
-      }
-    }).catch(()=>{
-      resolve([])
-    })
+      })
   })
-
 }

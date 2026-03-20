@@ -5,7 +5,11 @@
         <a-tab-pane key="1" tab="柱状图">
           <a-row>
             <a-col :span="24">
-              <Bar :chartData="barDataSource" height="50vh" :option="{ title: { text: '销售额排行', left: 'center' } }"></Bar>
+              <Bar
+                :chartData="barDataSource"
+                height="50vh"
+                :option="{ title: { text: '销售额排行', left: 'center' } }"
+              ></Bar>
             </a-col>
             <!-- <a-col :span="7" style="margin-left:50px" >
                             配置项：
@@ -20,7 +24,11 @@
           <Bar :chartData="barDataSource" width="30%" height="50vh"></Bar>
         </a-tab-pane>
         <a-tab-pane key="4" tab="面积图">
-          <SingleLine :chartData="barDataSource" height="50vh" :option="{ title: { text: '销售额排行', left: 'center' } }"></SingleLine>
+          <SingleLine
+            :chartData="barDataSource"
+            height="50vh"
+            :option="{ title: { text: '销售额排行', left: 'center' } }"
+          ></SingleLine>
         </a-tab-pane>
         <a-tab-pane key="5" tab="迷你面积图" style="display: flex; justify-content: center">
           <SingleLine :chartData="barDataSource" width="30%" height="50vh"></SingleLine>
@@ -57,37 +65,37 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import { getData } from './chartdemo.data.ts';
-  import Bar from '/@/components/chart/Bar.vue';
-  import BarMulti from '/@/components/chart/BarMulti.vue';
-  import SingleLine from '/@/components/chart/SingleLine.vue';
-  import LineMulti from '/@/components/chart/LineMulti.vue';
-  import Pie from '/@/components/chart/Pie.vue';
-  import Radar from '/@/components/chart/Radar.vue';
-  import Gauge from '/@/components/chart/Gauge.vue';
-  import RankList from '/@/components/chart/RankList.vue';
-  import Trend from '/@/components/chart/Trend.vue';
-  import BarAndLine from '/@/components/chart/BarAndLine.vue';
+import { ref } from 'vue'
+import { getData } from './chartdemo.data.ts'
+import Bar from '/@/components/chart/Bar.vue'
+import BarMulti from '/@/components/chart/BarMulti.vue'
+import SingleLine from '/@/components/chart/SingleLine.vue'
+import LineMulti from '/@/components/chart/LineMulti.vue'
+import Pie from '/@/components/chart/Pie.vue'
+import Radar from '/@/components/chart/Radar.vue'
+import Gauge from '/@/components/chart/Gauge.vue'
+import RankList from '/@/components/chart/RankList.vue'
+import Trend from '/@/components/chart/Trend.vue'
+import BarAndLine from '/@/components/chart/BarAndLine.vue'
 
-  const activeKey = ref('1');
-  const { barDataSource, barMultiData, pieData, barLineData, radarData,barLineColors } = getData;
-  const multiBarOption = {
-    title: { text: '多列柱状图', left: 'center' },
-  };
-  const rankList = loadData('name', 'total', 2000, 100, '北京朝阳 ', ' 号店');
-  //tab切换
-  function tabChange(key) {
-    console.log('切换的key:', key);
+const activeKey = ref('1')
+const { barDataSource, barMultiData, pieData, barLineData, radarData, barLineColors } = getData
+const multiBarOption = {
+  title: { text: '多列柱状图', left: 'center' },
+}
+const rankList = loadData('name', 'total', 2000, 100, '北京朝阳 ', ' 号店')
+//tab切换
+function tabChange(key) {
+  console.log('切换的key:', key)
+}
+function loadData(x, y, max, min, before = '', after = '月') {
+  let data = []
+  for (let i = 0; i < 12; i += 1) {
+    data.push({
+      [x]: `${before}${i + 1}${after}`,
+      [y]: Math.floor(Math.random() * max) + min,
+    })
   }
-  function loadData(x, y, max, min, before = '', after = '月') {
-    let data = [];
-    for (let i = 0; i < 12; i += 1) {
-      data.push({
-        [x]: `${before}${i + 1}${after}`,
-        [y]: Math.floor(Math.random() * max) + min,
-      });
-    }
-    return data;
-  }
+  return data
+}
 </script>

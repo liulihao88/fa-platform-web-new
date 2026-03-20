@@ -1,19 +1,19 @@
-import { unref, computed, ref, watch, nextTick } from 'vue';
-import { merge, debounce } from 'lodash-es';
-import { isArray } from '/@/utils/is';
-import { useAttrs } from '/@/hooks/core/useAttrs';
-import { useKeyboardEdit } from '../hooks/useKeyboardEdit';
-import { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types';
+import { unref, computed, ref, watch, nextTick } from 'vue'
+import { merge, debounce } from 'lodash-es'
+import { isArray } from '/@/utils/is'
+import { useAttrs } from '/@/hooks/core/useAttrs'
+import { useKeyboardEdit } from '../hooks/useKeyboardEdit'
+import { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types'
 
 export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods) {
-  const attrs = useAttrs();
+  const attrs = useAttrs()
   // vxe 键盘操作配置
-  const { keyboardEditConfig } = useKeyboardEdit(props);
+  const { keyboardEditConfig } = useKeyboardEdit(props)
   // vxe 最终 editRules
-  const vxeEditRules = computed(() => merge({}, props.editRules, data.innerEditRules));
+  const vxeEditRules = computed(() => merge({}, props.editRules, data.innerEditRules))
   // vxe 最终 events
   const vxeEvents = computed(() => {
-    let listeners = { ...unref(attrs) };
+    let listeners = { ...unref(attrs) }
     let events = {
       onScroll: methods.handleVxeScroll,
       onCellClick: methods.handleCellClick,
@@ -25,45 +25,45 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
       // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
       onCustom: methods.handleCustom,
       // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
-    };
+    }
     // 用户传递的事件，进行合并操作
     Object.keys(listeners).forEach((key) => {
-      let listen = listeners[key];
+      let listen = listeners[key]
       if (events.hasOwnProperty(key)) {
         if (isArray(listen)) {
-          listen.push(events[key]);
+          listen.push(events[key])
         } else {
-          listen = [events[key], listen];
+          listen = [events[key], listen]
         }
       }
-      events[key] = listen;
-    });
-    return events;
-  });
+      events[key] = listen
+    })
+    return events
+  })
 
   // vxe 最终 props
   const vxePropsMerge = computed(() => {
     // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
-    let rowClass = {};
+    let rowClass = {}
     if (props.dragSort) {
       rowClass = {
         rowClassName: (params) => {
-          let { row } = params;
-          const find = props.notAllowDrag?.find((item:any) => {
-            const {key, value} = item;
-            return row[key] == value;
-          });
+          let { row } = params
+          const find = props.notAllowDrag?.find((item: any) => {
+            const { key, value } = item
+            return row[key] == value
+          })
           // 业务传进的来的rowClassName
-          const popsRowClassName = props.rowClassName ?? '';
-          let outClass = '';
-          if(typeof popsRowClassName==='string'){
-            popsRowClassName && (outClass = popsRowClassName);
-          }else if(typeof popsRowClassName==='function'){
+          const popsRowClassName = props.rowClassName ?? ''
+          let outClass = ''
+          if (typeof popsRowClassName === 'string') {
+            popsRowClassName && (outClass = popsRowClassName)
+          } else if (typeof popsRowClassName === 'function') {
             outClass = popsRowClassName(params)
           }
-          return find ? `not-allow-drag ${outClass}` : `allow-drag ${outClass}`;
+          return find ? `not-allow-drag ${outClass}` : `allow-drag ${outClass}`
         },
-      };
+      }
     }
     // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
     return merge(
@@ -105,16 +105,16 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         checkboxConfig: {
           checkMethod: methods.handleCheckMethod,
         },
-        ...rowClass
+        ...rowClass,
         // rowClassName:(params)=>{
         //   const { row } = params;
         //   return row.dbFieldName=='id'?"not-allow-drag":"allow-drag"
         // }
       },
       unref(vxeEvents),
-      unref(keyboardEditConfig)
-    );
-  });
+      unref(keyboardEditConfig),
+    )
+  })
 
   // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
   const vxeColumnsRef = ref(data.vxeColumns!.value || [])
@@ -132,10 +132,10 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
       // 【issue/8695】单独抽出 columns，防止性能问题
       columns: unref(vxeColumnsRef),
     }
-  });
+  })
 
   return {
     vxeProps,
     prefixCls: data.prefixCls,
-  };
+  }
 }

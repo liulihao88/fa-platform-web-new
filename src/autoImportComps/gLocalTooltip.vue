@@ -1,6 +1,6 @@
 <template>
   <div class="content-container" @mouseenter="checkOverflow" @mouseleave="hideTooltip">
-    <div ref="textRef" class="text-content" :style="{...contentAttrs}">
+    <div ref="textRef" class="text-content" :style="{ ...contentAttrs }">
       {{ content }}
     </div>
     <div v-if="showTooltip" class="custom-tooltip">

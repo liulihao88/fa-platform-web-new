@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/test/order/orderList',
@@ -23,16 +23,16 @@ enum Api {
  * 列表接口
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 
 /**
  * 删除
  */
 export const deleteOne = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteOne, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除
  * @param params
@@ -45,34 +45,34 @@ export const batchDelete = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新
  * @param params
  */
 export const saveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.edit : Api.save
+  return defHttp.post({ url: url, params })
+}
 
 /**
  * 列表接口
  * @param params
  */
-export const customList = (params) => defHttp.get({ url: Api.customList, params });
+export const customList = (params) => defHttp.get({ url: Api.customList, params })
 
 /**
  * 删除
  */
 export const deleteCustomer = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteCustomer, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除
  * @param params
@@ -85,33 +85,33 @@ export const deleteBatchCustomer = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatchCustomer, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新
  * @param params
  */
 export const saveOrUpdateCustomer = (params, isUpdate) => {
-  let url = isUpdate ? Api.editCustomer : Api.saveCustomer;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.editCustomer : Api.saveCustomer
+  return defHttp.post({ url: url, params })
+}
 /**
  * 列表接口
  * @param params
  */
-export const ticketList = (params) => defHttp.get({ url: Api.ticketList, params });
+export const ticketList = (params) => defHttp.get({ url: Api.ticketList, params })
 
 /**
  * 删除
  */
 export const deleteTicket = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteTicket, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除
  * @param params
@@ -124,16 +124,16 @@ export const deleteBatchTicket = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatchTicket, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新
  * @param params
  */
 export const saveOrUpdateTicket = (params, isUpdate) => {
-  let url = isUpdate ? Api.editTicket : Api.saveTicket;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.editTicket : Api.saveTicket
+  return defHttp.post({ url: url, params })
+}

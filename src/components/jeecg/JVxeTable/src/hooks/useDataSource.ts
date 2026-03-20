@@ -1,36 +1,36 @@
-import { nextTick, watch } from 'vue';
-import { JVxeDataProps, JVxeRefs, JVxeTableMethods } from '../types';
-import { cloneDeep } from 'lodash-es';
+import { nextTick, watch } from 'vue'
+import { JVxeDataProps, JVxeRefs, JVxeTableMethods } from '../types'
+import { cloneDeep } from 'lodash-es'
 
 export function useDataSource(props, data: JVxeDataProps, methods: JVxeTableMethods, refs: JVxeRefs) {
   watch(
     () => props.dataSource,
     async () => {
-      data.disabledRowIds = [];
-      data.vxeDataSource.value = cloneDeep(props.dataSource);
+      data.disabledRowIds = []
+      data.vxeDataSource.value = cloneDeep(props.dataSource)
       data.vxeDataSource.value.forEach((row, rowIndex) => {
         // 判断是否是禁用行
         if (methods.isDisabledRow(row, rowIndex)) {
-          data.disabledRowIds.push(row.id);
+          data.disabledRowIds.push(row.id)
         }
         // 处理联动回显数据
-        methods.handleLinkageBackData(row);
-      });
-      await waitRef(refs.gridRef);
-      methods.recalcSortNumber();
+        methods.handleLinkageBackData(row)
+      })
+      await waitRef(refs.gridRef)
+      methods.recalcSortNumber()
     },
-    { immediate: true }
-  );
+    { immediate: true },
+  )
 }
 
 function waitRef($ref) {
   return new Promise<any>((resolve) => {
-    (function next() {
+    ;(function next() {
       if ($ref.value) {
-        resolve($ref);
+        resolve($ref)
       } else {
-        nextTick(() => next());
+        nextTick(() => next())
       }
-    })();
-  });
+    })()
+  })
 }

@@ -24,13 +24,26 @@
           <template #overlay>
             <a-menu>
               <a-menu-item v-if="originColumn.allowDownload !== false" @click="handleClickDownloadFile">
-                <span><Icon icon="ant-design:download" />&nbsp;下载</span>
+                <span>
+                  <Icon icon="ant-design:download" />
+                  &nbsp;下载
+                </span>
               </a-menu-item>
-              <a-menu-item :disabled="cellProps.disabled" v-if="originColumn.allowRemove !== false" @click="handleClickDeleteFile">
-                <span><Icon icon="ant-design:delete" />&nbsp;删除</span>
+              <a-menu-item
+                :disabled="cellProps.disabled"
+                v-if="originColumn.allowRemove !== false"
+                @click="handleClickDeleteFile"
+              >
+                <span>
+                  <Icon icon="ant-design:delete" />
+                  &nbsp;删除
+                </span>
               </a-menu-item>
               <a-menu-item :disabled="cellProps.disabled" @click="handleMoreOperation">
-                <span><Icon icon="ant-design:bars" />&nbsp;更多</span>
+                <span>
+                  <Icon icon="ant-design:bars" />
+                  &nbsp;更多
+                </span>
               </a-menu-item>
             </a-menu>
           </template>
@@ -57,22 +70,22 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { UploadTypeEnum } from '/@/components/Form/src/jeecg/components/JUpload';
-  import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types';
-  import { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
-  import { useFileCell, enhanced, components } from '../hooks/useFileCell';
+import { defineComponent } from 'vue'
+import { UploadTypeEnum } from '/@/components/Form/src/jeecg/components/JUpload'
+import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types'
+import { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks'
+import { useFileCell, enhanced, components } from '../hooks/useFileCell'
 
-  export default defineComponent({
-    name: 'JVxeFileCell',
-    components: components,
-    props: useJVxeCompProps(),
-    setup(props: JVxeComponent.Props) {
-      return useFileCell(props, UploadTypeEnum.file);
-    },
-    // 【组件增强】注释详见：JVxeComponent.Enhanced
-    enhanced: enhanced,
-  });
+export default defineComponent({
+  name: 'JVxeFileCell',
+  components: components,
+  props: useJVxeCompProps(),
+  setup(props: JVxeComponent.Props) {
+    return useFileCell(props, UploadTypeEnum.file)
+  },
+  // 【组件增强】注释详见：JVxeComponent.Enhanced
+  enhanced: enhanced,
+})
 </script>
 
 <style scoped lang="less"></style>

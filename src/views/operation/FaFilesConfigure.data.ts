@@ -1,9 +1,9 @@
-import {BasicColumn} from '/@/components/Table';
-import {FormSchema} from '/@/components/Table';
-import { rules} from '/@/utils/helper/validator';
-import { render } from '/@/utils/common/renderUtils';
-import { getWeekMonthQuarterYear } from '/@/utils';
-import { h } from 'vue';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { rules } from '/@/utils/helper/validator'
+import { render } from '/@/utils/common/renderUtils'
+import { getWeekMonthQuarterYear } from '/@/utils'
+import { h } from 'vue'
 //列表数据
 export const columns: BasicColumn[] = [
   {
@@ -11,8 +11,8 @@ export const columns: BasicColumn[] = [
     key: 'index',
     width: 80,
     resizable: true,
-    customRender: ({ record,index }) => {
-      return index+1
+    customRender: ({ record, index }) => {
+      return index + 1
     },
   },
   {
@@ -40,7 +40,7 @@ export const columns: BasicColumn[] = [
     width: 100,
     resizable: true,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'fa_file_process_status');
+      return render.renderDict(text, 'fa_file_process_status')
     },
   },
   {
@@ -56,21 +56,29 @@ export const columns: BasicColumn[] = [
         '003': 25,
         '100': 50,
         '101': 75,
-        '102': 100
-      };
+        '102': 100,
+      }
 
-      const percent = progressMap[text] || 0;
+      const percent = progressMap[text] || 0
 
       return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
-        h('div', {
-          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
-        }, [
-          h('div', {
-            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
-          }, `${percent}%`)
-        ])
-      ]);
-    }
+        h(
+          'div',
+          {
+            style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;',
+          },
+          [
+            h(
+              'div',
+              {
+                style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+              },
+              `${percent}%`,
+            ),
+          ],
+        ),
+      ])
+    },
   },
   {
     title: '所属机构',
@@ -105,21 +113,21 @@ export const columns: BasicColumn[] = [
       return record.successTime || '--'
     },
   },
-];
+]
 
 // 高级查询数据
 export const superQuerySchema = {
-  regionFld: {title: '数据类别',order: 0,view: 'number', type: 'number',},
-  metaData: {title: '标准数据',order: 1,view: 'text', type: 'string',},
-  dataFlag: {title: '标志位',order: 2,view: 'text', type: 'string',},
-  isSpecialModel: {title: '特定模型',order: 3,view: 'number', type: 'number',},
-  isSpecialOrg: {title: '特定机构',order: 4,view: 'number', type: 'number',},
-  isSpecialFile: {title: '特定文件',order: 5,view: 'number', type: 'number',},
-  dataType: {title: '数据类型',order: 6,view: 'text', type: 'string',},
-  dataNameEng: {title: '字段名称',order: 7,view: 'text', type: 'string',},
-  ifToUnify: {title: '是否需统一',order: 8,view: 'number', type: 'number',},
-  ifToUse: {title: '启用标志',order: 9,view: 'number', type: 'number',},
-  alias: {title: '别名',order: 10,view: 'text', type: 'string',},
-  deleteStatus: {title: '删除状态',order: 11,view: 'text', type: 'string',},
-  deleteTime: {title: '删除时间',order: 12,view: 'date', type: 'string',},
-};
+  regionFld: { title: '数据类别', order: 0, view: 'number', type: 'number' },
+  metaData: { title: '标准数据', order: 1, view: 'text', type: 'string' },
+  dataFlag: { title: '标志位', order: 2, view: 'text', type: 'string' },
+  isSpecialModel: { title: '特定模型', order: 3, view: 'number', type: 'number' },
+  isSpecialOrg: { title: '特定机构', order: 4, view: 'number', type: 'number' },
+  isSpecialFile: { title: '特定文件', order: 5, view: 'number', type: 'number' },
+  dataType: { title: '数据类型', order: 6, view: 'text', type: 'string' },
+  dataNameEng: { title: '字段名称', order: 7, view: 'text', type: 'string' },
+  ifToUnify: { title: '是否需统一', order: 8, view: 'number', type: 'number' },
+  ifToUse: { title: '启用标志', order: 9, view: 'number', type: 'number' },
+  alias: { title: '别名', order: 10, view: 'text', type: 'string' },
+  deleteStatus: { title: '删除状态', order: 11, view: 'text', type: 'string' },
+  deleteTime: { title: '删除时间', order: 12, view: 'date', type: 'string' },
+}

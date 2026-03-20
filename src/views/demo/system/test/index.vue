@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable">
       <template #tableTitle>
-        <a-button type="primary" @click="handleCreate"> 新增 </a-button>
+        <a-button type="primary" @click="handleCreate">新增</a-button>
       </template>
       <template #action="{ record }">
         <TableAction
@@ -27,71 +27,71 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
 
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getTestListByPage } from '/@/api/demo/system';
+import { BasicTable, useTable, TableAction } from '/@/components/Table'
+import { getTestListByPage } from '/@/api/demo/system'
 
-  import { useDrawer } from '/@/components/Drawer';
-  import TestDrawer from './TestDrawer.vue';
+import { useDrawer } from '/@/components/Drawer'
+import TestDrawer from './TestDrawer.vue'
 
-  import { columns, searchFormSchema } from './test.data';
+import { columns, searchFormSchema } from './test.data'
 
-  export default defineComponent({
-    name: 'system-test',
-    components: { BasicTable, TestDrawer, TableAction },
-    setup() {
-      const [registerDrawer, { openDrawer }] = useDrawer();
-      const [registerTable, { reload }] = useTable({
-        title: '列表数据',
-        api: getTestListByPage,
-        columns,
-        formConfig: {
-          labelWidth: 120,
-          schemas: searchFormSchema,
-        },
-        useSearchForm: true,
-        showTableSetting: true,
-        bordered: true,
-        showIndexColumn: false,
-        actionColumn: {
-          width: 80,
-          title: '操作',
-          dataIndex: 'action',
-          slots: { customRender: 'action' },
-          fixed: undefined,
-        },
-      });
+export default defineComponent({
+  name: 'system-test',
+  components: { BasicTable, TestDrawer, TableAction },
+  setup() {
+    const [registerDrawer, { openDrawer }] = useDrawer()
+    const [registerTable, { reload }] = useTable({
+      title: '列表数据',
+      api: getTestListByPage,
+      columns,
+      formConfig: {
+        labelWidth: 120,
+        schemas: searchFormSchema,
+      },
+      useSearchForm: true,
+      showTableSetting: true,
+      bordered: true,
+      showIndexColumn: false,
+      actionColumn: {
+        width: 80,
+        title: '操作',
+        dataIndex: 'action',
+        slots: { customRender: 'action' },
+        fixed: undefined,
+      },
+    })
 
-      function handleCreate() {
-        openDrawer(true, {
-          isUpdate: false,
-        });
-      }
+    function handleCreate() {
+      openDrawer(true, {
+        isUpdate: false,
+      })
+    }
 
-      function handleEdit(record: Recordable) {
-        openDrawer(true, {
-          record,
-          isUpdate: true,
-        });
-      }
+    function handleEdit(record: Recordable) {
+      openDrawer(true, {
+        record,
+        isUpdate: true,
+      })
+    }
 
-      function handleDelete(record: Recordable) {
-        console.log(record);
-      }
+    function handleDelete(record: Recordable) {
+      console.log(record)
+    }
 
-      function handleSuccess() {
-        reload();
-      }
+    function handleSuccess() {
+      reload()
+    }
 
-      return {
-        registerTable,
-        registerDrawer,
-        handleCreate,
-        handleEdit,
-        handleDelete,
-        handleSuccess,
-      };
-    },
-  });
+    return {
+      registerTable,
+      registerDrawer,
+      handleCreate,
+      handleEdit,
+      handleDelete,
+      handleSuccess,
+    }
+  },
+})
 </script>

@@ -1,8 +1,8 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
-import { duplicateCheckDelay } from '/@/views/system/user/user.api';
-import { validateCheckRule } from '/@/views/system/checkRule/check.rule.api';
-import { array } from 'vue-types';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { render } from '/@/utils/common/renderUtils'
+import { duplicateCheckDelay } from '/@/views/system/user/user.api'
+import { validateCheckRule } from '/@/views/system/checkRule/check.rule.api'
+import { array } from 'vue-types'
 
 export const columns: BasicColumn[] = [
   {
@@ -23,10 +23,10 @@ export const columns: BasicColumn[] = [
     width: 300,
     align: 'center',
     customRender: function ({ text }) {
-      return render.renderTip(text, 30);
+      return render.renderTip(text, 30)
     },
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -41,7 +41,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -63,7 +63,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 24 },
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
     dynamicRules: ({ model }) => {
       return [
@@ -72,25 +72,25 @@ export const formSchema: FormSchema[] = [
           validator: (_, value) => {
             return new Promise((resolve, reject) => {
               if (!value) {
-                return reject('请输入规则编码！');
+                return reject('请输入规则编码！')
               }
               let params = {
                 tableName: 'sys_check_rule',
                 fieldName: 'rule_code',
                 fieldVal: value,
                 dataId: model.id,
-              };
+              }
               duplicateCheckDelay(params)
                 .then((res) => {
-                  res.success ? resolve() : reject('规则编码已存在!');
+                  res.success ? resolve() : reject('规则编码已存在!')
                 })
                 .catch((err) => {
-                  reject(err.message || '校验失败');
-                });
-            });
+                  reject(err.message || '校验失败')
+                })
+            })
           },
         },
-      ];
+      ]
     },
   },
   {
@@ -103,7 +103,7 @@ export const formSchema: FormSchema[] = [
       rows: 2,
     },
   },
-];
+]
 
 export const checkRuleInput: FormSchema[] = [
   {
@@ -119,12 +119,12 @@ export const checkRuleInput: FormSchema[] = [
     componentProps: ({ formModel }) => {
       return {
         onChange: (e) => {
-          formModel.testValue = e.target.value;
+          formModel.testValue = e.target.value
         },
-      };
+      }
     },
     dynamicRules: ({ model }) => {
-      const { ruleCode } = model;
+      const { ruleCode } = model
       return [
         {
           required: false,
@@ -135,18 +135,18 @@ export const checkRuleInput: FormSchema[] = [
                 validateCheckRule(ruleCode, value)
                   .then((res) => {
                     //console.log(1233, res)
-                    res['success'] ? resolve() : reject(res['message']);
+                    res['success'] ? resolve() : reject(res['message'])
                   })
                   .catch((err) => {
-                    reject(err.message || err);
-                  });
+                    reject(err.message || err)
+                  })
               } else {
-                resolve();
+                resolve()
               }
-            });
+            })
           },
         },
-      ];
+      ]
     },
   },
-];
+]

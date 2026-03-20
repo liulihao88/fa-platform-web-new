@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 enum Api {
   list = '/sys/dict/list',
   save = '/sys/dict/add',
@@ -26,25 +26,25 @@ enum Api {
  * 导出api
  * @param params
  */
-export const getExportUrl = Api.exportXls;
+export const getExportUrl = Api.exportXls
 /**
  * 导入api
  * @param params
  */
-export const getImportUrl = Api.importExcel;
+export const getImportUrl = Api.importExcel
 /**
  * 字典列表接口
  * @param params
  */
-export const list = (params) => defHttp.get({ url: Api.list, params });
+export const list = (params) => defHttp.get({ url: Api.list, params })
 /**
  * 删除字典
  */
 export const deleteDict = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteDict, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 批量删除字典
  * @param params
@@ -57,100 +57,101 @@ export const batchDeleteDict = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 /**
  * 保存或者更新字典
  * @param params
  */
 export const saveOrUpdateDict = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.edit : Api.save
+  return defHttp.post({ url: url, params })
+}
 /**
  * 唯一校验
  * @param params
  */
-export const duplicateCheck = (params) => defHttp.get({ url: Api.duplicateCheck, params }, { isTransformResponse: false });
+export const duplicateCheck = (params) =>
+  defHttp.get({ url: Api.duplicateCheck, params }, { isTransformResponse: false })
 /**
  * 字典回收站列表
  * @param params
  */
-export const getRecycleBinList = (params) => defHttp.get({ url: Api.recycleBinList, params });
+export const getRecycleBinList = (params) => defHttp.get({ url: Api.recycleBinList, params })
 
 /**
  * 回收站批量还原
  * @param params
  */
 export const batchPutRecycleBin = (params, handleSuccess) => {
-  return defHttp.put({ url: Api.batchPutRecycleBin, params}).then(() => {
-    handleSuccess();
-  });
-};
+  return defHttp.put({ url: Api.batchPutRecycleBin, params }).then(() => {
+    handleSuccess()
+  })
+}
 /**
  * 回收站还原
  * @param params
  */
 export const putRecycleBin = (id, handleSuccess) => {
   return defHttp.put({ url: Api.putRecycleBin + `/${id}` }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 回收站批量删除
  * @param params
  */
 export const batchDeleteRecycleBin = (params, handleSuccess) => {
-  return defHttp.delete({ url: `${Api.batchDeleteRecycleBin}?ids=${params.ids}`}).then(() => {
-    handleSuccess();
-  });
-};
+  return defHttp.delete({ url: `${Api.batchDeleteRecycleBin}?ids=${params.ids}` }).then(() => {
+    handleSuccess()
+  })
+}
 /**
  * 回收站删除
  * @param params
  */
 export const deleteRecycleBin = (id, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteRecycleBin + `/${id}` }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 字典配置列表
  * @param params
  */
-export const itemList = (params) => defHttp.get({ url: Api.itemList, params });
+export const itemList = (params) => defHttp.get({ url: Api.itemList, params })
 /**
  * 字典配置删除
  * @param params
  */
 export const deleteItem = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteItem, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 保存或者更新字典配置
  * @param params
  */
 export const saveOrUpdateDictItem = (params, isUpdate) => {
-  let url = isUpdate ? Api.itemEdit : Api.itemSave;
-  return defHttp.post({ url: url, params });
-};
+  let url = isUpdate ? Api.itemEdit : Api.itemSave
+  return defHttp.post({ url: url, params })
+}
 /**
  * 校验字典数据值
  * @param params
  */
-export const dictItemCheck = (params) => defHttp.get({ url: Api.dictItemCheck, params }, { isTransformResponse: false });
+export const dictItemCheck = (params) => defHttp.get({ url: Api.dictItemCheck, params }, { isTransformResponse: false })
 /**
  * 刷新字典
  * @param params
  */
-export const refreshCache = () => defHttp.get({ url: Api.refreshCache }, { isTransformResponse: false });
+export const refreshCache = () => defHttp.get({ url: Api.refreshCache }, { isTransformResponse: false })
 /**
  * 获取所有字典项
  * @param params
  */
-export const queryAllDictItems = () => defHttp.get({ url: Api.queryAllDictItems }, { isTransformResponse: false });
+export const queryAllDictItems = () => defHttp.get({ url: Api.queryAllDictItems }, { isTransformResponse: false })

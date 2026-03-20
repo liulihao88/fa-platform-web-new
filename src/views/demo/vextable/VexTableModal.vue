@@ -1,6 +1,12 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="70%">
-    <a-form ref="formRef" :model="orderMainModel" :label-col="labelCol" :wrapper-col="wrapperCol" :rules="validatorRules">
+    <a-form
+      ref="formRef"
+      :model="orderMainModel"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+      :rules="validatorRules"
+    >
       <a-row class="form-row" :gutter="16">
         <a-col :lg="8">
           <a-form-item label="订单号" name="orderCode">
@@ -53,138 +59,153 @@
           >
             <vxe-column type="checkbox" width="60" align="center"></vxe-column>
             <vxe-column type="seq" width="60" align="center"></vxe-column>
-            <vxe-column field="name" title="客户名" sortable :edit-render="{ name: 'input', defaultValue: '' }"></vxe-column>
+            <vxe-column
+              field="name"
+              title="客户名"
+              sortable
+              :edit-render="{ name: 'input', defaultValue: '' }"
+            ></vxe-column>
             <vxe-column field="sex" title="性别" :edit-render="{ name: '$select', options: sexList }"></vxe-column>
-            <vxe-column field="idcard" title="身份证" sortable :edit-render="{ name: 'input', defaultValue: '' }"></vxe-column>
-            <vxe-column field="telphone" title="手机" sortable :edit-render="{ name: 'input', defaultValue: '' }"></vxe-column>
+            <vxe-column
+              field="idcard"
+              title="身份证"
+              sortable
+              :edit-render="{ name: 'input', defaultValue: '' }"
+            ></vxe-column>
+            <vxe-column
+              field="telphone"
+              title="手机"
+              sortable
+              :edit-render="{ name: 'input', defaultValue: '' }"
+            ></vxe-column>
           </vxe-table>
         </a-tab-pane>
 
-        <a-tab-pane tab="机票信息" key="2" forceRender> </a-tab-pane>
+        <a-tab-pane tab="机票信息" key="2" forceRender></a-tab-pane>
       </a-tabs>
     </a-form>
   </BasicModal>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, reactive, computed, unref } from 'vue';
-  import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface';
-  import { VxeTableInstance } from 'vxe-table';
-  export default defineComponent({
-    name: 'VexTableModal',
-    components: { BasicModal },
-    emits: ['success', 'register'],
-    setup(props, { emit }) {
-      const isUpdate = ref(true);
-      const xTable = ref({} as VxeTableInstance);
-      const rowId = ref('');
-      const formRef = ref();
-      const labelCol = reactive({
-        xs: { span: 24 },
-        sm: { span: 5 },
-      });
-      const wrapperCol = reactive({
-        xs: { span: 24 },
-        sm: { span: 16 },
-      });
-      const sexList = ref([
-        { label: '', value: '' },
-        { label: '男', value: '1' },
-        { label: '女', value: '2' },
-      ]);
-      const validatorRules = {
-        orderCode: [{ required: true, message: '订单号不能为空', trigger: 'blur' }],
-      };
-      const orderMainModel = reactive({
-        id: null,
-        orderCode: '',
-        orderMoney: '',
-        ctype: '',
-        content: '',
-        jeecgOrderCustomerList: [],
-        jeecgOrderTicketList: [],
-      });
-      const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
-        orderMainModel.orderCode = '';
-        setModalProps({ confirmLoading: false });
-        isUpdate.value = !!data?.isUpdate;
+import { defineComponent, ref, reactive, computed, unref } from 'vue'
+import { BasicModal, useModalInner } from '/@/components/Modal'
+import { ValidateErrorEntity } from 'ant-design-vue/es/form/interface'
+import { VxeTableInstance } from 'vxe-table'
+export default defineComponent({
+  name: 'VexTableModal',
+  components: { BasicModal },
+  emits: ['success', 'register'],
+  setup(props, { emit }) {
+    const isUpdate = ref(true)
+    const xTable = ref({} as VxeTableInstance)
+    const rowId = ref('')
+    const formRef = ref()
+    const labelCol = reactive({
+      xs: { span: 24 },
+      sm: { span: 5 },
+    })
+    const wrapperCol = reactive({
+      xs: { span: 24 },
+      sm: { span: 16 },
+    })
+    const sexList = ref([
+      { label: '', value: '' },
+      { label: '男', value: '1' },
+      { label: '女', value: '2' },
+    ])
+    const validatorRules = {
+      orderCode: [{ required: true, message: '订单号不能为空', trigger: 'blur' }],
+    }
+    const orderMainModel = reactive({
+      id: null,
+      orderCode: '',
+      orderMoney: '',
+      ctype: '',
+      content: '',
+      jeecgOrderCustomerList: [],
+      jeecgOrderTicketList: [],
+    })
+    const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
+      orderMainModel.orderCode = ''
+      setModalProps({ confirmLoading: false })
+      isUpdate.value = !!data?.isUpdate
 
-        if (unref(isUpdate)) {
-          rowId.value = data.record.id;
-          orderMainModel.orderCode = data.record.orderCode;
-        }
-      });
-      const tableData = ref([]);
-      const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
-
-      //动态添加行
-      async function insertEvent(row: any) {
-        const $table = xTable.value;
-        const record = {
-          name: '',
-          sex: '1',
-          idcard: '',
-          telphone: '',
-        };
-        const { row: newRow } = await $table.insertAt(record, row);
-        await $table.setActiveCell(newRow, 'sex');
+      if (unref(isUpdate)) {
+        rowId.value = data.record.id
+        orderMainModel.orderCode = data.record.orderCode
       }
+    })
+    const tableData = ref([])
+    const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'))
 
-      async function handleSubmit() {
-        formRef.value
-          .validate()
-          .then(() => {
-            try {
-              const $table = xTable.value;
-              const { fullData } = $table.getTableData();
-              orderMainModel.jeecgOrderCustomerList = fullData;
-              console.log('formData', JSON.stringify(orderMainModel));
-              setModalProps({ confirmLoading: true });
-              closeModal();
-              emit('success', { isUpdate: unref(isUpdate), values: { id: rowId.value } });
-            } finally {
-              setModalProps({ confirmLoading: false });
-            }
-          })
-          .catch((error: ValidateErrorEntity<any>) => {
-            console.log('error', error);
-          });
+    //动态添加行
+    async function insertEvent(row: any) {
+      const $table = xTable.value
+      const record = {
+        name: '',
+        sex: '1',
+        idcard: '',
+        telphone: '',
       }
+      const { row: newRow } = await $table.insertAt(record, row)
+      await $table.setActiveCell(newRow, 'sex')
+    }
 
-      return {
-        xTable,
-        tableData,
-        sexList,
-        formRef,
-        validatorRules,
-        orderMainModel,
-        registerModal,
-        getTitle,
-        labelCol,
-        wrapperCol,
-        insertEvent,
-        handleSubmit,
-      };
-    },
-  });
+    async function handleSubmit() {
+      formRef.value
+        .validate()
+        .then(() => {
+          try {
+            const $table = xTable.value
+            const { fullData } = $table.getTableData()
+            orderMainModel.jeecgOrderCustomerList = fullData
+            console.log('formData', JSON.stringify(orderMainModel))
+            setModalProps({ confirmLoading: true })
+            closeModal()
+            emit('success', { isUpdate: unref(isUpdate), values: { id: rowId.value } })
+          } finally {
+            setModalProps({ confirmLoading: false })
+          }
+        })
+        .catch((error: ValidateErrorEntity<any>) => {
+          console.log('error', error)
+        })
+    }
+
+    return {
+      xTable,
+      tableData,
+      sexList,
+      formRef,
+      validatorRules,
+      orderMainModel,
+      registerModal,
+      getTitle,
+      labelCol,
+      wrapperCol,
+      insertEvent,
+      handleSubmit,
+    }
+  },
+})
 </script>
 <style scoped>
-  .ant-btn {
-    padding: 0 10px;
-    margin-left: 3px;
-  }
+.ant-btn {
+  padding: 0 10px;
+  margin-left: 3px;
+}
 
-  .ant-form-item-control {
-    line-height: 0px;
-  }
+.ant-form-item-control {
+  line-height: 0px;
+}
 
-  /** 主表单行间距 */
-  .ant-form .ant-form-item {
-    margin-bottom: 10px;
-  }
+/** 主表单行间距 */
+.ant-form .ant-form-item {
+  margin-bottom: 10px;
+}
 
-  /** Tab页面行间距 */
-  .ant-tabs-content .ant-form-item {
-    margin-bottom: 0px;
-  }
+/** Tab页面行间距 */
+.ant-tabs-content .ant-form-item {
+  margin-bottom: 0px;
+}
 </style>

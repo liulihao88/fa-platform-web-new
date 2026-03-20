@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh_CN" id="htmlRoot">
   <head>
     <meta charset="UTF-8" />
@@ -13,19 +13,19 @@
     <link rel="icon" href="<%= basePublicPath %>/logo.png" />
     <!-- 全局配置 -->
     <script>
-      window._CONFIG = {};
+      window._CONFIG = {}
     </script>
   </head>
   <body>
     <script>
-      (() => {
-        var htmlRoot = document.getElementById('htmlRoot');
-        var theme = window.localStorage.getItem('__APP__DARK__MODE__');
+      ;(() => {
+        var htmlRoot = document.getElementById('htmlRoot')
+        var theme = window.localStorage.getItem('__APP__DARK__MODE__')
         if (htmlRoot && theme) {
-          htmlRoot.setAttribute('data-theme', theme);
-          theme = htmlRoot = null;
+          htmlRoot.setAttribute('data-theme', theme)
+          theme = htmlRoot = null
         }
-      })();
+      })()
     </script>
     <div id="app">
       <style>
@@ -157,16 +157,19 @@
       </style>
       <div class="app-loading">
         <div class="app-loading-wrap">
-<!--          <img src="<%= basePublicPath %>/resource/img/logo.png" class="app-loading-logo" alt="Logo" />-->
+          <!--          <img src="<%= basePublicPath %>/resource/img/logo.png" class="app-loading-logo" alt="Logo" />-->
           <div class="app-loading-dots">
-            <span class="dot dot-spin"><i></i><i></i><i></i><i></i></span>
+            <span class="dot dot-spin">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+            </span>
           </div>
           <div class="app-loading-title"><%= title %></div>
         </div>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
-
-
   </body>
 </html>

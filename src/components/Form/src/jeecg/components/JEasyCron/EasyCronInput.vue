@@ -20,44 +20,44 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watch } from 'vue';
-  import { useDesign } from '/@/hooks/web/useDesign';
-  import { useModal } from '/@/components/Modal';
-  import { propTypes } from '/@/utils/propTypes';
-  import Icon from '/@/components/Icon/src/Icon.vue';
-  import EasyCronModal from './EasyCronModal.vue';
-  import { cronEmits, cronProps } from './easy.cron.data';
+import { ref, watch } from 'vue'
+import { useDesign } from '/@/hooks/web/useDesign'
+import { useModal } from '/@/components/Modal'
+import { propTypes } from '/@/utils/propTypes'
+import Icon from '/@/components/Icon/src/Icon.vue'
+import EasyCronModal from './EasyCronModal.vue'
+import { cronEmits, cronProps } from './easy.cron.data'
 
-  const { prefixCls } = useDesign('easy-cron-input');
-  const emit = defineEmits([...cronEmits]);
-  const props = defineProps({
-    ...cronProps,
-    placeholder: propTypes.string.def('请输入cron表达式'),
-    exeStartTime: propTypes.oneOfType([propTypes.number, propTypes.string, propTypes.object]).def(0),
-  });
-  const [registerModal, { openModal }] = useModal();
-  const editCronValue = ref(props.value);
+const { prefixCls } = useDesign('easy-cron-input')
+const emit = defineEmits([...cronEmits])
+const props = defineProps({
+  ...cronProps,
+  placeholder: propTypes.string.def('请输入cron表达式'),
+  exeStartTime: propTypes.oneOfType([propTypes.number, propTypes.string, propTypes.object]).def(0),
+})
+const [registerModal, { openModal }] = useModal()
+const editCronValue = ref(props.value)
 
-  watch(
-    () => props.value,
-    (newVal) => {
-      if (newVal !== editCronValue.value) {
-        editCronValue.value = newVal;
-      }
+watch(
+  () => props.value,
+  (newVal) => {
+    if (newVal !== editCronValue.value) {
+      editCronValue.value = newVal
     }
-  );
-  watch(editCronValue, (newVal) => {
-    emit('change', newVal);
-    emit('update:value', newVal);
-  });
+  },
+)
+watch(editCronValue, (newVal) => {
+  emit('change', newVal)
+  emit('update:value', newVal)
+})
 
-  function showConfigModal() {
-    if (!props.disabled) {
-      openModal();
-    }
+function showConfigModal() {
+  if (!props.disabled) {
+    openModal()
   }
+}
 </script>
 
 <style lang="less">
-  @import 'easy.cron.input';
+@import 'easy.cron.input';
 </style>

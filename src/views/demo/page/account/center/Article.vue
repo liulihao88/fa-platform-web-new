@@ -35,58 +35,58 @@
   </List>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { List, Tag } from 'ant-design-vue';
-  import Icon from '/@/components/Icon/index';
-  import { actions, articleList } from './data';
+import { defineComponent } from 'vue'
+import { List, Tag } from 'ant-design-vue'
+import Icon from '/@/components/Icon/index'
+import { actions, articleList } from './data'
 
-  export default defineComponent({
-    components: {
-      List,
-      ListItem: List.Item,
-      ListItemMeta: List.Item.Meta,
-      Tag,
-      Icon,
-    },
-    setup() {
-      return {
-        prefixCls: 'account-center-article',
-        list: articleList,
-        actions,
-      };
-    },
-  });
+export default defineComponent({
+  components: {
+    List,
+    ListItem: List.Item,
+    ListItemMeta: List.Item.Meta,
+    Tag,
+    Icon,
+  },
+  setup() {
+    return {
+      prefixCls: 'account-center-article',
+      list: articleList,
+      actions,
+    }
+  },
+})
 </script>
 <style lang="less" scoped>
-  .account-center-article {
-    &__title {
-      margin-bottom: 12px;
-      font-size: 18px;
+.account-center-article {
+  &__title {
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  &__content {
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  &__action {
+    display: inline-block;
+    padding: 0 16px;
+    color: rgba(0, 0, 0, 0.45);
+
+    &:nth-child(1),
+    &:nth-child(2) {
+      border-right: 1px solid rgba(206, 206, 206, 0.4);
     }
 
-    &__content {
-      color: rgba(0, 0, 0, 0.65);
-    }
-
-    &__action {
-      display: inline-block;
-      padding: 0 16px;
-      color: rgba(0, 0, 0, 0.45);
-
-      &:nth-child(1),
-      &:nth-child(2) {
-        border-right: 1px solid rgba(206, 206, 206, 0.4);
-      }
-
-      &-icon {
-        margin-right: 3px;
-      }
-    }
-
-    &__time {
-      position: absolute;
-      right: 20px;
-      color: rgba(0, 0, 0, 0.45);
+    &-icon {
+      margin-right: 3px;
     }
   }
+
+  &__time {
+    position: absolute;
+    right: 20px;
+    color: rgba(0, 0, 0, 0.45);
+  }
+}
 </style>

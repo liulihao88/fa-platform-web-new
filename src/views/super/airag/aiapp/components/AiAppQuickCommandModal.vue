@@ -1,19 +1,27 @@
 <template>
   <div class="p-2">
-    <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="800px" :title="title" @ok="handleOk" @cancel="handleCancel">
+    <BasicModal
+      destroyOnClose
+      @register="registerModal"
+      :canFullscreen="false"
+      width="800px"
+      :title="title"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <BasicForm @register="registerForm"></BasicForm>
     </BasicModal>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, unref } from 'vue';
-import BasicModal from '@/components/Modal/src/BasicModal.vue';
-import { useModalInner } from '@/components/Modal';
+import { ref, unref } from 'vue'
+import BasicModal from '@/components/Modal/src/BasicModal.vue'
+import { useModalInner } from '@/components/Modal'
 
-import BasicForm from '@/components/Form/src/BasicForm.vue';
-import { useForm } from '@/components/Form';
-import { quickCommandFormSchema} from '../AiApp.data';
+import BasicForm from '@/components/Form/src/BasicForm.vue'
+import { useForm } from '@/components/Form'
+import { quickCommandFormSchema } from '../AiApp.data'
 
 export default {
   name: 'AiAppQuickCommandModal',
@@ -23,10 +31,10 @@ export default {
   },
   emits: ['ok', 'update-ok', 'register'],
   setup(props, { emit }) {
-    const title = ref<string>('添加指令');
+    const title = ref<string>('添加指令')
 
     //保存或修改
-    const isUpdate = ref<boolean>(false);
+    const isUpdate = ref<boolean>(false)
 
     //表单配置
     const [registerForm, { validate, resetFields, setFieldsValue }] = useForm({
@@ -34,36 +42,36 @@ export default {
       showActionButtonGroup: false,
       layout: 'vertical',
       wrapperCol: { span: 24 },
-    });
+    })
 
     //注册modal
     const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
-      await resetFields();
-      isUpdate.value = !!data?.isUpdate;
+      await resetFields()
+      isUpdate.value = !!data?.isUpdate
       if (unref(isUpdate)) {
         //表单赋值
         await setFieldsValue({
           ...data.record,
-        });
+        })
       }
-      setModalProps({ minHeight: 200, bodyStyle: { padding: '10px' } });
-    });
+      setModalProps({ minHeight: 200, bodyStyle: { padding: '10px' } })
+    })
 
     /**
      * 保存
      */
     async function handleOk() {
       try {
-        let values = await validate();
-        setModalProps({ confirmLoading: true });
-        if(isUpdate.value){
-          emit('update-ok',values);
-        }else{
-          emit('ok', values);
+        let values = await validate()
+        setModalProps({ confirmLoading: true })
+        if (isUpdate.value) {
+          emit('update-ok', values)
+        } else {
+          emit('ok', values)
         }
-        handleCancel();
+        handleCancel()
       } finally {
-        setModalProps({ confirmLoading: false });
+        setModalProps({ confirmLoading: false })
       }
     }
 
@@ -71,7 +79,7 @@ export default {
      * 取消
      */
     function handleCancel() {
-      closeModal();
+      closeModal()
     }
 
     return {
@@ -79,10 +87,10 @@ export default {
       registerForm,
       title,
       handleOk,
-      handleCancel
-    };
+      handleCancel,
+    }
   },
-};
+}
 </script>
 
 <style scoped lang="less">

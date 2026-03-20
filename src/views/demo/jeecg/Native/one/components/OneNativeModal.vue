@@ -14,56 +14,56 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, nextTick } from 'vue';
-  import OneNativeForm from './OneNativeForm.vue';
-  import { BasicModal } from '/@/components/Modal';
-  
-  const title = ref<string>('');
-  const width = ref<number>(800);
-  const visible = ref<boolean>(false);
-  const disableSubmit = ref<boolean>(false);
-  const realForm = ref();
-  const emit = defineEmits(['register', 'ok']);
+import { ref, nextTick } from 'vue'
+import OneNativeForm from './OneNativeForm.vue'
+import { BasicModal } from '/@/components/Modal'
 
-  function add() {
-    title.value = '新增';
-    visible.value = true;
-    nextTick(() => {
-      realForm.value.add();
-    });
-  }
+const title = ref<string>('')
+const width = ref<number>(800)
+const visible = ref<boolean>(false)
+const disableSubmit = ref<boolean>(false)
+const realForm = ref()
+const emit = defineEmits(['register', 'ok'])
 
-  function edit(record) {
-    title.value = disableSubmit.value ? '详情' : '编辑';
-    visible.value = true;
-    nextTick(() => {
-      realForm.value.edit(record);
-    });
-  }
+function add() {
+  title.value = '新增'
+  visible.value = true
+  nextTick(() => {
+    realForm.value.add()
+  })
+}
 
-  function handleOk() {
-    realForm.value.submitForm();
-  }
+function edit(record) {
+  title.value = disableSubmit.value ? '详情' : '编辑'
+  visible.value = true
+  nextTick(() => {
+    realForm.value.edit(record)
+  })
+}
 
-  function submitCallback() {
-    handleCancel();
-    emit('ok');
-  }
+function handleOk() {
+  realForm.value.submitForm()
+}
 
-  function handleCancel() {
-    visible.value = false;
-  }
+function submitCallback() {
+  handleCancel()
+  emit('ok')
+}
 
-  defineExpose({
-    add,
-    edit,
-    disableSubmit,
-  });
+function handleCancel() {
+  visible.value = false
+}
+
+defineExpose({
+  add,
+  edit,
+  disableSubmit,
+})
 </script>
 
 <style lang="less">
-  /**隐藏样式-modal确定按钮 */
-  .jee-hidden {
-    display: none !important;
-  }
+/**隐藏样式-modal确定按钮 */
+.jee-hidden {
+  display: none !important;
+}
 </style>

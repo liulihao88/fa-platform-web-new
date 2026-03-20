@@ -1,5 +1,5 @@
-import type { AppRouteRecordRaw } from '/@/router/types';
-import { LAYOUT } from '/@/router/constant';
+import type { AppRouteRecordRaw } from '/@/router/types'
+import { LAYOUT } from '/@/router/constant'
 
 export const AI_ROUTE: AppRouteRecordRaw = {
   path: '',
@@ -18,6 +18,6 @@ export const AI_ROUTE: AppRouteRecordRaw = {
       },
     },
   ],
-};
+}
 
-export const staticRoutesList = [AI_ROUTE];
+export const staticRoutesList = [AI_ROUTE]

@@ -16,48 +16,48 @@
 </template>
 
 <script lang="ts" setup>
-  //引入依赖
-  import { useForm, BasicForm, FormSchema } from '/@/components/Form';
-  import JEditor from '/@/components/Form/src/jeecg/components/JEditor.vue';
+//引入依赖
+import { useForm, BasicForm, FormSchema } from '/@/components/Form'
+import JEditor from '/@/components/Form/src/jeecg/components/JEditor.vue'
 
-  //自定义表单字段
-  const formSchemas: FormSchema[] = [
-    {
-      field: 'name',
-      label: '姓名',
-      component: 'Input',
-    },
-    {
-      field: 'phone',
-      label: '联系方式',
-      component: 'Input',
-      slot: 'phone',
-    },
-    {
-      field: 'feedback',
-      label: '问题反馈',
-      component: 'InputTextArea',
-      slot: 'feedback',
-    },
-  ];
+//自定义表单字段
+const formSchemas: FormSchema[] = [
+  {
+    field: 'name',
+    label: '姓名',
+    component: 'Input',
+  },
+  {
+    field: 'phone',
+    label: '联系方式',
+    component: 'Input',
+    slot: 'phone',
+  },
+  {
+    field: 'feedback',
+    label: '问题反馈',
+    component: 'InputTextArea',
+    slot: 'feedback',
+  },
+]
 
-  /**
-   * BasicForm绑定注册;
-   */
-  const [registerForm] = useForm({
-    //注册表单列
-    schemas: formSchemas,
-    showResetButton: false,
-    labelWidth: '150px',
-    submitButtonOptions: { text: '提交', preIcon: '' },
-    actionColOptions: { span: 17 },
-  });
+/**
+ * BasicForm绑定注册;
+ */
+const [registerForm] = useForm({
+  //注册表单列
+  schemas: formSchemas,
+  showResetButton: false,
+  labelWidth: '150px',
+  submitButtonOptions: { text: '提交', preIcon: '' },
+  actionColOptions: { span: 17 },
+})
 </script>
 
 <style scoped>
-  .font-color {
-    font-size: 13px;
-    color: #a1a1a1;
-    margin-bottom: 5px;
-  }
+.font-color {
+  font-size: 13px;
+  color: #a1a1a1;
+  margin-bottom: 5px;
+}
 </style>

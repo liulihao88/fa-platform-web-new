@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '@/components/Table';
+import { BasicColumn, FormSchema } from '@/components/Table'
 
 //ocr表格
 export const columns: BasicColumn[] = [
@@ -19,7 +19,7 @@ export const columns: BasicColumn[] = [
     ellipsis: true,
     width: 300,
   },
-];
+]
 
 //ocr表单
 export const schemas: FormSchema[] = [
@@ -45,7 +45,7 @@ export const schemas: FormSchema[] = [
     },
     required: true,
   },
-];
+]
 
 //ocr解析表单
 export const analysisSchemas: FormSchema[] = [
@@ -65,7 +65,7 @@ export const analysisSchemas: FormSchema[] = [
     label: '提示词',
     field: 'prompt',
     component: 'InputTextArea',
-    show:false,
+    show: false,
   },
   {
     label: '解析结果',
@@ -75,7 +75,7 @@ export const analysisSchemas: FormSchema[] = [
       row: 10,
       autosize: { minRows: 10, maxRows: 10 },
       readonly: true,
-      placeholder:"解析结果将在这里显示"
+      placeholder: '解析结果将在这里显示',
     },
   },
-];
+]

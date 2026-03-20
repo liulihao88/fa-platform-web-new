@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/sys/checkRule/list',
@@ -15,19 +15,19 @@ enum Api {
 /**
  * 导出地址
  */
-export const exportUrl = Api.exportXls;
+export const exportUrl = Api.exportXls
 /**
  * 导入地址
  */
-export const importUrl = Api.importXls;
+export const importUrl = Api.importXls
 
 /**
  * 列表查询
  * @param params
  */
 export const getCheckRuleList = (params) => {
-  return defHttp.get({ url: Api.list, params });
-};
+  return defHttp.get({ url: Api.list, params })
+}
 
 /**
  * 删除
@@ -36,9 +36,9 @@ export const getCheckRuleList = (params) => {
  */
 export const deleteCheckRule = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 
 /**
  * 批量删除
@@ -52,11 +52,11 @@ export const batchDeleteCheckRule = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}
 
 /**
  * 根据编码校验规则code，校验传入的值是否合法
@@ -64,23 +64,23 @@ export const batchDeleteCheckRule = (params, handleSuccess) => {
  * @param value
  */
 export const validateCheckRule = (ruleCode, value) => {
-  value = encodeURIComponent(value);
-  let params = { ruleCode, value };
-  return defHttp.get({ url: Api.checkByCode, params }, { isTransformResponse: false });
-};
+  value = encodeURIComponent(value)
+  let params = { ruleCode, value }
+  return defHttp.get({ url: Api.checkByCode, params }, { isTransformResponse: false })
+}
 
 /**
  * 保存
  * @param params
  */
 export const saveCheckRule = (params) => {
-  return defHttp.post({ url: Api.save, params });
-};
+  return defHttp.post({ url: Api.save, params })
+}
 
 /**
  * 更新
  * @param params
  */
 export const updateCheckRule = (params) => {
-  return defHttp.put({ url: Api.edit, params });
-};
+  return defHttp.put({ url: Api.edit, params })
+}

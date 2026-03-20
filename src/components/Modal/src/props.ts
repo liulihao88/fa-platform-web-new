@@ -1,9 +1,9 @@
-import type { PropType, CSSProperties } from 'vue';
-import type { ModalWrapperProps } from './typing';
-import { ButtonProps } from 'ant-design-vue/es/button/buttonTypes';
-import { useI18n } from '/@/hooks/web/useI18n';
+import type { PropType, CSSProperties } from 'vue'
+import type { ModalWrapperProps } from './typing'
+import { ButtonProps } from 'ant-design-vue/es/button/buttonTypes'
+import { useI18n } from '/@/hooks/web/useI18n'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
 export const modalProps = {
   visible: { type: Boolean },
@@ -20,7 +20,7 @@ export const modalProps = {
 
   modalHeaderHeight: Number,
   modalFooterHeight: Number,
-};
+}
 
 export const basicProps = Object.assign({}, modalProps, {
   defaultFullscreen: { type: Boolean },
@@ -88,4 +88,4 @@ export const basicProps = Object.assign({}, modalProps, {
   maxHeight: { type: Number },
   // 是否开启评论区域
   enableComment: { type: Boolean, default: false },
-});
+})

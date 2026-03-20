@@ -1,12 +1,12 @@
-import { FormSchema } from '@/components/Form';
+import { FormSchema } from '@/components/Form'
 
-import deepspeek from '/@/views/super/airag/aimodel/icon/deepspeek.png';
-import ollama from '/@/views/super/airag/aimodel/icon/ollama.png';
-import OpenAi from '/@/views/super/airag/aimodel/icon/OpenAi.png';
-import qianfan from '/@/views/super/airag/aimodel/icon/qianfan.png';
-import qianwen from '/@/views/super/airag/aimodel/icon/qianwen.png';
-import zhipuai from '/@/views/super/airag/aimodel/icon/zhipuai.png';
-import { ref } from 'vue';
+import deepspeek from '/@/views/super/airag/aimodel/icon/deepspeek.png'
+import ollama from '/@/views/super/airag/aimodel/icon/ollama.png'
+import OpenAi from '/@/views/super/airag/aimodel/icon/OpenAi.png'
+import qianfan from '/@/views/super/airag/aimodel/icon/qianfan.png'
+import qianwen from '/@/views/super/airag/aimodel/icon/qianwen.png'
+import zhipuai from '/@/views/super/airag/aimodel/icon/zhipuai.png'
+import { ref } from 'vue'
 
 /**
  * 表单
@@ -42,7 +42,7 @@ export const formSchema: FormSchema[] = [
     label: 'API域名',
     field: 'baseUrl',
     required: true,
-    component: 'Input'
+    component: 'Input',
   },
   {
     label: 'API Key',
@@ -50,10 +50,10 @@ export const formSchema: FormSchema[] = [
     required: true,
     component: 'InputPassword',
     ifShow: ({ values }) => {
-      if(values.provider==="OLLAMA"){
-        return false;
+      if (values.provider === 'OLLAMA') {
+        return false
       }
-      return true;
+      return true
     },
   },
   {
@@ -62,11 +62,16 @@ export const formSchema: FormSchema[] = [
     required: true,
     component: 'InputPassword',
     ifShow: ({ values }) => {
-      if(values.provider==='DEEPSEEK' || values.provider==="OLLAMA" || values.provider==="OPENAI"
-        || values.provider==="ZHIPU" || values.provider==="QWEN"){
-        return false;
+      if (
+        values.provider === 'DEEPSEEK' ||
+        values.provider === 'OLLAMA' ||
+        values.provider === 'OPENAI' ||
+        values.provider === 'ZHIPU' ||
+        values.provider === 'QWEN'
+      ) {
+        return false
       }
-      return true;
+      return true
     },
   },
   {
@@ -75,7 +80,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     show: false,
   },
-];
+]
 
 /**
  * 图片路径映射
@@ -89,4 +94,4 @@ export const imageList = ref<any>({
   QIANFAN: qianfan,
   QWEN: qianwen,
   ZHIPU: zhipuai,
-});
+})

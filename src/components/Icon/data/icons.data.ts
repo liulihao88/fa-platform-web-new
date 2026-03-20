@@ -788,4 +788,4 @@ export default [
   'ant-design:zhihu-square-filled',
   'ant-design:zoom-in-outlined',
   'ant-design:zoom-out-outlined',
-];
+]

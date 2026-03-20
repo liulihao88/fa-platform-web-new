@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -23,7 +23,7 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'status' },
     width: 150,
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -49,4 +49,4 @@ export const formSchema: FormSchema[] = [
     slot: 'predicates',
     component: 'Input',
   },
-];
+]

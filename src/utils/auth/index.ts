@@ -1,38 +1,38 @@
-import { Persistent, BasicKeys } from '/@/utils/cache/persistent';
-import { CacheTypeEnum } from '/@/enums/cacheEnum';
-import projectSetting from '/@/settings/projectSetting';
-import { TOKEN_KEY, LOGIN_INFO_KEY, TENANT_ID } from '/@/enums/cacheEnum';
+import { Persistent, BasicKeys } from '/@/utils/cache/persistent'
+import { CacheTypeEnum } from '/@/enums/cacheEnum'
+import projectSetting from '/@/settings/projectSetting'
+import { TOKEN_KEY, LOGIN_INFO_KEY, TENANT_ID } from '/@/enums/cacheEnum'
 
-const { permissionCacheType } = projectSetting;
-const isLocal = permissionCacheType === CacheTypeEnum.LOCAL;
+const { permissionCacheType } = projectSetting
+const isLocal = permissionCacheType === CacheTypeEnum.LOCAL
 
 /**
  * 获取token
  */
 export function getToken() {
-  return getAuthCache<string>(TOKEN_KEY);
+  return getAuthCache<string>(TOKEN_KEY)
 }
 /**
  * 获取登录信息
  */
 export function getLoginBackInfo() {
-  return getAuthCache(LOGIN_INFO_KEY);
+  return getAuthCache(LOGIN_INFO_KEY)
 }
 /**
  * 获取租户id
  */
 export function getTenantId() {
-  return getAuthCache<string>(TENANT_ID);
+  return getAuthCache<string>(TENANT_ID)
 }
 
 export function getAuthCache<T>(key: BasicKeys) {
-  const fn = isLocal ? Persistent.getLocal : Persistent.getSession;
-  return fn(key) as T;
+  const fn = isLocal ? Persistent.getLocal : Persistent.getSession
+  return fn(key) as T
 }
 
 export function setAuthCache(key: BasicKeys, value) {
-  const fn = isLocal ? Persistent.setLocal : Persistent.setSession;
-  return fn(key, value, true);
+  const fn = isLocal ? Persistent.setLocal : Persistent.setSession
+  return fn(key, value, true)
 }
 
 /**
@@ -41,8 +41,8 @@ export function setAuthCache(key: BasicKeys, value) {
  * @param value
  */
 export function setCacheByDynKey(key, value) {
-  const fn = isLocal ? Persistent.setLocal : Persistent.setSession;
-  return fn(key, value, true);
+  const fn = isLocal ? Persistent.setLocal : Persistent.setSession
+  return fn(key, value, true)
 }
 
 /**
@@ -50,8 +50,8 @@ export function setCacheByDynKey(key, value) {
  * @param key
  */
 export function getCacheByDynKey<T>(key) {
-  const fn = isLocal ? Persistent.getLocal : Persistent.getSession;
-  return fn(key) as T;
+  const fn = isLocal ? Persistent.getLocal : Persistent.getSession
+  return fn(key) as T
 }
 
 /**
@@ -59,8 +59,8 @@ export function getCacheByDynKey<T>(key) {
  * @param key
  */
 export function removeCacheByDynKey<T>(key) {
-  const fn = isLocal ? Persistent.removeLocal : Persistent.removeSession;
-  return fn(key) as T;
+  const fn = isLocal ? Persistent.removeLocal : Persistent.removeSession
+  return fn(key) as T
 }
 /**
  * 移除缓存中的某个属性
@@ -70,11 +70,11 @@ export function removeCacheByDynKey<T>(key) {
  * @updateDate:2021-09-07
  */
 export function removeAuthCache<T>(key: BasicKeys) {
-  const fn = isLocal ? Persistent.removeLocal : Persistent.removeSession;
-  return fn(key) as T;
+  const fn = isLocal ? Persistent.removeLocal : Persistent.removeSession
+  return fn(key) as T
 }
 
 export function clearAuthCache(immediate = true) {
-  const fn = isLocal ? Persistent.clearLocal : Persistent.clearSession;
-  return fn(immediate);
+  const fn = isLocal ? Persistent.clearLocal : Persistent.clearSession
+  return fn(immediate)
 }

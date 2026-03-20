@@ -1,26 +1,37 @@
-const colors = ['#4db6ac', '#ffb74d', '#64b5f6', '#e57373', '#9575cd', '#a1887f', '#90a4ae', '#4dd0e1', '#81c784', '#ff8a65'];
+const colors = [
+  '#4db6ac',
+  '#ffb74d',
+  '#64b5f6',
+  '#e57373',
+  '#9575cd',
+  '#a1887f',
+  '#90a4ae',
+  '#4dd0e1',
+  '#81c784',
+  '#ff8a65',
+]
 export const getData = (() => {
-  let dottedBase = +new Date();
-  const barDataSource: any[] = [];
-  const barMultiData: any[] = [];
-  const barLineData: any[] = [];
-  const barLineColors: any[] = [];
+  let dottedBase = +new Date()
+  const barDataSource: any[] = []
+  const barMultiData: any[] = []
+  const barLineData: any[] = []
+  const barLineColors: any[] = []
 
   for (let i = 0; i < 20; i++) {
-    let obj = { name: '', value: 0 };
-    const date = new Date((dottedBase += 1000 * 3600 * 24));
-    obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
-    obj.value = Math.random() * 200;
-    barDataSource.push(obj);
+    let obj = { name: '', value: 0 }
+    const date = new Date((dottedBase += 1000 * 3600 * 24))
+    obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
+    obj.value = Math.random() * 200
+    barDataSource.push(obj)
   }
 
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < 20; i++) {
-      let obj = { name: '', value: 0, type: 2010 + j + '' };
-      const date = new Date(dottedBase + 1000 * 3600 * 24 * i);
-      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
-      obj.value = Math.random() * 200;
-      barMultiData.push(obj);
+      let obj = { name: '', value: 0, type: 2010 + j + '' }
+      const date = new Date(dottedBase + 1000 * 3600 * 24 * i)
+      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
+      obj.value = Math.random() * 200
+      barMultiData.push(obj)
     }
   }
   const pieData = [
@@ -29,7 +40,7 @@ export const getData = (() => {
     { value: 234, name: '媒体曝光' },
     { value: 135, name: '质检总局' },
     { value: 105, name: '其他' },
-  ];
+  ]
   const radarData = [
     { value: 75, name: '政治', type: '文综', max: 100 },
     { value: 65, name: '历史', type: '文综', max: 100 },
@@ -37,16 +48,16 @@ export const getData = (() => {
     { value: 74, name: '化学', type: '文综', max: 100 },
     { value: 38, name: '物理', type: '文综', max: 100 },
     { value: 88, name: '生物', type: '文综', max: 100 },
-  ];
+  ]
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < 15; i++) {
-      let obj = { name: '', value: 0, type: 2010 + j + '', seriesType: j >= 1 ? 'line' : 'bar' };
-      const date = new Date(dottedBase + 1000 * 3600 * 24 * i);
-      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
-      obj.value = Math.random() * 200;
-      barLineData.push(obj);
+      let obj = { name: '', value: 0, type: 2010 + j + '', seriesType: j >= 1 ? 'line' : 'bar' }
+      const date = new Date(dottedBase + 1000 * 3600 * 24 * i)
+      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
+      obj.value = Math.random() * 200
+      barLineData.push(obj)
     }
-    barLineColors.push(colors[j]);
+    barLineColors.push(colors[j])
   }
-  return { barDataSource, barMultiData, pieData, barLineData, barLineColors,radarData };
-})();
+  return { barDataSource, barMultiData, pieData, barLineData, barLineColors, radarData }
+})()

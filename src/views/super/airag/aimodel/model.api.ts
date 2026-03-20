@@ -1,5 +1,5 @@
-import { defHttp } from '/@/utils/http/axios';
-import { Modal } from 'ant-design-vue';
+import { defHttp } from '/@/utils/http/axios'
+import { Modal } from 'ant-design-vue'
 
 enum Api {
   list = '/airag/airagModel/list',
@@ -15,16 +15,16 @@ enum Api {
  * @param params
  */
 export const list = (params) => {
-  return defHttp.get({ url: Api.list, params }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.list, params }, { isTransformResponse: false })
+}
 
 /**
  * 根据id查询AI模型
  * @param params
  */
 export const queryById = (params) => {
-  return defHttp.get({ url: Api.queryById, params }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.queryById, params }, { isTransformResponse: false })
+}
 
 /**
  * 新增AI模型
@@ -32,8 +32,8 @@ export const queryById = (params) => {
  * @param params
  */
 export const saveModel = (params) => {
-  return defHttp.post({ url: Api.save, params });
-};
+  return defHttp.post({ url: Api.save, params })
+}
 
 /**
  * 编辑AI模型
@@ -41,8 +41,8 @@ export const saveModel = (params) => {
  * @param params
  */
 export const editModel = (params) => {
-  return defHttp.put({ url: Api.edit, params });
-};
+  return defHttp.put({ url: Api.edit, params })
+}
 
 /**
  * 测试链接
@@ -50,8 +50,8 @@ export const editModel = (params) => {
  * @param params
  */
 export const testConn = (params) => {
-  return defHttp.post({ url: Api.testConn, params });
-};
+  return defHttp.post({ url: Api.testConn, params })
+}
 
 /**
  * 删除数据权限
@@ -64,8 +64,8 @@ export const deleteModel = (params, handleSuccess) => {
     cancelText: '取消',
     onOk: () => {
       return defHttp.delete({ url: Api.delete, params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+        handleSuccess()
+      })
     },
-  });
-};
+  })
+}

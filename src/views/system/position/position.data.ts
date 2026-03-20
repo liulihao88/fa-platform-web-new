@@ -1,5 +1,5 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { rules } from '/@/utils/helper/validator';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { rules } from '/@/utils/helper/validator'
 
 export const columns: BasicColumn[] = [
   // {
@@ -11,7 +11,7 @@ export const columns: BasicColumn[] = [
   {
     title: '职务名称',
     dataIndex: 'name',
-    align: 'left'
+    align: 'left',
     // width: 200,
   },
   // {
@@ -19,7 +19,7 @@ export const columns: BasicColumn[] = [
   //   dataIndex: 'postRank_dictText',
   //   width: 100,
   // },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -28,7 +28,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 8 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -68,4 +68,4 @@ export const formSchema: FormSchema[] = [
   //     return rules.duplicateCheckRule('sys_position', 'code', model, schema, true);
   //   },
   // },
-];
+]

@@ -1,51 +1,50 @@
-import type { UserConfig, ConfigEnv } from 'vite';
-import pkg from './package.json';
-import dayjs from 'dayjs';
-import { loadEnv } from 'vite';
-import { resolve } from 'path';
-import { generateModifyVars } from './build/generate/generateModifyVars';
-import { createProxy } from './build/vite/proxy';
-import { wrapperEnv } from './build/utils';
-import { createVitePlugins } from './build/vite/plugin';
-import { OUTPUT_DIR } from './build/constant';
+import type { UserConfig, ConfigEnv } from 'vite'
+import pkg from './package.json'
+import dayjs from 'dayjs'
+import { loadEnv } from 'vite'
+import { resolve } from 'path'
+import { generateModifyVars } from './build/generate/generateModifyVars'
+import { createProxy } from './build/vite/proxy'
+import { wrapperEnv } from './build/utils'
+import { createVitePlugins } from './build/vite/plugin'
+import { OUTPUT_DIR } from './build/constant'
 
 function pathResolve(dir: string) {
-  return resolve(process.cwd(), '.', dir);
+  return resolve(process.cwd(), '.', dir)
 }
 
-const { dependencies, devDependencies, name, version } = pkg;
+const { dependencies, devDependencies, name, version } = pkg
 const __APP_INFO__ = {
   pkg: { dependencies, devDependencies, name, version },
   lastBuildTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-};
+}
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
-  const root = process.cwd();
+  const root = process.cwd()
 
-  const env = loadEnv(mode, root);
+  const env = loadEnv(mode, root)
 
   // The boolean type read by loadEnv is a string. This function can be converted to boolean type
-  const viteEnv = wrapperEnv(env);
+  const viteEnv = wrapperEnv(env)
 
-  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv;
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv
 
-  const isBuild = command === 'build';
+  const isBuild = command === 'build'
 
   const serverOptions: Recordable = {}
 
   // ----- [begin] 【JEECG作为乾坤子应用】 -----
-  const {VITE_GLOB_QIANKUN_MICRO_APP_NAME, VITE_GLOB_QIANKUN_MICRO_APP_ENTRY} = viteEnv;
-  const isQiankunMicro = VITE_GLOB_QIANKUN_MICRO_APP_NAME != null && VITE_GLOB_QIANKUN_MICRO_APP_NAME !== '';
+  const { VITE_GLOB_QIANKUN_MICRO_APP_NAME, VITE_GLOB_QIANKUN_MICRO_APP_ENTRY } = viteEnv
+  const isQiankunMicro = VITE_GLOB_QIANKUN_MICRO_APP_NAME != null && VITE_GLOB_QIANKUN_MICRO_APP_NAME !== ''
   if (isQiankunMicro && !isBuild) {
-    serverOptions.cors = true;
-    serverOptions.origin = VITE_GLOB_QIANKUN_MICRO_APP_ENTRY!.split('/').slice(0, 3).join('/');
+    serverOptions.cors = true
+    serverOptions.origin = VITE_GLOB_QIANKUN_MICRO_APP_ENTRY!.split('/').slice(0, 3).join('/')
   }
   // ----- [end] 【JEECG作为乾坤子应用】 -----
-  
-  console.log('[init] Start Port: ', VITE_PORT);
-  console.log('[init] Vite Proxy Config: ', VITE_PROXY);
-  
-  
+
+  console.log('[init] Start Port: ', VITE_PORT)
+  console.log('[init] Vite Proxy Config: ', VITE_PROXY)
+
   return {
     base: isQiankunMicro ? VITE_GLOB_QIANKUN_MICRO_APP_ENTRY : VITE_PUBLIC_PATH,
     root,
@@ -102,10 +101,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
           manualChunks: {
             // vue vue-router合并打包
             'vue-vendor': ['vue', 'vue-router'],
-            'antd-vue-vendor': ['ant-design-vue','@ant-design/icons-vue','@ant-design/colors'],
-            'vxe-table-vendor': ['vxe-table','vxe-table-plugin-antd','xe-utils'],
+            'antd-vue-vendor': ['ant-design-vue', '@ant-design/icons-vue', '@ant-design/colors'],
+            'vxe-table-vendor': ['vxe-table', 'vxe-table-plugin-antd', 'xe-utils'],
             'emoji-mart-vue-fast': ['emoji-mart-vue-fast'],
-            'china-area-data-vendor': ['china-area-data']
+            'china-area-data-vendor': ['china-area-data'],
           },
         },
       },
@@ -146,5 +145,5 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         '@jeecg/aiflow',
       ],
     },
-  };
-};
+  }
+}

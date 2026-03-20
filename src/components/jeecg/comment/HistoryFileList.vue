@@ -20,7 +20,7 @@
               </div>
             </template>
           </div>
-          <div class="layer" :class="{'layer-image':isImage(item)}">
+          <div class="layer" :class="{ 'layer-image': isImage(item) }">
             <div class="next" @click="viewImage(item)">
               <div class="text">
                 {{ item.name }}
@@ -39,50 +39,61 @@
           </div>
         </div>
       </div>
-      <div class="item empty"></div><div class="item empty"></div><div class="item empty"></div> <div class="item empty"></div><div class="item empty"></div><div class="item empty"></div>
+      <div class="item empty"></div>
+      <div class="item empty"></div>
+      <div class="item empty"></div>
+      <div class="item empty"></div>
+      <div class="item empty"></div>
+      <div class="item empty"></div>
     </div>
   </div>
 </template>
 
 <script>
-  import { Tooltip } from 'ant-design-vue';
-  import { UploadOutlined, FolderOutlined, DownloadOutlined, PaperClipOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-  import { useFileList } from './useComment';
+import { Tooltip } from 'ant-design-vue'
+import {
+  UploadOutlined,
+  FolderOutlined,
+  DownloadOutlined,
+  PaperClipOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons-vue'
+import { useFileList } from './useComment'
 
-  export default {
-    name: 'HistoryFileList',
-    props: {
-      dataList: {
-        type: Array,
-        default: () => [],
-      },
-      isComment: {
-        type: Boolean,
-        default: false,
-      },
+export default {
+  name: 'HistoryFileList',
+  props: {
+    dataList: {
+      type: Array,
+      default: () => [],
     },
-    components: {
-      UploadOutlined,
-      FolderOutlined,
-      DownloadOutlined,
-      PaperClipOutlined,
-      DeleteOutlined,
-      Tooltip,
+    isComment: {
+      type: Boolean,
+      default: false,
     },
-    setup() {
-      const { getBackground, getFileSize, downLoad, isImage, getImageAsBackground, viewImage } = useFileList();
-      return {
-        getBackground,
-        downLoad,
-        getFileSize,
-        isImage,
-        getImageAsBackground,
-        viewImage
-      };
-    },
-  };
+  },
+  components: {
+    UploadOutlined,
+    FolderOutlined,
+    DownloadOutlined,
+    PaperClipOutlined,
+    DeleteOutlined,
+    Tooltip,
+  },
+  setup() {
+    const { getBackground, getFileSize, downLoad, isImage, getImageAsBackground, viewImage } = useFileList()
+    return {
+      getBackground,
+      downLoad,
+      getFileSize,
+      isImage,
+      getImageAsBackground,
+      viewImage,
+    }
+  },
+}
 </script>
 
 <style lang="less" scoped>
-  @import 'comment.less';
+@import 'comment.less';
 </style>

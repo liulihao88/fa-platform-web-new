@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
   cpuCount = '/actuator/metrics/system.cpu.count',
@@ -41,232 +41,232 @@ enum Api {
  * 查询cpu数量
  */
 export const getCpuCount = () => {
-  return defHttp.get({ url: Api.cpuCount }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.cpuCount }, { isTransformResponse: false })
+}
 
 /**
  * 查询系统 CPU 使用率
  */
 export const getCpuUsage = () => {
-  return defHttp.get({ url: Api.cpuUsage }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.cpuUsage }, { isTransformResponse: false })
+}
 
 /**
  * 查询应用启动时间点
  */
 export const getProcessStartTime = () => {
-  return defHttp.get({ url: Api.processStartTime }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.processStartTime }, { isTransformResponse: false })
+}
 
 /**
  * 查询应用已运行时间
  */
 export const getProcessUptime = () => {
-  return defHttp.get({ url: Api.processUptime }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.processUptime }, { isTransformResponse: false })
+}
 
 /**
  * 查询当前应用 CPU 使用率
  */
 export const getProcessCpuUsage = () => {
-  return defHttp.get({ url: Api.processCpuUsage }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.processCpuUsage }, { isTransformResponse: false })
+}
 
 /**
  * 查询JVM 最大内存
  */
 export const getJvmMemoryMax = () => {
-  return defHttp.get({ url: Api.jvmMemoryMax }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmMemoryMax }, { isTransformResponse: false })
+}
 
 /**
  * JVM 可用内存
  */
 export const getJvmMemoryCommitted = () => {
-  return defHttp.get({ url: Api.jvmMemoryCommitted }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmMemoryCommitted }, { isTransformResponse: false })
+}
 
 /**
  * JVM 已用内存
  */
 export const getJvmMemoryUsed = () => {
-  return defHttp.get({ url: Api.jvmMemoryUsed }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmMemoryUsed }, { isTransformResponse: false })
+}
 
 /**
  * JVM 缓冲区已用内存
  */
 export const getJvmBufferMemoryUsed = () => {
-  return defHttp.get({ url: Api.jvmBufferMemoryUsed }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmBufferMemoryUsed }, { isTransformResponse: false })
+}
 
 /**
  *JVM 当前缓冲区数量
  */
 export const getJvmBufferCount = () => {
-  return defHttp.get({ url: Api.jvmBufferCount }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmBufferCount }, { isTransformResponse: false })
+}
 
 /**
  **JVM 守护线程数量
  */
 export const getJvmThreadsDaemon = () => {
-  return defHttp.get({ url: Api.jvmThreadsDaemon }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmThreadsDaemon }, { isTransformResponse: false })
+}
 
 /**
  *JVM 当前活跃线程数量
  */
 export const getJvmThreadsLive = () => {
-  return defHttp.get({ url: Api.jvmThreadsLive }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmThreadsLive }, { isTransformResponse: false })
+}
 
 /**
  *JVM 峰值线程数量
  */
 export const getJvmThreadsPeak = () => {
-  return defHttp.get({ url: Api.jvmThreadsPeak }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmThreadsPeak }, { isTransformResponse: false })
+}
 
 /**
  *JVM 已加载 Class 数量
  */
 export const getJvmClassesLoaded = () => {
-  return defHttp.get({ url: Api.jvmClassesLoaded }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmClassesLoaded }, { isTransformResponse: false })
+}
 
 /**
  *JVM 未加载 Class 数量
  */
 export const getJvmClassesUnloaded = () => {
-  return defHttp.get({ url: Api.jvmClassesUnloaded }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmClassesUnloaded }, { isTransformResponse: false })
+}
 
 /**
  **GC 时, 年轻代分配的内存空间
  */
 export const getJvmGcMemoryAllocated = () => {
-  return defHttp.get({ url: Api.jvmGcMemoryAllocated }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmGcMemoryAllocated }, { isTransformResponse: false })
+}
 
 /**
  *GC 时, 老年代分配的内存空间
  */
 export const getJvmGcMemoryPromoted = () => {
-  return defHttp.get({ url: Api.jvmGcMemoryPromoted }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmGcMemoryPromoted }, { isTransformResponse: false })
+}
 
 /**
  *GC 时, 老年代的最大内存空间
  */
 export const getJvmGcMaxDataSize = () => {
-  return defHttp.get({ url: Api.jvmGcMaxDataSize }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmGcMaxDataSize }, { isTransformResponse: false })
+}
 
 /**
  *FullGC 时, 老年代的内存空间
  */
 export const getJvmGcLiveDataSize = () => {
-  return defHttp.get({ url: Api.jvmGcLiveDataSize }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmGcLiveDataSize }, { isTransformResponse: false })
+}
 
 /**
  *系统启动以来GC 次数
  */
 export const getJvmGcPause = () => {
-  return defHttp.get({ url: Api.jvmGcPause }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.jvmGcPause }, { isTransformResponse: false })
+}
 
 /**
  *tomcat 已创建 session 数
  */
 export const getTomcatSessionsCreated = () => {
-  return defHttp.get({ url: Api.tomcatSessionsCreated }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.tomcatSessionsCreated }, { isTransformResponse: false })
+}
 
 /**
  *tomcat 已过期 session 数
  */
 export const getTomcatSessionsExpired = () => {
-  return defHttp.get({ url: Api.tomcatSessionsExpired }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.tomcatSessionsExpired }, { isTransformResponse: false })
+}
 
 /**
  *tomcat 当前活跃 session 数
  */
 export const getTomcatSessionsActiveCurrent = () => {
-  return defHttp.get({ url: Api.tomcatSessionsActiveCurrent }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.tomcatSessionsActiveCurrent }, { isTransformResponse: false })
+}
 
 /**
  *tomcat 活跃 session 数峰值
  */
 export const getTomcatSessionsActiveMax = () => {
-  return defHttp.get({ url: Api.tomcatSessionsActiveMax }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.tomcatSessionsActiveMax }, { isTransformResponse: false })
+}
 
 /**
  *超过session 最大配置后，拒绝的 session 个数
  */
 export const getTomcatSessionsRejected = () => {
-  return defHttp.get({ url: Api.tomcatSessionsRejected }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.tomcatSessionsRejected }, { isTransformResponse: false })
+}
 
 /**
  *undertow 已创建 session 数
  */
 export const getUndertowSessionsCreated = () => {
-  return defHttp.get({ url: Api.undertowSessionsCreated }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.undertowSessionsCreated }, { isTransformResponse: false })
+}
 
 /**
  *undertow 已过期 session 数
  */
 export const getUndertowSessionsExpired = () => {
-  return defHttp.get({ url: Api.undertowSessionsExpired }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.undertowSessionsExpired }, { isTransformResponse: false })
+}
 
 /**
  *undertow 当前活跃 session 数
  */
 export const getUndertowSessionsActiveCurrent = () => {
-  return defHttp.get({ url: Api.undertowSessionsActiveCurrent }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.undertowSessionsActiveCurrent }, { isTransformResponse: false })
+}
 
 /**
  *undertow 活跃 session 数峰值
  */
 export const getUndertowSessionsActiveMax = () => {
-  return defHttp.get({ url: Api.undertowSessionsActiveMax }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.undertowSessionsActiveMax }, { isTransformResponse: false })
+}
 
 /**
  * 内存信息
  */
 export const getMemoryInfo = () => {
-  return defHttp.get({ url: Api.memoryInfo }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.memoryInfo }, { isTransformResponse: false })
+}
 
 export const getMoreInfo = (infoType) => {
   if (infoType == '1') {
-    return {};
+    return {}
   }
   if (infoType == '2') {
-    return { 'jvm.gc.pause': ['.count', '.totalTime'] };
+    return { 'jvm.gc.pause': ['.count', '.totalTime'] }
   }
   if (infoType == '3') {
     return {
       'tomcat.global.request': ['.count', '.totalTime'],
       'tomcat.servlet.request': ['.count', '.totalTime'],
-    };
+    }
   }
   if (infoType == '5') {
-    return {};
+    return {}
   }
   if (infoType == '6') {
-    return {};
+    return {}
   }
-};
+}
 
 export const getTextInfo = (infoType) => {
   if (infoType == '1') {
@@ -276,7 +276,7 @@ export const getTextInfo = (infoType) => {
       'process.start.time': { color: 'purple', text: '应用启动时间点', unit: '', valueType: 'Date' },
       'process.uptime': { color: 'purple', text: '应用已运行时间', unit: '秒' },
       'process.cpu.usage': { color: 'purple', text: '当前应用 CPU 使用率', unit: '%', valueType: 'Number' },
-    };
+    }
   }
   if (infoType == '2') {
     return {
@@ -296,7 +296,7 @@ export const getTextInfo = (infoType) => {
       'jvm.gc.live.data.size': { color: 'pink', text: 'FullGC 时, 老年代的内存空间', unit: 'MB', valueType: 'RAM' },
       'jvm.gc.pause.count': { color: 'blue', text: '系统启动以来GC 次数', unit: '次' },
       'jvm.gc.pause.totalTime': { color: 'blue', text: '系统启动以来GC 总耗时', unit: '秒' },
-    };
+    }
   }
   if (infoType == '3') {
     return {
@@ -314,7 +314,7 @@ export const getTextInfo = (infoType) => {
       'tomcat.servlet.request.totalTime': { color: 'cyan', text: 'servlet 请求总耗时', unit: '秒' },
       'tomcat.threads.current': { color: 'pink', text: 'tomcat 当前线程数（包括守护线程）', unit: '个' },
       'tomcat.threads.config.max': { color: 'pink', text: 'tomcat 配置的线程最大数', unit: '个' },
-    };
+    }
   }
   if (infoType == '5') {
     return {
@@ -327,7 +327,7 @@ export const getTextInfo = (infoType) => {
       'memory.runtime.max': { color: 'purple', text: 'JVM最大内存', unit: 'MB', valueType: 'RAM' },
       'memory.runtime.free': { color: 'purple', text: 'JVM可用内存', unit: 'MB', valueType: 'RAM' },
       'memory.runtime.usage': { color: 'purple', text: 'JVM内存使用率', unit: '%', valueType: 'Number' },
-    };
+    }
   }
   if (infoType == '6') {
     // undertow 监控
@@ -337,9 +337,9 @@ export const getTextInfo = (infoType) => {
       'undertow.sessions.active.current': { color: 'green', text: 'undertow 当前活跃 session 数', unit: '个' },
       'undertow.sessions.active.max': { color: 'green', text: 'undertow 活跃 session 数峰值', unit: '个' },
       'undertow.sessions.rejected': { color: 'green', text: '超过session 最大配置后，拒绝的 session 个数', unit: '个' },
-    };
+    }
   }
-};
+}
 
 /**
  * 查询cpu数量
@@ -347,7 +347,7 @@ export const getTextInfo = (infoType) => {
  */
 export const getServerInfo = (infoType) => {
   if (infoType == '1') {
-    return Promise.all([getCpuCount(), getCpuUsage(), getProcessStartTime(), getProcessUptime(), getProcessCpuUsage()]);
+    return Promise.all([getCpuCount(), getCpuUsage(), getProcessStartTime(), getProcessUptime(), getProcessCpuUsage()])
   }
   if (infoType == '2') {
     return Promise.all([
@@ -366,7 +366,7 @@ export const getServerInfo = (infoType) => {
       getJvmGcMemoryAllocated(),
       getJvmGcMemoryPromoted(),
       getJvmGcPause(),
-    ]);
+    ])
   }
   if (infoType == '3') {
     return Promise.all([
@@ -375,10 +375,10 @@ export const getServerInfo = (infoType) => {
       getTomcatSessionsCreated(),
       getTomcatSessionsExpired(),
       getTomcatSessionsRejected(),
-    ]);
+    ])
   }
   if (infoType == '5') {
-    return Promise.all([getMemoryInfo()]);
+    return Promise.all([getMemoryInfo()])
   }
   // undertow监控
   if (infoType == '6') {
@@ -387,6 +387,6 @@ export const getServerInfo = (infoType) => {
       getUndertowSessionsActiveMax(),
       getUndertowSessionsCreated(),
       getUndertowSessionsExpired(),
-    ]);
+    ])
   }
-};
+}

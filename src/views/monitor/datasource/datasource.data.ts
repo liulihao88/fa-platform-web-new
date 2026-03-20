@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table'
 
 const dbDriverMap = {
   // MySQL 数据库
@@ -31,7 +31,7 @@ const dbDriverMap = {
   '14': { dbDriver: 'org.h2.Driver' },
   // 其他数据库
   '15': { dbDriver: '' },
-};
+}
 const dbUrlMap = {
   // MySQL 数据库
   '1': { dbUrl: 'jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false' },
@@ -49,7 +49,10 @@ const dbUrlMap = {
   // Postgresql 数据库
   '6': { dbUrl: 'jdbc:postgresql://127.0.0.1:5432/jeecg-boot' },
   // 达梦 数据库
-  '7': { dbUrl: 'jdbc:dm://127.0.0.1:5236/?jeecg-boot&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8' },
+  '7': {
+    dbUrl:
+      'jdbc:dm://127.0.0.1:5236/?jeecg-boot&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8',
+  },
   // 人大金仓 数据库
   '8': { dbUrl: 'jdbc:kingbase8://127.0.0.1:54321/jeecg-boot' },
   // 神通 数据库
@@ -66,7 +69,7 @@ const dbUrlMap = {
   '14': { dbUrl: 'jdbc:h2:tcp://127.0.0.1:8082/jeecg-boot' },
   // 其他数据库
   '15': { dbUrl: '' },
-};
+}
 
 export const columns: BasicColumn[] = [
   {
@@ -94,7 +97,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'dbUsername',
     width: 200,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -111,10 +114,10 @@ export const searchFormSchema: FormSchema[] = [
     componentProps: () => {
       return {
         dictCode: 'database_type',
-      };
+      }
     },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -129,7 +132,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     required: true,
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
   },
   {
@@ -147,9 +150,9 @@ export const formSchema: FormSchema[] = [
       return {
         dictCode: 'database_type',
         onChange: (e: any) => {
-          formModel = Object.assign(formModel, dbDriverMap[e], dbUrlMap[e]);
+          formModel = Object.assign(formModel, dbDriverMap[e], dbUrlMap[e])
         },
-      };
+      }
     },
   },
   {
@@ -182,4 +185,4 @@ export const formSchema: FormSchema[] = [
     label: '备注',
     component: 'InputTextArea',
   },
-];
+]

@@ -4,15 +4,13 @@
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
       <template #tableTitle>
-        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined">
-          新增
-        </a-button>
-<!--        <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls">-->
-<!--          导出-->
-<!--        </a-button>-->
-<!--        <j-upload-button type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">-->
-<!--          导入-->
-<!--        </j-upload-button>-->
+        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined">新增</a-button>
+        <!--        <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls">-->
+        <!--          导出-->
+        <!--        </a-button>-->
+        <!--        <j-upload-button type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">-->
+        <!--          导入-->
+        <!--        </j-upload-button>-->
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <template #overlay>
             <a-menu>
@@ -30,30 +28,27 @@
       </template>
       <!--操作栏-->
       <template #action="{ record }">
-        <TableAction
-          :actions="getTableAction(record)"
-          :dropDownActions="getDropDownAction(record)"
-        />
+        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)" />
       </template>
     </BasicTable>
 
     <!-- 表单区域 -->
-    <SysTableWhiteListModal @register="registerModal" @success="handleSuccess"/>
+    <SysTableWhiteListModal @register="registerModal" @success="handleSuccess" />
   </div>
 </template>
 
 <script lang="ts" name="ahh-sysTableWhiteList" setup>
-import {BasicTable, TableAction} from '/@/components/Table';
-import {useModal} from '/@/components/Modal';
-import {useListPage} from '/@/hooks/system/useListPage'
+import { BasicTable, TableAction } from '/@/components/Table'
+import { useModal } from '/@/components/Modal'
+import { useListPage } from '/@/hooks/system/useListPage'
 import SysTableWhiteListModal from './modules/SysTableWhiteListModal.vue'
-import {columns, searchFormSchema} from './SysTableWhiteList.data';
-import {batchDelete, deleteOne, getExportUrl, getImportUrl, list} from './SysTableWhiteList.api';
+import { columns, searchFormSchema } from './SysTableWhiteList.data'
+import { batchDelete, deleteOne, getExportUrl, getImportUrl, list } from './SysTableWhiteList.api'
 
 //注册model
-const [registerModal, {openModal}] = useModal();
+const [registerModal, { openModal }] = useModal()
 //注册table数据
-const {prefixCls, tableContext, onExportXls, onImportXls} = useListPage({
+const { prefixCls, tableContext, onExportXls, onImportXls } = useListPage({
   tableProps: {
     title: '系统表白名单',
     api: list,
@@ -70,15 +65,15 @@ const {prefixCls, tableContext, onExportXls, onImportXls} = useListPage({
     },
   },
   exportConfig: {
-    name: "系统表白名单",
+    name: '系统表白名单',
     url: getExportUrl,
   },
   importConfig: {
-    url: getImportUrl
+    url: getImportUrl,
   },
 })
 
-const [registerTable, {reload}, {rowSelection, selectedRowKeys}] = tableContext
+const [registerTable, { reload }, { rowSelection, selectedRowKeys }] = tableContext
 
 /**
  * 新增事件
@@ -87,7 +82,7 @@ function handleAdd() {
   openModal(true, {
     isUpdate: false,
     showFooter: true,
-  });
+  })
 }
 
 /**
@@ -98,7 +93,7 @@ function handleEdit(record: Recordable) {
     record,
     isUpdate: true,
     showFooter: true,
-  });
+  })
 }
 
 /**
@@ -109,28 +104,28 @@ function handleDetail(record: Recordable) {
     record,
     isUpdate: true,
     showFooter: false,
-  });
+  })
 }
 
 /**
  * 删除事件
  */
 async function handleDelete(record) {
-  await deleteOne({id: record.id}, reload);
+  await deleteOne({ id: record.id }, reload)
 }
 
 /**
  * 批量删除事件
  */
 async function batchHandleDelete() {
-  await batchDelete({ids: selectedRowKeys.value}, reload);
+  await batchDelete({ ids: selectedRowKeys.value }, reload)
 }
 
 /**
  * 成功回调
  */
-function handleSuccess({isUpdate, values}) {
-  reload();
+function handleSuccess({ isUpdate, values }) {
+  reload()
 }
 
 /**
@@ -141,7 +136,7 @@ function getTableAction(record) {
     {
       label: '编辑',
       onClick: handleEdit.bind(null, record),
-    }
+    },
   ]
 }
 
@@ -153,16 +148,15 @@ function getDropDownAction(record) {
     {
       label: '详情',
       onClick: handleDetail.bind(null, record),
-    }, {
+    },
+    {
       label: '删除',
       popConfirm: {
         title: '是否确认删除',
         confirm: handleDelete.bind(null, record),
-      }
-    }
+      },
+    },
   ]
 }
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,6 +1,6 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { render } from '/@/utils/common/renderUtils'
 
 export const columns: BasicColumn[] = [
   {
@@ -13,7 +13,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'ctype',
     width: 160,
     customRender: ({ text }) => {
-      return text == '1' ? '国内订单' : text == '2' ? '国际订单' : '';
+      return text == '1' ? '国内订单' : text == '2' ? '国际订单' : ''
     },
   },
   {
@@ -31,7 +31,7 @@ export const columns: BasicColumn[] = [
     width: 200,
     dataIndex: 'content',
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -60,7 +60,7 @@ export const searchFormSchema: FormSchema[] = [
     },
     colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -112,7 +112,7 @@ export const formSchema: FormSchema[] = [
     field: 'content',
     component: 'Input',
   },
-];
+]
 
 export const customColumns: BasicColumn[] = [
   {
@@ -125,7 +125,7 @@ export const customColumns: BasicColumn[] = [
     dataIndex: 'sex',
     width: 100,
     customRender: ({ text }) => {
-      return render.renderDict(text, 'sex');
+      return render.renderDict(text, 'sex')
     },
   },
   {
@@ -138,7 +138,7 @@ export const customColumns: BasicColumn[] = [
     width: 200,
     dataIndex: 'telphone',
   },
-];
+]
 
 export const customerFormSchema: FormSchema[] = [
   {
@@ -187,7 +187,7 @@ export const customerFormSchema: FormSchema[] = [
     component: 'Input',
     show: false,
   },
-];
+]
 
 export const ticketColumns: BasicColumn[] = [
   {
@@ -206,7 +206,7 @@ export const ticketColumns: BasicColumn[] = [
     title: '创建时间',
     dataIndex: 'createTime',
   },
-];
+]
 
 export const ticketFormSchema: FormSchema[] = [
   {
@@ -227,7 +227,7 @@ export const ticketFormSchema: FormSchema[] = [
     component: 'DatePicker',
     componentProps: {
       valueFormat: 'YYYY-MM-DD',
-      getPopupContainer:()=>document.body,
+      getPopupContainer: () => document.body,
     },
   },
   {
@@ -236,4 +236,4 @@ export const ticketFormSchema: FormSchema[] = [
     component: 'Input',
     show: false,
   },
-];
+]

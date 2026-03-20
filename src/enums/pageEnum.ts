@@ -14,5 +14,5 @@ export enum PageEnum {
   // 邮件中的跳转地址
   TOKEN_LOGIN = '/tokenLogin',
   // SSO异常页面
-  SSO_EXCEPTION = '/exception/sso'
+  SSO_EXCEPTION = '/exception/sso',
 }

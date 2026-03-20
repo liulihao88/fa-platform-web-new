@@ -1,30 +1,30 @@
-import { computed } from 'vue';
-import { router } from '/@/router';
-import { createLocalStorage } from '/@/utils/cache';
-import { useMessage } from '/@/hooks/web/useMessage';
+import { computed } from 'vue'
+import { router } from '/@/router'
+import { createLocalStorage } from '/@/utils/cache'
+import { useMessage } from '/@/hooks/web/useMessage'
 
 export function useColumnsCache({ cacheColumnsKey, refs }: any) {
-  const $ls = createLocalStorage();
-  const { createMessage: $message } = useMessage();
+  const $ls = createLocalStorage()
+  const { createMessage: $message } = useMessage()
   const cacheKey = computed(() => {
-    const path = router.currentRoute.value.fullPath;
-    let key = path.replace(/[\/\\]/g, '_');
+    const path = router.currentRoute.value.fullPath
+    let key = path.replace(/[\/\\]/g, '_')
     if (cacheColumnsKey) {
-      key += ':' + cacheColumnsKey;
+      key += ':' + cacheColumnsKey
     }
-    return 'vxe-columnCache:' + key;
-  });
+    return 'vxe-columnCache:' + key
+  })
   const initSetting = (props) => {
-    const columnCache = $ls.get(cacheKey.value);
+    const columnCache = $ls.get(cacheKey.value)
     if (columnCache) {
       columnCache.forEach((key) => {
-        const column = props.columns.find((item) => item.key === key);
+        const column = props.columns.find((item) => item.key === key)
         if (column) {
-          column.visible = false;
+          column.visible = false
         }
-      });
+      })
     }
-  };
+  }
   // const initSetting = (refs) => {
   //   let columnCache = $ls.get(cacheKey.value);
   //   if (columnCache) {
@@ -41,65 +41,65 @@ export function useColumnsCache({ cacheColumnsKey, refs }: any) {
   //   console.log(columnCache);
   // };
   function saveSetting($grid: any) {
-    console.log($grid);
-    const { fullColumn, visibleColumn } = $grid.getTableColumn();
-    const hideColumnKey = getHideColumnKey(fullColumn, visibleColumn);
+    console.log($grid)
+    const { fullColumn, visibleColumn } = $grid.getTableColumn()
+    const hideColumnKey = getHideColumnKey(fullColumn, visibleColumn)
     if (hideColumnKey.length) {
-      $ls.set(cacheKey.value, hideColumnKey);
-      $message.success('保存成功');
+      $ls.set(cacheKey.value, hideColumnKey)
+      $message.success('保存成功')
     }
   }
   const resetSetting = ($grid) => {
-    const columnCache = $ls.get(cacheKey.value);
+    const columnCache = $ls.get(cacheKey.value)
     if (columnCache) {
-      const { fullColumn } = $grid.getTableColumn();
-      const hideColumns = getHideColumn(fullColumn, columnCache);
+      const { fullColumn } = $grid.getTableColumn()
+      const hideColumns = getHideColumn(fullColumn, columnCache)
       if (hideColumns?.length) {
         hideColumns.forEach((column) => {
           if (columnCache.includes(column?.params?.key)) {
-            $grid.showColumn(column);
+            $grid.showColumn(column)
           }
-        });
+        })
       }
     }
-    $ls.remove(cacheKey.value);
-    $message.success('重置成功');
-  };
+    $ls.remove(cacheKey.value)
+    $message.success('重置成功')
+  }
   const getHideColumn = (fullColumn, columnCache) => {
-    const result: any = [];
+    const result: any = []
     if (columnCache?.length) {
-    console.log('--fullColumn:',fullColumn);
+      console.log('--fullColumn:', fullColumn)
       columnCache.forEach((key) => {
-        const column = fullColumn.find((item) => item?.params?.key === key);
+        const column = fullColumn.find((item) => item?.params?.key === key)
         if (column) {
-          result.push(column);
+          result.push(column)
         }
-      });
+      })
     }
-    return result;
-  };
+    return result
+  }
   const getHideColumnKey = (fullColumn, visibleColumn) => {
-    const reuslt: any = [];
+    const reuslt: any = []
     if (fullColumn.length === visibleColumn.length) {
-      return reuslt;
+      return reuslt
     } else {
       fullColumn.forEach((item) => {
-        const fKey = item?.params?.key;
+        const fKey = item?.params?.key
         if (fKey) {
           const vItem = visibleColumn.find((item) => {
-            return item?.params?.key === fKey;
-          });
+            return item?.params?.key === fKey
+          })
           if (!vItem) {
-            reuslt.push(fKey);
+            reuslt.push(fKey)
           }
         }
-      });
-      return reuslt;
+      })
+      return reuslt
     }
-  };
+  }
   return {
     initSetting,
     resetSetting,
     saveSetting,
-  };
+  }
 }

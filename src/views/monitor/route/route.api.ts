@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
   list = '/sys/gatewayRoute/list',
@@ -17,23 +17,23 @@ enum Api {
  * @param params
  */
 export const getRouteList = (params) => {
-  return defHttp.get({ url: Api.list, params });
-};
+  return defHttp.get({ url: Api.list, params })
+}
 /**
  * 查询逻辑删除的路由列表
  * @param params
  */
 export const deleteRouteList = (params) => {
-  return defHttp.get({ url: Api.deleteList, params });
-};
+  return defHttp.get({ url: Api.deleteList, params })
+}
 
 /**
  * 保存或者更新路由
  * @param params
  */
 export const saveOrUpdateRoute = (params) => {
-  return defHttp.post({ url: Api.edit, params });
-};
+  return defHttp.post({ url: Api.edit, params })
+}
 
 /**
  * 删除路由
@@ -41,9 +41,9 @@ export const saveOrUpdateRoute = (params) => {
  */
 export const deleteRoute = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 
 /**
  * 回收站还原
@@ -51,23 +51,23 @@ export const deleteRoute = (params, handleSuccess) => {
  */
 export const putRecycleBin = (params, handleSuccess) => {
   return defHttp.put({ url: Api.batchPutRecycleBin, params }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 回收站删除
  * @param params
  */
 export const deleteRecycleBin = (params, handleSuccess) => {
   return defHttp.delete({ url: `${Api.batchDeleteRecycleBin}?ids=${params.ids}` }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}
 /**
  * 复制
  */
 export const copyRoute = (params, handleSuccess) => {
   return defHttp.get({ url: Api.copyRoute, params }).then(() => {
-    handleSuccess();
-  });
-};
+    handleSuccess()
+  })
+}

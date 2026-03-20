@@ -1,7 +1,7 @@
-export type DynamicViewsRecord = Record<string, () => Promise<Recordable>>;
+export type DynamicViewsRecord = Record<string, () => Promise<Recordable>>
 
 /** 已注册模块的动态页面 */
-export const packageViews: DynamicViewsRecord = {};
+export const packageViews: DynamicViewsRecord = {}
 
 /**
  * 注册动态路由页面
@@ -9,11 +9,11 @@ export const packageViews: DynamicViewsRecord = {};
  */
 export function registerDynamicRouter(getViews: () => DynamicViewsRecord) {
   if (typeof getViews === 'function') {
-    let dynamicViews = getViews();
+    let dynamicViews = getViews()
     Object.keys(dynamicViews).forEach((key) => {
       // 处理动态页面的key，使其可以让路由识别
-      let newKey = key.replace('./src/views', '../../views');
-      packageViews[newKey] = dynamicViews[key];
-    });
+      let newKey = key.replace('./src/views', '../../views')
+      packageViews[newKey] = dynamicViews[key]
+    })
   }
 }

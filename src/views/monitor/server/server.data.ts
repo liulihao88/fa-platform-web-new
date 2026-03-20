@@ -1,4 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
+import { BasicColumn } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -20,4 +20,4 @@ export const columns: BasicColumn[] = [
     slots: { customRender: 'value' },
     width: 80,
   },
-];
+]

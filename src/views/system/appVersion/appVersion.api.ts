@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
   //查询app版本
@@ -10,11 +10,11 @@ enum Api {
  * 查询APP版本
  * @param params
  */
-export const queryAppVersion = (params) => defHttp.get({ url: Api.queryAppVersion, params });
+export const queryAppVersion = (params) => defHttp.get({ url: Api.queryAppVersion, params })
 /**
  * 保存APP版本
  * @param params
  */
 export const saveAppVersion = (params) => {
-  return defHttp.post({ url: Api.saveAppVersion, params });
-};
+  return defHttp.post({ url: Api.saveAppVersion, params })
+}

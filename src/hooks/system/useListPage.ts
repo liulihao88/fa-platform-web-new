@@ -1,57 +1,57 @@
-import { reactive, ref, Ref, unref } from 'vue';
-import { merge } from 'lodash-es';
-import { DynamicProps } from '/#/utils';
-import { BasicTableProps, TableActionType, useTable } from '/@/components/Table';
-import { ColEx } from '/@/components/Form/src/types';
-import { FormActionType } from '/@/components/Form';
-import { useMessage } from '/@/hooks/web/useMessage';
-import { useMethods } from '/@/hooks/system/useMethods';
-import { useDesign } from '/@/hooks/web/useDesign';
-import { filterObj } from '/@/utils/common/compUtils';
-import { isFunction } from '@/utils/is';
-const { handleExportXls, handleImportXls } = useMethods();
+import { reactive, ref, Ref, unref } from 'vue'
+import { merge } from 'lodash-es'
+import { DynamicProps } from '/#/utils'
+import { BasicTableProps, TableActionType, useTable } from '/@/components/Table'
+import { ColEx } from '/@/components/Form/src/types'
+import { FormActionType } from '/@/components/Form'
+import { useMessage } from '/@/hooks/web/useMessage'
+import { useMethods } from '/@/hooks/system/useMethods'
+import { useDesign } from '/@/hooks/web/useDesign'
+import { filterObj } from '/@/utils/common/compUtils'
+import { isFunction } from '@/utils/is'
+const { handleExportXls, handleImportXls } = useMethods()
 
 // 定义 useListPage 方法所需参数
 interface ListPageOptions {
   // 样式作用域范围
-  designScope?: string;
+  designScope?: string
   // 【必填】表格参数配置
   tableProps: TableProps & {
     // 添加 defSort 类型定义
-    defSort?: DefSort;
-  };
+    defSort?: DefSort
+  }
   // 是否分页
-  pagination?: boolean;
+  pagination?: boolean
   // 导出配置
   exportConfig?: {
-    url: string | (() => string);
+    url: string | (() => string)
     // 导出文件名
-    name?: string | (() => string);
+    name?: string | (() => string)
     //导出参数
-    params?: object | (() => object);
-  };
+    params?: object | (() => object)
+  }
   // 导入配置
   importConfig?: {
     //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
-    url: string | (() => string);
+    url: string | (() => string)
     //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     // 导出成功后的回调
-    success?: (fileInfo?: any) => void;
-  };
+    success?: (fileInfo?: any) => void
+  }
 }
 
 interface IDoRequestOptions {
   // 是否显示确认对话框，默认 true
-  confirm?: boolean;
+  confirm?: boolean
   // 是否自动刷新表格，默认 true
-  reload?: boolean;
+  reload?: boolean
   // 是否自动清空选择，默认 true
-  clearSelection?: boolean;
+  clearSelection?: boolean
 }
 
 interface DefSort {
-  column: string;
-  order: 'asc' | 'desc';
+  column: string
+  order: 'asc' | 'desc'
 }
 
 /**
@@ -60,50 +60,50 @@ interface DefSort {
  * @param options
  */
 export function useListPage(options: ListPageOptions) {
-  const $message = useMessage();
-  let $design = {} as ReturnType<typeof useDesign>;
+  const $message = useMessage()
+  let $design = {} as ReturnType<typeof useDesign>
   if (options.designScope) {
-    $design = useDesign(options.designScope);
+    $design = useDesign(options.designScope)
   }
 
-  const tableContext = useListTable(options.tableProps);
+  const tableContext = useListTable(options.tableProps)
 
-  const [, { getForm, reload, setLoading }, { selectedRowKeys }] = tableContext;
+  const [, { getForm, reload, setLoading }, { selectedRowKeys }] = tableContext
 
   // 导出 excel
   async function onExportXls() {
     //update-begin---author:wangshuai ---date:20220411  for：导出新增自定义参数------------
-    let { url, name, params } = options?.exportConfig ?? {};
-    let realUrl = typeof url === 'function' ? url() : url;
+    let { url, name, params } = options?.exportConfig ?? {}
+    let realUrl = typeof url === 'function' ? url() : url
     if (realUrl) {
-      let title = typeof name === 'function' ? name() : name;
+      let title = typeof name === 'function' ? name() : name
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
-      let paramsForm:any = {};
+      let paramsForm: any = {}
       try {
         //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
         //当useSearchFor不等于false的时候，才去触发validate
         if (options?.tableProps?.useSearchForm !== false) {
-          paramsForm = await getForm().validate();
-          console.log('paramsForm', paramsForm);
+          paramsForm = await getForm().validate()
+          console.log('paramsForm', paramsForm)
         }
         //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
       } catch (e) {
-        console.warn(e);
+        console.warn(e)
       }
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
 
       //update-begin-author:liusq date:20230410 for:[/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
       // 获取表格的默认排序
-      const { defSort } = options?.tableProps ?? {};
+      const { defSort } = options?.tableProps ?? {}
       if (defSort && !paramsForm?.column) {
         // 使用类型断言确保 defSort 类型正确
         Object.assign(paramsForm, {
           column: (defSort as DefSort).column,
           order: (defSort as DefSort).order,
-        });
+        })
       } else if (!paramsForm?.column) {
         // 如果没有默认排序,则使用创建时间倒序
-        Object.assign(paramsForm, { column: 'createTime', order: 'desc' });
+        Object.assign(paramsForm, { column: 'createTime', order: 'desc' })
       }
       //update-begin-author:liusq date:20230410 for: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
 
@@ -111,39 +111,39 @@ export function useListPage(options: ListPageOptions) {
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
       if (params) {
         //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
-        const realParams = isFunction(params) ? await params() : { ...(params || {}) };
+        const realParams = isFunction(params) ? await params() : { ...(params || {}) }
         //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
         Object.keys(realParams).map((k) => {
-          let temp = (realParams as object)[k];
+          let temp = (realParams as object)[k]
           if (temp) {
-            paramsForm[k] = unref(temp);
+            paramsForm[k] = unref(temp)
           }
-        });
+        })
       }
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
       if (selectedRowKeys.value && selectedRowKeys.value.length > 0) {
-        paramsForm['selections'] = selectedRowKeys.value.join(',');
+        paramsForm['selections'] = selectedRowKeys.value.join(',')
       }
       console.log()
-      return handleExportXls(title as string, realUrl, filterObj(paramsForm));
+      return handleExportXls(title as string, realUrl, filterObj(paramsForm))
       //update-end---author:wangshuai ---date:20220411  for：导出新增自定义参数--------------
     } else {
-      $message.createMessage.warn('没有传递 exportConfig.url 参数');
-      return Promise.reject();
+      $message.createMessage.warn('没有传递 exportConfig.url 参数')
+      return Promise.reject()
     }
   }
 
   // 导入 excel
   function onImportXls(file) {
-    let { url, success } = options?.importConfig ?? {};
+    let { url, success } = options?.importConfig ?? {}
     //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
-    let realUrl = typeof url === 'function' ? url() : url;
+    let realUrl = typeof url === 'function' ? url() : url
     if (realUrl) {
-      return handleImportXls(file, realUrl, success || reload);
+      return handleImportXls(file, realUrl, success || reload)
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     } else {
-      $message.createMessage.warn('没有传递 importConfig.url 参数');
-      return Promise.reject();
+      $message.createMessage.warn('没有传递 importConfig.url 参数')
+      return Promise.reject()
     }
   }
 
@@ -156,21 +156,21 @@ export function useListPage(options: ListPageOptions) {
     return new Promise((resolve, reject) => {
       const execute = async () => {
         try {
-          setLoading(true);
-          const res = await api();
+          setLoading(true)
+          const res = await api()
           if (options?.reload ?? true) {
-            reload();
+            reload()
           }
           if (options?.clearSelection ?? true) {
-            selectedRowKeys.value = [];
+            selectedRowKeys.value = []
           }
-          resolve(res);
+          resolve(res)
         } catch (e) {
-          reject(e);
+          reject(e)
         } finally {
-          setLoading(false);
+          setLoading(false)
         }
-      };
+      }
       if (options?.confirm ?? true) {
         $message.createConfirm({
           iconType: 'warning',
@@ -178,16 +178,16 @@ export function useListPage(options: ListPageOptions) {
           content: '确定要删除吗？',
           onOk: () => execute(),
           onCancel: () => reject(),
-        });
+        })
       } else {
-        execute();
+        execute()
       }
-    });
+    })
   }
 
   /** 执行单个删除操作 */
   function doDeleteRecord(api: () => Promise<any>) {
-    return doRequest(api, { confirm: false, clearSelection: false });
+    return doRequest(api, { confirm: false, clearSelection: false })
   }
 
   return {
@@ -198,14 +198,14 @@ export function useListPage(options: ListPageOptions) {
     doRequest,
     doDeleteRecord,
     tableContext,
-  };
+  }
 }
 
 // 定义表格所需参数
-type TableProps = Partial<DynamicProps<BasicTableProps>>;
+type TableProps = Partial<DynamicProps<BasicTableProps>>
 type UseTableMethod = TableActionType & {
-  getForm: () => FormActionType;
-};
+  getForm: () => FormActionType
+}
 
 /**
  * useListTable 列表页面标准表格参数
@@ -215,13 +215,13 @@ type UseTableMethod = TableActionType & {
 export function useListTable(tableProps: TableProps): [
   (instance: TableActionType, formInstance: UseTableMethod) => void,
   TableActionType & {
-    getForm: () => FormActionType;
+    getForm: () => FormActionType
   },
   {
-    rowSelection: any;
-    selectedRows: Ref<Recordable[]>;
-    selectedRowKeys: Ref<any[]>;
-  }
+    rowSelection: any
+    selectedRows: Ref<Recordable[]>
+    selectedRowKeys: Ref<any[]>
+  },
 ] {
   // 自适应列配置
   const adaptiveColProps: Partial<ColEx> = {
@@ -231,7 +231,7 @@ export function useListTable(tableProps: TableProps): [
     lg: 8, // ≥992px
     xl: 8, // ≥1200px
     xxl: 6, // ≥1600px
-  };
+  }
   const defaultTableProps: TableProps = {
     rowKey: 'id',
     // 使用查询条件区域
@@ -300,42 +300,42 @@ export function useListTable(tableProps: TableProps): [
       dataIndex: 'action',
       slots: { customRender: 'action' },
     },
-  };
+  }
   // 合并用户个性化配置
   if (tableProps) {
     //update-begin---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
-    if(tableProps.formConfig){
-      setTableProps(tableProps.formConfig);
+    if (tableProps.formConfig) {
+      setTableProps(tableProps.formConfig)
     }
     //update-end---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
     // merge 方法可深度合并对象
-    merge(defaultTableProps, tableProps);
+    merge(defaultTableProps, tableProps)
   }
 
   // 发送请求之前调用的方法
   function beforeFetch(params) {
     // 默认以 createTime 降序排序
-    return Object.assign({ column: 'createTime', order: 'desc' }, params);
+    return Object.assign({ column: 'createTime', order: 'desc' }, params)
   }
 
   // 合并方法
-  Object.assign(defaultTableProps, { beforeFetch });
+  Object.assign(defaultTableProps, { beforeFetch })
   if (typeof tableProps.beforeFetch === 'function') {
     defaultTableProps.beforeFetch = function (params) {
-      params = beforeFetch(params);
+      params = beforeFetch(params)
       // @ts-ignore
-      tableProps.beforeFetch(params);
-      return params;
-    };
+      tableProps.beforeFetch(params)
+      return params
+    }
   }
 
   // 当前选择的行
-  const selectedRowKeys = ref<any[]>([]);
+  const selectedRowKeys = ref<any[]>([])
   // 选择的行记录
-  const selectedRows = ref<Recordable[]>([]);
+  const selectedRows = ref<Recordable[]>([])
 
   // 表格选择列配置
-  const rowSelection: any = tableProps?.rowSelection ?? {};
+  const rowSelection: any = tableProps?.rowSelection ?? {}
   const defaultRowSelection = reactive({
     ...rowSelection,
     type: rowSelection.type ?? 'checkbox',
@@ -344,14 +344,14 @@ export function useListTable(tableProps: TableProps): [
     selectedRows: selectedRows,
     selectedRowKeys: selectedRowKeys,
     onChange(...args) {
-      selectedRowKeys.value = args[0];
-      selectedRows.value = args[1];
+      selectedRowKeys.value = args[0]
+      selectedRows.value = args[1]
       if (typeof rowSelection.onChange === 'function') {
-        rowSelection.onChange(...args);
+        rowSelection.onChange(...args)
       }
     },
-  });
-  delete defaultTableProps.rowSelection;
+  })
+  delete defaultTableProps.rowSelection
 
   /**
    * 设置表格参数
@@ -359,14 +359,14 @@ export function useListTable(tableProps: TableProps): [
    * @param formConfig
    */
   function setTableProps(formConfig: any) {
-    const replaceAttributeArray: string[] = ['baseColProps','labelCol'];
+    const replaceAttributeArray: string[] = ['baseColProps', 'labelCol']
     for (let item of replaceAttributeArray) {
-      if(formConfig && formConfig[item]){
-        if(defaultTableProps.formConfig){
-          let defaultFormConfig:any = defaultTableProps.formConfig;
-          defaultFormConfig[item] = formConfig[item];
+      if (formConfig && formConfig[item]) {
+        if (defaultTableProps.formConfig) {
+          let defaultFormConfig: any = defaultTableProps.formConfig
+          defaultFormConfig[item] = formConfig[item]
         }
-        formConfig[item] = {};
+        formConfig[item] = {}
       }
     }
   }
@@ -378,5 +378,5 @@ export function useListTable(tableProps: TableProps): [
       selectedRowKeys,
       rowSelection: defaultRowSelection,
     },
-  ];
+  ]
 }

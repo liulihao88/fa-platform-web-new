@@ -1,5 +1,5 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { duplicateCheckDelay } from '/@/views/system/user/user.api';
+import { BasicColumn, FormSchema } from '/@/components/Table'
+import { duplicateCheckDelay } from '/@/views/system/user/user.api'
 
 export const columns: BasicColumn[] = [
   {
@@ -26,7 +26,7 @@ export const columns: BasicColumn[] = [
     width: 200,
     align: 'center',
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -41,7 +41,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -63,7 +63,7 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 24 },
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
     dynamicRules: ({ model }) => {
       return [
@@ -72,25 +72,25 @@ export const formSchema: FormSchema[] = [
           validator: (_, value) => {
             return new Promise((resolve, reject) => {
               if (!value) {
-                return reject('请输入规则编码！');
+                return reject('请输入规则编码！')
               }
               let params = {
                 tableName: 'sys_fill_rule',
                 fieldName: 'rule_code',
                 fieldVal: value,
                 dataId: model.id,
-              };
+              }
               duplicateCheckDelay(params)
                 .then((res) => {
-                  res.success ? resolve() : reject('规则编码已存在!');
+                  res.success ? resolve() : reject('规则编码已存在!')
                 })
                 .catch((err) => {
-                  reject(err.message || '校验失败');
-                });
-            });
+                  reject(err.message || '校验失败')
+                })
+            })
           },
         },
-      ];
+      ]
     },
   },
   {
@@ -109,4 +109,4 @@ export const formSchema: FormSchema[] = [
       min: 0,
     },
   },
-];
+]

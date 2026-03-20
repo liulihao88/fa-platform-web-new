@@ -1,4 +1,4 @@
-import { FormSchema } from '@/components/Form';
+import { FormSchema } from '@/components/Form'
 
 /**
  * 表单
@@ -42,12 +42,12 @@ export const formSchema: FormSchema[] = [
     label: '选择应用类型',
     field: 'type',
     component: 'Input',
-    show:({ values })=>{
-      return !values.id;
+    show: ({ values }) => {
+      return !values.id
     },
     slot: 'typeSlot',
   },
-];
+]
 
 /**
  * 快捷指令表单
@@ -83,6 +83,6 @@ export const quickCommandFormSchema: FormSchema[] = [
       autosize: { minRows: 4, maxRows: 4 },
       showCount: true,
       maxLength: 100,
-    }
+    },
   },
-];
+]

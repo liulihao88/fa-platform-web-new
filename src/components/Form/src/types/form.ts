@@ -1,232 +1,241 @@
-import type { NamePath, RuleObject, ValidateOptions } from 'ant-design-vue/lib/form/interface';
-import type { VNode, ComputedRef } from 'vue';
-import type { ButtonProps as AntdButtonProps } from '/@/components/Button';
-import type { FormItem } from './formItem';
-import type { ColEx, ComponentType } from './index';
-import type { TableActionType } from '/@/components/Table/src/types/table';
-import type { CSSProperties } from 'vue';
-import type { RowProps } from 'ant-design-vue/lib/grid/Row';
+import type { NamePath, RuleObject, ValidateOptions } from 'ant-design-vue/lib/form/interface'
+import type { VNode, ComputedRef } from 'vue'
+import type { ButtonProps as AntdButtonProps } from '/@/components/Button'
+import type { FormItem } from './formItem'
+import type { ColEx, ComponentType } from './index'
+import type { TableActionType } from '/@/components/Table/src/types/table'
+import type { CSSProperties } from 'vue'
+import type { RowProps } from 'ant-design-vue/lib/grid/Row'
 
-export type FieldMapToTime = [string, [string, string], string?][];
-export type FieldMapToNumber = [string, [string, string]][];
+export type FieldMapToTime = [string, [string, string], string?][]
+export type FieldMapToNumber = [string, [string, string]][]
 
 export type Rule = RuleObject & {
-  trigger?: 'blur' | 'change' | ['change', 'blur'];
-};
+  trigger?: 'blur' | 'change' | ['change', 'blur']
+}
 
 export interface RenderCallbackParams {
-  schema: FormSchema;
-  values: Recordable;
-  model: Recordable;
-  field: string;
+  schema: FormSchema
+  values: Recordable
+  model: Recordable
+  field: string
 }
 
 export interface ButtonProps extends AntdButtonProps {
-  text?: string;
+  text?: string
 }
 
 export interface FormActionType {
-  submit: () => Promise<void>;
-  setFieldsValue: <T>(values: T) => Promise<void>;
-  resetFields: () => Promise<void>;
-  getFieldsValue: () => Recordable;
-  clearValidate: (name?: string | string[]) => Promise<void>;
-  updateSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>;
-  resetSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>;
-  setProps: (formProps: Partial<FormProps>) => Promise<void>;
-  getProps: ComputedRef<Partial<FormProps>>;
-  getSchemaByField: (field: string) => Nullable<FormSchema>;
-  removeSchemaByFiled: (field: string | string[]) => Promise<void>;
-  appendSchemaByField: (schema: FormSchema, prefixField: string | undefined, first?: boolean | undefined) => Promise<void>;
-  validateFields: (nameList?: NamePath[], options?: ValidateOptions) => Promise<any>;
-  validate: (nameList?: NamePath[]) => Promise<any>;
-  scrollToField: (name: NamePath, options?: ScrollOptions) => Promise<void>;
+  submit: () => Promise<void>
+  setFieldsValue: <T>(values: T) => Promise<void>
+  resetFields: () => Promise<void>
+  getFieldsValue: () => Recordable
+  clearValidate: (name?: string | string[]) => Promise<void>
+  updateSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>
+  resetSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>
+  setProps: (formProps: Partial<FormProps>) => Promise<void>
+  getProps: ComputedRef<Partial<FormProps>>
+  getSchemaByField: (field: string) => Nullable<FormSchema>
+  removeSchemaByFiled: (field: string | string[]) => Promise<void>
+  appendSchemaByField: (
+    schema: FormSchema,
+    prefixField: string | undefined,
+    first?: boolean | undefined,
+  ) => Promise<void>
+  validateFields: (nameList?: NamePath[], options?: ValidateOptions) => Promise<any>
+  validate: (nameList?: NamePath[]) => Promise<any>
+  scrollToField: (name: NamePath, options?: ScrollOptions) => Promise<void>
   getSchemaComponentProps: (schema: FormSchema) => Recordable
 }
 
-export type RegisterFn = (formInstance: FormActionType) => void;
+export type RegisterFn = (formInstance: FormActionType) => void
 
-export type UseFormReturnType = [RegisterFn, FormActionType];
+export type UseFormReturnType = [RegisterFn, FormActionType]
 
 export interface FormProps {
-  layout?: 'vertical' | 'inline' | 'horizontal';
+  layout?: 'vertical' | 'inline' | 'horizontal'
   // Form value
-  model?: Recordable;
+  model?: Recordable
   // The width of all items in the entire form
-  labelWidth?: number | string;
+  labelWidth?: number | string
   //alignment
-  labelAlign?: 'left' | 'right';
+  labelAlign?: 'left' | 'right'
   //Row configuration for the entire form
-  rowProps?: RowProps;
+  rowProps?: RowProps
   // Submit form on reset
-  submitOnReset?: boolean;
+  submitOnReset?: boolean
   // Col configuration for the entire form
-  labelCol?: Partial<ColEx> | null;
+  labelCol?: Partial<ColEx> | null
   // Col configuration for the entire form
-  wrapperCol?: Partial<ColEx> | null;
+  wrapperCol?: Partial<ColEx> | null
 
   // General row style
-  baseRowStyle?: CSSProperties;
+  baseRowStyle?: CSSProperties
 
   // General col configuration
-  baseColProps?: Partial<ColEx>;
+  baseColProps?: Partial<ColEx>
 
   // Form configuration rules
-  schemas?: FormSchema[];
+  schemas?: FormSchema[]
   // Function values used to merge into dynamic control form items
-  mergeDynamicData?: Recordable;
+  mergeDynamicData?: Recordable
   // Compact mode for search forms
-  compact?: boolean;
+  compact?: boolean
   // Blank line span
-  emptySpan?: number | Partial<ColEx>;
+  emptySpan?: number | Partial<ColEx>
   // Internal component size of the form
-  size?: 'default' | 'small' | 'large';
+  size?: 'default' | 'small' | 'large'
   // Whether to disable
-  disabled?: boolean;
+  disabled?: boolean
   // Time interval fields are mapped into multiple
-  fieldMapToTime?: FieldMapToTime;
+  fieldMapToTime?: FieldMapToTime
   // number interval fields are mapped into multiple
-  fieldMapToNumber?: FieldMapToNumber;
+  fieldMapToNumber?: FieldMapToNumber
   // Placeholder is set automatically
-  autoSetPlaceHolder?: boolean;
+  autoSetPlaceHolder?: boolean
   // Auto submit on press enter on input
-  autoSubmitOnEnter?: boolean;
+  autoSubmitOnEnter?: boolean
   // Check whether the information is added to the label
-  rulesMessageJoinLabel?: boolean;
+  rulesMessageJoinLabel?: boolean
   // 是否显示展开收起按钮
-  showAdvancedButton?: boolean;
+  showAdvancedButton?: boolean
   // Whether to focus on the first input box, only works when the first form item is input
-  autoFocusFirstItem?: boolean;
+  autoFocusFirstItem?: boolean
   // 【jeecg】如果 showAdvancedButton 为 true，超过指定列数默认折叠，默认为3
-  autoAdvancedCol?: number;
+  autoAdvancedCol?: number
   // 如果 showAdvancedButton 为 true，超过指定行数行默认折叠
   // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // autoAdvancedLine?: number;
   // update-end--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // 折叠时始终保持显示的行数
-  alwaysShowLines?: number;
+  alwaysShowLines?: number
   // Whether to show the operation button
-  showActionButtonGroup?: boolean;
+  showActionButtonGroup?: boolean
 
   // Reset button configuration
-  resetButtonOptions?: Partial<ButtonProps>;
+  resetButtonOptions?: Partial<ButtonProps>
 
   // Confirm button configuration
-  submitButtonOptions?: Partial<ButtonProps>;
+  submitButtonOptions?: Partial<ButtonProps>
 
   // Operation column configuration
-  actionColOptions?: Partial<ColEx>;
+  actionColOptions?: Partial<ColEx>
 
   // Show reset button
-  showResetButton?: boolean;
+  showResetButton?: boolean
   // Show confirmation button
-  showSubmitButton?: boolean;
+  showSubmitButton?: boolean
 
-  resetFunc?: () => Promise<void>;
-  submitFunc?: () => Promise<void>;
-  transformDateFunc?: (date: any) => string;
-  colon?: boolean;
+  resetFunc?: () => Promise<void>
+  submitFunc?: () => Promise<void>
+  transformDateFunc?: (date: any) => string
+  colon?: boolean
 }
 export interface FormSchema {
   // Field name
-  field: string;
+  field: string
   // Event name triggered by internal value change, default change
-  changeEvent?: string;
+  changeEvent?: string
   // Variable name bound to v-model Default value
-  valueField?: string;
+  valueField?: string
   // Label name
   // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-  label: string | VNode | Fn;
+  label: string | VNode | Fn
   // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   // Auxiliary text
-  subLabel?: string;
+  subLabel?: string
   // Help text on the right side of the text
-  helpMessage?: string | string[] | ((renderCallbackParams: RenderCallbackParams) => string | string[]);
+  helpMessage?: string | string[] | ((renderCallbackParams: RenderCallbackParams) => string | string[])
   // BaseHelp component props
-  helpComponentProps?: Partial<HelpComponentProps>;
+  helpComponentProps?: Partial<HelpComponentProps>
   // Label width, if it is passed, the labelCol and WrapperCol configured by itemProps will be invalid
-  labelWidth?: string | number;
+  labelWidth?: string | number
   // Disable the adjustment of labelWidth with global settings of formModel, and manually set labelCol and wrapperCol by yourself
-  disabledLabelWidth?: boolean;
+  disabledLabelWidth?: boolean
   // render component
-  component: ComponentType;
+  component: ComponentType
   // Component parameters
   componentProps?:
-    | ((opt: { schema: FormSchema; tableAction: TableActionType; formActionType: FormActionType; formModel: Recordable }) => Recordable)
-    | object;
+    | ((opt: {
+        schema: FormSchema
+        tableAction: TableActionType
+        formActionType: FormActionType
+        formModel: Recordable
+      }) => Recordable)
+    | object
   // Required
-  required?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  required?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean)
 
-  suffix?: string | number | VueNode | ((values: RenderCallbackParams) => string | number | VueNode);
+  suffix?: string | number | VueNode | ((values: RenderCallbackParams) => string | number | VueNode)
   // 【QQYUN-12876】是否是紧凑型 suffix（当组件宽度未占满时，可紧挨着组件右侧）
-  suffixCompact?: boolean;
+  suffixCompact?: boolean
 
   // Validation rules
-  rules?: Rule[];
+  rules?: Rule[]
   // Check whether the information is added to the label
-  rulesMessageJoinLabel?: boolean;
+  rulesMessageJoinLabel?: boolean
 
   // Reference formModelItem
-  itemProps?: Partial<FormItem> | ((renderCallbackParams: RenderCallbackParams) => Partial<FormItem>);
+  itemProps?: Partial<FormItem> | ((renderCallbackParams: RenderCallbackParams) => Partial<FormItem>)
 
   // col configuration outside formModelItem
-  colProps?: Partial<ColEx>;
+  colProps?: Partial<ColEx>
 
   // 默认值
-  defaultValue?: any;
-  isAdvanced?: boolean;
+  defaultValue?: any
+  isAdvanced?: boolean
 
   // Matching details components
-  span?: number;
+  span?: number
 
-  ifShow?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  ifShow?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean)
 
-  show?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  show?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean)
 
   // Render the content in the form-item tag
-  render?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  render?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string
 
   // Rendering col content requires outer wrapper form-item
-  renderColContent?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  renderColContent?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string
 
-  renderComponentContent?: ((renderCallbackParams: RenderCallbackParams) => any) | VNode | VNode[] | string;
+  renderComponentContent?: ((renderCallbackParams: RenderCallbackParams) => any) | VNode | VNode[] | string
 
   // Custom slot, in from-item
-  slot?: string;
+  slot?: string
 
   // Custom slot, similar to renderColContent
-  colSlot?: string;
+  colSlot?: string
 
-  dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean)
 
-  dynamicRules?: (renderCallbackParams: RenderCallbackParams) => Rule[];
+  dynamicRules?: (renderCallbackParams: RenderCallbackParams) => Rule[]
   // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
   // 设置组件props的key
-  dynamicPropskey?: string;
-  dynamicPropsVal?: ((renderCallbackParams: RenderCallbackParams) => any);
+  dynamicPropskey?: string
+  dynamicPropsVal?: (renderCallbackParams: RenderCallbackParams) => any
   // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
 
   // 这个属性自定义的 用于自定义的业务 比如在表单打开的时候修改表单的禁用状态，但是又不能重写componentProps，因为他的内容太多了，所以使用dynamicDisabled和buss实现
-  buss?: any;
-  
+  buss?: any
+
   //label字数控制（label宽度）
-  labelLength?: number;
+  labelLength?: number
   // update-begin--author:liaozhiyang---date:20240529---for【TV360X-460】basicForm支持v-auth指令(权限控制显隐)
-  auth?: string;
+  auth?: string
   // update-end--author:liaozhiyang---date:20240529---for【TV360X-460】basicForm支持v-auth指令(权限控制显隐)
 }
 export interface HelpComponentProps {
-  maxWidth: string;
+  maxWidth: string
   // Whether to display the serial number
-  showIndex: boolean;
+  showIndex: boolean
   // Text list
-  text: any;
+  text: any
   // colour
-  color: string;
+  color: string
   // font size
-  fontSize: string;
-  icon: string;
-  absolute: boolean;
+  fontSize: string
+  icon: string
+  absolute: boolean
   // Positioning
-  position: any;
+  position: any
 }

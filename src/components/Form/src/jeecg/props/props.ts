@@ -1,5 +1,5 @@
 //下拉选择框组件公共props
-import { propTypes } from '/@/utils/propTypes';
+import { propTypes } from '/@/utils/propTypes'
 
 export const selectProps = {
   //是否多选
@@ -33,7 +33,7 @@ export const selectProps = {
     type: Number,
     default: 0,
   },
-};
+}
 
 //树形选择组件公共props
 export const treeProps = {
@@ -84,4 +84,4 @@ export const treeProps = {
   checkStrictly: propTypes.bool.def(false),
   // 是否允许多选，默认 true
   multiple: propTypes.bool.def(true),
-};
+}

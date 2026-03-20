@@ -1,20 +1,25 @@
-import type { Ref } from 'vue';
-import type { FormProps, FormSchema } from '../types/form';
+import type { Ref } from 'vue'
+import type { FormProps, FormSchema } from '../types/form'
 
-import { computed, unref } from 'vue';
-import { isNumber } from '/@/utils/is';
+import { computed, unref } from 'vue'
+import { isNumber } from '/@/utils/is'
 
 export function useItemLabelWidth(schemaItemRef: Ref<FormSchema>, propsRef: Ref<FormProps>) {
   return computed(() => {
-    const schemaItem = unref(schemaItemRef);
-    const { labelCol = {}, wrapperCol = {} } = schemaItem.itemProps || {};
-    const { labelWidth, disabledLabelWidth } = schemaItem;
+    const schemaItem = unref(schemaItemRef)
+    const { labelCol = {}, wrapperCol = {} } = schemaItem.itemProps || {}
+    const { labelWidth, disabledLabelWidth } = schemaItem
 
-    const { labelWidth: globalLabelWidth, labelCol: globalLabelCol, wrapperCol: globWrapperCol,layout } = unref(propsRef);
+    const {
+      labelWidth: globalLabelWidth,
+      labelCol: globalLabelCol,
+      wrapperCol: globWrapperCol,
+      layout,
+    } = unref(propsRef)
 
     // update-begin--author:sunjianlei---date:20211104---for: 禁用全局 labelWidth，不自动设置 textAlign --------
     if (disabledLabelWidth) {
-      return { labelCol, wrapperCol };
+      return { labelCol, wrapperCol }
     }
     // update-begin--author:sunjianlei---date:20211104---for: 禁用全局 labelWidth，不自动设置 textAlign --------
 
@@ -22,17 +27,17 @@ export function useItemLabelWidth(schemaItemRef: Ref<FormSchema>, propsRef: Ref<
     if (!globalLabelWidth && !labelWidth && !globalLabelCol) {
       labelCol.style = {
         textAlign: 'left',
-      };
-      return { labelCol, wrapperCol };
+      }
+      return { labelCol, wrapperCol }
     }
-    let width = labelWidth || globalLabelWidth;
-    let col = { ...globalLabelCol, ...labelCol };
-    const wrapCol = { ...globWrapperCol, ...wrapperCol };
+    let width = labelWidth || globalLabelWidth
+    let col = { ...globalLabelCol, ...labelCol }
+    const wrapCol = { ...globWrapperCol, ...wrapperCol }
 
     if (width) {
-      width = isNumber(width) ? `${width}px` : width;
+      width = isNumber(width) ? `${width}px` : width
       // update-begin--author:liaozhiyang---date:20240717---for：【issues/6865】配置单个的labelWidth不生效
-      col = {};
+      col = {}
       // update-end--author:liaozhiyang---date:20240717---for：【issues/6865】配置单个的labelWidth不生效
     }
 
@@ -42,6 +47,6 @@ export function useItemLabelWidth(schemaItemRef: Ref<FormSchema>, propsRef: Ref<
         style: { width: layout === 'vertical' ? '100%' : `calc(100% - ${width})` },
         ...wrapCol,
       },
-    };
-  });
+    }
+  })
 }

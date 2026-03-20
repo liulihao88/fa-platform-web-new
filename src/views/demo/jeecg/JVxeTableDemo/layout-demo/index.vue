@@ -24,12 +24,12 @@
 </template>
 
 <script lang="ts" setup>
-  import Template1 from './Template1.vue';
-  import Template2 from './Template2.vue';
-  import Template3 from './Template3.vue';
-  import Template4 from './Template4.vue';
-  import Template5 from './Template5.vue';
-  import ErpTemplate from './ErpTemplate.vue';
+import Template1 from './Template1.vue'
+import Template2 from './Template2.vue'
+import Template3 from './Template3.vue'
+import Template4 from './Template4.vue'
+import Template5 from './Template5.vue'
+import ErpTemplate from './ErpTemplate.vue'
 </script>
 
 <style scoped></style>

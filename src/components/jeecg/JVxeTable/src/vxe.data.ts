@@ -1,4 +1,4 @@
-import { propTypes } from '/@/utils/propTypes';
+import { propTypes } from '/@/utils/propTypes'
 
 export const vxeProps = () => ({
   rowKey: propTypes.string.def('id'),
@@ -120,6 +120,16 @@ export const vxeProps = () => ({
   addBtnCfg: propTypes.object,
   // 删除按钮配置
   removeBtnCfg: propTypes.object,
-});
+})
 
-export const vxeEmits = ['save', 'added', 'removed', 'inserted', 'dragged', 'selectRowChange', 'pageChange', 'valueChange', 'blur'];
+export const vxeEmits = [
+  'save',
+  'added',
+  'removed',
+  'inserted',
+  'dragged',
+  'selectRowChange',
+  'pageChange',
+  'valueChange',
+  'blur',
+]

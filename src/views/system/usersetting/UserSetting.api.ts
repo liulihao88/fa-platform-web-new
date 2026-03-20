@@ -1,11 +1,11 @@
-import { defHttp } from "/@/utils/http/axios";
+import { defHttp } from '/@/utils/http/axios'
 
 enum Api {
-  userEdit='/sys/user/login/setting/userEdit',
-  getUserData='/sys/user/login/setting/getUserData',
-  queryNameByCodes='/sys/position/queryByCodes',
-  updateMobile='/sys/user/updateMobile',
-  updateUserPassword='/sys/user/passwordChange',
+  userEdit = '/sys/user/login/setting/userEdit',
+  getUserData = '/sys/user/login/setting/getUserData',
+  queryNameByCodes = '/sys/position/queryByCodes',
+  updateMobile = '/sys/user/updateMobile',
+  updateUserPassword = '/sys/user/passwordChange',
   getTenantListByUserId = '/sys/tenant/getTenantListByUserId',
   cancelApplyTenant = '/sys/tenant/cancelApplyTenant',
   exitUserTenant = '/sys/tenant/exitUserTenant',
@@ -27,7 +27,7 @@ enum Api {
  * @param params
  */
 export const userEdit = (params) => {
-  return defHttp.post({ url: Api.userEdit, params },{ isTransformResponse:false });
+  return defHttp.post({ url: Api.userEdit, params }, { isTransformResponse: false })
 }
 
 /**
@@ -35,7 +35,7 @@ export const userEdit = (params) => {
  * @param params
  */
 export const getUserData = () => {
-  return defHttp.get({ url: Api.getUserData },{ isTransformResponse:false });
+  return defHttp.get({ url: Api.getUserData }, { isTransformResponse: false })
 }
 
 /**
@@ -43,7 +43,7 @@ export const getUserData = () => {
  * @param params
  */
 export const queryNameByCodes = (params) => {
-  return defHttp.get({ url: Api.queryNameByCodes, params },{isTransformResponse:false});
+  return defHttp.get({ url: Api.queryNameByCodes, params }, { isTransformResponse: false })
 }
 
 /**
@@ -51,7 +51,7 @@ export const queryNameByCodes = (params) => {
  * @param params
  */
 export const updateMobile = (params) => {
-  return defHttp.put({ url: Api.updateMobile, params },{isTransformResponse:false});
+  return defHttp.put({ url: Api.updateMobile, params }, { isTransformResponse: false })
 }
 
 /**
@@ -59,7 +59,7 @@ export const updateMobile = (params) => {
  * @param params
  */
 export const updateUserPassword = (params) => {
-  return defHttp.get({ url: Api.updateUserPassword, params },{isTransformResponse:false});
+  return defHttp.get({ url: Api.updateUserPassword, params }, { isTransformResponse: false })
 }
 
 /**
@@ -67,7 +67,10 @@ export const updateUserPassword = (params) => {
  * @param params
  */
 export const updatePasswordNotBindPhone = (params) => {
-  return defHttp.put({ url: Api.updatePasswordNotBindPhone, params },{ isTransformResponse:false, joinParamsToUrl: true });
+  return defHttp.put(
+    { url: Api.updatePasswordNotBindPhone, params },
+    { isTransformResponse: false, joinParamsToUrl: true },
+  )
 }
 
 /**
@@ -75,31 +78,34 @@ export const updatePasswordNotBindPhone = (params) => {
  * @param params
  */
 export const getTenantListByUserId = (params) => {
-  return defHttp.get({ url: Api.getTenantListByUserId, params }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.getTenantListByUserId, params }, { isTransformResponse: false })
+}
 
 /**
  * 取消申请
  * @param params
  */
 export const cancelApplyTenant = (params) => {
-  return defHttp.put({ url: Api.cancelApplyTenant, data: params }, { joinParamsToUrl: true, isTransformResponse: false });
-};
+  return defHttp.put(
+    { url: Api.cancelApplyTenant, data: params },
+    { joinParamsToUrl: true, isTransformResponse: false },
+  )
+}
 
 /**
  * 用户退出租户
  * @param params
  */
-export const exitUserTenant = (params)=>{
-  return defHttp.delete({ url: Api.exitUserTenant, params },{ isTransformResponse: false, joinParamsToUrl: true });
+export const exitUserTenant = (params) => {
+  return defHttp.delete({ url: Api.exitUserTenant, params }, { isTransformResponse: false, joinParamsToUrl: true })
 }
 
 /**
  * 变更租户拥有者
  * @param params
  */
-export const changeOwenUserTenant = (params)=>{
-  return defHttp.post({ url: Api.changeOwenUserTenant, params },{ isTransformResponse: false, joinParamsToUrl: true });
+export const changeOwenUserTenant = (params) => {
+  return defHttp.post({ url: Api.changeOwenUserTenant, params }, { isTransformResponse: false, joinParamsToUrl: true })
 }
 
 /**
@@ -107,45 +113,45 @@ export const changeOwenUserTenant = (params)=>{
  * @param params
  */
 export const getThirdAccountByUserId = (params) => {
-  return defHttp.get({ url: Api.getThirdAccountByUserId, params }, { isTransformResponse: false });
-};
+  return defHttp.get({ url: Api.getThirdAccountByUserId, params }, { isTransformResponse: false })
+}
 
 /**
  * 根据第三方uuid绑定账号
  * @param params
  */
 export const bindThirdAppAccount = (params) => {
-  return defHttp.post({ url: Api.bindThirdAppAccount, params }, { isTransformResponse: false, joinParamsToUrl: true });
-};
+  return defHttp.post({ url: Api.bindThirdAppAccount, params }, { isTransformResponse: false, joinParamsToUrl: true })
+}
 
 /**
  * 根据第三方uuid绑定账号
  * @param params
  */
 export const deleteThirdAccount = (params) => {
-  return defHttp.delete({ url: Api.deleteThirdAccount, params }, { isTransformResponse:false, joinParamsToUrl: true });
-};
+  return defHttp.delete({ url: Api.deleteThirdAccount, params }, { isTransformResponse: false, joinParamsToUrl: true })
+}
 
 /**
  * 同意和拒绝加入租户
  * @param params
  */
 export const agreeOrRefuseJoinTenant = (params) => {
-  return defHttp.put({ url: Api.agreeOrRefuseJoinTenant, params },{ joinParamsToUrl: true });
-};
+  return defHttp.put({ url: Api.agreeOrRefuseJoinTenant, params }, { joinParamsToUrl: true })
+}
 
 /**
  * 更改手机号
  * @param params
  */
 export const changePhone = (params) => {
-  return defHttp.put({ url: Api.changePhone, params },{ joinParamsToUrl: true, isTransformResponse: false });
-};
+  return defHttp.put({ url: Api.changePhone, params }, { joinParamsToUrl: true, isTransformResponse: false })
+}
 
 /**
  * 用户注销
  * @param params
  */
 export const userLogOff = (params) => {
-  return defHttp.put({ url: Api.userLogOff, params },{ isTransformResponse:false });
+  return defHttp.put({ url: Api.userLogOff, params }, { isTransformResponse: false })
 }

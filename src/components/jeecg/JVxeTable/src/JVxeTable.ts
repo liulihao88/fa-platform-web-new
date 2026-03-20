@@ -1,15 +1,15 @@
-import { defineComponent, h, nextTick, ref, useSlots } from 'vue';
-import { vxeEmits, vxeProps } from './vxe.data';
-import { useData, useRefs, useResolveComponent as rc } from './hooks/useData';
-import { useColumns } from './hooks/useColumns';
-import { useColumnsCache } from './hooks/useColumnsCache';
-import { useMethods } from './hooks/useMethods';
-import { useDataSource } from './hooks/useDataSource';
-import { useDragSort } from './hooks/useDragSort';
-import { useRenderComponents } from './hooks/useRenderComponents';
-import { useFinallyProps } from './hooks/useFinallyProps';
-import { JVxeTableProps } from './types';
-import './style/index.less';
+import { defineComponent, h, nextTick, ref, useSlots } from 'vue'
+import { vxeEmits, vxeProps } from './vxe.data'
+import { useData, useRefs, useResolveComponent as rc } from './hooks/useData'
+import { useColumns } from './hooks/useColumns'
+import { useColumnsCache } from './hooks/useColumnsCache'
+import { useMethods } from './hooks/useMethods'
+import { useDataSource } from './hooks/useDataSource'
+import { useDragSort } from './hooks/useDragSort'
+import { useRenderComponents } from './hooks/useRenderComponents'
+import { useFinallyProps } from './hooks/useFinallyProps'
+import { JVxeTableProps } from './types'
+import './style/index.less'
 
 export default defineComponent({
   name: 'JVxeTable',
@@ -17,23 +17,23 @@ export default defineComponent({
   props: vxeProps(),
   emits: [...vxeEmits],
   setup(props: JVxeTableProps, context) {
-    const instanceRef = ref();
-    const refs = useRefs();
-    const slots = useSlots();
-    const data = useData(props);
-    const { methods, publicMethods, created } = useMethods(props, context, data, refs, instanceRef);
-    created();
-    useColumns(props, data, methods, slots);
-    useDataSource(props, data, methods, refs);
-    useDragSort(props, methods);
+    const instanceRef = ref()
+    const refs = useRefs()
+    const slots = useSlots()
+    const data = useData(props)
+    const { methods, publicMethods, created } = useMethods(props, context, data, refs, instanceRef)
+    created()
+    useColumns(props, data, methods, slots)
+    useDataSource(props, data, methods, refs)
+    useDragSort(props, methods)
     // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
-    const { initSetting } = useColumnsCache({ cacheColumnsKey: props.cacheColumnsKey });
-    initSetting(props);
+    const { initSetting } = useColumnsCache({ cacheColumnsKey: props.cacheColumnsKey })
+    initSetting(props)
     // update-end--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
     // 最终传入到 template 里的 props
-    const finallyProps = useFinallyProps(props, data, methods);
+    const finallyProps = useFinallyProps(props, data, methods)
     // 渲染子组件
-    const renderComponents = useRenderComponents(props, data, methods, slots);
+    const renderComponents = useRenderComponents(props, data, methods, slots)
     return {
       instanceRef,
       ...refs,
@@ -41,7 +41,7 @@ export default defineComponent({
       ...finallyProps,
       ...renderComponents,
       vxeDataSource: data.vxeDataSource,
-    };
+    }
   },
   render() {
     return h(
@@ -67,16 +67,16 @@ export default defineComponent({
                 ...this.vxeProps,
                 data: this.vxeDataSource,
               },
-              this.$slots
+              this.$slots,
             ),
             this.renderPagination(),
             this.renderDetailsModal(),
           ],
-        }
-      )
-    );
+        },
+      ),
+    )
   },
   created() {
-    this.instanceRef = this;
+    this.instanceRef = this
   },
-});
+})

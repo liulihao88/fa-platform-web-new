@@ -1,10 +1,21 @@
 <template>
   <div class="p-2">
-    <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="1000px" @ok="handleOk" @cancel="handleCancel" okText="替换" wrapClassName='ai-rag-generate-prompt-modal'>
+    <BasicModal
+      destroyOnClose
+      @register="registerModal"
+      :canFullscreen="false"
+      width="1000px"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      okText="替换"
+      wrapClassName="ai-rag-generate-prompt-modal"
+    >
       <div class="prompt">
         <div class="prompt-left">
           <div class="prompt-left-title">提示词生成器</div>
-          <div class="prompt-left-desc">提示词生成器使用配置的模型来优化提示词，以获得更高的质量和更好的结构。请写出清晰详细的说明。</div>
+          <div class="prompt-left-desc">
+            提示词生成器使用配置的模型来优化提示词，以获得更高的质量和更好的结构。请写出清晰详细的说明。
+          </div>
           <a-divider></a-divider>
           <div class="prompt-left-try">
             <div class="prompt-left-try-title">试一试</div>
@@ -53,260 +64,260 @@
 </template>
 
 <script lang="ts">
-  import { ref, unref } from 'vue';
-  import BasicModal from '@/components/Modal/src/BasicModal.vue';
-  import { useModalInner } from '@/components/Modal';
-  import { promptGenerate } from '@/views/super/airag/aiapp/AiApp.api';
+import { ref, unref } from 'vue'
+import BasicModal from '@/components/Modal/src/BasicModal.vue'
+import { useModalInner } from '@/components/Modal'
+import { promptGenerate } from '@/views/super/airag/aiapp/AiApp.api'
 
-  export default {
-    name: 'AiAppGeneratedPrompt',
-    components: {
-      BasicModal,
-    },
-    emits: ['ok', 'register'],
-    setup(props, { emit }) {
-      //提示词
-      const prompt = ref<string>('');
-      //加载
-      const loading = ref<boolean>(false);
-      //显示文本
-      const content = ref<string>('');
-      //指令提示词
-      const instructionsList = ref<any>([
-        { name: 'python代码助手', value: 'python', icon: 'ant-design:code-outlined' },
-        { name: '翻译器', value: 'translator', icon: 'ant-design:translation-outlined' },
-        { name: '会议助手', value: 'meeting', icon: 'ant-design:team-outlined' },
-        { name: '润色文章', value: 'article', icon: 'ant-design:profile-outlined' },
-        { name: 'sql生成器', value: 'sql', icon: 'ant-design:console-sql-outlined' },
-        { name: '旅行规划师', value: 'travel', icon: 'ant-design:car-outlined' },
-        { name: 'linux专家', value: 'linux', icon: 'ant-design:fund-projection-screen-outlined' },
-        { name: '内容提炼器', value: 'content', icon: 'ant-design:read-outlined' },
-      ]);
-      //指令
-      const tip = ref<any>({
-        python: '你是一个python专家，可以帮助用户编写和纠错代码。',
-        translator: '一个可以将多种语言翻译为中文的翻译器。',
-        meeting: '将会议内容提炼总结，包括讨论主题、关键要点和待办事项。',
-        article: '用高超的编辑技巧改进我的文章。',
-        sql: '根据用户的描述，生成sql语句，要支持引导用户提供表结构',
-        travel: '你是一个旅行规划师，擅长帮助用户轻松规划他们的旅行',
-        linux: '你是一个linux专家，擅长解决各种linux相关的问题。',
-        content: '你是一个阅读理解大师，可以阅读用户提供的文章，并提炼主要内容输出给用户。',
-      });
-      //注册modal
-      const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
-        content.value = '';
-        loading.value = false;
-        prompt.value = '';
-        setModalProps({ height: 500 });
-      });
+export default {
+  name: 'AiAppGeneratedPrompt',
+  components: {
+    BasicModal,
+  },
+  emits: ['ok', 'register'],
+  setup(props, { emit }) {
+    //提示词
+    const prompt = ref<string>('')
+    //加载
+    const loading = ref<boolean>(false)
+    //显示文本
+    const content = ref<string>('')
+    //指令提示词
+    const instructionsList = ref<any>([
+      { name: 'python代码助手', value: 'python', icon: 'ant-design:code-outlined' },
+      { name: '翻译器', value: 'translator', icon: 'ant-design:translation-outlined' },
+      { name: '会议助手', value: 'meeting', icon: 'ant-design:team-outlined' },
+      { name: '润色文章', value: 'article', icon: 'ant-design:profile-outlined' },
+      { name: 'sql生成器', value: 'sql', icon: 'ant-design:console-sql-outlined' },
+      { name: '旅行规划师', value: 'travel', icon: 'ant-design:car-outlined' },
+      { name: 'linux专家', value: 'linux', icon: 'ant-design:fund-projection-screen-outlined' },
+      { name: '内容提炼器', value: 'content', icon: 'ant-design:read-outlined' },
+    ])
+    //指令
+    const tip = ref<any>({
+      python: '你是一个python专家，可以帮助用户编写和纠错代码。',
+      translator: '一个可以将多种语言翻译为中文的翻译器。',
+      meeting: '将会议内容提炼总结，包括讨论主题、关键要点和待办事项。',
+      article: '用高超的编辑技巧改进我的文章。',
+      sql: '根据用户的描述，生成sql语句，要支持引导用户提供表结构',
+      travel: '你是一个旅行规划师，擅长帮助用户轻松规划他们的旅行',
+      linux: '你是一个linux专家，擅长解决各种linux相关的问题。',
+      content: '你是一个阅读理解大师，可以阅读用户提供的文章，并提炼主要内容输出给用户。',
+    })
+    //注册modal
+    const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
+      content.value = ''
+      loading.value = false
+      prompt.value = ''
+      setModalProps({ height: 500 })
+    })
 
-      /**
-       * 保存
-       */
-      async function handleOk() {
-        emit('ok', content.value);
-        handleCancel();
-      }
+    /**
+     * 保存
+     */
+    async function handleOk() {
+      emit('ok', content.value)
+      handleCancel()
+    }
 
-      //update-begin---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
-      /**
-       * 生成
-       */
-      async function generatedPrompt() {
-        content.value = '';
-        loading.value = true;
-        let readableStream = await promptGenerate({ prompt: prompt.value }).catch(() => {
-            loading.value = false;
-        });
-        const reader = readableStream.getReader();
-        const decoder = new TextDecoder('UTF-8');
-        let buffer = '';
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          let result = decoder.decode(value, { stream: true });
-          const lines = result.split('\n\n');
-          for (const line of lines) {
-            if (line.startsWith('data:')) {
-                const content = line.replace('data:', '').trim();
-                if(!content){
-                  continue;
-                }
-                if(!content.endsWith('}')){
-                  buffer = buffer + line;
-                  continue;
-                }
-                buffer = "";
-                renderText(content)
-              } else {
-                if(!line) {
-                  continue;
-                }
-                if(!line.endsWith('}')) {
-                  buffer = buffer + line;
-                  continue;
-                }
-                buffer = "";
-                renderText(line)
-              }
+    //update-begin---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
+    /**
+     * 生成
+     */
+    async function generatedPrompt() {
+      content.value = ''
+      loading.value = true
+      let readableStream = await promptGenerate({ prompt: prompt.value }).catch(() => {
+        loading.value = false
+      })
+      const reader = readableStream.getReader()
+      const decoder = new TextDecoder('UTF-8')
+      let buffer = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) {
+          break
+        }
+        let result = decoder.decode(value, { stream: true })
+        const lines = result.split('\n\n')
+        for (const line of lines) {
+          if (line.startsWith('data:')) {
+            const content = line.replace('data:', '').trim()
+            if (!content) {
+              continue
             }
-          }
-      }
-
-      /**
-       * 渲染文本
-       * 
-       * @param item
-       */
-      function renderText(item) {
-        try {
-          let parse = JSON.parse(item);
-          if (parse.event == 'MESSAGE') {
-            content.value += parse.data.message;
-            if(loading.value){
-              loading.value = false;
+            if (!content.endsWith('}')) {
+              buffer = buffer + line
+              continue
             }
+            buffer = ''
+            renderText(content)
+          } else {
+            if (!line) {
+              continue
+            }
+            if (!line.endsWith('}')) {
+              buffer = buffer + line
+              continue
+            }
+            buffer = ''
+            renderText(line)
           }
-          if (parse.event == 'MESSAGE_END') {
-            loading.value = false;
-          }
-          if (parse.event == 'ERROR') {
-            content.value = parse.data.message?parse.data.message:'生成失败，请稍后重试！'
-            loading.value = false;
-          }
-        } catch (error) {
-          console.log('Error parsing update:', error);
         }
       }
-      //update-end---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
+    }
 
-      /**
-       * 指令点击事件
-       */
-      function instructionsClick(value) {
-        prompt.value = tip.value[value];
+    /**
+     * 渲染文本
+     *
+     * @param item
+     */
+    function renderText(item) {
+      try {
+        let parse = JSON.parse(item)
+        if (parse.event == 'MESSAGE') {
+          content.value += parse.data.message
+          if (loading.value) {
+            loading.value = false
+          }
+        }
+        if (parse.event == 'MESSAGE_END') {
+          loading.value = false
+        }
+        if (parse.event == 'ERROR') {
+          content.value = parse.data.message ? parse.data.message : '生成失败，请稍后重试！'
+          loading.value = false
+        }
+      } catch (error) {
+        console.log('Error parsing update:', error)
       }
+    }
+    //update-end---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
 
-      /**
-       * 取消
-       */
-      function handleCancel() {
-        closeModal();
-      }
+    /**
+     * 指令点击事件
+     */
+    function instructionsClick(value) {
+      prompt.value = tip.value[value]
+    }
 
-      return {
-        registerModal,
-        handleOk,
-        handleCancel,
-        prompt,
-        generatedPrompt,
-        instructionsList,
-        loading,
-        instructionsClick,
-        content,
-      };
-    },
-  };
+    /**
+     * 取消
+     */
+    function handleCancel() {
+      closeModal()
+    }
+
+    return {
+      registerModal,
+      handleOk,
+      handleCancel,
+      prompt,
+      generatedPrompt,
+      instructionsList,
+      loading,
+      instructionsClick,
+      content,
+    }
+  },
+}
 </script>
 
 <style scoped lang="less">
-  .prompt {
-    width: 100%;
+.prompt {
+  width: 100%;
+  display: flex;
+}
+.prompt-left {
+  width: 50%;
+  padding: 20px;
+  border-right: 1px solid #10182814;
+  .prompt-left-title {
+    background: linear-gradient(92deg, #2250f2 -29.55%, #0ebcf3 75.22%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 28px;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .prompt-left-desc {
+    color: #676f83;
+    font-weight: 400;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .prompt-left-try {
     display: flex;
-  }
-  .prompt-left {
-    width: 50%;
-    padding: 20px;
-    border-right: 1px solid #10182814;
-    .prompt-left-title {
-      background: linear-gradient(92deg, #2250f2 -29.55%, #0ebcf3 75.22%);
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 28px;
-      font-weight: 700;
-      font-size: 18px;
-    }
-    .prompt-left-desc {
+    align-items: center;
+    .prompt-left-try-title {
       color: #676f83;
-      font-weight: 400;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    .prompt-left-try {
-      display: flex;
-      align-items: center;
-      .prompt-left-try-title {
-        color: #676f83;
-        line-height: 18px;
-        text-transform: uppercase;
-        font-weight: 600;
-        font-size: 12px;
-        margin-right: 10px;
-      }
-    }
-    .prompt-left-textarea {
-      margin-top: 25px;
-      .command {
-        color: #101828;
-        line-height: 15px;
-        font-weight: 500;
-        font-size: 12px;
-        margin-bottom: 15px;
-      }
-    }
-    .prompt-left-btn {
-      width: 80px;
-      margin-top: 10px;
-      float: right;
+      line-height: 18px;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-size: 12px;
+      margin-right: 10px;
     }
   }
-  .prompt-right {
-    padding: 20px;
-    width: 50%;
-    text-align: center;
-    align-content: center;
-    svg {
-      color: #676f83;
-    }
-  }
-  .instructions {
-    display: flex;
-    flex-wrap: wrap;
-    .instructions-content {
-      padding-left: 5px;
-      padding-right: 5px;
-      border-radius: 5px;
-      align-items: center;
-      cursor: pointer;
-      height: 20px;
-      display: flex;
-      margin-top: 8px;
-      margin-left: 5px;
-    }
-    .instructions-name {
-      color: #354052;
-      font-size: 13px;
+  .prompt-left-textarea {
+    margin-top: 25px;
+    .command {
+      color: #101828;
+      line-height: 15px;
       font-weight: 500;
-      line-height: 2px;
-      margin-left: 4px;
+      font-size: 12px;
+      margin-bottom: 15px;
     }
   }
-  :deep(.ant-divider-horizontal) {
-    margin: 12px 0;
+  .prompt-left-btn {
+    width: 80px;
+    margin-top: 10px;
+    float: right;
   }
+}
+.prompt-right {
+  padding: 20px;
+  width: 50%;
+  text-align: center;
+  align-content: center;
+  svg {
+    color: #676f83;
+  }
+}
+.instructions {
+  display: flex;
+  flex-wrap: wrap;
+  .instructions-content {
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 5px;
+    align-items: center;
+    cursor: pointer;
+    height: 20px;
+    display: flex;
+    margin-top: 8px;
+    margin-left: 5px;
+  }
+  .instructions-name {
+    color: #354052;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 2px;
+    margin-left: 4px;
+  }
+}
+:deep(.ant-divider-horizontal) {
+  margin: 12px 0;
+}
 </style>
 <style lang="less">
-  .ai-rag-generate-prompt-modal {
-    .jeecg-modal-content > .scroll-container {
-      padding: 0;
+.ai-rag-generate-prompt-modal {
+  .jeecg-modal-content > .scroll-container {
+    padding: 0;
 
-      & > .scrollbar__wrap {
-        overflow: hidden;
-        margin-bottom: 0 !important;
-      }
+    & > .scrollbar__wrap {
+      overflow: hidden;
+      margin-bottom: 0 !important;
     }
   }
+}
 </style>

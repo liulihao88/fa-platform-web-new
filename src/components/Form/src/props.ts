@@ -1,14 +1,14 @@
-import type { FieldMapToTime, FormSchema } from './types/form';
-import type { CSSProperties, PropType } from 'vue';
-import type { ColEx } from './types';
-import type { TableActionType } from '/@/components/Table';
-import type { ButtonProps } from 'ant-design-vue/es/button/buttonTypes';
-import type { RowProps } from 'ant-design-vue/lib/grid/Row';
-import dayjs from "dayjs";
-import { propTypes } from '/@/utils/propTypes';
-import componentSetting from '/@/settings/componentSetting';
+import type { FieldMapToTime, FormSchema } from './types/form'
+import type { CSSProperties, PropType } from 'vue'
+import type { ColEx } from './types'
+import type { TableActionType } from '/@/components/Table'
+import type { ButtonProps } from 'ant-design-vue/es/button/buttonTypes'
+import type { RowProps } from 'ant-design-vue/lib/grid/Row'
+import dayjs from 'dayjs'
+import { propTypes } from '/@/utils/propTypes'
+import componentSetting from '/@/settings/componentSetting'
 
-const { form } = componentSetting;
+const { form } = componentSetting
 export const basicProps = {
   model: {
     type: Object as PropType<Recordable>,
@@ -61,7 +61,7 @@ export const basicProps = {
     type: Function as PropType<Fn>,
     default: (date: any) => {
       // 判断是否是dayjs实例
-      return dayjs.isDayjs(date) ? date?.format('YYYY-MM-DD HH:mm:ss') : date;
+      return dayjs.isDayjs(date) ? date?.format('YYYY-MM-DD HH:mm:ss') : date
     },
   },
   rulesMessageJoinLabel: propTypes.bool.def(true),
@@ -117,7 +117,7 @@ export const basicProps = {
   labelAlign: propTypes.string,
 
   rowProps: Object as PropType<RowProps>,
-  
+
   // 当表单是查询条件的时候 当表单改变后自动查询，不需要点击查询按钮
   autoSearch: propTypes.bool.def(false),
-};
+}

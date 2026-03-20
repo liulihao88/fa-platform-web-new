@@ -10,7 +10,13 @@
               </a-col>
               <a-col :span="24">
                 <div style="width: 100%; margin-top: 15px">
-                  <a-button type="primary" :loading="loading" :size="'small'" preIcon="ant-design:save-filled" @click="saveDataRuleForRole">
+                  <a-button
+                    type="primary"
+                    :loading="loading"
+                    :size="'small'"
+                    preIcon="ant-design:save-filled"
+                    @click="saveDataRuleForRole"
+                  >
                     <span>点击保存</span>
                   </a-button>
                 </div>
@@ -26,57 +32,57 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref } from 'vue';
-  import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
+import { ref, unref } from 'vue'
+import { BasicDrawer, useDrawerInner } from '/@/components/Drawer'
 
-  import { queryDepartRoleDataRule, saveDepartRoleDataRule } from '../depart.user.api';
+import { queryDepartRoleDataRule, saveDepartRoleDataRule } from '../depart.user.api'
 
-  defineEmits(['register']);
-  const loading = ref<boolean>(false);
-  const departId = ref('');
-  const functionId = ref('');
-  const roleId = ref('');
-  const dataRuleList = ref<Array<any>>([]);
-  const dataRuleChecked = ref<Array<any>>([]);
+defineEmits(['register'])
+const loading = ref<boolean>(false)
+const departId = ref('')
+const functionId = ref('')
+const roleId = ref('')
+const dataRuleList = ref<Array<any>>([])
+const dataRuleChecked = ref<Array<any>>([])
 
-  // 注册抽屉组件
-  const [registerDrawer, { closeDrawer }] = useDrawerInner((data) => {
-    roleId.value = unref(data.roleId);
-    departId.value = unref(data.departId);
-    functionId.value = unref(data.functionId);
-    loadData();
-  });
+// 注册抽屉组件
+const [registerDrawer, { closeDrawer }] = useDrawerInner((data) => {
+  roleId.value = unref(data.roleId)
+  departId.value = unref(data.departId)
+  functionId.value = unref(data.functionId)
+  loadData()
+})
 
-  async function loadData() {
-    try {
-      loading.value = true;
-      const { datarule, drChecked } = await queryDepartRoleDataRule(functionId, departId, roleId);
-      dataRuleList.value = datarule;
-      if (drChecked) {
-        dataRuleChecked.value = drChecked.split(',');
-      }
-    } finally {
-      loading.value = false;
+async function loadData() {
+  try {
+    loading.value = true
+    const { datarule, drChecked } = await queryDepartRoleDataRule(functionId, departId, roleId)
+    dataRuleList.value = datarule
+    if (drChecked) {
+      dataRuleChecked.value = drChecked.split(',')
     }
+  } finally {
+    loading.value = false
   }
+}
 
-  function saveDataRuleForRole() {
-    let params = {
-      permissionId: functionId.value,
-      roleId: roleId.value,
-      dataRuleIds: dataRuleChecked.value.join(','),
-    };
-    saveDepartRoleDataRule(params);
+function saveDataRuleForRole() {
+  let params = {
+    permissionId: functionId.value,
+    roleId: roleId.value,
+    dataRuleIds: dataRuleChecked.value.join(','),
   }
+  saveDepartRoleDataRule(params)
+}
 
-  function onClose() {
-    doReset();
-  }
+function onClose() {
+  doReset()
+}
 
-  function doReset() {
-    functionId.value = '';
-    roleId.value = '';
-    dataRuleList.value = [];
-    dataRuleChecked.value = [];
-  }
+function doReset() {
+  functionId.value = ''
+  roleId.value = ''
+  dataRuleList.value = []
+  dataRuleChecked.value = []
+}
 </script>

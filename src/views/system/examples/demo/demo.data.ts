@@ -1,6 +1,6 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
-import { render } from '/@/utils/common/renderUtils';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
+import { render } from '/@/utils/common/renderUtils'
 
 export const columns: BasicColumn[] = [
   {
@@ -10,8 +10,8 @@ export const columns: BasicColumn[] = [
     align: 'left',
     resizable: true,
     sorter: {
-      multiple:1
-    }
+      multiple: 1,
+    },
   },
   {
     title: '关键词',
@@ -31,8 +31,8 @@ export const columns: BasicColumn[] = [
     width: 140,
     resizable: true,
     sorter: {
-      multiple: 2
-    }
+      multiple: 2,
+    },
   },
   {
     title: '奖金',
@@ -44,10 +44,10 @@ export const columns: BasicColumn[] = [
     title: '性别',
     dataIndex: 'sex',
     sorter: {
-      multiple: 3
+      multiple: 3,
     },
     customRender: ({ record }) => {
-      return render.renderDict(record.sex, 'sex');
+      return render.renderDict(record.sex, 'sex')
       // let v = record.sex ? (record.sex == '1' ? '男' : '女') : '';
       // return h('span', v);
     },
@@ -72,7 +72,7 @@ export const columns: BasicColumn[] = [
     width: 120,
     resizable: true,
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -89,7 +89,7 @@ export const searchFormSchema: FormSchema[] = [
     label: '生日',
     component: 'RangePicker',
     componentProps: {
-      valueType: 'Date'
+      valueType: 'Date',
     },
     colProps: { span: 8 },
   },
@@ -110,7 +110,7 @@ export const searchFormSchema: FormSchema[] = [
       placeholder: '请选择性别',
     },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -220,4 +220,4 @@ export const formSchema: FormSchema[] = [
     show: false,
     component: 'Input',
   },
-];
+]

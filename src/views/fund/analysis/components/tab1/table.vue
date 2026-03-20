@@ -1,177 +1,171 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿
+<template>
   <div>
-  <!-- 搜索卡片 -->
-  <a-card class="search-form-card">
-    <a-form
-        ref="formRef"
-        class="search-form"
-        name="advanced_search"
-        :model="formState"
-        @finish="onSearch"
-    >
-      <!-- 增加行间距为32px -->
-      <a-row gutter="16">
-        <a-col :span="24">
-          <a-row :gutter="24">
-            <a-col :span="6">
-              <a-form-item
-                  name="folder"
-                  label="文件夹/文件名称"
-                  :labelCol="{ span: 8 }"
-                  :wrapperCol="{ span: 40 }"
+    <!-- 搜索卡片 -->
+    <a-card class="search-form-card">
+      <a-form ref="formRef" class="search-form" name="advanced_search" :model="formState" @finish="onSearch">
+        <!-- 增加行间距为32px -->
+        <a-row gutter="16">
+          <a-col :span="24">
+            <a-row :gutter="24">
+              <a-col :span="6">
+                <a-form-item name="folder" label="文件夹/文件名称" :labelCol="{ span: 8 }" :wrapperCol="{ span: 40 }">
+                  <a-input v-model:value="formState.folder" placeholder="请输入文件夹/文件名称" />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item name="fileStatus" label="状态" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18 }">
+                  <a-select v-model:value="formState.fileStatus" placeholder="请选择状态" @change="onSearch">
+                    <a-select-option v-for="item in filterStatusOptions" :key="item.value" :value="item.value">
+                      {{ item.label }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
+                <a-button class="ml2" @click="resetSearch">重置</a-button>
+              </a-col>
+            </a-row>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-card>
+    <div>
+      <!-- 表格部分 -->
+      <BasicTable
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="pagination"
+        :loading="tableLoading"
+        :scroll="{ x: 1500, y: 500 }"
+        :bordered="true"
+        size="small"
+        :canColDrag="true"
+        :showTableSetting="true"
+        :tableSetting="{
+          redo: false,
+          size: false,
+          setting: true,
+          fullScreen: false,
+          cacheKey: 'fund-analysis-main-table',
+        }"
+        :showActionColumn="true"
+        :canResize="true"
+        @change="handleTableChange"
+        @register="registerTable"
+      >
+        <!--插槽:table标题-->
+        <template #tableTitle>
+          <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
+          <a-button type="primary" class="ml2" @click="batchDeleteFiles">删除选择文件</a-button>
+          <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
+        </template>
+        <template #bodyCell="{ column, record, index }">
+          <template v-if="column.key === 'index'">
+            {{ index + 1 }}
+          </template>
+
+          <template v-else-if="column.dataIndex === 'organization'">
+            {{ record.organization || '--' }}
+          </template>
+          <template v-else-if="column.dataIndex === 'returnInfo'">
+            {{ record.returnInfo || '--' }}
+          </template>
+          <template v-else-if="column.dataIndex === 'successTime'">
+            {{ record.successTime || '--' }}
+          </template>
+          <template v-else-if="column.key === 'operation'">
+            <div class="table-operations">
+              <a-button
+                v-if="checkFilesNames(record)"
+                class="ml1"
+                size="small"
+                type="primary"
+                @click="handleTitleConfigClick(record)"
               >
-                <a-input v-model:value="formState.folder" placeholder="请输入文件夹/文件名称" />
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-form-item
-                  name="fileStatus"
-                  label="状态"
-                  :labelCol="{ span: 4 }"
-                  :wrapperCol="{ span: 18 }"
+                字段映射
+              </a-button>
+              <a-button
+                v-if="checkFilesNames(record)"
+                class="ml1"
+                size="small"
+                type="primary"
+                @click="handleEditFileClick(record)"
               >
-                <a-select v-model:value="formState.fileStatus" placeholder="请选择状态" @change="onSearch">
-                  <a-select-option
-                      v-for="item in filterStatusOptions"
-                      :key="item.value"
-                      :value="item.value"
-                  >
-                    {{item.label}}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="6">
-              <a-button type="primary" html-type="submit" :loading="searchLoading">查询</a-button>
-              <a-button class="ml2" @click="resetSearch">重置</a-button>
-            </a-col>
-          </a-row>
-        </a-col>
-      </a-row>
-    </a-form>
-  </a-card>
-  <div>
-  <!-- 表格部分 -->
-  <BasicTable
-    :columns="columns" 
-    :dataSource="dataSource"
-    :pagination="pagination"
-    :loading="tableLoading"
-    :scroll="{ x: 1500,y:500 }"
-    :bordered="true"
-    size="small"
-    :canColDrag="true"
-    :showTableSetting="true"
-    :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-main-table' }"
-    :showActionColumn="true"
-    :canResize="true"
-    @change="handleTableChange"
-    @register="registerTable"
-  >
-    <!--插槽:table标题-->
-    <template #tableTitle>
-      <a-button type="primary" class="ml2 upload-button" @click="uploadFile">上传文件</a-button>
-      <a-button type="primary" class="ml2" @click="batchDeleteFiles">删除选择文件</a-button>
-      <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
-    </template>
-    <template #bodyCell="{ column, record, index }">
-      <template v-if="column.key === 'index'">
-        {{ index + 1 }}
-      </template>
-     
-      <template v-else-if="column.dataIndex === 'organization'">
-        {{ record.organization || '--' }}
-      </template>
-      <template v-else-if="column.dataIndex === 'returnInfo'">
-        {{ record.returnInfo || '--' }}
-      </template>
-      <template v-else-if="column.dataIndex === 'successTime'">
-        {{ record.successTime || '--' }}
-      </template>
-      <template v-else-if="column.key === 'operation'">
-        <div class="table-operations">
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleTitleConfigClick(record)">字段映射</a-button>
-          <a-button v-if="checkFilesNames(record)" class="ml1" size="small" type="primary" @click="handleEditFileClick(record)">转换查看</a-button>
-          <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
-        </div>
-      </template>
-    </template>
-  </BasicTable>
-  </div>
+                转换查看
+              </a-button>
+              <a-button class="ml1" size="small" type="primary" danger @click="deleteFile(record)">删除</a-button>
+            </div>
+          </template>
+        </template>
+      </BasicTable>
+    </div>
   </div>
   <!-- 编辑文件的Modal弹框 -->
   <BasicModal
-      v-model:visible="editModalVisible"
-      title="文件转换详情"
-      width="100%"
-      :useWrapper="true"
-      wrap-class-name="full-modal"
-      @ok="closeEditModal"
-      @cancel="closeEditModal"
-      :defaultFullscreen="true"
-      :footer="null"
+    v-model:visible="editModalVisible"
+    title="文件转换详情"
+    width="100%"
+    :useWrapper="true"
+    wrap-class-name="full-modal"
+    @ok="closeEditModal"
+    @cancel="closeEditModal"
+    :defaultFullscreen="true"
+    :footer="null"
   >
     <div>
       <a-card style="height: 850px">
         <div class="panel-controls">
-         <div>
-           <a-button 
-             type="primary" 
-             size="small" 
-             @click="toggleLeftPanel"
-             :icon="leftPanelVisible ? '<-' : '->'"
-           >
-             {{ leftPanelVisible ? '隐藏源文件视图' : '显示源文件视图' }}
-           </a-button>
-           <a-button 
-             type="primary" 
-             size="small" 
-             @click="toggleRightPanel"
-             :icon="rightPanelVisible ? '->' : '<-'"
-             class="ml2"
-           >
-             {{ rightPanelVisible ? '隐藏转换结果' : '显示转换结果' }}
-           </a-button>
-         </div>
-         <div>
-           <TransformInfo></TransformInfo>
-         </div>
+          <div>
+            <a-button type="primary" size="small" @click="toggleLeftPanel" :icon="leftPanelVisible ? '<-' : '->'">
+              {{ leftPanelVisible ? '隐藏源文件视图' : '显示源文件视图' }}
+            </a-button>
+            <a-button
+              type="primary"
+              size="small"
+              @click="toggleRightPanel"
+              :icon="rightPanelVisible ? '->' : '<-'"
+              class="ml2"
+            >
+              {{ rightPanelVisible ? '隐藏转换结果' : '显示转换结果' }}
+            </a-button>
+          </div>
+          <div>
+            <TransformInfo></TransformInfo>
+          </div>
         </div>
-        <splitpanes 
-          class="default-theme" 
-          :push-other-panes="false"
-          @resize="onSplitterResize"
-        >
-          <pane 
-            v-if="leftPanelVisible" 
-            :size="leftPanelSize" 
-            :min-size="leftPanelVisible ? 0.1 : 0"
-          >
+        <splitpanes class="default-theme" :push-other-panes="false" @resize="onSplitterResize">
+          <pane v-if="leftPanelVisible" :size="leftPanelSize" :min-size="leftPanelVisible ? 0.1 : 0">
             <a-card title="源文件视图" size="small" style="height: 750px">
               <a-row>
                 <a-col span="24">
                   文件名称：{{ currentFile.fileName || '-' }}
-                  <a-button type="primary" size="small" @click="previewFile(currentRecord)" class="ml2">预览文件</a-button>
-                  <a-button type="primary" size="small" @click="previewFile(currentRecord, 'fast')" class="ml2">快速预览文件</a-button>
+                  <a-button type="primary" size="small" @click="previewFile(currentRecord)" class="ml2">
+                    预览文件
+                  </a-button>
+                  <a-button type="primary" size="small" @click="previewFile(currentRecord, 'fast')" class="ml2">
+                    快速预览文件
+                  </a-button>
                 </a-col>
               </a-row>
               <a-row style="height: 700px" class="custom-ant-col">
-                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 700px" >
+                <a-col v-if="['xls', 'xlsx', 'xlsm'].includes(currentFileType)" span="24" style="height: 700px">
                   <div v-if="fileLoading" class="file-loading">
                     <a-spin size="large" />
                     <p>文件加载中，请稍候...</p>
                   </div>
                   <VueOfficeExcel
-                      v-else-if="fileStreamInfo"
-                      :src="fileStreamInfo"
-                      :options="vueExcelOptions"
-                      @rendered="onExcelRendered"
-                      @error="onExcelError"
-                      :pagination="true"
-                      :page-size="20"
-                      style="height: 700px"
-                      :min-col-width="100"
-                      :max-col-width="300"
+                    v-else-if="fileStreamInfo"
+                    :src="fileStreamInfo"
+                    :options="vueExcelOptions"
+                    @rendered="onExcelRendered"
+                    @error="onExcelError"
+                    :pagination="true"
+                    :page-size="20"
+                    style="height: 700px"
+                    :min-col-width="100"
+                    :max-col-width="300"
                   />
                   <div v-else class="file-loading">
                     <p>点击"预览文件"按钮加载文件内容</p>
@@ -194,9 +188,15 @@
                         :page-size="10"
                         :min-page-width="700"
                     />-->
-                      <iframe :src="iframeUrl" id="searchshow" frameborder="0" style="overflow: auto; width: 100%; height: 100vh;" v-if="iframeUrl.startsWith('/static')"></iframe>
-                      <PdfNewViewer :url="iframeUrl" v-else></PdfNewViewer>
-                    </div>
+                    <iframe
+                      :src="iframeUrl"
+                      id="searchshow"
+                      frameborder="0"
+                      style="overflow: auto; width: 100%; height: 100vh"
+                      v-if="iframeUrl.startsWith('/static')"
+                    ></iframe>
+                    <PdfNewViewer :url="iframeUrl" v-else></PdfNewViewer>
+                  </div>
                 </a-col>
                 <a-col v-else-if="currentFileType === 'csv'" span="24">
                   <!-- CSV预览 - 仿Excel表格样式 -->
@@ -212,45 +212,39 @@
                     <div class="csv-table-container">
                       <table class="csv-table" border="1" cellspacing="0" cellpadding="5">
                         <thead>
-                        <tr>
-                          <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
-                        </tr>
+                          <tr>
+                            <th v-for="(header, index) in csvHeaders" :key="index">{{ header }}</th>
+                          </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
-                          <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
-                        </tr>
+                          <tr v-for="(row, rowIndex) in csvRows" :key="rowIndex">
+                            <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
                 </a-col>
-
               </a-row>
             </a-card>
           </pane>
-          
-          <pane 
-            v-if="rightPanelVisible" 
-            :size="rightPanelSize" 
-            :min-size="rightPanelVisible ? 0.1 : 0"
-          >
-            <a-card title="转换结果" size="small" style="height: 750px">
 
+          <pane v-if="rightPanelVisible" :size="rightPanelSize" :min-size="rightPanelVisible ? 0.1 : 0">
+            <a-card title="转换结果" size="small" style="height: 750px">
               <!-- Sheet列表区域 -->
-              <a-row style="margin-bottom: 16px;height: 700px">
+              <a-row style="margin-bottom: 16px; height: 700px">
                 <a-col :span="4">
                   <div class="sheet-list">
-                  <h3>文件页码</h3>
-                  <div
-                    v-for="sheet in currentFile.filePages"
-                    :key="sheet.pageId"
-                    :class="['file-item', { active: activeSheet === sheet.pageId }]"
-                    @click="selectSheet(sheet)"
-                  >
-                    {{ sheet.pageName }}
+                    <h3>文件页码</h3>
+                    <div
+                      v-for="sheet in currentFile.filePages"
+                      :key="sheet.pageId"
+                      :class="['file-item', { active: activeSheet === sheet.pageId }]"
+                      @click="selectSheet(sheet)"
+                    >
+                      {{ sheet.pageName }}
+                    </div>
                   </div>
-                </div>
                 </a-col>
                 <a-col :span="20">
                   <a-card class="table-card" style="height: 700px">
@@ -258,20 +252,26 @@
                       <!-- 银行客户信息表格 -->
                       <a-tab-pane key="bankCustomer" tab="银行客户信息">
                         <BasicTable
-                            :columns="bankCustomerColumns"
-                            :pagination="bankCustomerPagination"
-                            size="small"
-                            :bordered="true"
-                            :scroll="{ x: 1500, y: 500 }"
-                            :loading="tableLoading"
-                            @change="handleBankCustomerTableChange"
-                            :canColDrag="true"
-                            :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-bank-customer-table' }"
-                            :canResize="true"
-                            :rowClassName="getRowClassName"
-                            @register="registerBankCustomerTable"
-                            class="file-trans-table"
+                          :columns="bankCustomerColumns"
+                          :pagination="bankCustomerPagination"
+                          size="small"
+                          :bordered="true"
+                          :scroll="{ x: 1500, y: 500 }"
+                          :loading="tableLoading"
+                          @change="handleBankCustomerTableChange"
+                          :canColDrag="true"
+                          :showTableSetting="true"
+                          :tableSetting="{
+                            redo: false,
+                            size: false,
+                            setting: true,
+                            fullScreen: false,
+                            cacheKey: 'fund-analysis-bank-customer-table',
+                          }"
+                          :canResize="true"
+                          :rowClassName="getRowClassName"
+                          @register="registerBankCustomerTable"
+                          class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.dataIndex === 'operation'">
@@ -284,21 +284,27 @@
                       <!-- 银行交易流水表格 -->
                       <a-tab-pane key="bankTransaction" tab="银行交易流水">
                         <BasicTable
-                            :columns="bankTransactionColumns"
-                            :pagination="bankTransactionPagination"
-                            size="small"
-                            :bordered="true"
-                            :scroll="{ x: 1500, y: 500 }"
-                            :loading="tableLoading"
-                            @change="handleBankTransactionTableChange"
-                            style="margin-bottom: 16px;"
-                            :canColDrag="true"
-                            :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-bank-transaction-table' }"
-                            :canResize="true"
-                            :rowClassName="getRowClassName"
-                            @register="registerBankTransactionTable"
-                            class="file-trans-table"
+                          :columns="bankTransactionColumns"
+                          :pagination="bankTransactionPagination"
+                          size="small"
+                          :bordered="true"
+                          :scroll="{ x: 1500, y: 500 }"
+                          :loading="tableLoading"
+                          @change="handleBankTransactionTableChange"
+                          style="margin-bottom: 16px"
+                          :canColDrag="true"
+                          :showTableSetting="true"
+                          :tableSetting="{
+                            redo: false,
+                            size: false,
+                            setting: true,
+                            fullScreen: false,
+                            cacheKey: 'fund-analysis-bank-transaction-table',
+                          }"
+                          :canResize="true"
+                          :rowClassName="getRowClassName"
+                          @register="registerBankTransactionTable"
+                          class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.dataIndex === 'operation'">
@@ -311,21 +317,27 @@
                       <!-- 非银行客户信息表格 -->
                       <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
                         <BasicTable
-                            :columns="nonBankCustomerColumns"
-                            :pagination="nonBankCustomerPagination"
-                            size="small"
-                            :bordered="true"
-                            :scroll="{ x: 1500, y: 500 }"
-                            :loading="tableLoading"
-                            @change="handleNonBankCustomerTableChange"
-                            style="margin-bottom: 16px;"
-                            :rowClassName="getRowClassName"
-                            :canColDrag="true"
-                            :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-non-bank-customer-table' }"
-                            :canResize="true"
-                            @register="registerNonBankCustomerTable"
-                            class="file-trans-table"
+                          :columns="nonBankCustomerColumns"
+                          :pagination="nonBankCustomerPagination"
+                          size="small"
+                          :bordered="true"
+                          :scroll="{ x: 1500, y: 500 }"
+                          :loading="tableLoading"
+                          @change="handleNonBankCustomerTableChange"
+                          style="margin-bottom: 16px"
+                          :rowClassName="getRowClassName"
+                          :canColDrag="true"
+                          :showTableSetting="true"
+                          :tableSetting="{
+                            redo: false,
+                            size: false,
+                            setting: true,
+                            fullScreen: false,
+                            cacheKey: 'fund-analysis-non-bank-customer-table',
+                          }"
+                          :canResize="true"
+                          @register="registerNonBankCustomerTable"
+                          class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.dataIndex === 'operation'">
@@ -338,20 +350,26 @@
                       <!-- 非银行交易流水表格 -->
                       <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
                         <BasicTable
-                            :columns="nonBankTransactionColumns"
-                            :pagination="nonBankTransactionPagination"
-                            size="small"
-                            :scroll="{ x: 1500, y: 500 }"
-                            :bordered="true"
-                            :loading="tableLoading"
-                            @change="handleNonBankTransactionTableChange"
-                            :canColDrag="true"
-                            :showTableSetting="true"
-                            :tableSetting="{ redo: false, size: false, setting: true, fullScreen: false, cacheKey: 'fund-analysis-non-bank-transaction-table' }"
-                            :canResize="true"
-                            :rowClassName="getRowClassName"
-                            @register="registerNonBankTransactionTable"
-                            class="file-trans-table"
+                          :columns="nonBankTransactionColumns"
+                          :pagination="nonBankTransactionPagination"
+                          size="small"
+                          :scroll="{ x: 1500, y: 500 }"
+                          :bordered="true"
+                          :loading="tableLoading"
+                          @change="handleNonBankTransactionTableChange"
+                          :canColDrag="true"
+                          :showTableSetting="true"
+                          :tableSetting="{
+                            redo: false,
+                            size: false,
+                            setting: true,
+                            fullScreen: false,
+                            cacheKey: 'fund-analysis-non-bank-transaction-table',
+                          }"
+                          :canResize="true"
+                          :rowClassName="getRowClassName"
+                          @register="registerNonBankTransactionTable"
+                          class="file-trans-table"
                         >
                           <template #bodyCell="{ column, record }">
                             <template v-if="column.dataIndex === 'operation'">
@@ -362,7 +380,6 @@
                       </a-tab-pane>
                     </a-tabs>
                   </a-card>
-
                 </a-col>
               </a-row>
             </a-card>
@@ -370,51 +387,50 @@
         </splitpanes>
       </a-card>
     </div>
-
   </BasicModal>
 
   <!-- 上传文件的Modal弹框 -->
   <BasicModal
-      v-model:visible="uploadModalVisible"
-      title="上传文件"
-      width="700px"
-      :maskClosable="false"
-      :keyboard="false"
-      :footer="null"
+    v-model:visible="uploadModalVisible"
+    title="上传文件"
+    width="700px"
+    :maskClosable="false"
+    :keyboard="false"
+    :footer="null"
   >
     <div>
-       <div style="display: flex; justify-content: space-between">
+      <div style="display: flex; justify-content: space-between">
         <div>
-          <div class="ml4" style="color: red">
-            注：
-          </div>
-          
+          <div class="ml4" style="color: red">注：</div>
+
           <div class="ml4" style="color: red">1、如果压缩文件或者数据文件有密码，需要用密码打开后去掉密码再上传</div>
-          <div class="ml4" style="color: red">2、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包,当文件20M时，建议压缩成多个文件上传</div>
+          <div class="ml4" style="color: red">
+            2、多个文件或者文件夹可以压缩成一个文件上传，支持ZIP压缩包,当文件20M时，建议压缩成多个文件上传
+          </div>
           <div class="ml4" style="color: red">3、同一个银行的文件放同一个文件夹，文件夹以银行名称命名</div>
         </div>
         <div style="text-align: left; white-space: nowrap">
-          <a href="javascript:void(0)" @click="onFileNameInstructionClick" style="margin-left: 50px">上传文件格式说明</a>
+          <a href="javascript:void(0)" @click="onFileNameInstructionClick" style="margin-left: 50px">
+            上传文件格式说明
+          </a>
         </div>
       </div>
       <a-card>
         <a-upload-dragger
-            :fileList="fileList"
-            :multiple="true"
-            :customRequest="onFileListUpload"
-            accept=".xls,.xlsx,.xlsm,.csv,.pdf,.zip"
-            :beforeUpload="beforeUpload"
-            @remove="handleRemove"
-            class="custom-upload-dragger"
+          :fileList="fileList"
+          :multiple="true"
+          :customRequest="onFileListUpload"
+          accept=".xls,.xlsx,.xlsm,.csv,.pdf,.zip"
+          :beforeUpload="beforeUpload"
+          @remove="handleRemove"
+          class="custom-upload-dragger"
         >
           <div class="upload-dragger-content">
             <p class="ant-upload-drag-icon">
-              <inbox-outlined style="font-size: 48px; color: #1890ff;"></inbox-outlined>
+              <inbox-outlined style="font-size: 48px; color: #1890ff"></inbox-outlined>
             </p>
             <p class="ant-upload-text">点击或拖拽文件到此处上传</p>
-            <p class="ant-upload-hint">
-              支持扩展名 .xls .xlsx .xlsm .csv .pdf .zip
-            </p>
+            <p class="ant-upload-hint">支持扩展名 .xls .xlsx .xlsm .csv .pdf .zip</p>
           </div>
         </a-upload-dragger>
 
@@ -426,41 +442,25 @@
               <div class="upload-item-size">{{ formatFileSize(file.size) }}</div>
               <div class="progress-container">
                 <a-progress
-                    :percent="file.percent"
-                    :status="file.status === 'error' ? 'exception' : file.status === 'done' ? 'success' : 'active'"
-                    size="small"
+                  :percent="file.percent"
+                  :status="file.status === 'error' ? 'exception' : file.status === 'done' ? 'success' : 'active'"
+                  size="small"
                 />
               </div>
             </div>
             <div class="upload-actions">
-              <a-button
-                  v-if="file.status === 'uploading'"
-                  size="small"
-                  @click="handleCancel(file)"
-              >
-                取消
-              </a-button>
-              <close-outlined
-                  v-else
-                  style="color: #ff4d4f; cursor: pointer;"
-                  @click="handleRemove(file)"
-              />
+              <a-button v-if="file.status === 'uploading'" size="small" @click="handleCancel(file)">取消</a-button>
+              <close-outlined v-else style="color: #ff4d4f; cursor: pointer" @click="handleRemove(file)" />
             </div>
           </div>
         </div>
 
-        <div style="margin-top: 16px; text-align: right;">
-          <a-button
-              type="primary"
-              @click="handleUpload"
-              :disabled="fileList.length === 0"
-              :loading="uploading"
-          >
+        <div style="margin-top: 16px; text-align: right">
+          <a-button type="primary" @click="handleUpload" :disabled="fileList.length === 0" :loading="uploading">
             {{ uploading ? '上传中' : '确认' }}
           </a-button>
         </div>
       </a-card>
-
     </div>
   </BasicModal>
 
@@ -477,35 +477,39 @@
   >
     <a-card style="height: 100%">
       <!-- 上方：文件名称、文件夹信息 -->
-      <a-row :gutter="16" style="margin-bottom: 16px;">
+      <a-row :gutter="16" style="margin-bottom: 16px">
         <a-col :span="24" style="">
-          <a-card title="文件信息" size="small" >
-            <a-row :gutter="16" style="display: flex; align-items: center;">
+          <a-card title="文件信息" size="small">
+            <a-row :gutter="16" style="display: flex; align-items: center">
               <a-col :span="8">
-                <div><strong>文件名称：</strong>{{ currentTitleConfigFile?.folder || '-' }}{{ currentTitleConfigFile?.sourceFile || currentTitleConfigFile?.fileName || '-' }}</div>
+                <div>
+                  <strong>文件名称：</strong>
+                  {{ currentTitleConfigFile?.folder || '-'
+                  }}{{ currentTitleConfigFile?.sourceFile || currentTitleConfigFile?.fileName || '-' }}
+                </div>
               </a-col>
-<!--              <a-col :span="8">-->
-<!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
-<!--              </a-col>-->
-              <a-col :span="2" style="text-align: right;">
-                  <strong>所属银行/支付公司：</strong>
+              <!--              <a-col :span="8">-->
+              <!--                <div><strong>文件夹：</strong>{{ currentTitleConfigFile?.folder || '-' }}</div>-->
+              <!--              </a-col>-->
+              <a-col :span="2" style="text-align: right">
+                <strong>所属银行/支付公司：</strong>
               </a-col>
               <a-col :span="6">
-                  <JSelectOrgsConfig
-                    :value="currentTitleConfigFile.selectOrgCd"
-                    placeholder="请选择所属银行/支付公司"
-                    allow-clear
-                    notFoundContent="无此银行，请联系运维添加"
-                    :disabled="isOrganizationSelectDisabled"
-                    @change="(value) => onOrganizationChange(value)"
-                  />
+                <JSelectOrgsConfig
+                  :value="currentTitleConfigFile.selectOrgCd"
+                  placeholder="请选择所属银行/支付公司"
+                  allow-clear
+                  notFoundContent="无此银行，请联系运维添加"
+                  :disabled="isOrganizationSelectDisabled"
+                  @change="(value) => onOrganizationChange(value)"
+                />
               </a-col>
               <a-col :span="8">
-                   <div class="tooltip-box">
-                      <gTooltip :title="useMapTextTitle" trigger="click" >
-                       <a-button type="primary">字段映射说明</a-button>
-                      </gTooltip>
-                   </div>
+                <div class="tooltip-box">
+                  <gTooltip :title="useMapTextTitle" trigger="click">
+                    <a-button type="primary">字段映射说明</a-button>
+                  </gTooltip>
+                </div>
               </a-col>
             </a-row>
           </a-card>
@@ -513,7 +517,7 @@
       </a-row>
 
       <!-- 下方：左侧文件页码信息，右侧标题配置列表 -->
-      <a-row :gutter="16" style="height: calc(100% - 120px);">
+      <a-row :gutter="16" style="height: calc(100% - 120px)">
         <!-- 左侧：文件页码信息 -->
         <a-col :span="4">
           <a-card title="文件页码" size="small" style="height: 100%">
@@ -534,75 +538,108 @@
         <!-- 右侧：标题配置列表 -->
         <a-col :span="20">
           <a-card title="字段映射" size="small" style="height: 100%" class="titleConfigClass">
-           <div class="top-box">
-             <div v-if="isIgnoreTitleConfig" class="ml2">
-               <a-button  type="primary" @click="handleIgnoreConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">忽略配置</a-button>
-               <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
-               <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
-             </div>
-             <div v-else class="ml2">
-               <a-button  type="primary" @click="handleSaveConfig" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled">保存配置</a-button>
-               <span v-if="isCurrentSheetConfigured" class="ml2"><span  style="color:red">*</span>当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可</span>
-               <span v-else class="ml2"><span class="ml2" style="color:red">*</span>多个数据块配置后一起保存</span>
-             </div>
-             <div v-if="titleConfigData.result.length > 0 && titleConfigData.result[0].errorMessage" class="ml2 config-error-message" style="color: #ff4d4f; margin-top: 8px; font-size: 14px;">
-                 {{ titleConfigData.result[0].errorMessage }}
-             </div>
- 
-             <div class="select-box">
-               <div class="select-container">
-                 <div class="select-container-left">交易金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjTransAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
-                   <a-select-option
-                       v-for="item in booleanOptions"
-                       :key="item.value"
-                       :value="item.value"
-                   >
-                     {{item.label}}
-                   </a-select-option>
-                 </a-select>
-               </div>
-               <div class="select-container">
-                 <div class="select-container-left">贷方金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjCreditAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
-                   <a-select-option
-                       v-for="item in booleanOptions"
-                       :key="item.value"
-                       :value="item.value"
-                   >
-                     {{item.label}}
-                   </a-select-option>
-                 </a-select>
-               </div>
-               <div class="select-container">
-                 <div class="select-container-left">结算金额调整项:</div>
-                  <a-select v-model:value="adjForm.adjSettlementAmt" :disabled="isCurrentSheetConfigured || isSaveButtonDisabled" placeholder="请选择" style="width: 80px">
-                   <a-select-option
-                       v-for="item in booleanOptions"
-                       :key="item.value"
-                       :value="item.value"
-                   >
-                     {{item.label}}
-                   </a-select-option>
-                 </a-select>
-               </div>
-             </div>
-           </div>
+            <div class="top-box">
+              <div v-if="isIgnoreTitleConfig" class="ml2">
+                <a-button
+                  type="primary"
+                  @click="handleIgnoreConfig"
+                  :disabled="isCurrentSheetConfigured || isSaveButtonDisabled"
+                >
+                  忽略配置
+                </a-button>
+                <span v-if="isCurrentSheetConfigured" class="ml2">
+                  <span style="color: red">*</span>
+                  当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可
+                </span>
+                <span v-else class="ml2">
+                  <span class="ml2" style="color: red">*</span>
+                  多个数据块配置后一起保存
+                </span>
+              </div>
+              <div v-else class="ml2">
+                <a-button
+                  type="primary"
+                  @click="handleSaveConfig"
+                  :disabled="isCurrentSheetConfigured || isSaveButtonDisabled"
+                >
+                  保存配置
+                </a-button>
+                <span v-if="isCurrentSheetConfigured" class="ml2">
+                  <span style="color: red">*</span>
+                  当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可
+                </span>
+                <span v-else class="ml2">
+                  <span class="ml2" style="color: red">*</span>
+                  多个数据块配置后一起保存
+                </span>
+              </div>
+              <div
+                v-if="titleConfigData.result.length > 0 && titleConfigData.result[0].errorMessage"
+                class="ml2 config-error-message"
+                style="color: #ff4d4f; margin-top: 8px; font-size: 14px"
+              >
+                {{ titleConfigData.result[0].errorMessage }}
+              </div>
+
+              <div class="select-box">
+                <div class="select-container">
+                  <div class="select-container-left">交易金额调整项:</div>
+                  <a-select
+                    v-model:value="adjForm.adjTransAmt"
+                    :disabled="isCurrentSheetConfigured || isSaveButtonDisabled"
+                    placeholder="请选择"
+                    style="width: 80px"
+                  >
+                    <a-select-option v-for="item in booleanOptions" :key="item.value" :value="item.value">
+                      {{ item.label }}
+                    </a-select-option>
+                  </a-select>
+                </div>
+                <div class="select-container">
+                  <div class="select-container-left">贷方金额调整项:</div>
+                  <a-select
+                    v-model:value="adjForm.adjCreditAmt"
+                    :disabled="isCurrentSheetConfigured || isSaveButtonDisabled"
+                    placeholder="请选择"
+                    style="width: 80px"
+                  >
+                    <a-select-option v-for="item in booleanOptions" :key="item.value" :value="item.value">
+                      {{ item.label }}
+                    </a-select-option>
+                  </a-select>
+                </div>
+                <div class="select-container">
+                  <div class="select-container-left">结算金额调整项:</div>
+                  <a-select
+                    v-model:value="adjForm.adjSettlementAmt"
+                    :disabled="isCurrentSheetConfigured || isSaveButtonDisabled"
+                    placeholder="请选择"
+                    style="width: 80px"
+                  >
+                    <a-select-option v-for="item in booleanOptions" :key="item.value" :value="item.value">
+                      {{ item.label }}
+                    </a-select-option>
+                  </a-select>
+                </div>
+              </div>
+            </div>
 
             <a-tabs v-model:activeKey="titleConfigActiveTab" class="table-tab">
-              <a-tab-pane 
-                v-for="(dataBlock, index) in titleConfigData.result" 
-                :key="`dataBlock${dataBlock.dataBlockNum}`" 
+              <a-tab-pane
+                v-for="(dataBlock, index) in titleConfigData.result"
+                :key="`dataBlock${dataBlock.dataBlockNum}`"
                 :tab="`数据块${dataBlock.dataBlockNum}`"
               >
-                <div style="display: flex; justify-content: space-between;">
-                  <div >
-                    <div class="ml4" style="display: flex; align-items: center; width: 100%"><div style="width: 100px">未映射的字段：</div>
-                    <div style="width: 1400px">
-                        <gLocalTooltip :content="dataBlock.noMappingTitle" :contentAttrs="{color: 'red'}">
-  
-                        </gLocalTooltip>
-                    </div>
+                <div style="display: flex; justify-content: space-between">
+                  <div>
+                    <div class="ml4" style="display: flex; align-items: center; width: 100%">
+                      <div style="width: 100px">未映射的字段：</div>
+                      <div style="width: 1400px">
+                        <gLocalTooltip
+                          :content="dataBlock.noMappingTitle"
+                          :contentAttrs="{ color: 'red' }"
+                        ></gLocalTooltip>
+                      </div>
                       <!-- <span style="color:red">{{dataBlock.noMappingTitle}}</span> -->
                     </div>
                   </div>
@@ -618,35 +655,33 @@
                   :loading="titleConfigLoading"
                   :canColDrag="true"
                   :showTableSetting="true"
-                  :tableSetting="{redo: false, size: false, setting: false, fullScreen: false }"
+                  :tableSetting="{ redo: false, size: false, setting: false, fullScreen: false }"
                   :canResize="false"
                   :showIndexColumn="false"
                   class="title-config-table"
                 >
                   <template #tableTitle>
                     <div class="ml2">
-                      <span style="color:red">*</span>下表数据为示例数据，不是全部数据
+                      <span style="color: red">*</span>
+                      下表数据为示例数据，不是全部数据
                     </div>
                   </template>
                   <template #bodyCell="{ column, record }">
                     <template v-if="column.dataIndex === 'config'">
-                        <div v-if="record.type === 'newMetaData'">
-                        配置列
-                      </div>
-                      <div v-else-if="record.type === 'titleColName'">
-                        原字段
-                      </div>
+                      <div v-if="record.type === 'newMetaData'">配置列</div>
+                      <div v-else-if="record.type === 'titleColName'">原字段</div>
                       <div v-else-if="record.type === 'datas'">
-                        {{ record.dataIndex !== undefined ? (record.dataIndex + 1) : '' }}
+                        {{ record.dataIndex !== undefined ? record.dataIndex + 1 : '' }}
                       </div>
                     </template>
-                    
-                    
+
                     <template v-else-if="column.dataIndex && column.dataIndex.startsWith('col')">
-                      <div v-if="record.type === 'newMetaData'" 
-                           class="config-select-cell"
-                           @click="openDialog(record, column, dataBlock)"
-                           :class="{ 'editing': isEditing(record, column) }">
+                      <div
+                        v-if="record.type === 'newMetaData'"
+                        class="config-select-cell"
+                        @click="openDialog(record, column, dataBlock)"
+                        :class="{ editing: isEditing(record, column) }"
+                      >
                         <template v-if="isEditing(record, column)">
                           <!-- <JSearchSelect
                             :dictOptions="titleConfigOptions"
@@ -659,21 +694,47 @@
                             @blur="disableEdit(record, column)"
                             @keydown.enter="disableEdit(record, column)"
                           /> -->
-                           <span>
-                            {{ getSelectedOptionText(dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData) }}
+                          <span>
+                            {{
+                              getSelectedOptionText(
+                                dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter
+                                  .newMetaData,
+                              )
+                            }}
                           </span>
-                          <EditOutlined v-if="!isCurrentSheetConfigured" style="margin-left: 5px; color: #1890ff; font-size: 12px;" />
+                          <EditOutlined
+                            v-if="!isCurrentSheetConfigured"
+                            style="margin-left: 5px; color: #1890ff; font-size: 12px"
+                          />
                         </template>
                         <template v-else>
                           <span>
-                            {{ getSelectedOptionText(dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData) }}
+                            {{
+                              getSelectedOptionText(
+                                dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter
+                                  .newMetaData,
+                              )
+                            }}
                           </span>
-                          <EditOutlined v-if="!isCurrentSheetConfigured" style="margin-left: 5px; color: #1890ff; font-size: 12px;" />
+                          <EditOutlined
+                            v-if="!isCurrentSheetConfigured"
+                            style="margin-left: 5px; color: #1890ff; font-size: 12px"
+                          />
                         </template>
                       </div>
                       <div v-else-if="record.type === 'titleColName'">
-                        <span :style="{ color: dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.oriMetaData ? 'inherit' : 'red' }">
-                          {{ dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName }}
+                        <span
+                          :style="{
+                            color: dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))]
+                              .faFileParameter.oriMetaData
+                              ? 'inherit'
+                              : 'red',
+                          }"
+                        >
+                          {{
+                            dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter
+                              .titleColName
+                          }}
                         </span>
                       </div>
                       <div v-else-if="record.type === 'datas'">
@@ -691,12 +752,7 @@
   </BasicModal>
 
   <!-- 客户信息详情抽屉 -->
-  <BasicDrawer
-    @register="registerCustomerDetailDrawer"
-    title="客户信息详情"
-    width="50%"
-    :showFooter="false"
-  >
+  <BasicDrawer @register="registerCustomerDetailDrawer" title="客户信息详情" width="50%" :showFooter="false">
     <a-descriptions :column="2" bordered size="middle">
       <a-descriptions-item label="文件">{{ customerDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ customerDetailData.rowNum }}</a-descriptions-item>
@@ -745,12 +801,7 @@
   </BasicDrawer>
 
   <!-- 交易流水详情抽屉 -->
-  <BasicDrawer
-    @register="registerTransactionDetailDrawer"
-    title="交易流水详情"
-    width="50%"
-    :showFooter="false"
-  >
+  <BasicDrawer @register="registerTransactionDetailDrawer" title="交易流水详情" width="50%" :showFooter="false">
     <a-descriptions :column="2" bordered size="middle">
       <a-descriptions-item label="文件">{{ transactionDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ transactionDetailData.rowNum }}</a-descriptions-item>
@@ -827,7 +878,9 @@
       <a-descriptions-item label="手机号码">{{ nonBankCustomerDetailData.teleNum }}</a-descriptions-item>
       <a-descriptions-item label="店铺号">{{ nonBankCustomerDetailData.portId }}</a-descriptions-item>
       <a-descriptions-item label="结算银行名称">{{ nonBankCustomerDetailData.settlementOrg }}</a-descriptions-item>
-      <a-descriptions-item label="结算账号/卡号">{{ nonBankCustomerDetailData.settlementAccountNum }}</a-descriptions-item>
+      <a-descriptions-item label="结算账号/卡号">
+        {{ nonBankCustomerDetailData.settlementAccountNum }}
+      </a-descriptions-item>
       <a-descriptions-item label="币种">{{ nonBankCustomerDetailData.currNo }}</a-descriptions-item>
       <a-descriptions-item label="账户类型">{{ nonBankCustomerDetailData.accountType }}</a-descriptions-item>
       <a-descriptions-item label="余额">{{ nonBankCustomerDetailData.balence }}</a-descriptions-item>
@@ -905,7 +958,9 @@
       <a-descriptions-item label="客户种类">{{ nonBankTransactionDetailData.customerType }}</a-descriptions-item>
       <a-descriptions-item label="结算行">{{ nonBankTransactionDetailData.settlementOrg }}</a-descriptions-item>
       <a-descriptions-item label="结算行编码">{{ nonBankTransactionDetailData.settlementOrgCd }}</a-descriptions-item>
-      <a-descriptions-item label="结算账号">{{ nonBankTransactionDetailData.settlementAccountNum }}</a-descriptions-item>
+      <a-descriptions-item label="结算账号">
+        {{ nonBankTransactionDetailData.settlementAccountNum }}
+      </a-descriptions-item>
       <a-descriptions-item label="卡类型">{{ nonBankTransactionDetailData.cardType }}</a-descriptions-item>
       <a-descriptions-item label="设备MAC">{{ nonBankTransactionDetailData.macAddress }}</a-descriptions-item>
       <a-descriptions-item label="交易IP地址">{{ nonBankTransactionDetailData.ipAddress }}</a-descriptions-item>
@@ -922,22 +977,26 @@
   </BasicDrawer>
   <!-- 文件命名说明组件 -->
   <FileInfo ref="fileInfoRef"></FileInfo>
-  <ChangeTableHeaderDialog @register="regModal" :headerDialogObject="headerDialogObject" @getSelectResult="getSelectResult"></ChangeTableHeaderDialog>
+  <ChangeTableHeaderDialog
+    @register="regModal"
+    :headerDialogObject="headerDialogObject"
+    @getSelectResult="getSelectResult"
+  ></ChangeTableHeaderDialog>
 </template>
 
 <script lang="ts" name="tab1" setup>
-import { ref,reactive, onMounted, defineProps,computed,nextTick, h } from 'vue';
-import { render } from '/@/utils/common/renderUtils';
-import { useModal } from '/@/components/Modal';
-import { message, Modal } from 'ant-design-vue';
+import { ref, reactive, onMounted, defineProps, computed, nextTick, h } from 'vue'
+import { render } from '/@/utils/common/renderUtils'
+import { useModal } from '/@/components/Modal'
+import { message, Modal } from 'ant-design-vue'
 //引入VueOfficeExcel组件
 import VueOfficeExcel from '@vue-office/excel'
 import VueOfficePdf from '@vue-office/pdf'
 //引入相关样式
 import '@vue-office/excel/lib/index.css'
-import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
-import JSelectOrgsConfig from "@/components/Form/src/jeecg/components/JSelectOrgsConfig.vue";
-import TransformInfo from "@/views/fund/analysis/components/tab1/transformInfo.vue";
+import JSearchSelect from '@/components/Form/src/jeecg/components/JSearchSelect.vue'
+import JSelectOrgsConfig from '@/components/Form/src/jeecg/components/JSelectOrgsConfig.vue'
+import TransformInfo from '@/views/fund/analysis/components/tab1/transformInfo.vue'
 import {
   deleteFileListApi,
   batchDeleteFileListApi,
@@ -955,34 +1014,31 @@ import {
   getFileConfigApi,
   updateFileConfigApi,
   fileConfigDataApi,
-  queryFilePropertyByFileIdApi
+  queryFilePropertyByFileIdApi,
 } from '../../user.api'
 //ts语法
-import { useRoute } from 'vue-router';
-import {useRouter} from "vue-router";
-import {BasicModal} from '/@/components/Modal';
-import { BasicTable, useTable, TableAction } from '/@/components/Table';
-import { Splitpanes, Pane } from 'splitpanes';
-import 'splitpanes/dist/splitpanes.css';
-import { useTimer } from '@/hooks/core/useTimer';
-import ChangeTableHeaderDialog from "./changeTableHeaderDialog.vue";
-import PdfNewViewer from "./pdfNewViewer.vue";
+import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
+import { BasicModal } from '/@/components/Modal'
+import { BasicTable, useTable, TableAction } from '/@/components/Table'
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+import { useTimer } from '@/hooks/core/useTimer'
+import ChangeTableHeaderDialog from './changeTableHeaderDialog.vue'
+import PdfNewViewer from './pdfNewViewer.vue'
 
-import FileInfo from "./fileInfo.vue";
-import { EditOutlined } from '@ant-design/icons-vue';
+import FileInfo from './fileInfo.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 
-import { BasicDrawer, useDrawer } from '/@/components/Drawer';
+import { BasicDrawer, useDrawer } from '/@/components/Drawer'
 
-import { useGlobSetting } from '/@/hooks/setting';
+import { useGlobSetting } from '/@/hooks/setting'
 
+const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null)
 
+const [regModal, { openModal }] = useModal()
 
-const fileInfoRef = ref<InstanceType<typeof FileInfo> | null>(null);
-
-const [regModal, { openModal }] = useModal();
-
-
-const emits = defineEmits(['timerUpdate']);
+const emits = defineEmits(['timerUpdate'])
 
 const useMapTextTitle = h('div', {}, [
   h('div', '1、首先需要确定银行/支付公司， 如果系统没有自动识别，则必须手工选择正确的机构'),
@@ -990,65 +1046,67 @@ const useMapTextTitle = h('div', {}, [
   h('div', '3、当没有交易方向时， 交易金额和借方金额一样，以正表示借方。'),
   h('div', '4、贷方金额，为正时表示贷方'),
   h('div', '5、结算金额，为正时表示贷方'),
-  h('div', '6、当对应的调整项为【是】时， 以上三个字段均以反方向表示借贷， 比如： 交易金额为负表示借方，贷方金额为负表示贷方，结算金额为负表示贷方。以文件的数据具体情况进行灵活配置。'),
-  h('div', '7、当未映射的字段不重要时，可以不做映射')
-]);
-
-
+  h(
+    'div',
+    '6、当对应的调整项为【是】时， 以上三个字段均以反方向表示借贷， 比如： 交易金额为负表示借方，贷方金额为负表示贷方，结算金额为负表示贷方。以文件的数据具体情况进行灵活配置。',
+  ),
+  h('div', '7、当未映射的字段不重要时，可以不做映射'),
+])
 
 const booleanOptions = [
   {
-    label: '是', value: '是',
-  },{
-    label: '否', value: '否',
-  }
+    label: '是',
+    value: '是',
+  },
+  {
+    label: '否',
+    value: '否',
+  },
 ]
 
-const statusMap:any = {
+const statusMap: any = {
   '900': ['900', '901', '902', '904'],
   '001': ['002', '100', '101'],
   '003': ['003'],
   '102': ['102'],
 }
 
-const router = useRouter();
+const router = useRouter()
 interface ConvertFileItem {
-  id: string;
-  fileName: string;
-  value: string;
-  label: string;
+  id: string
+  fileName: string
+  value: string
+  label: string
 }
 
 interface Props {
-  fileProcessOptions: Array<{value: string, label: string}>;
-  caseInfo: Record<string, any>;
+  fileProcessOptions: Array<{ value: string; label: string }>
+  caseInfo: Record<string, any>
 }
-
-
 
 // 添加文件分页配置
 const filePagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
-  totalPage: 0
-});
+  totalPage: 0,
+})
 
 // CSV表头
 const csvHeaders = computed(() => {
   if (csvData.value.length > 0) {
-    return csvData.value[0];
+    return csvData.value[0]
   }
-  return [];
-});
+  return []
+})
 
 // CSV行数据
 const csvRows = computed(() => {
   if (csvData.value.length > 1) {
-    return csvData.value.slice(1);
+    return csvData.value.slice(1)
   }
-  return [];
-});
+  return []
+})
 
 /**
    * 下拉菜单	查询状态	
@@ -1065,39 +1123,39 @@ const csvRows = computed(() => {
 已完成	102	合并完成
    */
 
-const filterStatusOptions = computed(()=>{
-  if(!props.fileProcessOptions || props.fileProcessOptions.length === 0){
+const filterStatusOptions = computed(() => {
+  if (!props.fileProcessOptions || props.fileProcessOptions.length === 0) {
     return []
   }
-  let resultOptions:any = [];
-  props.fileProcessOptions.forEach(v=>{
-    if(statusMap['900'].includes(v.value)){
-      if(!resultOptions.some(option => option.value === '900')){
+  let resultOptions: any = []
+  props.fileProcessOptions.forEach((v) => {
+    if (statusMap['900'].includes(v.value)) {
+      if (!resultOptions.some((option) => option.value === '900')) {
         resultOptions.push({
           label: '转换失败',
           value: '900',
         })
       }
     }
-    if(statusMap['001'].includes(v.value)){
-        if(!resultOptions.some(option => option.value === '001')){
+    if (statusMap['001'].includes(v.value)) {
+      if (!resultOptions.some((option) => option.value === '001')) {
         resultOptions.push({
           label: '自动运行中',
           value: '001',
         })
-        }
+      }
     }
-    if(['003'].includes(v.value)){
-        resultOptions.push({
-          label: '待配置',
-          value: '003',
-        })
+    if (['003'].includes(v.value)) {
+      resultOptions.push({
+        label: '待配置',
+        value: '003',
+      })
     }
-    if(['102'].includes(v.value)){
-        resultOptions.push({
-          label: '已完成',
-          value: '102',
-        })
+    if (['102'].includes(v.value)) {
+      resultOptions.push({
+        label: '已完成',
+        value: '102',
+      })
     }
   })
   return resultOptions
@@ -1106,33 +1164,33 @@ const filterStatusOptions = computed(()=>{
 const hasTableData = computed(() => {
   switch (activeTab.value) {
     case 'bankCustomer':
-      return activeSheetData.value.bankCustomers.length > 0;
+      return activeSheetData.value.bankCustomers.length > 0
     case 'bankTransaction':
-      return activeSheetData.value.bankTransactions.length > 0;
+      return activeSheetData.value.bankTransactions.length > 0
     case 'nonBankCustomer':
-      return activeSheetData.value.notBankCustomers.length > 0;
+      return activeSheetData.value.notBankCustomers.length > 0
     case 'nonBankTransaction':
-      return activeSheetData.value.notBankTransactions.length > 0;
+      return activeSheetData.value.notBankTransactions.length > 0
     default:
-      return false;
+      return false
   }
-});
+})
 
 // 计算属性：检查当前选中的页码是否已配置
 const isCurrentSheetConfigured = computed(() => {
   if (!activeTitleConfigSheet.value || !currentTitleConfigFile.value?.filePages) {
-    return false;
+    return false
   }
-  
+
   const currentSheet = currentTitleConfigFile.value.filePages.find(
-    sheet => sheet.pageId === activeTitleConfigSheet.value
-  );
-  
-  return currentSheet?.configureStatus === '1';
-});
-const props = defineProps<Props>();
-const formRef = ref();
-const {query} = useRoute();
+    (sheet) => sheet.pageId === activeTitleConfigSheet.value,
+  )
+
+  return currentSheet?.configureStatus === '1'
+})
+const props = defineProps<Props>()
+const formRef = ref()
+const { query } = useRoute()
 const adjForm = ref({
   adjTransAmt: props.caseInfo?.adjTransAmt || 0,
   adjCreditAmt: props.caseInfo?.adjCreditAmt || 0,
@@ -1141,12 +1199,12 @@ const adjForm = ref({
 const formState = reactive({
   folder: '',
   fileName: '',
-  fileStatus: undefined
-});
+  fileStatus: undefined,
+})
 // 添加全屏状态
-const isFullscreen = ref(false);
+const isFullscreen = ref(false)
 // 新增状态
-const activeTab = ref('bankCustomer'); // 默认激活第一个选项卡
+const activeTab = ref('bankCustomer') // 默认激活第一个选项卡
 // 新增分页配置
 const bankCustomerPagination = reactive({
   current: 1,
@@ -1155,8 +1213,8 @@ const bankCustomerPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-  pageSizeOptions: ['10', '20', '50', '100']
-});
+  pageSizeOptions: ['10', '20', '50', '100'],
+})
 
 const bankTransactionPagination = reactive({
   current: 1,
@@ -1165,8 +1223,8 @@ const bankTransactionPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-  pageSizeOptions: ['10', '20', '50', '100']
-});
+  pageSizeOptions: ['10', '20', '50', '100'],
+})
 
 const nonBankCustomerPagination = reactive({
   current: 1,
@@ -1175,8 +1233,8 @@ const nonBankCustomerPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-  pageSizeOptions: ['10', '20', '50', '100']
-});
+  pageSizeOptions: ['10', '20', '50', '100'],
+})
 
 const nonBankTransactionPagination = reactive({
   current: 1,
@@ -1185,216 +1243,210 @@ const nonBankTransactionPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-  pageSizeOptions: ['10', '20', '50', '100']
-});
-
-
+  pageSizeOptions: ['10', '20', '50', '100'],
+})
 
 // 新增：编辑Modal相关状态
-const editModalVisible = ref(false);
-const fileStreamInfo = ref<any>();
+const editModalVisible = ref(false)
+const fileStreamInfo = ref<any>()
 // 定义支持的文件类型
 const supportedTypes = ['pdf', 'csv', 'xls', 'xlsm', 'xlsx']
-const currentFileType = ref('');
+const currentFileType = ref('')
 const csvContent = ref('')
-const csvData = ref<any[]>([]);
+const csvData = ref<any[]>([])
 
 // 解析CSV数据
 const parseCSV = (csvText: string): any[][] => {
   // 处理可能存在的BOM标记
-  if (typeof csvText === 'string' && csvText.charCodeAt(0) === 0xFEFF) {
-    csvText = csvText.slice(1);
+  if (typeof csvText === 'string' && csvText.charCodeAt(0) === 0xfeff) {
+    csvText = csvText.slice(1)
   }
-  
-  const lines = csvText.split('\n');
-  const result: any[][] = [];
+
+  const lines = csvText.split('\n')
+  const result: any[][] = []
   console.info('lines', lines)
-  lines.forEach(line => {
+  lines.forEach((line) => {
     if (line.trim() !== '') {
       // 简单的CSV解析，按逗号分割（实际项目中可能需要更复杂的解析）
-      const cells = line.split(',').map(cell => {
+      const cells = line.split(',').map((cell) => {
         // 去除可能存在的引号
-        return cell.trim().replace(/^"(.*)"$/, '$1');
-      });
-      result.push(cells);
+        return cell.trim().replace(/^"(.*)"$/, '$1')
+      })
+      result.push(cells)
     }
-  });
+  })
   console.info('result', result)
-  return result;
-};
-const vueExcelOptions =ref({
-  transformImage:true,
-  xls:true
+  return result
+}
+const vueExcelOptions = ref({
+  transformImage: true,
+  xls: true,
 })
-const currentRecord = ref<any>(null);
-const convertModalVisible = ref(false);
-const convertFileList = ref<ConvertFileItem[]>([]);
-const selectedConvertFile = ref<ConvertFileItem | null>(null);
-const convertFormRef = ref();
+const currentRecord = ref<any>(null)
+const convertModalVisible = ref(false)
+const convertFileList = ref<ConvertFileItem[]>([])
+const selectedConvertFile = ref<ConvertFileItem | null>(null)
+const convertFormRef = ref()
 const convertFormState = ref({
   fileName: '', // 保留原文件名
   orgName: '',
-  dataOrg:undefined,
-  orgCd:'',
+  dataOrg: undefined,
+  orgCd: '',
   orgNameFrom: '',
   inVertical: undefined,
   folderName: '',
   directory: '',
   dataCardNum: '',
   status: '',
-  customerName:'',
-  customerId:''
-});
+  customerName: '',
+  customerId: '',
+})
 
 // 添加文件加载状态
-const fileLoading = ref(false);
+const fileLoading = ref(false)
 // 添加文件大小限制（以字节为单位）
-const MAX_FILE_SIZE = 10; // 3MB
+const MAX_FILE_SIZE = 10 // 3MB
 
-const bankEfit = ref(false);
-const selectedBank = ref('');
-const activeSheet = ref('');
+const bankEfit = ref(false)
+const selectedBank = ref('')
+const activeSheet = ref('')
 interface SheetData {
-  pageId: string;
-  pageName: string;
-
+  pageId: string
+  pageName: string
 }
 
 interface ActiveSheetData {
-  bankCustomers: any[];
-  bankTransactions: any[];
-  notBankCustomers: any[];
-  notBankTransactions: any[];
+  bankCustomers: any[]
+  bankTransactions: any[]
+  notBankCustomers: any[]
+  notBankTransactions: any[]
 }
 
 const activeSheetData = ref<ActiveSheetData>({
-  bankCustomers:[],
-  bankTransactions:[],
-  notBankCustomers:[],
-  notBankTransactions:[]
-});
+  bankCustomers: [],
+  bankTransactions: [],
+  notBankCustomers: [],
+  notBankTransactions: [],
+})
 
 // 表格列定义
 const bankCustomerColumns = ref([
-  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '银行名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true},
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
-  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '客户证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '客户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
-  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
-  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
-  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
-  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
-]);
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true },
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '银行名称', dataIndex: 'orgName', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '客户证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '客户证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true },
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
+])
 
 const bankTransactionColumns = ref([
-  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '户名', dataIndex: 'accountName', width: 100, resizable: true},
-  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true},
-  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
-  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
-  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
-  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
-  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
-  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
-  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
-  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
-  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
-  { title: '对方机构名称', dataIndex: 'counterOrgName', width: 100, resizable: true},
-  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true},
-  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true},
-  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
-  { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true},
-  { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
-]);
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true },
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true },
+  { title: '户名', dataIndex: 'accountName', width: 100, resizable: true },
+  { title: '账号', dataIndex: 'accountNum', width: 100, resizable: true },
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
+  { title: '交易渠道', dataIndex: 'channel', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
+  { title: '对方机构名称', dataIndex: 'counterOrgName', width: 100, resizable: true },
+  { title: '对方账号', dataIndex: 'counterAccountNo', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'showCustomerId', width: 100, resizable: true },
+  { title: '客户名称', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true },
+  { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true },
+  { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
+])
 
 // 表格列定义
 const nonBankCustomerColumns = ref([
-  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
-  { title: '结算银行名称', dataIndex: 'settlementOrg', width: 100, resizable: true},
-  { title: '结算账号/卡号', dataIndex: 'settlementAccountNum', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
-  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true},
-  { title: '余额', dataIndex: 'balence', width: 100, resizable: true},
-  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '商户证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
-]);
-
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true },
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true },
+  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true },
+  { title: '结算银行名称', dataIndex: 'settlementOrg', width: 100, resizable: true },
+  { title: '结算账号/卡号', dataIndex: 'settlementAccountNum', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
+  { title: '客户种类', dataIndex: 'customerType', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '商户证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
+])
 
 const nonBankTransactionColumns = ref([
-  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true},
-  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true},
-  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true},
-  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true},
-  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true},
-  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true},
-  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true},
-  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true},
-  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true},
-  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true},
-  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true},
-  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true},
-  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true},
-  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true},
-  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true},
-  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true},
-  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true},
-  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true},
-  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true},
-  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true},
-  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true},
-  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true},
-  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true},
-  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true},
-  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true},
-  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true},
-  { title: '余额', dataIndex: 'balance', width: 100, resizable: true},
-  { title: '备注', dataIndex: 'comment', width: 100, resizable: true},
-  { title: '操作', dataIndex: 'operation',  width: 120, fixed: 'right' as const , resizable: true}
-]);
-
+  { title: '文件', dataIndex: 'fileName', width: 100, resizable: true },
+  { title: '行号', dataIndex: 'rowNum', width: 100, resizable: true },
+  { title: '机构名称', dataIndex: 'orgName', width: 100, resizable: true },
+  { title: '商户号', dataIndex: 'showMerchantId', width: 100, resizable: true },
+  { title: '商户名称', dataIndex: 'merchantName', width: 100, resizable: true },
+  { title: '店铺号', dataIndex: 'portId', width: 100, resizable: true },
+  { title: '订单号', dataIndex: 'orderNo', width: 100, resizable: true },
+  { title: '商品名称', dataIndex: 'productName', width: 100, resizable: true },
+  { title: '手机号码', dataIndex: 'teleNum', width: 100, resizable: true },
+  { title: '流水号', dataIndex: 'transNo', width: 100, resizable: true },
+  { title: '卡号', dataIndex: 'cardNum', width: 100, resizable: true },
+  { title: '户名', dataIndex: 'customerName', width: 100, resizable: true },
+  { title: '币种', dataIndex: 'currNo', width: 100, resizable: true },
+  { title: '交易方向', dataIndex: 'transWay', width: 100, resizable: true },
+  { title: '交易金额', dataIndex: 'transAmt', width: 100, resizable: true },
+  { title: '贷方发生额', dataIndex: 'creditAmt', width: 100, resizable: true },
+  { title: '交易种类', dataIndex: 'transType', width: 100, resizable: true },
+  { title: '业务日期', dataIndex: 'bizDate', width: 100, resizable: true },
+  { title: '交易时间', dataIndex: 'transTime', width: 100, resizable: true },
+  { title: '交易卡开户行', dataIndex: 'openOrgCd', width: 100, resizable: true },
+  { title: '客户号', dataIndex: 'customerId', width: 100, resizable: true },
+  { title: '营业执照', dataIndex: 'licenseNum', width: 100, resizable: true },
+  { title: '法人姓名', dataIndex: 'legalPersonName', width: 100, resizable: true },
+  { title: '证件种类', dataIndex: 'idType', width: 100, resizable: true },
+  { title: '证件号码', dataIndex: 'idNum', width: 100, resizable: true },
+  { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true },
+  { title: '余额', dataIndex: 'balance', width: 100, resizable: true },
+  { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
+])
 
 //const nonBankCustomerColumns = ref([...bankCustomerColumns.value]);
 //const nonBankTransactionColumns = ref([...bankTransactionColumns.value]);
 
 interface CurrentFile {
-  id?: string;
-  fileName: string;
-  fileAddress: string;
-  filePages: SheetData[];
-  organization: string;
-  organizationCode: string;
-  selectOrgCd: string;
-
+  id?: string
+  fileName: string
+  fileAddress: string
+  filePages: SheetData[]
+  organization: string
+  organizationCode: string
+  selectOrgCd: string
 }
 
 let currentFile = reactive<CurrentFile>({
@@ -1402,29 +1454,29 @@ let currentFile = reactive<CurrentFile>({
   fileAddress: '',
   filePages: [],
   organization: '',
-  organizationCode:'',
-  selectOrgCd: ''
-});
+  organizationCode: '',
+  selectOrgCd: '',
+})
 // 上传Modal相关状态
-const uploadModalVisible = ref(false);
-const fileList = ref<any[]>([]);
-const uploading = ref(false);
-const tableLoading = ref(false);
-const searchLoading = ref(false);
+const uploadModalVisible = ref(false)
+const fileList = ref<any[]>([])
+const uploading = ref(false)
+const tableLoading = ref(false)
+const searchLoading = ref(false)
 
 const columns = ref([
   {
     title: '源文件',
     dataIndex: 'sourceFile',
     width: 200,
-    resizable: true
+    resizable: true,
   },
   {
     title: '文件夹',
     dataIndex: 'folder',
     key: 'folder',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '状态',
@@ -1433,15 +1485,15 @@ const columns = ref([
     resizable: true,
     customRender: ({ text }) => {
       // 定义需要显示为红色的状态码
-      const redStatusCodes = ['900', '901', '902', '904', '999'];
-      const displayText = render.renderDict(text, 'fa_file_process_status');
-      
+      const redStatusCodes = ['900', '901', '902', '904', '999']
+      const displayText = render.renderDict(text, 'fa_file_process_status')
+
       // 如果状态码在红色状态码列表中，则显示为红色
       if (redStatusCodes.includes(text)) {
-        return h('span', { style: 'color: red;' }, displayText);
+        return h('span', { style: 'color: red;' }, displayText)
       }
-      
-      return displayText;
+
+      return displayText
     },
   },
   {
@@ -1457,21 +1509,29 @@ const columns = ref([
         '003': 25,
         '100': 50,
         '101': 75,
-        '102': 100
-      };
-      
-      const percent = progressMap[text] || 0;
-      
+        '102': 100,
+      }
+
+      const percent = progressMap[text] || 0
+
       return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
-        h('div', { 
-          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
-        }, [
-          h('div', {
-            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
-          }, `${percent}%`)
-        ])
-      ]);
-    }
+        h(
+          'div',
+          {
+            style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;',
+          },
+          [
+            h(
+              'div',
+              {
+                style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+              },
+              `${percent}%`,
+            ),
+          ],
+        ),
+      ])
+    },
   },
   {
     title: '配置进度',
@@ -1479,47 +1539,55 @@ const columns = ref([
     width: 80,
     resizable: true,
     customRender: ({ text }) => {
-      const percent = text || 0;
+      const percent = text || 0
       return h('div', { style: 'display: flex; align-items: center; width: 100%' }, [
-        h('div', {
-          style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;'
-        }, [
-          h('div', {
-            style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
-          }, `${percent}%`)
-        ])
-      ]);
-    }
+        h(
+          'div',
+          {
+            style: 'width: 100%; background-color: #f5f5f5; border-radius: 10px; overflow: hidden;',
+          },
+          [
+            h(
+              'div',
+              {
+                style: `width: ${percent}%; height: 20px; background: linear-gradient(90deg, #1890ff, #40a9ff); transition: width 0.3s; text-align: center; line-height: 20px; color: white; font-size: 12px;`,
+              },
+              `${percent}%`,
+            ),
+          ],
+        ),
+      ])
+    },
   },
   {
     title: '返回信息',
     dataIndex: 'returnInfo',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '上传时间',
     dataIndex: 'uploadTime',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '成功时间',
     dataIndex: 'successTime',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '导入行数',
     dataIndex: 'importDataNum',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '去重行数',
     dataIndex: 'repeatDataNum',
     width: 150,
-    resizable: true
+    resizable: true,
   },
   {
     title: '操作',
@@ -1528,10 +1596,10 @@ const columns = ref([
     fixed: 'right' as const,
     width: 250,
     ifShow: true, // 确保操作列始终显示
-    resizable: true
-  }
-]);
-const dataSource = ref([]);
+    resizable: true,
+  },
+])
+const dataSource = ref([])
 
 // 添加分页配置
 const pagination = reactive({
@@ -1541,99 +1609,99 @@ const pagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-  pageSizeOptions: ['10', '20', '50', '100']
-});
+  pageSizeOptions: ['10', '20', '50', '100'],
+})
 
 interface FaFileParameter {
-  id: string;
-  caseId: string;
-  caseFileId: string;
-  caseFilePageId: string;
-  dataBlock: string;
-  colSequence: string;
-  dataRowNum: string;
-  dataType: string;
-  newMetaData: string;
-  titleColName: string;
-  oriMetaData: string;
+  id: string
+  caseId: string
+  caseFileId: string
+  caseFilePageId: string
+  dataBlock: string
+  colSequence: string
+  dataRowNum: string
+  dataType: string
+  newMetaData: string
+  titleColName: string
+  oriMetaData: string
 }
 
 interface DataBlockStruct {
-  faFileParameter: FaFileParameter;
-  datas: string[];
-  availableOptions?: FileConfigOption[];
+  faFileParameter: FaFileParameter
+  datas: string[]
+  availableOptions?: FileConfigOption[]
 }
 
 interface DataBlock {
-  dataBlockNum: number;
-  dataBlockStucts: DataBlockStruct[];
-  noMappingTitle: string;
-  errorMessage?: string; // 添加错误信息属性
+  dataBlockNum: number
+  dataBlockStucts: DataBlockStruct[]
+  noMappingTitle: string
+  errorMessage?: string // 添加错误信息属性
 }
 
 // 添加配置选项类型
 interface FileConfigOption {
-  value: string;
-  text: string;
+  value: string
+  text: string
 }
 
 // 标题配置相关状态
-const titleConfigModalVisible = ref(false);
-const currentTitleConfigFile = ref<any>(null);
-const activeTitleConfigSheet = ref('');
-const titleConfigActiveTab = ref('dataBlock1');
+const titleConfigModalVisible = ref(false)
+const currentTitleConfigFile = ref<any>(null)
+const activeTitleConfigSheet = ref('')
+const titleConfigActiveTab = ref('dataBlock1')
 const titleConfigData = ref<{
-  result: DataBlock[];
+  result: DataBlock[]
 }>({
-  result: []
-});
+  result: [],
+})
 
 // 添加标题配置加载状态
-const titleConfigLoading = ref(false);
+const titleConfigLoading = ref(false)
 
 // 所属银行/支付公司下拉框是否禁用
-const isOrganizationSelectDisabled = ref(false);
+const isOrganizationSelectDisabled = ref(false)
 
 // 保存按钮是否禁用（防止重复提交）
-const isSaveButtonDisabled = ref(false);
+const isSaveButtonDisabled = ref(false)
 
 // 添加下拉选项状态
-const titleConfigOptions = ref<FileConfigOption[]>([]);
-const orgListOptions = ref<{value: string, text: string}[]>([]);
+const titleConfigOptions = ref<FileConfigOption[]>([])
+const orgListOptions = ref<{ value: string; text: string }[]>([])
 
-const selectedRowKeys = ref<string[]>([]);
+const selectedRowKeys = ref<string[]>([])
 
 // 配置行选择器
 const rowSelection = computed(() => {
   return {
     selectedRowKeys: selectedRowKeys.value,
     onChange: (selectedKeys: string[]) => {
-      selectedRowKeys.value = selectedKeys;
+      selectedRowKeys.value = selectedKeys
     },
     selections: [
       {
         key: 'all',
         text: '选择全部',
         onSelect: () => {
-          selectedRowKeys.value = dataSource.value.map(item => item.id);
+          selectedRowKeys.value = dataSource.value.map((item) => item.id)
         },
       },
       {
         key: 'clear',
         text: '清空所有',
         onSelect: () => {
-          selectedRowKeys.value = [];
+          selectedRowKeys.value = []
         },
       },
     ],
-  };
-});
+  }
+})
 // 删除文件
 const batchDeleteFiles = async (record) => {
   // 校验是否选择了数据
   if (selectedRowKeys.value.length === 0) {
-    message.warning('请先选择要删除的文件');
-    return;
+    message.warning('请先选择要删除的文件')
+    return
   }
 
   Modal.confirm({
@@ -1645,24 +1713,23 @@ const batchDeleteFiles = async (record) => {
     onOk() {
       const params = {
         caseId: query.caseId,
-        ids: selectedRowKeys.value
+        ids: selectedRowKeys.value,
       }
-      batchDeleteFileListApi(params).then(()=>{
-        fetchFileList();
+      batchDeleteFileListApi(params).then(() => {
+        fetchFileList()
       })
-
-    }
-  });
-};
+    },
+  })
+}
 
 const [registerTable] = useTable({
   columns: columns.value,
   dataSource: dataSource,
   loading: tableLoading,
   pagination: pagination,
-  rowSelection:rowSelection,
+  rowSelection: rowSelection,
   bordered: true,
-  rowKey:'id',
+  rowKey: 'id',
   size: 'small',
   scroll: { x: 1500 },
   canColDrag: true,
@@ -1671,14 +1738,14 @@ const [registerTable] = useTable({
   canResize: true,
   // 添加最小高度确保表格在全屏时正确显示
   minHeight: 300,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
     size: false,
     setting: false,
     fullScreen: false,
-    cacheKey: 'fund-analysis-main-table'
-  }
-});
+    cacheKey: 'fund-analysis-main-table',
+  },
+})
 
 const [registerBankCustomerTable] = useTable({
   columns: bankCustomerColumns.value,
@@ -1692,14 +1759,14 @@ const [registerBankCustomerTable] = useTable({
   showTableSetting: true,
   canResize: true,
   minHeight: 300,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
     size: false,
     setting: true,
     fullScreen: false,
-    cacheKey: 'fund-analysis-bank-customer-table'
-  }
-});
+    cacheKey: 'fund-analysis-bank-customer-table',
+  },
+})
 
 const [registerBankTransactionTable] = useTable({
   columns: bankTransactionColumns.value,
@@ -1713,14 +1780,14 @@ const [registerBankTransactionTable] = useTable({
   showTableSetting: true,
   canResize: true,
   minHeight: 300,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
     size: false,
     setting: true,
     fullScreen: false,
-    cacheKey: 'fund-analysis-bank-transaction-table'
-  }
-});
+    cacheKey: 'fund-analysis-bank-transaction-table',
+  },
+})
 
 const [registerNonBankCustomerTable] = useTable({
   columns: nonBankCustomerColumns.value,
@@ -1734,14 +1801,14 @@ const [registerNonBankCustomerTable] = useTable({
   showTableSetting: true,
   canResize: true,
   minHeight: 300,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
     size: false,
     setting: true,
     fullScreen: false,
-    cacheKey: 'fund-analysis-non-bank-customer-table'
-  }
-});
+    cacheKey: 'fund-analysis-non-bank-customer-table',
+  },
+})
 
 const [registerNonBankTransactionTable] = useTable({
   columns: nonBankTransactionColumns.value,
@@ -1754,32 +1821,35 @@ const [registerNonBankTransactionTable] = useTable({
   showTableSetting: true,
   canResize: true,
   minHeight: 300,
-  tableSetting: { 
+  tableSetting: {
     redo: false,
     size: false,
     setting: true,
     fullScreen: false,
-    cacheKey: 'fund-analysis-non-bank-transaction-table'
-  }
-});
+    cacheKey: 'fund-analysis-non-bank-transaction-table',
+  },
+})
 
 // 添加定时器引用
 
 // 页面初始化时调用接口
 onMounted(() => {
-  pagination.current = 1;
-  fetchFileList();
-});
-
+  pagination.current = 1
+  fetchFileList()
+})
 
 // 不展示压缩文件后缀的文件
-const checkFilesNames=(record)=> {
-  const {sourceFile,fileName} = record
-  const lowerFile1 = sourceFile.toLowerCase();
-  const lowerFile2 = fileName.toLowerCase();
+const checkFilesNames = (record) => {
+  const { sourceFile, fileName } = record
+  const lowerFile1 = sourceFile.toLowerCase()
+  const lowerFile2 = fileName.toLowerCase()
 
-  return !(lowerFile1.endsWith(".zip") || lowerFile1.endsWith(".rar") ||
-      lowerFile2.endsWith(".zip") || lowerFile2.endsWith(".rar"));
+  return !(
+    lowerFile1.endsWith('.zip') ||
+    lowerFile1.endsWith('.rar') ||
+    lowerFile2.endsWith('.zip') ||
+    lowerFile2.endsWith('.rar')
+  )
 }
 
 // 获取文件列表
@@ -1787,7 +1857,7 @@ const fetchFileList = async (isAutoRefresh = false) => {
   try {
     // 如果是自动刷新，则不显示loading效果
     if (!isAutoRefresh) {
-      tableLoading.value = true;
+      tableLoading.value = true
     }
 
     const params = {
@@ -1796,339 +1866,340 @@ const fetchFileList = async (isAutoRefresh = false) => {
       fileName: formState.fileName,
       fileStatus: formState.fileStatus ? statusMap[formState.fileStatus] : [],
       pageNo: pagination.current,
-      pageSize: pagination.pageSize
-    };
+      pageSize: pagination.pageSize,
+    }
 
-    const response = await caseFilePageListApi(params);
-    dataSource.value = response.records || [];
-    pagination.total = response.total || 0;
-  
+    const response = await caseFilePageListApi(params)
+    dataSource.value = response.records || []
+    pagination.total = response.total || 0
+
     // 确保分页信息完全更新，解决总页数不更新的问题
     if (response.pages !== undefined) {
       // 更新分页的总页数
-      const totalPage = response.pages;
+      const totalPage = response.pages
       // 这里我们不需要直接操作页数，但确保pagination对象是响应式的
       // 当total改变时，分页组件会自动重新计算页数
     }
   } catch (error) {
-    console.error('获取文件列表失败:', error);
-    dataSource.value = [];
-    pagination.total = 0;
+    console.error('获取文件列表失败:', error)
+    dataSource.value = []
+    pagination.total = 0
   } finally {
     // 如果是自动刷新，则不显示loading效果
     if (!isAutoRefresh) {
-      tableLoading.value = false;
-      searchLoading.value = false;
+      tableLoading.value = false
+      searchLoading.value = false
     }
   }
-};
+}
 
-const { restart, stop } = useTimer(()=>{
+const { restart, stop } = useTimer(() => {
   fetchFileList(true)
   emits('timerUpdate')
-}, 15000);
+}, 15000)
 
 // 添加表格分页变化处理方法
 const handleTableChange = (pag) => {
-  pagination.current = pag.current;
-  pagination.pageSize = pag.pageSize;
-  fetchFileList();
-};
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
+  fetchFileList()
+}
 
 // 修改onFileListUpload方法
 const onFileListUpload = (data) => {
-  const file = fileList.value.find(item => item.uid === data.file.uid);
+  const file = fileList.value.find((item) => item.uid === data.file.uid)
   if (file) {
-    file.status = 'uploading';
+    file.status = 'uploading'
   }
 
   const params = {
     file: data.file,
     data: { caseId: query.caseId },
-  };
+  }
 
-  uploadFileApi(params,true).then((res)=>{
+  uploadFileApi(params, true).then((res) => {
     if (res.code === 200) {
       // 上传成功，更新文件状态
-      const uploadedFile = fileList.value.find(item => item.uid === data.file.uid);
+      const uploadedFile = fileList.value.find((item) => item.uid === data.file.uid)
       if (uploadedFile) {
-        uploadedFile.status = 'done';
-        uploadedFile.percent = 100;
+        uploadedFile.status = 'done'
+        uploadedFile.percent = 100
         // 触发响应式更新
-        fileList.value = [...fileList.value];
+        fileList.value = [...fileList.value]
       }
-    }else{
-      const uploadedFile = fileList.value.find(item => item.uid === data.file.uid);
+    } else {
+      const uploadedFile = fileList.value.find((item) => item.uid === data.file.uid)
       if (uploadedFile) {
-        uploadedFile.status = 'error';
-        uploadedFile.percent = 0;
+        uploadedFile.status = 'error'
+        uploadedFile.percent = 0
         // 触发响应式更新
-        fileList.value = [...fileList.value];
+        fileList.value = [...fileList.value]
       }
-      message.error(`${res.message || '上传失败'} `);
+      message.error(`${res.message || '上传失败'} `)
     }
-
   })
-};
+}
 
 // 搜索处理
 const onSearch = () => {
-  searchLoading.value = true;
-  pagination.current = 1;
-  fetchFileList();
-};
+  searchLoading.value = true
+  pagination.current = 1
+  fetchFileList()
+}
 
 // 重置搜索
 const resetSearch = () => {
-  formRef.value.resetFields();
-  pagination.current = 1;
+  formRef.value.resetFields()
+  pagination.current = 1
   fetchFileList()
-};
+}
 
 // 上传文件
 const uploadFile = () => {
   uploadModalVisible.value = true
-};
+}
 
 // 上传前校验
 const beforeUpload = (file) => {
   // 检查是否已存在同名文件
-  const isExist = fileList.value.some(item => item.name === file.name);
+  const isExist = fileList.value.some((item) => item.name === file.name)
   if (isExist) {
-    message.warning(`文件 ${file.name} 已经存在上传列表中`);
-    return false;
+    message.warning(`文件 ${file.name} 已经存在上传列表中`)
+    return false
   }
 
   // 添加到文件列表
-  fileList.value = [...fileList.value, {
-    uid: file.uid,
-    name: file.name,
-    size: file.size,
-    type: file.type,
-    originFileObj: file,
-    percent: 0,
-    status: 'pending'
-  }];
-
-};
+  fileList.value = [
+    ...fileList.value,
+    {
+      uid: file.uid,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      originFileObj: file,
+      percent: 0,
+      status: 'pending',
+    },
+  ]
+}
 
 // 移除文件
 const handleRemove = (file) => {
-  fileList.value = fileList.value.filter(item => item.uid !== file.uid);
-};
+  fileList.value = fileList.value.filter((item) => item.uid !== file.uid)
+}
 
 // 取消上传
 const handleCancel = (file) => {
-  file.status = 'removed';
-  message.info(`已取消上传: ${file.name}`);
-  handleRemove(file);
-};
+  file.status = 'removed'
+  message.info(`已取消上传: ${file.name}`)
+  handleRemove(file)
+}
 
 // 格式化文件大小
 const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-};
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]
+}
 
 // 执行上传
 const handleUpload = async () => {
   if (fileList.value.length === 0) {
-    message.warning('请选择要上传的文件');
-    return;
+    message.warning('请选择要上传的文件')
+    return
   }
-  uploading.value = false;
-  uploadModalVisible.value = false;
-  message.info("文件开始处理，请稍候！")
-  fileList.value = [];
+  uploading.value = false
+  uploadModalVisible.value = false
+  message.info('文件开始处理，请稍候！')
+  fileList.value = []
 
   // 刷新文件列表
-  fetchFileList();
-};
+  fetchFileList()
+}
 
 // 修改selectSheet方法
 const selectSheet = async (sheet) => {
-  activeSheet.value = sheet.pageId;
-  activeTab.value = 'bankCustomer'; // 重置为第一个选项卡
+  activeSheet.value = sheet.pageId
+  activeTab.value = 'bankCustomer' // 重置为第一个选项卡
 
   // 重置所有分页参数
-  resetAllPagination();
+  resetAllPagination()
 
   // 清空所有数据
   activeSheetData.value = {
     bankCustomers: [],
     bankTransactions: [],
     notBankCustomers: [],
-    notBankTransactions: []
-  };
+    notBankTransactions: [],
+  }
 
   // 加载第一个选项卡的数据
-  await loadTabData('bankCustomer');
-};
+  await loadTabData('bankCustomer')
+}
 // 新增：重置所有分页参数方法
 const resetAllPagination = () => {
-  bankCustomerPagination.current = 1;
-  bankCustomerPagination.total = 0;
-  bankTransactionPagination.current = 1;
-  bankTransactionPagination.total = 0;
-  nonBankCustomerPagination.current = 1;
-  nonBankCustomerPagination.total = 0;
-  nonBankTransactionPagination.current = 1;
-  nonBankTransactionPagination.total = 0;
-};
+  bankCustomerPagination.current = 1
+  bankCustomerPagination.total = 0
+  bankTransactionPagination.current = 1
+  bankTransactionPagination.total = 0
+  nonBankCustomerPagination.current = 1
+  nonBankCustomerPagination.total = 0
+  nonBankTransactionPagination.current = 1
+  nonBankTransactionPagination.total = 0
+}
 
 // 新增：表格分页变化处理方法
 const handleBankCustomerTableChange = (pagination) => {
-  bankCustomerPagination.current = pagination.current;
-  bankCustomerPagination.pageSize = pagination.pageSize;
-  loadTabData('bankCustomer');
-};
+  bankCustomerPagination.current = pagination.current
+  bankCustomerPagination.pageSize = pagination.pageSize
+  loadTabData('bankCustomer')
+}
 
 const handleBankTransactionTableChange = (pagination) => {
-  bankTransactionPagination.current = pagination.current;
-  bankTransactionPagination.pageSize = pagination.pageSize;
-  loadTabData('bankTransaction');
-};
+  bankTransactionPagination.current = pagination.current
+  bankTransactionPagination.pageSize = pagination.pageSize
+  loadTabData('bankTransaction')
+}
 
 const handleNonBankCustomerTableChange = (pagination) => {
-  nonBankCustomerPagination.current = pagination.current;
-  nonBankCustomerPagination.pageSize = pagination.pageSize;
-  loadTabData('nonBankCustomer');
-};
+  nonBankCustomerPagination.current = pagination.current
+  nonBankCustomerPagination.pageSize = pagination.pageSize
+  loadTabData('nonBankCustomer')
+}
 
 const handleNonBankTransactionTableChange = (pagination) => {
-  nonBankTransactionPagination.current = pagination.current;
-  nonBankTransactionPagination.pageSize = pagination.pageSize;
-  loadTabData('nonBankTransaction');
-};
+  nonBankTransactionPagination.current = pagination.current
+  nonBankTransactionPagination.pageSize = pagination.pageSize
+  loadTabData('nonBankTransaction')
+}
 
 // 新增：选项卡切换处理方法
 const handleTabChange = (key) => {
   // 如果当前选项卡没有数据，则加载数据
   if (!hasTableData.value) {
-    loadTabData(key);
+    loadTabData(key)
   }
-};
+}
 
 // 新增：加载选项卡数据方法
 const loadTabData = async (tabKey) => {
-  if (!activeSheet.value) return;
+  if (!activeSheet.value) return
 
   try {
-    tableLoading.value = true;
+    tableLoading.value = true
 
-    let pageNo, pageSize, params, response;
+    let pageNo, pageSize, params, response
 
     switch (tabKey) {
       case 'bankCustomer':
-        pageNo = bankCustomerPagination.current;
-        pageSize = bankCustomerPagination.pageSize;
+        pageNo = bankCustomerPagination.current
+        pageSize = bankCustomerPagination.pageSize
         params = {
           filePageId: activeSheet.value,
           pageNo,
-          pageSize
-        };
-        response = await standardCustomerApi(params);
-        activeSheetData.value.bankCustomers = response.records || response.bankCustomers || [];
-        bankCustomerPagination.total = response.total || 0;
-        break;
+          pageSize,
+        }
+        response = await standardCustomerApi(params)
+        activeSheetData.value.bankCustomers = response.records || response.bankCustomers || []
+        bankCustomerPagination.total = response.total || 0
+        break
 
       case 'bankTransaction':
-        pageNo = bankTransactionPagination.current;
-        pageSize = bankTransactionPagination.pageSize;
+        pageNo = bankTransactionPagination.current
+        pageSize = bankTransactionPagination.pageSize
         params = {
           filePageId: activeSheet.value,
           pageNo,
-          pageSize
-        };
-        response = await standardTransApi(params);
-        activeSheetData.value.bankTransactions = response.records || response.bankTransactions || [];
-        bankTransactionPagination.total = response.total || 0;
-        break;
+          pageSize,
+        }
+        response = await standardTransApi(params)
+        activeSheetData.value.bankTransactions = response.records || response.bankTransactions || []
+        bankTransactionPagination.total = response.total || 0
+        break
 
       case 'nonBankCustomer':
-        pageNo = nonBankCustomerPagination.current;
-        pageSize = nonBankCustomerPagination.pageSize;
+        pageNo = nonBankCustomerPagination.current
+        pageSize = nonBankCustomerPagination.pageSize
         params = {
           filePageId: activeSheet.value,
           pageNo,
-          pageSize
-        };
-        response = await standardNonBankCustomerApi(params);
-        activeSheetData.value.notBankCustomers = response.records || response.notBankCustomers || [];
-        nonBankCustomerPagination.total = response.total || 0;
-        break;
+          pageSize,
+        }
+        response = await standardNonBankCustomerApi(params)
+        activeSheetData.value.notBankCustomers = response.records || response.notBankCustomers || []
+        nonBankCustomerPagination.total = response.total || 0
+        break
 
       case 'nonBankTransaction':
-        pageNo = nonBankTransactionPagination.current;
-        pageSize = nonBankTransactionPagination.pageSize;
+        pageNo = nonBankTransactionPagination.current
+        pageSize = nonBankTransactionPagination.pageSize
         params = {
           filePageId: activeSheet.value,
           pageNo,
-          pageSize
-        };
-        response = await standardNonBankTransApi(params);
-        activeSheetData.value.notBankTransactions = response.records || response.notBankTransactions || [];
-        nonBankTransactionPagination.total = response.total || 0;
-        break;
+          pageSize,
+        }
+        response = await standardNonBankTransApi(params)
+        activeSheetData.value.notBankTransactions = response.records || response.notBankTransactions || []
+        nonBankTransactionPagination.total = response.total || 0
+        break
     }
   } catch (error) {
-    console.error(`加载${tabKey}数据失败:`, error);
-    message.error(`加载数据失败`);
+    console.error(`加载${tabKey}数据失败:`, error)
+    message.error(`加载数据失败`)
   } finally {
-    tableLoading.value = false;
+    tableLoading.value = false
   }
-};
+}
 
-
-const getFileConvertInfo =(id)=>{
-   getFileConfirmInfo({fileId:id}).then((response)=>{
-    convertFormState.value = response
-  }).catch((err)=>{
-    resetConvertForm()
-  })
-
+const getFileConvertInfo = (id) => {
+  getFileConfirmInfo({ fileId: id })
+    .then((response) => {
+      convertFormState.value = response
+    })
+    .catch((err) => {
+      resetConvertForm()
+    })
 }
 
 const handleEditFileClick = (record) => {
   // 定义可打开模态框的状态
-  const validStatuses = [ '101', '102'];
+  const validStatuses = ['101', '102']
   // 定义配置中的状态
-  const configStatuses = ['003'];
+  const configStatuses = ['003']
   // 定义加载中的状态
-  const loadingStatuses = ['000', '100', '001', '002', '004', '005'];
+  const loadingStatuses = ['000', '100', '001', '002', '004', '005']
   // 定义错误状态
-  const errorStatuses = ['900', '901', '902', '904', '999'];
+  const errorStatuses = ['900', '901', '902', '904', '999']
 
   if (validStatuses.includes(record.status)) {
     // 状态允许打开模态框
-    editFile(record);
+    editFile(record)
   } else if (configStatuses.includes(record.status)) {
     // 文件正在配置中
-    message.warning('请配置完成后操作');
+    message.warning('请配置完成后操作')
   } else if (loadingStatuses.includes(record.status)) {
     // 文件正在加载中
-    message.warning('文件数据正在解析中，请稍后');
+    message.warning('文件数据正在解析中，请稍后')
   } else if (errorStatuses.includes(record.status)) {
     // 文件加载错误
-    message.error('文件加载错误，请修改后再运行');
+    message.error('文件加载错误，请修改后再运行')
   } else {
     // 其他状态默认提示
-    message.warning('当前状态不支持转换查看');
+    message.warning('当前状态不支持转换查看')
   }
-};
+}
 
 // 修改editFile方法，不再在打开模态框时自动加载文件预览
 const editFile = async (record) => {
   // 先显示模态框
-  editModalVisible.value = true;
-  currentRecord.value = record;
-  
+  editModalVisible.value = true
+  currentRecord.value = record
+
   // 查询转换基本信息
-  const convertInfo = await getFileConverResultApi({fileId:record.id})
-  const fileInfo = await getFileInfoItem({fileId:record.id})
+  const convertInfo = await getFileConverResultApi({ fileId: record.id })
+  const fileInfo = await getFileInfoItem({ fileId: record.id })
   const { fileType } = fileInfo
   currentFileType.value = (fileType || '').toLowerCase()
 
@@ -2140,41 +2211,41 @@ const editFile = async (record) => {
   //   return; // 如果文件类型不支持，直接返回，不显示Modal
   // }
 
-  Object.assign(currentFile, convertInfo || {});
-  if(convertInfo.organizationCode){
+  Object.assign(currentFile, convertInfo || {})
+  if (convertInfo.organizationCode) {
     selectedBank.value = convertInfo.organizationCode
   }
 
   // 重置分页和数据
-  resetAllPagination();
+  resetAllPagination()
   activeSheetData.value = {
     bankCustomers: [],
     bankTransactions: [],
     notBankCustomers: [],
-    notBankTransactions: []
-  };
+    notBankTransactions: [],
+  }
 
   // 默认选择第一个sheet并加载数据
-  const {filePages} = convertInfo
+  const { filePages } = convertInfo
   if (filePages && filePages.length > 0) {
-    await selectSheet(filePages[0]);
+    await selectSheet(filePages[0])
   }
 
   // 清空文件预览相关数据
-  fileStreamInfo.value = '';
-  iframeUrl.value ='';
-  csvData.value = [];
-  csvContent.value = '';
+  fileStreamInfo.value = ''
+  iframeUrl.value = ''
+  csvData.value = []
+  csvContent.value = ''
 
   nextTick(() => {
     // 先显示模态框
     //editModalVisible.value = true;
     // 在模态框显示后再重置分隔条到居中位置
     setTimeout(() => {
-      resetSplitPanelsToCenter();
-    }, 100);
-  });
-};
+      resetSplitPanelsToCenter()
+    }, 100)
+  })
+}
 
 // 清理创建的对象URL
 const cleanupUrl = () => {
@@ -2182,11 +2253,11 @@ const cleanupUrl = () => {
     fileStreamInfo.value = ''
   }
   if (iframeUrl.value) {
-    iframeUrl.value = '';
+    iframeUrl.value = ''
   }
 }
 
-const iframeUrl = ref('');
+const iframeUrl = ref('')
 
 // const previewFile2 = (record)=>{
 //   var url = 'http://192.168.1.11:3100/jeecgboot/1979469283597438977/4028818b99f6898d0199f6898de00003_0 0test.xls'; //要预览文件的访问地址
@@ -2197,204 +2268,211 @@ const iframeUrl = ref('');
 // }
 
 // 预览文件excel或者pdf或者csv文件
-const previewFile = (record, type)=>{
-  const responseType = currentFileType.value === 'csv'?'arraybuffer':'arraybuffer';
-  
+const previewFile = (record, type) => {
+  const responseType = currentFileType.value === 'csv' ? 'arraybuffer' : 'arraybuffer'
+
   // 设置加载状态
-  fileLoading.value = true;
-  
+  fileLoading.value = true
+
   // 先获取文件信息，检查文件大小
-  getFileInfoItem({fileId:record.id}).then(fileInfo => {
-    const fileSize = fileInfo.fileSize || 0;
-    
-    //  当前文件大小为 xxMB， 超过系统可负荷的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?
-    // 检查文件大小是否超过限制
-    if (fileSize > MAX_FILE_SIZE * 1024 * 1024) {
-      Modal.confirm({
-        title: '文件过大提示',
-        content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统可负载的 ${MAX_FILE_SIZE}MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?`,
-        okText: '继续预览',
-        cancelText: '取消',
-        onOk: () => {
-          // 用户选择继续，执行文件加载
-          loadFileContent(record, responseType,fileInfo, type);
-        },
-        onCancel: () => {
-          // 用户取消预览
-          fileLoading.value = false;
-          fileStreamInfo.value = '';
-          iframeUrl.value ='';
-        }
-      });
-    } else {
-      // 文件大小在限制范围内，直接加载
-      loadFileContent(record, responseType,fileInfo, type);
-    }
-  }).catch(error => {
-    console.error('获取文件信息失败:', error);
-  });
+  getFileInfoItem({ fileId: record.id })
+    .then((fileInfo) => {
+      const fileSize = fileInfo.fileSize || 0
+
+      //  当前文件大小为 xxMB， 超过系统可负荷的 3MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?
+      // 检查文件大小是否超过限制
+      if (fileSize > MAX_FILE_SIZE * 1024 * 1024) {
+        Modal.confirm({
+          title: '文件过大提示',
+          content: `当前文件大小为 ${(fileSize / (1024 * 1024)).toFixed(2)}MB，超过系统可负载的 ${MAX_FILE_SIZE}MB 限制，建议线下用 WPS 打开查看。如果继续预览，会影响浏览器性能，是否继续预览?`,
+          okText: '继续预览',
+          cancelText: '取消',
+          onOk: () => {
+            // 用户选择继续，执行文件加载
+            loadFileContent(record, responseType, fileInfo, type)
+          },
+          onCancel: () => {
+            // 用户取消预览
+            fileLoading.value = false
+            fileStreamInfo.value = ''
+            iframeUrl.value = ''
+          },
+        })
+      } else {
+        // 文件大小在限制范围内，直接加载
+        loadFileContent(record, responseType, fileInfo, type)
+      }
+    })
+    .catch((error) => {
+      console.error('获取文件信息失败:', error)
+    })
 }
 
 // 实际加载文件内容的方法
-const loadFileContent = (record, responseType,fileInfo, type) => {
-  const globSetting = useGlobSetting();
-  const domainUrl = globSetting.domainUrl; // 这就是 VITE_GLOB_DOMAIN_URL 的值
+const loadFileContent = (record, responseType, fileInfo, type) => {
+  const globSetting = useGlobSetting()
+  const domainUrl = globSetting.domainUrl // 这就是 VITE_GLOB_DOMAIN_URL 的值
 
   // const API_DOMAIN = import.meta.env.VITE_GLOB_DOMAIN_URL
-  const previewUrl = domainUrl+"/"+fileInfo.fileViewUrl;
+  const previewUrl = domainUrl + '/' + fileInfo.fileViewUrl
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
-    fileStreamInfo.value = previewUrl;
-    fileLoading.value = false;
-    return;
-  } else if(['pdf'].includes(currentFileType.value)){
-    if(type === 'fast'){
+    fileStreamInfo.value = previewUrl
+    fileLoading.value = false
+    return
+  } else if (['pdf'].includes(currentFileType.value)) {
+    if (type === 'fast') {
       iframeUrl.value = previewUrl
-    }else{
-      const pdfPreviewUrl  = '/static/pdf/web/viewer.html?file='+encodeURIComponent(previewUrl) + '&disableRange=true&disableAutoFetch=false&disableStream=true';
-      iframeUrl.value = pdfPreviewUrl;
+    } else {
+      const pdfPreviewUrl =
+        '/static/pdf/web/viewer.html?file=' +
+        encodeURIComponent(previewUrl) +
+        '&disableRange=true&disableAutoFetch=false&disableStream=true'
+      iframeUrl.value = pdfPreviewUrl
     }
 
-    fileLoading.value = false;
-    return;
+    fileLoading.value = false
+    return
   }
-  getFileStreamByFileId({fileId:record.id}, responseType).then((response)=>{
-    console.info('文件类型',currentFileType.value)
-    if (currentFileType.value === 'csv') {
-      // CSV文件以arraybuffer形式获取，然后转换为文本
-      console.info('文件内容',response)
-      
-      // 尝试多种编码方式解码
-      let csvText = '';
-      const encodings = ['utf-8', 'gbk', 'gb2312'];
-      for (let encoding of encodings) {
-        try {
-          const decoder = new TextDecoder(encoding, { fatal: true });
-          csvText = decoder.decode(response.data);
-          console.log(`成功使用 ${encoding} 编码解码文件`);
-          break;
-        } catch (e) {
-          console.log(`使用 ${encoding} 编码解码失败`);
+  getFileStreamByFileId({ fileId: record.id }, responseType)
+    .then((response) => {
+      console.info('文件类型', currentFileType.value)
+      if (currentFileType.value === 'csv') {
+        // CSV文件以arraybuffer形式获取，然后转换为文本
+        console.info('文件内容', response)
+
+        // 尝试多种编码方式解码
+        let csvText = ''
+        const encodings = ['utf-8', 'gbk', 'gb2312']
+        for (let encoding of encodings) {
+          try {
+            const decoder = new TextDecoder(encoding, { fatal: true })
+            csvText = decoder.decode(response.data)
+            console.log(`成功使用 ${encoding} 编码解码文件`)
+            break
+          } catch (e) {
+            console.log(`使用 ${encoding} 编码解码失败`)
+          }
         }
+
+        // 处理可能存在的BOM标记
+        if (csvText.charCodeAt(0) === 0xfeff) {
+          csvText = csvText.slice(1)
+        }
+
+        // 解析CSV内容并存储
+        csvContent.value = csvText
+        try {
+          csvData.value = parseCSV(csvText)
+        } catch (e) {
+          console.error('解析CSV失败:', e)
+          csvData.value = []
+          message.error('CSV文件解析失败')
+        }
+        fileLoading.value = false
       }
-      
-      // 处理可能存在的BOM标记
-      if (csvText.charCodeAt(0) === 0xFEFF) {
-        csvText = csvText.slice(1);
-      }
-      
-      // 解析CSV内容并存储
-      csvContent.value = csvText;
-      try {
-        csvData.value = parseCSV(csvText);
-      } catch (e) {
-        console.error('解析CSV失败:', e);
-        csvData.value = [];
-        message.error('CSV文件解析失败');
-      }
-      fileLoading.value = false;
-    }
-    // else if (currentFileType.value === 'excel') {
-    //   // Excel文件以blob形式获取，然后转换为URL
-    //   const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    //   const url = URL.createObjectURL(blob);
-    //   fileStreamInfo.value = url;
-    //   fileLoading.value = false;
-    // } else if (currentFileType.value === 'pdf') {
-    //   // PDF文件以blob形式获取，然后转换为URL
-    //   const blob = new Blob([response.data], { type: 'application/pdf' });
-    //   fileStreamInfo.value = blob;
-    //   fileLoading.value = false;
-    // } else {
-    //   // 其他文件类型直接显示
-    //   const blob = new Blob([response.data], { type: 'application/octet-stream' });
-    //   const url = URL.createObjectURL(blob);
-    //   fileStreamInfo.value = url;
-    //   fileLoading.value = false;
-    // }
-  }).catch(error => {
-    console.error('获取文件流失败:', error);
-    fileLoading.value = false;
-    message.error('文件加载失败');
-  });
+      // else if (currentFileType.value === 'excel') {
+      //   // Excel文件以blob形式获取，然后转换为URL
+      //   const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      //   const url = URL.createObjectURL(blob);
+      //   fileStreamInfo.value = url;
+      //   fileLoading.value = false;
+      // } else if (currentFileType.value === 'pdf') {
+      //   // PDF文件以blob形式获取，然后转换为URL
+      //   const blob = new Blob([response.data], { type: 'application/pdf' });
+      //   fileStreamInfo.value = blob;
+      //   fileLoading.value = false;
+      // } else {
+      //   // 其他文件类型直接显示
+      //   const blob = new Blob([response.data], { type: 'application/octet-stream' });
+      //   const url = URL.createObjectURL(blob);
+      //   fileStreamInfo.value = url;
+      //   fileLoading.value = false;
+      // }
+    })
+    .catch((error) => {
+      console.error('获取文件流失败:', error)
+      fileLoading.value = false
+      message.error('文件加载失败')
+    })
 }
 
 // Excel渲染事件处理
 const onExcelRendered = () => {
-  console.log('Excel渲染完成');
-  fileLoading.value = false;
-};
+  console.log('Excel渲染完成')
+  fileLoading.value = false
+}
 
 const onExcelError = (error) => {
-  console.error('Excel渲染错误:', error);
-  fileLoading.value = false;
-  message.error('Excel文件渲染失败');
-};
+  console.error('Excel渲染错误:', error)
+  fileLoading.value = false
+  message.error('Excel文件渲染失败')
+}
 
 // 添加PDF渲染事件处理
 const onPdfRendered = () => {
-  console.log('PDF渲染完成');
-  fileLoading.value = false;
-};
+  console.log('PDF渲染完成')
+  fileLoading.value = false
+}
 
 const onPdfError = (error) => {
-  console.error('PDF渲染错误:', error);
-  fileLoading.value = false;
-  message.error('PDF文件渲染失败');
-  
+  console.error('PDF渲染错误:', error)
+  fileLoading.value = false
+  message.error('PDF文件渲染失败')
+
   // 可以根据错误类型提供更具体的提示
   if (error?.message?.includes('Invalid PDF')) {
-    message.error('PDF文件格式不正确或已损坏');
+    message.error('PDF文件格式不正确或已损坏')
   } else if (error?.message?.includes('Missing PDF')) {
-    message.error('PDF文件内容缺失');
+    message.error('PDF文件内容缺失')
   }
-};
+}
 
 // 关闭编辑Modal
 const closeEditModal = () => {
-  editModalVisible.value = false;
-  isFullscreen.value = false;
+  editModalVisible.value = false
+  isFullscreen.value = false
   // 重置Modal样式
-  const modalElement = document.querySelector('.full-modal .ant-modal') as HTMLElement | null;
+  const modalElement = document.querySelector('.full-modal .ant-modal') as HTMLElement | null
   if (modalElement) {
-    modalElement.style.width = '100%';
-    modalElement.style.height = 'auto';
-    modalElement.style.top = '';
-    modalElement.style.left = '';
-    modalElement.style.maxWidth = '';
+    modalElement.style.width = '100%'
+    modalElement.style.height = 'auto'
+    modalElement.style.top = ''
+    modalElement.style.left = ''
+    modalElement.style.maxWidth = ''
   }
   // 清空当前文件信息
   Object.assign(currentFile, {
     fileName: '',
     pageNumber: '',
-    fileContent: ''
-  });
+    fileContent: '',
+  })
   // 重置分页和数据
-  resetAllPagination();
+  resetAllPagination()
   activeSheetData.value = {
     bankCustomers: [],
     bankTransactions: [],
     notBankCustomers: [],
-    notBankTransactions: []
-  };
-};
+    notBankTransactions: [],
+  }
+}
 
 // 修改confirmFileConvert方法
 const confirmFileConvert = async () => {
   try {
-    resetConvertForm();
+    resetConvertForm()
     // 获取分页文件列表
-    await fetchConvertFileList();
+    await fetchConvertFileList()
     // 默认选择第一个文件
-    if(convertFileList.value && convertFileList.value.length){
-      selectedConvertFile.value = convertFileList.value[0];
+    if (convertFileList.value && convertFileList.value.length) {
+      selectedConvertFile.value = convertFileList.value[0]
       getFileConvertInfo(selectedConvertFile.value.id)
     }
     // 显示模态框
-    convertModalVisible.value = true;
+    convertModalVisible.value = true
   } catch (error) {
-    message.error('获取文件列表失败');
+    message.error('获取文件列表失败')
   }
-};
+}
 
 // 添加获取转换文件列表的方法（分页）
 const fetchConvertFileList = async () => {
@@ -2402,132 +2480,131 @@ const fetchConvertFileList = async () => {
     const params = {
       caseId: query.caseId,
       pageNo: filePagination.current,
-      pageSize: filePagination.pageSize
-    };
-    const response = await standardFilePageListApi(params);
-    convertFileList.value = response.records || [];
-    filePagination.total = response.total || 0;
-    filePagination.totalPage = Math.ceil(filePagination.total / filePagination.pageSize) || 0;
+      pageSize: filePagination.pageSize,
+    }
+    const response = await standardFilePageListApi(params)
+    convertFileList.value = response.records || []
+    filePagination.total = response.total || 0
+    filePagination.totalPage = Math.ceil(filePagination.total / filePagination.pageSize) || 0
   } catch (error) {
-    console.error('获取文件列表失败:', error);
-    convertFileList.value = [];
-    filePagination.total = 0;
-    filePagination.totalPage = 0;
+    console.error('获取文件列表失败:', error)
+    convertFileList.value = []
+    filePagination.total = 0
+    filePagination.totalPage = 0
   }
-};
+}
 
 const saveTitleConfig = async () => {
   try {
     // 设置按钮为禁用状态，防止重复提交
-    isSaveButtonDisabled.value = true;
-    
+    isSaveButtonDisabled.value = true
+
     // 校验是否选择了所属银行/支付公司
     if (!currentTitleConfigFile.value.organizationCode) {
-      message.warning('请先选择所属银行/支付公司');
-      isSaveButtonDisabled.value = false;
-      return;
+      message.warning('请先选择所属银行/支付公司')
+      isSaveButtonDisabled.value = false
+      return
     }
-    
+
     // 确保orgCode是字符串而不是对象或数组
-    let orgCodeValue = currentTitleConfigFile.value.organizationCode;
+    let orgCodeValue = currentTitleConfigFile.value.organizationCode
     if (Array.isArray(orgCodeValue)) {
-      orgCodeValue = orgCodeValue[0];
+      orgCodeValue = orgCodeValue[0]
     }
     if (typeof orgCodeValue === 'object' && orgCodeValue !== null) {
-      orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue);
+      orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue)
     }
     if (typeof orgCodeValue !== 'string') {
-      orgCodeValue = String(orgCodeValue);
+      orgCodeValue = String(orgCodeValue)
     }
-    
+
     // 准备请求参数
     const params = {
-      faFileParameters: titleConfigData.value.result.flatMap(dataBlock => 
-        dataBlock.dataBlockStucts.map(struct => struct.faFileParameter)
+      faFileParameters: titleConfigData.value.result.flatMap((dataBlock) =>
+        dataBlock.dataBlockStucts.map((struct) => struct.faFileParameter),
       ),
       orgCode: orgCodeValue,
       pageId: activeTitleConfigSheet.value,
       adjTransAmt: adjForm.value.adjTransAmt,
       adjCreditAmt: adjForm.value.adjCreditAmt,
       adjSettlementAmt: adjForm.value.adjSettlementAmt,
-    };
-    
+    }
+
     // 调用API保存配置
-    await updateFileConfigApi(params);
+    await updateFileConfigApi(params)
     //message.success('字段映射已保存');
-    
+
     // 保存成功后，刷新文件列表数据
-    fetchFileList();
-    
+    fetchFileList()
+
     // 重新加载所属银行/支付公司下拉框和页码列表数据
-    await showTitleConfigModal(currentTitleConfigFile.value, true);
-    
+    await showTitleConfigModal(currentTitleConfigFile.value, true)
+
     // 如果之前有选中的页码，则重新加载该页码的数据
     if (activeTitleConfigSheet.value) {
       // 查找当前选中的页码对象
       const currentSheet = currentTitleConfigFile.value.filePages?.find(
-        sheet => sheet.pageId === activeTitleConfigSheet.value
-      );
-      
+        (sheet) => sheet.pageId === activeTitleConfigSheet.value,
+      )
+
       // 如果找到了页码对象，则重新加载数据
       if (currentSheet) {
-        await selectTitleConfigSheet(currentSheet);
+        await selectTitleConfigSheet(currentSheet)
       }
     }
   } catch (error) {
-    console.error('保存标题配置失败:', error);
+    console.error('保存标题配置失败:', error)
     // 解析错误信息并显示在"未映射的字段"下方
-    let errorMessage = '保存标题配置失败';
+    let errorMessage = '保存标题配置失败'
     if (error instanceof Error) {
-      errorMessage = error.message;
+      errorMessage = error.message
     } else if (typeof error === 'string') {
-      errorMessage = error;
+      errorMessage = error
     } else if (error && typeof error === 'object' && 'message' in error) {
-      errorMessage = (error as { message: string }).message;
+      errorMessage = (error as { message: string }).message
     }
-    
+
     // 将错误信息添加到对应的数据块中
     if (titleConfigData.value.result.length > 0) {
       // 默认显示在第一个数据块中
-      titleConfigData.value.result[0].errorMessage = errorMessage;
+      titleConfigData.value.result[0].errorMessage = errorMessage
     }
-    
   } finally {
     // 无论成功或失败，都取消按钮的禁用状态
-    isSaveButtonDisabled.value = false;
+    isSaveButtonDisabled.value = false
   }
-};
+}
 
 // 上一页
 const prevPage = () => {
   if (filePagination.current > 1) {
-    filePagination.current--;
-    fetchConvertFileList();
+    filePagination.current--
+    fetchConvertFileList()
   }
-};
+}
 
 // 下一页
 const nextPage = () => {
   if (filePagination.current < filePagination.totalPage) {
-    filePagination.current++;
-    fetchConvertFileList();
+    filePagination.current++
+    fetchConvertFileList()
   }
-};
+}
 
 // 选择文件
 const selectConvertFile = (file) => {
-  selectedConvertFile.value = file;
-  resetConvertForm();
+  selectedConvertFile.value = file
+  resetConvertForm()
   getFileConvertInfo(file.id)
   // 可以在这里加载文件的预填信息
-};
+}
 
 // 重置表单
 const resetConvertForm = () => {
   convertFormState.value = {
     fileName: '', // 保留原文件名
     orgName: '',
-    orgCd:'',
+    orgCd: '',
     orgNameFrom: '',
     inVertical: undefined,
     folderName: '',
@@ -2535,10 +2612,10 @@ const resetConvertForm = () => {
     directory: '',
     dataCardNum: '',
     status: '',
-    customerName:'',
-    customerId:''
+    customerName: '',
+    customerId: '',
   }
-};
+}
 
 // 删除文件
 const deleteFile = async (record) => {
@@ -2549,38 +2626,35 @@ const deleteFile = async (record) => {
     okType: 'danger',
     cancelText: '取消',
     onOk() {
-      deleteFileListApi({fileId:record.id}).then(()=>{
-        fetchFileList();
+      deleteFileListApi({ fileId: record.id }).then(() => {
+        fetchFileList()
       })
-
-    }
-  });
-};
+    },
+  })
+}
 
 // 状态颜色映射（可根据需要调整）
 const statusColorMap = {
-  '1': 'green',    // 成功
-  '2': 'red',      // 失败
-  '3': 'orange',   // 处理中
-  '4': 'blue',     // 待处理
-  '5': 'gray'      // 其他状态
-};
+  '1': 'green', // 成功
+  '2': 'red', // 失败
+  '3': 'orange', // 处理中
+  '4': 'blue', // 待处理
+  '5': 'gray', // 其他状态
+}
 
 // 状态颜色
 const getStatusColor = (status) => {
-  return statusColorMap[status] || 'default';
-};
+  return statusColorMap[status] || 'default'
+}
 
 // 状态文本 - 从fileProcessOptions中获取
 const getStatusText = (statusValue) => {
   if (!props.fileProcessOptions || !Array.isArray(props.fileProcessOptions)) {
-    return '--';
+    return '--'
   }
-  const option = props.fileProcessOptions.find(opt => opt.value === statusValue);
-  return option ? option.label : '--';
-};
-
-
+  const option = props.fileProcessOptions.find((opt) => opt.value === statusValue)
+  return option ? option.label : '--'
+}
 
 // 新增：获取表格数据的方法
 const getTableAction = (record) => {
@@ -2591,266 +2665,261 @@ const getTableAction = (record) => {
         // 可以在这里添加具体的操作
       },
     },
-  ];
-};
+  ]
+}
 
 // 添加面板控制相关状态
-const leftPanelVisible = ref(true);
-const rightPanelVisible = ref(true);
-const leftPanelSize = ref(50);
-const rightPanelSize = ref(50);
+const leftPanelVisible = ref(true)
+const rightPanelVisible = ref(true)
+const leftPanelSize = ref(50)
+const rightPanelSize = ref(50)
 
 // 保存面板大小用于恢复
-const lastLeftPanelSize = ref(50);
-const lastRightPanelSize = ref(50);
+const lastLeftPanelSize = ref(50)
+const lastRightPanelSize = ref(50)
 
 // 切换左侧面板显示/隐藏
 const toggleLeftPanel = () => {
-  leftPanelVisible.value = !leftPanelVisible.value;
-  
+  leftPanelVisible.value = !leftPanelVisible.value
+
   if (leftPanelVisible.value) {
     // 恢复左侧面板
-    leftPanelSize.value = lastLeftPanelSize.value;
+    leftPanelSize.value = lastLeftPanelSize.value
     if (!rightPanelVisible.value) {
-      rightPanelVisible.value = true;
+      rightPanelVisible.value = true
     }
-    rightPanelSize.value = 100 - leftPanelSize.value;
+    rightPanelSize.value = 100 - leftPanelSize.value
   } else {
     // 隐藏左侧面板
-    lastLeftPanelSize.value = leftPanelSize.value;
-    rightPanelSize.value = 100;
+    lastLeftPanelSize.value = leftPanelSize.value
+    rightPanelSize.value = 100
   }
-};
+}
 
 // 切换右侧面板显示/隐藏
 const toggleRightPanel = () => {
-  rightPanelVisible.value = !rightPanelVisible.value;
-  
+  rightPanelVisible.value = !rightPanelVisible.value
+
   if (rightPanelVisible.value) {
     // 恢复右侧面板
-    rightPanelSize.value = lastRightPanelSize.value;
+    rightPanelSize.value = lastRightPanelSize.value
     if (!leftPanelVisible.value) {
-      leftPanelVisible.value = true;
+      leftPanelVisible.value = true
     }
-    leftPanelSize.value = 100 - rightPanelSize.value;
+    leftPanelSize.value = 100 - rightPanelSize.value
   } else {
     // 隐藏右侧面板
-    lastRightPanelSize.value = rightPanelSize.value;
-    leftPanelSize.value = 100;
+    lastRightPanelSize.value = rightPanelSize.value
+    leftPanelSize.value = 100
   }
-};
+}
 
 // 处理分割面板大小调整
 const onSplitterResize = (panes) => {
   if (panes.length >= 2) {
     // 检查左侧面板是否应该隐藏（拖拽到最左侧）
     if (panes[0].size <= 0.1 && leftPanelVisible.value) {
-      leftPanelVisible.value = false;
+      leftPanelVisible.value = false
       // 保存当前大小以便恢复
-      lastLeftPanelSize.value = leftPanelSize.value;
-      rightPanelSize.value = 100;
-      return;
+      lastLeftPanelSize.value = leftPanelSize.value
+      rightPanelSize.value = 100
+      return
     }
-    
+
     // 检查右侧面板是否应该隐藏（拖拽到最右侧）
     if (panes[1].size <= 0.1 && rightPanelVisible.value) {
-      rightPanelVisible.value = false;
+      rightPanelVisible.value = false
       // 保存当前大小以便恢复
-      lastRightPanelSize.value = rightPanelSize.value;
-      leftPanelSize.value = 100;
-      return;
+      lastRightPanelSize.value = rightPanelSize.value
+      leftPanelSize.value = 100
+      return
     }
-    
+
     // 如果左侧面板之前被隐藏，现在变大了，应该重新显示
     if (!leftPanelVisible.value && panes[0].size > 0.1) {
-      leftPanelVisible.value = true;
-      leftPanelSize.value = lastLeftPanelSize.value;
-      rightPanelSize.value = 100 - leftPanelSize.value;
-      return;
+      leftPanelVisible.value = true
+      leftPanelSize.value = lastLeftPanelSize.value
+      rightPanelSize.value = 100 - leftPanelSize.value
+      return
     }
-    
+
     // 如果右侧面板之前被隐藏，现在变大了，应该重新显示
     if (!rightPanelVisible.value && panes[1].size > 0.1) {
-      rightPanelVisible.value = true;
-      rightPanelSize.value = lastRightPanelSize.value;
-      leftPanelSize.value = 100 - rightPanelSize.value;
-      return;
+      rightPanelVisible.value = true
+      rightPanelSize.value = lastRightPanelSize.value
+      leftPanelSize.value = 100 - rightPanelSize.value
+      return
     }
-    
+
     // 更新面板大小
-    leftPanelSize.value = panes[0].size;
-    rightPanelSize.value = panes[1].size;
+    leftPanelSize.value = panes[0].size
+    rightPanelSize.value = panes[1].size
   }
-};
+}
 
 // 重置分隔条到居中位置
 const resetSplitPanelsToCenter = () => {
   // 设置面板大小为居中
-  leftPanelSize.value = 50;
-  rightPanelSize.value = 50;
-  
+  leftPanelSize.value = 50
+  rightPanelSize.value = 50
+
   // 保存当前大小以便后续使用
-  lastLeftPanelSize.value = 50;
-  lastRightPanelSize.value = 50;
+  lastLeftPanelSize.value = 50
+  lastRightPanelSize.value = 50
   // 显示两个面板
-  leftPanelVisible.value = true;
-  rightPanelVisible.value = true;
-};
+  leftPanelVisible.value = true
+  rightPanelVisible.value = true
+}
 
 // 在脚本部分添加新方法
 const getRowClassName = (record) => {
-  return record.cleanRule ? 'blue-row' : '';
-};
+  return record.cleanRule ? 'blue-row' : ''
+}
 
 // 新增：处理标题配置按钮点击事件
 const handleTitleConfigClick = (record) => {
   // 定义可打开模态框的状态
-  const validStatuses = ['003', '100', '101', '904','102'];
+  const validStatuses = ['003', '100', '101', '904', '102']
   // 定义加载中的状态
-  const loadingStatuses = ['000', '001', '002', '004', '005'];
+  const loadingStatuses = ['000', '001', '002', '004', '005']
   // 定义错误状态
-  const errorStatuses = ['900', '901', '902',  '999'];
+  const errorStatuses = ['900', '901', '902', '999']
 
   if (validStatuses.includes(record.status)) {
     // 状态允许打开模态框
-    showTitleConfigModal(record);
+    showTitleConfigModal(record)
   } else if (loadingStatuses.includes(record.status)) {
     // 文件正在加载中
-    message.warning('文件正在加载中，请稍后');
+    message.warning('文件正在加载中，请稍后')
   } else if (errorStatuses.includes(record.status)) {
     // 文件加载错误
-    message.error('文件加载错误，请修改后再配置');
+    message.error('文件加载错误，请修改后再配置')
   } else {
     // 其他状态默认提示
-    message.warning('当前状态不支持标题配置');
+    message.warning('当前状态不支持标题配置')
   }
-};
+}
 
 // 标题配置相关方法
 const showTitleConfigModal = async (record, isSaving = false) => {
-  currentTitleConfigFile.value = record;
-  titleConfigModalVisible.value = true;
+  currentTitleConfigFile.value = record
+  titleConfigModalVisible.value = true
 
-
-  
   // 重置激活的页码
-  activeTitleConfigSheet.value = '';
+  activeTitleConfigSheet.value = ''
   // 清空现有数据
   titleConfigData.value = {
-    result: []
-  };
+    result: [],
+  }
 
   //清空标题配置
-  titleConfigOptions.value = [];
+  titleConfigOptions.value = []
   try {
-
     // 获取文件转换结果信息（包含文件页码信息）
-    const fileConvertResult = await getFileConverResultApi({fileId: record.id});
-    
+    const fileConvertResult = await getFileConverResultApi({ fileId: record.id })
+
     // 获取文件属性信息，设置默认的所属银行/支付公司
-    let organizationCode = '';
+    let organizationCode = ''
     try {
-      const fileProperty = await queryFilePropertyByFileIdApi({fileId: record.id});
+      const fileProperty = await queryFilePropertyByFileIdApi({ fileId: record.id })
       if (fileProperty && fileProperty.orgCd) {
-        organizationCode = fileProperty.orgCd;
+        organizationCode = fileProperty.orgCd
       }
       // 根据configFlag判断是否禁用下拉框
       if (fileProperty && fileProperty.configFlag === true) {
-        isOrganizationSelectDisabled.value = true;
+        isOrganizationSelectDisabled.value = true
       } else {
-        isOrganizationSelectDisabled.value = false;
+        isOrganizationSelectDisabled.value = false
       }
     } catch (error) {
-      console.warn('获取文件属性信息失败:', error);
-      isOrganizationSelectDisabled.value = false;
+      console.warn('获取文件属性信息失败:', error)
+      isOrganizationSelectDisabled.value = false
     }
-    
+
     // 更新当前标题配置文件信息，包括文件页码
     currentTitleConfigFile.value = {
       ...record,
       ...fileConvertResult,
-      organizationCode:organizationCode
-    };
-
-    // 只有是点击完以后, 才检查是否配置完成
-    if(isSaving){
-      let configAllComplete = currentTitleConfigFile.value.filePages.every(v=>{
-        return v.configureStatus == '1'
-      })
-      if(configAllComplete){
-        message.info('该文件已经配置完成，系统开始自动解析');
-      }
+      organizationCode: organizationCode,
     }
 
+    // 只有是点击完以后, 才检查是否配置完成
+    if (isSaving) {
+      let configAllComplete = currentTitleConfigFile.value.filePages.every((v) => {
+        return v.configureStatus == '1'
+      })
+      if (configAllComplete) {
+        message.info('该文件已经配置完成，系统开始自动解析')
+      }
+    }
 
     // 如果之前有选中的页码，则重新加载该页码的数据
     if (activeTitleConfigSheet.value) {
       // 查找当前选中的页码对象
       const currentSheet = currentTitleConfigFile.value.filePages?.find(
-        sheet => sheet.pageId === activeTitleConfigSheet.value
-      );
+        (sheet) => sheet.pageId === activeTitleConfigSheet.value,
+      )
 
       // 如果找到了页码对象，则重新加载数据
       if (currentSheet) {
-        currentTitleConfigFile.value.selectOrgCd = organizationCode;
+        currentTitleConfigFile.value.selectOrgCd = organizationCode
         // await selectTitleConfigSheet(currentSheet);
       }
-    }else{
+    } else {
       if (fileConvertResult.filePages && fileConvertResult.filePages.length > 0) {
-        activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId;
+        activeTitleConfigSheet.value = fileConvertResult.filePages[0].pageId
       }
-      const currentSheet = fileConvertResult.filePages[0];
+      const currentSheet = fileConvertResult.filePages[0]
 
       // 如果找到了页码对象，则重新加载数据
       if (currentSheet) {
-        currentTitleConfigFile.value.selectOrgCd = organizationCode;
+        currentTitleConfigFile.value.selectOrgCd = organizationCode
         // await selectTitleConfigSheet(currentSheet);
       }
     }
 
     if (!organizationCode) {
-      message.warning('请先选择所属银行/支付公司');
-      return;
+      message.warning('请先选择所属银行/支付公司')
+      return
     }
-
   } catch (error) {
-    console.error('获取标题配置数据失败:', error);
-    message.error('获取标题配置数据失败');
+    console.error('获取标题配置数据失败:', error)
+    message.error('获取标题配置数据失败')
   }
-};
+}
 
 // 所属银行/支付公司下拉框值变更事件处理
 const onOrganizationChange = (value) => {
-  if(value?.length === 0){
-    return;
+  if (value?.length === 0) {
+    return
   }
   // 确保传递给后端的是字符串而不是数组或对象
-  let orgCodeValue = value;
+  let orgCodeValue = value
   // 更新currentTitleConfigFile.value.organizationCode的值
   if (currentTitleConfigFile.value) {
-    currentTitleConfigFile.value.organizationCode = orgCodeValue;
+    currentTitleConfigFile.value.organizationCode = orgCodeValue
   }
-  
+
   // 如果已有选中的页码ID，则触发页码的点击事件重新加载标题配置列表数据
   if (activeTitleConfigSheet.value && currentTitleConfigFile.value) {
     // 查找当前选中的页码对象
     const currentSheet = currentTitleConfigFile.value.filePages?.find(
-      sheet => sheet.pageId === activeTitleConfigSheet.value
-    );
-    
+      (sheet) => sheet.pageId === activeTitleConfigSheet.value,
+    )
+
     // 如果找到了页码对象，则重新加载数据
     if (currentSheet) {
       // 传递新的organizationCode值给selectTitleConfigSheet方法
-      selectTitleConfigSheet(currentSheet, orgCodeValue);
+      selectTitleConfigSheet(currentSheet, orgCodeValue)
     }
   }
-};
+}
 
 // 添加全屏状态
-const isIgnoreTitleConfig = ref(false);
+const isIgnoreTitleConfig = ref(false)
 
 // 添加编辑状态管理
-const editingCell = ref<{record: any, column: any} | null>(null);
+const editingCell = ref<{ record: any; column: any } | null>(null)
 
 // 忽略配置二次确认
 const handleIgnoreConfig = () => {
@@ -2862,17 +2931,17 @@ const handleIgnoreConfig = () => {
     onOk: () => {
       return saveTitleConfig().then(() => {
         // 保存成功后确保模态框仍然可见
-        titleConfigModalVisible.value = true;
-      });
+        titleConfigModalVisible.value = true
+      })
     },
     onCancel() {
       // 取消时也确保模态框可见
       nextTick(() => {
-        titleConfigModalVisible.value = true;
-      });
-    }
-  });
-};
+        titleConfigModalVisible.value = true
+      })
+    },
+  })
+}
 
 // 保存配置二次确认
 const handleSaveConfig = () => {
@@ -2884,23 +2953,23 @@ const handleSaveConfig = () => {
     onOk: () => {
       return saveTitleConfig().then(() => {
         // 保存成功后确保模态框仍然可见
-        titleConfigModalVisible.value = true;
-      });
+        titleConfigModalVisible.value = true
+      })
     },
     onCancel() {
       // 取消时也确保模态框可见
       nextTick(() => {
-        titleConfigModalVisible.value = true;
-      });
-    }
-  });
-};
+        titleConfigModalVisible.value = true
+      })
+    },
+  })
+}
 
 // 启用编辑模式
 const enableEdit = (record, column, dataBlock) => {
-  if (isCurrentSheetConfigured.value) return;
-  editingCell.value = { record, column };
-};
+  if (isCurrentSheetConfigured.value) return
+  editingCell.value = { record, column }
+}
 const headerDialogObject = ref({
   colText: '',
   originColText: '',
@@ -2911,73 +2980,75 @@ const headerDialogObject = ref({
   mappingTitle: '',
 })
 const openDialog = (record, column, dataBlock) => {
-  let colText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData;
-  let originColText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName;
-  let mappingTitle = dataBlock.mappingTitle;
-  headerDialogObject.value.colText = colText;
-  headerDialogObject.value.originColText = originColText;
-  headerDialogObject.value.column = column;
-  headerDialogObject.value.dataBlock = dataBlock;
-  headerDialogObject.value.orgCode =  currentTitleConfigFile.value.organizationCode;
-  headerDialogObject.value.mappingTitle = mappingTitle;
-  if (isCurrentSheetConfigured.value) return;
-  editingCell.value = { record, column };
+  let colText = dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData
+  let originColText =
+    dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.titleColName
+  let mappingTitle = dataBlock.mappingTitle
+  headerDialogObject.value.colText = colText
+  headerDialogObject.value.originColText = originColText
+  headerDialogObject.value.column = column
+  headerDialogObject.value.dataBlock = dataBlock
+  headerDialogObject.value.orgCode = currentTitleConfigFile.value.organizationCode
+  headerDialogObject.value.mappingTitle = mappingTitle
+  if (isCurrentSheetConfigured.value) return
+  editingCell.value = { record, column }
   openModal(true, {
     isUpdate: false,
-  });
+  })
 }
 
 // 禁用编辑模式
 const disableEdit = (record, column) => {
-  editingCell.value = null;
-};
+  editingCell.value = null
+}
 
 // 检查是否处于编辑状态
 const isEditing = (record, column) => {
-  return editingCell.value && 
-         editingCell.value.record.type === record.type && 
-         editingCell.value.column.dataIndex === column.dataIndex;
-};
+  return (
+    editingCell.value &&
+    editingCell.value.record.type === record.type &&
+    editingCell.value.column.dataIndex === column.dataIndex
+  )
+}
 
 // 获取选中选项的文本
 const getSelectedOptionText = (value) => {
-  if (!value) return '';
-  const option = titleConfigOptions.value.find(opt => opt.value === value);
-  return option ? option.text : value;
-};
-
+  if (!value) return ''
+  const option = titleConfigOptions.value.find((opt) => opt.value === value)
+  return option ? option.text : value
+}
 
 const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
   // 使用传入的新orgCode或者当前值
-  let orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode;
-  
+  let orgCode = newOrgCode !== null ? newOrgCode : currentTitleConfigFile.value.organizationCode
+
   // 校验是否选择了所属银行/支付公司
   if (!orgCode) {
-    message.warning('请先选择所属银行/支付公司');
-    return;
+    message.warning('请先选择所属银行/支付公司')
+    return
   }
   //初始化交易金额调整项adjTransAmt、贷方金额调整项adjCreditAmt、结算金额调整项adjSettlementAmt下拉框
-  adjForm.value.adjTransAmt = sheet.adjTransAmt || "否";
-  adjForm.value.adjCreditAmt = sheet.adjCreditAmt || "否";
-  adjForm.value.adjSettlementAmt = sheet.adjSettlementAmt || "否";
+  adjForm.value.adjTransAmt = sheet.adjTransAmt || '否'
+  adjForm.value.adjCreditAmt = sheet.adjCreditAmt || '否'
+  adjForm.value.adjSettlementAmt = sheet.adjSettlementAmt || '否'
   // 确保orgCode是字符串而不是数组或对象
-  let orgCodeValue = orgCode;
+  let orgCodeValue = orgCode
   if (Array.isArray(orgCodeValue)) {
-    orgCodeValue = orgCodeValue[0];
+    orgCodeValue = orgCodeValue[0]
   }
   if (typeof orgCodeValue === 'object' && orgCodeValue !== null) {
-    orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue);
+    orgCodeValue = orgCodeValue.value || orgCodeValue.orgCd || JSON.stringify(orgCodeValue)
   }
   if (typeof orgCodeValue !== 'string') {
-    orgCodeValue = String(orgCodeValue);
+    orgCodeValue = String(orgCodeValue)
   }
-  activeTitleConfigSheet.value = sheet.pageId;
-  
+  activeTitleConfigSheet.value = sheet.pageId
+
   try {
     // 开始加载，设置加载状态为true
-    titleConfigLoading.value = true;
-    isIgnoreTitleConfig.value = false;
-    
+    titleConfigLoading.value = true
+    isIgnoreTitleConfig.value = false
+
     // // 获取文件配置选项
     // const configResponse = await getFileConfigApi({orgCode: orgCodeValue});
     //
@@ -2995,13 +3066,13 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
     // 获取标题配置数据
     const titleConfigResponse = await fileConfigDataApi({
       pageId: sheet.pageId,
-      orgCode: orgCodeValue
-    });
+      orgCode: orgCodeValue,
+    })
 
     if (titleConfigResponse && Array.isArray(titleConfigResponse)) {
       titleConfigData.value = {
-        result: titleConfigResponse
-      };
+        result: titleConfigResponse,
+      }
       // 根据oriMetaData字段过滤下拉框选项 暂时去掉字段过滤
       // titleConfigData.value = {
       //   result: titleConfigResponse.map(dataBlock => {
@@ -3026,211 +3097,209 @@ const selectTitleConfigSheet = async (sheet, newOrgCode = null) => {
 
       // 设置默认激活的标签页
       if (titleConfigData.value.result.length > 0) {
-        titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`;
-      }else{
+        titleConfigActiveTab.value = `dataBlock${titleConfigData.value.result[0].dataBlockNum}`
+      } else {
         //如果没有获取到数据，使用模拟数据
         // message.error('未查询到配置数据');
-        isIgnoreTitleConfig.value = true;
+        isIgnoreTitleConfig.value = true
         // titleConfigActiveTab.value = null;
       }
     } else {
       // 如果没有获取到数据，清空现有数据
-      isIgnoreTitleConfig.value = true;
+      isIgnoreTitleConfig.value = true
       titleConfigData.value = {
-        result: []
-      };
-      titleConfigActiveTab.value = 'dataBlock1';
+        result: [],
+      }
+      titleConfigActiveTab.value = 'dataBlock1'
     }
   } catch (error) {
-    console.error('获取标题配置数据失败:', error);
-    message.error('获取标题配置数据失败: ' + (error instanceof Error ? error.message : String(error)));
+    console.error('获取标题配置数据失败:', error)
+    message.error('获取标题配置数据失败: ' + (error instanceof Error ? error.message : String(error)))
   } finally {
     // 结束加载，设置加载状态为false
-    titleConfigLoading.value = false;
+    titleConfigLoading.value = false
   }
-};
+}
 
 // 构造标题配置表格数据
 const getTitleConfigTableData = (dataBlockStucts: DataBlockStruct[]) => {
   // 获取最大数据行数
-  const maxDataRows = Math.max(...dataBlockStucts.map(struct => struct.datas.length), 0);
-  
+  const maxDataRows = Math.max(...dataBlockStucts.map((struct) => struct.datas.length), 0)
+
   // 构造表格数据
   const tableData: Array<{
-    key: string;
-    type: 'newMetaData' | 'titleColName' | 'datas';
-    config?: string;
-    dataIndex?: number;
-    datas?: string[];
-  }> = [];
-  
+    key: string
+    type: 'newMetaData' | 'titleColName' | 'datas'
+    config?: string
+    dataIndex?: number
+    datas?: string[]
+  }> = []
+
   // 添加配置行（newMetaData）
   tableData.push({
     key: 'newMetaData',
     type: 'newMetaData',
-    config: '配置列（newMetaData）'
-  });
-  
+    config: '配置列（newMetaData）',
+  })
+
   // 添加原标题行（titleColName）
   tableData.push({
     key: 'titleColName',
     type: 'titleColName',
-    config: '原标题（titleColName）'
-  });
-  
+    config: '原标题（titleColName）',
+  })
+
   // 添加数据行（datas）
   for (let i = 0; i < maxDataRows; i++) {
     tableData.push({
       key: `data-${i}`,
       type: 'datas',
       dataIndex: i,
-      datas: dataBlockStucts.map(struct => struct.datas[i] || '')
-    });
+      datas: dataBlockStucts.map((struct) => struct.datas[i] || ''),
+    })
   }
-  
-  return tableData;
-};
+
+  return tableData
+}
 
 // 获取过滤后的下拉选项
 const getFilteredOptions = (dataBlockStucts: DataBlockStruct[], colIndex: number) => {
   // 获取当前列的结构
-  const currentStruct = dataBlockStucts[colIndex];
-  if (!currentStruct) return [];
-  
+  const currentStruct = dataBlockStucts[colIndex]
+  if (!currentStruct) return []
+
   // 如果已经计算过可用选项，直接返回
   if (currentStruct.availableOptions && currentStruct.availableOptions.length > 0) {
-    return currentStruct.availableOptions;
+    return currentStruct.availableOptions
   }
-  
+
   // 否则返回所有选项
-  return titleConfigOptions.value;
-};
+  return titleConfigOptions.value
+}
 
 // 构造标题配置表格列
 const getTitleConfigColumns = (dataBlockStucts: DataBlockStruct[]) => {
   // 构造表格列
-  const columns: any[] = [];
-  
+  const columns: any[] = []
+
   // 添加配置列（固定列）,fixed: 'left'
   columns.push({
     title: '配置',
     dataIndex: 'config',
-    width: 80
-  });
-  
+    width: 80,
+  })
+
   // 添加数据列
   for (let i = 0; i < dataBlockStucts.length; i++) {
     columns.push({
       title: `列${i + 1}`,
       dataIndex: `col${i}`,
       width: 120,
-      resizable: true
-    });
+      resizable: true,
+    })
   }
-  
-  return columns;
-};
+
+  return columns
+}
 
 const onNewMetaDataChange = (struct, event) => {
   // 处理newMetaData变更
-  console.log('newMetaData changed:', struct, event);
-};
+  console.log('newMetaData changed:', struct, event)
+}
 
 // 添加处理标题配置变化的函数
 const handleTitleConfigChange = (value, dataBlock, column) => {
   // 获取列索引
-  const colIndex = parseInt(column.dataIndex.replace('col', ''));
-  
+  const colIndex = parseInt(column.dataIndex.replace('col', ''))
+
   // 获取当前列的oriMetaData
-  const oriMetaData = dataBlock.dataBlockStucts[colIndex].faFileParameter.oriMetaData;
-  
+  const oriMetaData = dataBlock.dataBlockStucts[colIndex].faFileParameter.oriMetaData
+
   // 获取标题列名称
-  const titleColName = dataBlock.dataBlockStucts[colIndex].faFileParameter.titleColName;
+  const titleColName = dataBlock.dataBlockStucts[colIndex].faFileParameter.titleColName
 
   // 如果oriMetaData为空
   if (!oriMetaData) {
     // 重新组装未映射的标题配置
     if (value) {
       // 当选择了非空值时，从未映射标题中移除当前标题列名称
-      const noMappingTitles = dataBlock.noMappingTitle.split(',');
-      const updatedNoMappingTitles = noMappingTitles.filter(title => title.trim() !== titleColName.trim());
-      dataBlock.noMappingTitle = updatedNoMappingTitles.join(',');
+      const noMappingTitles = dataBlock.noMappingTitle.split(',')
+      const updatedNoMappingTitles = noMappingTitles.filter((title) => title.trim() !== titleColName.trim())
+      dataBlock.noMappingTitle = updatedNoMappingTitles.join(',')
     } else {
       // 当选择了空值时，将标题列名称重新加回到未映射标题中
-      const noMappingTitles = dataBlock.noMappingTitle.split(',');
+      const noMappingTitles = dataBlock.noMappingTitle.split(',')
       // 检查是否已经存在，避免重复添加
       if (!noMappingTitles.includes(titleColName)) {
-        noMappingTitles.push(titleColName);
-        dataBlock.noMappingTitle = noMappingTitles.join(',');
+        noMappingTitles.push(titleColName)
+        dataBlock.noMappingTitle = noMappingTitles.join(',')
       }
     }
   }
   dataBlock.dataBlockStucts[parseInt(column.dataIndex.replace('col', ''))].faFileParameter.newMetaData = value
   // dataBlock.noMappingTitle = dataBlock.dataBlockStucts.filter(struct => !struct.faFileParameter.newMetaData).map(item => item.faFileParameter.titleColName).join(',');
-  dataBlock.mappingTitle = dataBlock.dataBlockStucts.filter(struct => struct.faFileParameter.newMetaData).map(item => item.faFileParameter.newMetaData).join(',');
-};
-
-const getSelectResult = (values, ...args) => {
-  const {dataBlock, column} = args[0]
-  handleTitleConfigChange(values[0], dataBlock, column)
+  dataBlock.mappingTitle = dataBlock.dataBlockStucts
+    .filter((struct) => struct.faFileParameter.newMetaData)
+    .map((item) => item.faFileParameter.newMetaData)
+    .join(',')
 }
 
-
-;
+const getSelectResult = (values, ...args) => {
+  const { dataBlock, column } = args[0]
+  handleTitleConfigChange(values[0], dataBlock, column)
+}
 
 // 文件命名说明点击事件
 // 文件命名说明点击事件
 const onFileNameInstructionClick = () => {
   // TODO: 实现文件命名说明点击逻辑
-  console.log('文件命名说明 clicked');
-  fileInfoRef.value?.open();
-};
+  console.log('文件命名说明 clicked')
+  fileInfoRef.value?.open()
+}
 
 defineExpose({
   restart,
   stop,
-});
+})
 
 // 详情抽屉相关状态 - 为每个表格创建独立的状态
-const customerDetailData = ref<any>({});
-const [registerCustomerDetailDrawer, { openDrawer: openCustomerDetailDrawer }] = useDrawer();
+const customerDetailData = ref<any>({})
+const [registerCustomerDetailDrawer, { openDrawer: openCustomerDetailDrawer }] = useDrawer()
 
-const transactionDetailData = ref<any>({});
-const [registerTransactionDetailDrawer, { openDrawer: openTransactionDetailDrawer }] = useDrawer();
+const transactionDetailData = ref<any>({})
+const [registerTransactionDetailDrawer, { openDrawer: openTransactionDetailDrawer }] = useDrawer()
 
-const nonBankCustomerDetailData = ref<any>({});
-const [registerNonBankCustomerDetailDrawer, { openDrawer: openNonBankCustomerDetailDrawer }] = useDrawer();
+const nonBankCustomerDetailData = ref<any>({})
+const [registerNonBankCustomerDetailDrawer, { openDrawer: openNonBankCustomerDetailDrawer }] = useDrawer()
 
-const nonBankTransactionDetailData = ref<any>({});
-const [registerNonBankTransactionDetailDrawer, { openDrawer: openNonBankTransactionDetailDrawer }] = useDrawer();
+const nonBankTransactionDetailData = ref<any>({})
+const [registerNonBankTransactionDetailDrawer, { openDrawer: openNonBankTransactionDetailDrawer }] = useDrawer()
 
 // 显示详情抽屉 - 为每个表格创建独立的处理函数
 function handleCustomerDetail(record) {
-  customerDetailData.value = record;
-  openCustomerDetailDrawer(true, record);
+  customerDetailData.value = record
+  openCustomerDetailDrawer(true, record)
 }
 
 function handleTransactionDetail(record) {
-  transactionDetailData.value = record;
-  openTransactionDetailDrawer(true, record);
+  transactionDetailData.value = record
+  openTransactionDetailDrawer(true, record)
 }
 
 function handleNonBankCustomerDetail(record) {
-  nonBankCustomerDetailData.value = record;
-  openNonBankCustomerDetailDrawer(true, record);
+  nonBankCustomerDetailData.value = record
+  openNonBankCustomerDetailDrawer(true, record)
 }
 
 function handleNonBankTransactionDetail(record) {
-  nonBankTransactionDetailData.value = record;
-  openNonBankTransactionDetailDrawer(true, record);
+  nonBankTransactionDetailData.value = record
+  openNonBankTransactionDetailDrawer(true, record)
 }
-
 </script>
 
 <style scoped>
-
-.search-form-card :deep{
-  .ant-card-body :deep{
+.search-form-card :deep {
+  .ant-card-body :deep {
     padding-bottom: 0px !important;
   }
 }
@@ -3243,11 +3312,10 @@ function handleNonBankTransactionDetail(record) {
 }
 
 /* 自定义上传拖拽区域样式 */
-.custom-upload-dragger :deep{
-  .ant-upload-btn :deep{
+.custom-upload-dragger :deep {
+  .ant-upload-btn :deep {
     height: 280px;
   }
-
 }
 
 .upload-dragger-content {
@@ -3293,7 +3361,8 @@ function handleNonBankTransactionDetail(record) {
   max-height: 700px;
   overflow-y: auto;
 }
-.file-item, .sheet-item {
+.file-item,
+.sheet-item {
   padding: 10px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
@@ -3302,10 +3371,12 @@ function handleNonBankTransactionDetail(record) {
   justify-content: space-between;
   align-items: center;
 }
-.file-item:hover, .sheet-item:hover {
+.file-item:hover,
+.sheet-item:hover {
   background-color: #f0f7ff;
 }
-.file-item.active, .sheet-item.active {
+.file-item.active,
+.sheet-item.active {
   background-color: #e6f7ff;
   border-right: 3px solid #1890ff;
 }
@@ -3319,7 +3390,7 @@ function handleNonBankTransactionDetail(record) {
   white-space: nowrap;
 }
 
-:deep(.x-spreadsheet-sheet){
+:deep(.x-spreadsheet-sheet) {
   width: 100% !important;
 }
 
@@ -3432,7 +3503,7 @@ function handleNonBankTransactionDetail(record) {
 }
 
 .table-tab :deep(.ant-table-placeholder .ant-table-cell) {
-  border: none!important;
+  border: none !important;
 }
 
 /* 标题配置表格中的下拉框样式优化，防止被遮挡 */
@@ -3446,7 +3517,7 @@ function handleNonBankTransactionDetail(record) {
 }
 
 /* 固定标题配置表格的前两行（配置行和原标题行） */
-.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n+2)) {
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n + 2)) {
   position: sticky;
   top: 0;
   background-color: #fafafa;
@@ -3455,7 +3526,7 @@ function handleNonBankTransactionDetail(record) {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n+3)) {
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(-n + 3)) {
   position: sticky;
   top: 0;
   background-color: #fafafa;
@@ -3471,7 +3542,7 @@ function handleNonBankTransactionDetail(record) {
   top: 48px; /* 精确计算第三行高度 */
 }
 /* 为数据行添加顶部边框，使其与固定行更好区分 */
-.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(n+3)) {
+.titleConfigClass .table-tab :deep(.ant-table-tbody > tr:nth-child(n + 3)) {
   border-top: 1px solid #f0f0f0;
 }
 
@@ -3527,144 +3598,144 @@ function handleNonBankTransactionDetail(record) {
   overflow-y: auto !important;
 }
 
- :deep(.blue-row) {
+:deep(.blue-row) {
   background-color: #e6f7ff !important;
 }
 
-  :deep(.splitpanes__splitter) {
-    background-color: #e8e8e8;
-    position: relative;
-  }
-  
-  :deep(.splitpanes__splitter):before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #1890ff;
-    transition: all 0.3s ease;
-  }
-  
-  :deep(.splitpanes--vertical > .splitpanes__splitter):before {
-    width: 4px;
-    height: 40px;
-    border-radius: 2px;
-    margin-left: -2px;
-  }
-  
-  :deep(.splitpanes__splitter:hover):before {
-    background-color: #40a9ff;
-    width: 6px;
-    margin-left: -3px;
-  }
-  
-  .file-loading {
+:deep(.splitpanes__splitter) {
+  background-color: #e8e8e8;
+  position: relative;
+}
+
+:deep(.splitpanes__splitter):before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #1890ff;
+  transition: all 0.3s ease;
+}
+
+:deep(.splitpanes--vertical > .splitpanes__splitter):before {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  margin-left: -2px;
+}
+
+:deep(.splitpanes__splitter:hover):before {
+  background-color: #40a9ff;
+  width: 6px;
+  margin-left: -3px;
+}
+
+.file-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+}
+
+.file-loading p {
+  margin-top: 16px;
+  color: #666;
+}
+
+.csv-preview {
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+  background-color: #f5f5f5;
+}
+
+.pdf-container {
+  background-color: #f5f5f5;
+  padding: 20px;
+  height: 100%;
+}
+
+.pdf-container :deep(.vue-office-pdf) {
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.csv-table-container {
+  max-height: 600px;
+  overflow: auto;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.csv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.csv-table th {
+  background-color: #fafafa;
+  font-weight: bold;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: 1px solid #e8e8e8;
+  padding: 8px 12px;
+}
+
+.csv-table td {
+  border: 1px solid #e8e8e8;
+  padding: 8px 12px;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.csv-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.csv-table tr:hover {
+  background-color: #f0f7ff;
+}
+
+.csv-empty {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.top-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .select-box {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-height: 300px;
-  }
-  
-  .file-loading p {
-    margin-top: 16px;
-    color: #666;
-  }
-  
-  .csv-preview {
-    padding: 20px;
-    height: 100%;
-    overflow: auto;
-    background-color: #f5f5f5;
-  }
-  
-  .pdf-container {
-    background-color: #f5f5f5;
-    padding: 20px;
-    height: 100%;
-  }
-  
-  .pdf-container :deep(.vue-office-pdf) {
-    background-color: white;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-  }
-
-  .csv-table-container {
-    max-height: 600px;
-    overflow: auto;
-    background-color: white;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-
-  .csv-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-
-  .csv-table th {
-    background-color: #fafafa;
-    font-weight: bold;
-    text-align: left;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border: 1px solid #e8e8e8;
-    padding: 8px 12px;
-  }
-
-  .csv-table td {
-    border: 1px solid #e8e8e8;
-    padding: 8px 12px;
-    white-space: nowrap;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .csv-table tr:nth-child(even) {
-    background-color: #fafafa;
-  }
-
-  .csv-table tr:hover {
-    background-color: #f0f7ff;
-  }
-
-  .csv-empty {
-    text-align: center;
-    padding: 40px;
-    color: #999;
-  }
-
-  .top-box{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .select-box{
+    .select-container {
+      margin-left: 8px;
       display: flex;
-      .select-container{
-        margin-left: 8px;
-        display: flex;
-        align-items: center;
-        .select-container-left {
-          margin-right: 4px;
-           white-space: nowrap;
-        }
+      align-items: center;
+      .select-container-left {
+        margin-right: 4px;
+        white-space: nowrap;
       }
     }
   }
-  .tooltip-box{
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
+}
+.tooltip-box {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
 
-  .custom-ant-col :deep(.ant-col){
-    height: 700px;
-  }
+.custom-ant-col :deep(.ant-col) {
+  height: 700px;
+}
 </style>

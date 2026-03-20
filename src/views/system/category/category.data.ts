@@ -1,5 +1,5 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import { BasicColumn } from '/@/components/Table'
+import { FormSchema } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -12,7 +12,7 @@ export const columns: BasicColumn[] = [
     title: '分类编码',
     dataIndex: 'code',
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -27,7 +27,7 @@ export const searchFormSchema: FormSchema[] = [
     component: 'JInput',
     colProps: { span: 6 },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
   {
@@ -43,7 +43,7 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       //update-begin---author:wangshuai ---date:20230829  for：replaceFields已过期，使用fieldNames代替------------
       fieldNames: {
-      //update-end---author:wangshuai ---date:20230829  for：replaceFields已过期，使用fieldNames代替------------
+        //update-end---author:wangshuai ---date:20230829  for：replaceFields已过期，使用fieldNames代替------------
         value: 'key',
       },
       dropdownStyle: {
@@ -52,10 +52,10 @@ export const formSchema: FormSchema[] = [
       getPopupContainer: () => document.body,
     },
     show: ({ values }) => {
-      return values.pid !== '0';
+      return values.pid !== '0'
     },
     dynamicDisabled: ({ values }) => {
-      return !!values.id;
+      return !!values.id
     },
   },
   {
@@ -64,4 +64,4 @@ export const formSchema: FormSchema[] = [
     required: true,
     component: 'Input',
   },
-];
+]

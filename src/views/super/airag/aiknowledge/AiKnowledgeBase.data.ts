@@ -1,5 +1,5 @@
-import { FormSchema } from '@/components/Form';
-import { BasicColumn } from '@/components/Table';
+import { FormSchema } from '@/components/Form'
+import { BasicColumn } from '@/components/Table'
 
 /**
  * 表单
@@ -28,7 +28,8 @@ export const formSchema: FormSchema[] = [
     field: 'descr',
     component: 'InputTextArea',
     componentProps: {
-      placeholder: '描述知识库的内容，详尽的描述将帮助AI能深入理解该知识库的内容，能更准确的检索到内容，提高该知识库的命中率。',
+      placeholder:
+        '描述知识库的内容，详尽的描述将帮助AI能深入理解该知识库的内容，能更准确的检索到内容，提高该知识库的命中率。',
       //是否展示字数
       showCount: true,
       maxlength: 256,
@@ -57,7 +58,7 @@ export const formSchema: FormSchema[] = [
     },
     defaultValue: 'enable',
   },
-];
+]
 
 //文档文本表单
 export const docTextSchema: FormSchema[] = [
@@ -84,7 +85,7 @@ export const docTextSchema: FormSchema[] = [
     field: 'type',
     required: true,
     component: 'Input',
-    show: false
+    show: false,
   },
   {
     label: '内容',
@@ -92,34 +93,33 @@ export const docTextSchema: FormSchema[] = [
     rules: [{ required: true, message: '请输入内容' }],
     component: 'JMarkdownEditor',
     componentProps: {
-      placeholder: "请输入内容",
-      preview:{ mode: 'view', action: [] }
+      placeholder: '请输入内容',
+      preview: { mode: 'view', action: [] },
     },
-    ifShow:({ values})=>{
-      if(values.type === 'text'){
-        return true;
+    ifShow: ({ values }) => {
+      if (values.type === 'text') {
+        return true
       }
-      return false;
-    }
+      return false
+    },
   },
   {
     label: '文件',
     field: 'filePath',
     rules: [{ required: true, message: '请上传文件' }],
     component: 'JUpload',
-    helpMessage:'支持txt、markdown、pdf、docx、xlsx、pptx',
-    componentProps:{
+    helpMessage: '支持txt、markdown、pdf、docx、xlsx、pptx',
+    componentProps: {
       fileType: 'file',
       maxCount: 1,
       multiple: false,
-      text: '上传文档'
+      text: '上传文档',
     },
-    ifShow:({ values })=>{
-      if(values.type === 'file'){
-        return true;
+    ifShow: ({ values }) => {
+      if (values.type === 'file') {
+        return true
       }
-      return false;
-    }
+      return false
+    },
   },
-];
-
+]

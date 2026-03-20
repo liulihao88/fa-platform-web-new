@@ -22,10 +22,16 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item v-if="originColumn.allowDownload !== false" @click="handleClickDownloadFile">
-                  <span><Icon icon="ant-design:download-outlined" />&nbsp;下载</span>
+                  <span>
+                    <Icon icon="ant-design:download-outlined" />
+                    &nbsp;下载
+                  </span>
                 </a-menu-item>
                 <a-menu-item v-if="originColumn.allowRemove !== false" @click="handleClickDeleteFile">
-                  <span><Icon icon="ant-design:delete-outlined" />&nbsp;删除</span>
+                  <span>
+                    <Icon icon="ant-design:delete-outlined" />
+                    &nbsp;删除
+                  </span>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -51,27 +57,27 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { Icon } from '/@/components/Icon';
-  import { Dropdown } from 'ant-design-vue';
-  import { LoadingOutlined } from '@ant-design/icons-vue';
-  import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types';
-  import { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
-  import { useJVxeUploadCell, fileGetValue, fileSetValue } from '../../hooks/cells/useJVxeUploadCell';
+import { defineComponent } from 'vue'
+import { Icon } from '/@/components/Icon'
+import { Dropdown } from 'ant-design-vue'
+import { LoadingOutlined } from '@ant-design/icons-vue'
+import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types'
+import { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks'
+import { useJVxeUploadCell, fileGetValue, fileSetValue } from '../../hooks/cells/useJVxeUploadCell'
 
-  export default defineComponent({
-    name: 'JVxeUploadCell',
-    components: { Icon, Dropdown, LoadingOutlined },
-    props: useJVxeCompProps(),
-    setup(props: JVxeComponent.Props) {
-      const setup = useJVxeUploadCell(props);
-      return { ...setup };
-    },
-    // 【组件增强】注释详见：：JVxeComponent.Enhanced
-    enhanced: {
-      switches: { visible: true },
-      getValue: (value) => fileGetValue(value),
-      setValue: (value) => fileSetValue(value),
-    } as JVxeComponent.EnhancedPartial,
-  });
+export default defineComponent({
+  name: 'JVxeUploadCell',
+  components: { Icon, Dropdown, LoadingOutlined },
+  props: useJVxeCompProps(),
+  setup(props: JVxeComponent.Props) {
+    const setup = useJVxeUploadCell(props)
+    return { ...setup }
+  },
+  // 【组件增强】注释详见：：JVxeComponent.Enhanced
+  enhanced: {
+    switches: { visible: true },
+    getValue: (value) => fileGetValue(value),
+    setValue: (value) => fileSetValue(value),
+  } as JVxeComponent.EnhancedPartial,
+})
 </script>

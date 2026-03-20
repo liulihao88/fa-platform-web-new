@@ -1,6 +1,11 @@
 <template>
   <!-- 第三方登录绑定账号密码输入弹框 -->
-  <a-modal title="请输入密码" v-model:open="thirdPasswordShow" @ok="thirdLoginCheckPassword" @cancel="thirdLoginNoPassword">
+  <a-modal
+    title="请输入密码"
+    v-model:open="thirdPasswordShow"
+    @ok="thirdLoginCheckPassword"
+    @cancel="thirdLoginNoPassword"
+  >
     <a-input-password placeholder="请输入密码" v-model:value="thirdLoginPassword" style="margin: 15px; width: 80%" />
   </a-modal>
 
@@ -10,7 +15,7 @@
       <div class="ant-modal-confirm-body">
         <QuestionCircleFilled style="color: #faad14" />
         <span class="ant-modal-confirm-title">提示</span>
-        <div class="ant-modal-confirm-content"> 已有同名账号存在,请确认是否绑定该账号？ </div>
+        <div class="ant-modal-confirm-content">已有同名账号存在,请确认是否绑定该账号？</div>
       </div>
       <div class="ant-modal-confirm-btns">
         <a-button @click="thirdLoginUserCreate" :loading="thirdCreateUserLoding">创建新账号</a-button>
@@ -30,7 +35,13 @@
         </a-input>
       </FormItem>
       <FormItem name="sms" class="enter-x">
-        <CountdownInput size="large" class="fix-auto-fill" v-model:value="thirdCaptcha" placeholder="请输入验证码" :sendCodeApi="sendCodeApi">
+        <CountdownInput
+          size="large"
+          class="fix-auto-fill"
+          v-model:value="thirdCaptcha"
+          placeholder="请输入验证码"
+          :sendCodeApi="sendCodeApi"
+        >
           <template #prefix>
             <Icon icon="ant-design:mail-outlined" :style="{ color: 'rgba(0,0,0,.25)' }"></Icon>
           </template>
@@ -43,22 +54,22 @@
   </a-modal>
 </template>
 <script lang="ts">
-  import { defineComponent } from 'vue';
-  import { Form, Input } from 'ant-design-vue';
-  import { CountdownInput } from '/@/components/CountDown';
-  import { useThirdLogin } from '/@/hooks/system/useThirdLogin';
-  import { QuestionCircleFilled } from '@ant-design/icons-vue';
+import { defineComponent } from 'vue'
+import { Form, Input } from 'ant-design-vue'
+import { CountdownInput } from '/@/components/CountDown'
+import { useThirdLogin } from '/@/hooks/system/useThirdLogin'
+import { QuestionCircleFilled } from '@ant-design/icons-vue'
 
-  const FormItem = Form.Item;
-  const InputPassword = Input.Password;
+const FormItem = Form.Item
+const InputPassword = Input.Password
 
-  export default defineComponent({
-    name: 'ThirdModal',
-    components: { FormItem, Form, InputPassword, CountdownInput, QuestionCircleFilled },
-    setup() {
-      return {
-        ...useThirdLogin(),
-      };
-    },
-  });
+export default defineComponent({
+  name: 'ThirdModal',
+  components: { FormItem, Form, InputPassword, CountdownInput, QuestionCircleFilled },
+  setup() {
+    return {
+      ...useThirdLogin(),
+    }
+  },
+})
 </script>

@@ -24,34 +24,34 @@
 </template>
 
 <script lang="ts" setup name="system-depart-user">
-  import { provide, ref } from 'vue';
-  import { useDesign } from '/@/hooks/web/useDesign';
+import { provide, ref } from 'vue'
+import { useDesign } from '/@/hooks/web/useDesign'
 
-  import DepartTree from './components/DepartTree.vue';
-  import DepartBaseInfoTab from './components/DepartBaseInfoTab.vue';
-  import DepartUserInfoTab from './components/DepartUserInfoTab.vue';
-  import DepartRoleInfoTab from './components/DepartRoleInfoTab.vue';
+import DepartTree from './components/DepartTree.vue'
+import DepartBaseInfoTab from './components/DepartBaseInfoTab.vue'
+import DepartUserInfoTab from './components/DepartUserInfoTab.vue'
+import DepartRoleInfoTab from './components/DepartRoleInfoTab.vue'
 
-  const { prefixCls } = useDesign('depart-user');
-  provide('prefixCls', prefixCls);
+const { prefixCls } = useDesign('depart-user')
+provide('prefixCls', prefixCls)
 
-  // 当前选中的部门信息
-  let departData = ref({});
+// 当前选中的部门信息
+let departData = ref({})
 
-  const reRender = ref(-1);
+const reRender = ref(-1)
 
-  // 左侧树选择后触发
-  function onTreeSelect(data) {
-    // update-begin--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
-    if (reRender.value == -1) {
-      // 重新渲染组件
-      reRender.value = Math.random();
-    }
-    // update-end--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
-    departData.value = data;
+// 左侧树选择后触发
+function onTreeSelect(data) {
+  // update-begin--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
+  if (reRender.value == -1) {
+    // 重新渲染组件
+    reRender.value = Math.random()
   }
+  // update-end--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
+  departData.value = data
+}
 </script>
 
 <style lang="less">
-  @import './index.less';
+@import './index.less';
 </style>

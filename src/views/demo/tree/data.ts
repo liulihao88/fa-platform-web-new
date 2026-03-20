@@ -1,4 +1,4 @@
-import { TreeItem } from '/@/components/Tree/index';
+import { TreeItem } from '/@/components/Tree/index'
 
 export const treeData: TreeItem[] = [
   {
@@ -32,4 +32,4 @@ export const treeData: TreeItem[] = [
       { title: 'leaf', key: '2-2-1' },
     ],
   },
-];
+]

@@ -16,7 +16,12 @@
         <a-tab-pane loading="true" tab="受理监管" key="1">
           <a-row>
             <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-              <Bar :chartData="barData" :option="{ title: { text: '', textStyle: { fontWeight: 'lighter' } } }" height="40vh" :seriesColor="seriesColor" />
+              <Bar
+                :chartData="barData"
+                :option="{ title: { text: '', textStyle: { fontWeight: 'lighter' } } }"
+                height="40vh"
+                :seriesColor="seriesColor"
+              />
             </a-col>
             <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
               <QuickNav :loading="loading" class="enter-y" :bordered="false" :body-style="{ padding: 0 }" />
@@ -54,75 +59,75 @@
   </a-card>
 </template>
 <script lang="ts" setup>
-  import { ref, computed } from 'vue';
-  import Bar from '/@/components/chart/Bar.vue';
-  import BarMulti from '/@/components/chart/BarMulti.vue';
-  import Gauge from '/@/components/chart/Gauge.vue';
-  import QuickNav from './QuickNav.vue';
-  import { useRootSetting } from '/@/hooks/setting/useRootSetting';
+import { ref, computed } from 'vue'
+import Bar from '/@/components/chart/Bar.vue'
+import BarMulti from '/@/components/chart/BarMulti.vue'
+import Gauge from '/@/components/chart/Gauge.vue'
+import QuickNav from './QuickNav.vue'
+import { useRootSetting } from '/@/hooks/setting/useRootSetting'
 
-  defineProps({
-    loading: {
-      type: Boolean,
-    },
-  });
-  const { getThemeColor } = useRootSetting();
-  const interactiveColor = ref();
-  const rankList = [];
-  for (let i = 0; i < 7; i++) {
-    rankList.push({
-      name: '白鹭岛 ' + (i + 1) + ' 号店',
-      total: 1234.56 - i * 100,
-    });
-  }
+defineProps({
+  loading: {
+    type: Boolean,
+  },
+})
+const { getThemeColor } = useRootSetting()
+const interactiveColor = ref()
+const rankList = []
+for (let i = 0; i < 7; i++) {
+  rankList.push({
+    name: '白鹭岛 ' + (i + 1) + ' 号店',
+    total: 1234.56 - i * 100,
+  })
+}
 
-  const barData = [];
+const barData = []
+for (let i = 0; i < 12; i += 1) {
+  barData.push({
+    name: `${i + 1}月`,
+    value: Math.floor(Math.random() * 1000) + 200,
+  })
+}
+const barMultiData = []
+for (let j = 0; j < 2; j++) {
   for (let i = 0; i < 12; i += 1) {
-    barData.push({
+    barMultiData.push({
+      type: j == 0 ? 'jeecg' : 'jeebt',
       name: `${i + 1}月`,
       value: Math.floor(Math.random() * 1000) + 200,
-    });
+    })
   }
-  const barMultiData = [];
-  for (let j = 0; j < 2; j++) {
-    for (let i = 0; i < 12; i += 1) {
-      barMultiData.push({
-        type: j == 0 ? 'jeecg' : 'jeebt',
-        name: `${i + 1}月`,
-        value: Math.floor(Math.random() * 1000) + 200,
-      });
-    }
-  }
+}
 
-  const seriesColor = computed(() => {
-    interactiveColor.value = [
-      { type: 'jeecg', color: getThemeColor.value },
-      { type: 'jeebt', color: getRandomColor() },
-    ];
-    return getThemeColor.value;
-  });
-  function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+const seriesColor = computed(() => {
+  interactiveColor.value = [
+    { type: 'jeecg', color: getThemeColor.value },
+    { type: 'jeebt', color: getRandomColor() },
+  ]
+  return getThemeColor.value
+})
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'
+  var color = '#'
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
   }
+  return color
+}
 </script>
 
 <style lang="less" scoped>
-  .extra-wrapper {
-    line-height: 55px;
-    padding-right: 24px;
+.extra-wrapper {
+  line-height: 55px;
+  padding-right: 24px;
 
-    .extra-item {
-      display: inline-block;
-      margin-right: 24px;
+  .extra-item {
+    display: inline-block;
+    margin-right: 24px;
 
-      a {
-        margin-left: 24px;
-      }
+    a {
+      margin-left: 24px;
     }
   }
+}
 </style>

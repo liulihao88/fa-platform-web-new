@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { ref, getCurrentInstance } from 'vue';
-  const { proxy } = getCurrentInstance();
-  let obj = {
-    name: 'andy',
-  };
+import { ref, getCurrentInstance } from 'vue'
+const { proxy } = getCurrentInstance()
+let obj = {
+  name: 'andy',
+}
 </script>
 
 <template>

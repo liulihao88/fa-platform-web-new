@@ -1,29 +1,29 @@
-import type { GlobEnvConfig } from '/#/config';
+import type { GlobEnvConfig } from '/#/config'
 
-import { warn } from '/@/utils/log';
-import pkg from '../../package.json';
-import { getConfigFileName } from '../../build/getConfigFileName';
-import { getGlobal } from "@/qiankun/micro";
+import { warn } from '/@/utils/log'
+import pkg from '../../package.json'
+import { getConfigFileName } from '../../build/getConfigFileName'
+import { getGlobal } from '@/qiankun/micro'
 
 export function getCommonStoragePrefix() {
-  const { VITE_GLOB_APP_SHORT_NAME } = getAppEnvConfig();
-  return `${VITE_GLOB_APP_SHORT_NAME}__${getEnv()}`.toUpperCase();
+  const { VITE_GLOB_APP_SHORT_NAME } = getAppEnvConfig()
+  return `${VITE_GLOB_APP_SHORT_NAME}__${getEnv()}`.toUpperCase()
 }
 
 // Generate cache key according to version
 export function getStorageShortName() {
-  return `${getCommonStoragePrefix()}${`__${pkg.version}`}__`.toUpperCase();
+  return `${getCommonStoragePrefix()}${`__${pkg.version}`}__`.toUpperCase()
 }
 
 export function getAppEnvConfig() {
-  const ENV_NAME = getConfigFileName(import.meta.env);
+  const ENV_NAME = getConfigFileName(import.meta.env)
 
-  const global = getGlobal();
+  const global = getGlobal()
 
   const ENV = (import.meta.env.DEV
     ? // Get the global configuration (the configuration will be extracted independently when packaging)
       (import.meta.env as unknown as GlobEnvConfig)
-    : global[ENV_NAME as any]) as unknown as GlobEnvConfig;
+    : global[ENV_NAME as any]) as unknown as GlobEnvConfig
 
   const {
     VITE_GLOB_APP_TITLE,
@@ -44,10 +44,10 @@ export function getAppEnvConfig() {
     // 【JEECG作为乾坤子应用】
     VITE_GLOB_QIANKUN_MICRO_APP_NAME,
     VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
-    
+
     //在线文档编辑版本。可选属性：wps, onlyoffice
     VITE_GLOB_ONLINE_DOCUMENT_VERSION,
-  } = ENV;
+  } = ENV
 
   // if (!/^[a-zA-Z\_]*$/.test(VITE_GLOB_APP_SHORT_NAME)) {
   //   warn(
@@ -74,19 +74,19 @@ export function getAppEnvConfig() {
     VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
 
     //在线文档编辑版本。可选属性：wps, onlyoffice
-    VITE_GLOB_ONLINE_DOCUMENT_VERSION
-  };
+    VITE_GLOB_ONLINE_DOCUMENT_VERSION,
+  }
 }
 
 /**
  * @description: Development mode
  */
-export const devMode = 'development';
+export const devMode = 'development'
 
 /**
  * @description: Production mode
  */
-export const prodMode = 'production';
+export const prodMode = 'production'
 
 /**
  * @description: Get environment variables
@@ -94,7 +94,7 @@ export const prodMode = 'production';
  * @example:
  */
 export function getEnv(): string {
-  return import.meta.env.MODE;
+  return import.meta.env.MODE
 }
 
 /**
@@ -103,7 +103,7 @@ export function getEnv(): string {
  * @example:
  */
 export function isDevMode(): boolean {
-  return import.meta.env.DEV;
+  return import.meta.env.DEV
 }
 
 /**
@@ -112,24 +112,24 @@ export function isDevMode(): boolean {
  * @example:
  */
 export function isProdMode(): boolean {
-  return import.meta.env.PROD;
+  return import.meta.env.PROD
 }
 
 export function getHideLayoutTypes(): string[] {
-  const {VITE_GLOB_HIDE_LAYOUT_TYPES} = getAppEnvConfig();
+  const { VITE_GLOB_HIDE_LAYOUT_TYPES } = getAppEnvConfig()
   if (typeof VITE_GLOB_HIDE_LAYOUT_TYPES !== 'string') {
-    return [];
+    return []
   }
-  return VITE_GLOB_HIDE_LAYOUT_TYPES.split(',');
+  return VITE_GLOB_HIDE_LAYOUT_TYPES.split(',')
 }
 
 /**
  * 获取在线文档版本号
  */
 export function getOnlineDocumentVersion(): string {
-  const { VITE_GLOB_ONLINE_DOCUMENT_VERSION } = getAppEnvConfig();
+  const { VITE_GLOB_ONLINE_DOCUMENT_VERSION } = getAppEnvConfig()
   if (typeof VITE_GLOB_ONLINE_DOCUMENT_VERSION !== 'string') {
-    return 'wps';
+    return 'wps'
   }
-  return VITE_GLOB_ONLINE_DOCUMENT_VERSION;
+  return VITE_GLOB_ONLINE_DOCUMENT_VERSION
 }

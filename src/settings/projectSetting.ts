@@ -1,6 +1,6 @@
-import type { ProjectConfig } from '/#/config';
-import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum';
-import { CacheTypeEnum } from '/@/enums/cacheEnum';
+import type { ProjectConfig } from '/#/config'
+import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum'
+import { CacheTypeEnum } from '/@/enums/cacheEnum'
 import {
   ContentEnum,
   PermissionModeEnum,
@@ -9,10 +9,10 @@ import {
   SettingButtonPositionEnum,
   SessionTimeoutProcessingEnum,
   TabsThemeEnum,
-} from '/@/enums/appEnum';
-import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting';
-import { primaryColor } from '../../build/config/themeConfig';
-import { darkMode } from '/@/settings/designSetting';
+} from '/@/enums/appEnum'
+import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting'
+import { primaryColor } from '../../build/config/themeConfig'
+import { darkMode } from '/@/settings/designSetting'
 
 // ! 改动后需要清空浏览器缓存
 const setting: ProjectConfig = {
@@ -199,6 +199,6 @@ const setting: ProjectConfig = {
   // 切换界面的时候是否取消已经发送但是未响应的http请求。
   // 如果开启,想对单独接口覆盖。可以在单独接口设置
   removeAllHttpPending: false,
-};
+}
 
-export default setting;
+export default setting

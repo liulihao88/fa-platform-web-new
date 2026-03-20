@@ -23,85 +23,85 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import type { PropType } from 'vue';
-  import { ref } from 'vue';
-  // component
-  import { Skeleton } from 'ant-design-vue';
-  import { CollapseTransition } from '/@/components/Transition';
-  import CollapseHeader from './CollapseHeader.vue';
-  import { triggerWindowResize } from '/@/utils/event';
-  // hook
-  import { useTimeoutFn } from '/@/hooks/core/useTimeout';
-  import { useDesign } from '/@/hooks/web/useDesign';
+import type { PropType } from 'vue'
+import { ref } from 'vue'
+// component
+import { Skeleton } from 'ant-design-vue'
+import { CollapseTransition } from '/@/components/Transition'
+import CollapseHeader from './CollapseHeader.vue'
+import { triggerWindowResize } from '/@/utils/event'
+// hook
+import { useTimeoutFn } from '/@/hooks/core/useTimeout'
+import { useDesign } from '/@/hooks/web/useDesign'
 
-  const props = defineProps({
-    title: { type: String, default: '' },
-    defaultExpan: { type: Boolean, default: true },
-    loading: { type: Boolean },
-    /**
-     *  Can it be expanded
-     */
-    canExpan: { type: Boolean, default: true },
-    /**
-     * Warm reminder on the right side of the title
-     */
-    helpMessage: {
-      type: [Array, String] as PropType<string[] | string>,
-      default: '',
-    },
-    /**
-     * Whether to trigger window.resize when expanding and contracting,
-     * Can adapt to tables and forms, when the form shrinks, the form triggers resize to adapt to the height
-     */
-    triggerWindowResize: { type: Boolean },
-    /**
-     * Delayed loading time
-     */
-    lazyTime: { type: Number, default: 0 },
-  });
-  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
-  const show = ref(props.defaultExpan);
-  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
-
-  const { prefixCls } = useDesign('collapse-container');
-
+const props = defineProps({
+  title: { type: String, default: '' },
+  defaultExpan: { type: Boolean, default: true },
+  loading: { type: Boolean },
   /**
-   * @description: Handling development events
+   *  Can it be expanded
    */
-  function handleExpand() {
-    show.value = !show.value;
-    if (props.triggerWindowResize) {
-      // 200 milliseconds here is because the expansion has animation,
-      useTimeoutFn(triggerWindowResize, 200);
-    }
+  canExpan: { type: Boolean, default: true },
+  /**
+   * Warm reminder on the right side of the title
+   */
+  helpMessage: {
+    type: [Array, String] as PropType<string[] | string>,
+    default: '',
+  },
+  /**
+   * Whether to trigger window.resize when expanding and contracting,
+   * Can adapt to tables and forms, when the form shrinks, the form triggers resize to adapt to the height
+   */
+  triggerWindowResize: { type: Boolean },
+  /**
+   * Delayed loading time
+   */
+  lazyTime: { type: Number, default: 0 },
+})
+// update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
+const show = ref(props.defaultExpan)
+// update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
+
+const { prefixCls } = useDesign('collapse-container')
+
+/**
+ * @description: Handling development events
+ */
+function handleExpand() {
+  show.value = !show.value
+  if (props.triggerWindowResize) {
+    // 200 milliseconds here is because the expansion has animation,
+    useTimeoutFn(triggerWindowResize, 200)
   }
+}
 </script>
 <style lang="less">
-  @prefix-cls: ~'@{namespace}-collapse-container';
+@prefix-cls: ~'@{namespace}-collapse-container';
 
-  .@{prefix-cls} {
-    background-color: @component-background;
-    border-radius: 2px;
-    transition: all 0.3s ease-in-out;
+.@{prefix-cls} {
+  background-color: @component-background;
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
 
-    &__header {
-      display: flex;
-      height: 32px;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid @border-color-light;
-    }
-
-    &__footer {
-      border-top: 1px solid @border-color-light;
-    }
-
-    &__action {
-      display: flex;
-      text-align: right;
-      flex: 1;
-      align-items: center;
-      justify-content: flex-end;
-    }
+  &__header {
+    display: flex;
+    height: 32px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid @border-color-light;
   }
+
+  &__footer {
+    border-top: 1px solid @border-color-light;
+  }
+
+  &__action {
+    display: flex;
+    text-align: right;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
 </style>

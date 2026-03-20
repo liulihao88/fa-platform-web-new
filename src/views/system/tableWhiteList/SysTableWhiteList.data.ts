@@ -1,8 +1,8 @@
-import {BasicColumn, FormSchema} from '/@/components/Table';
+import { BasicColumn, FormSchema } from '/@/components/Table'
 
 const statusOptions = [
-  {label: '禁用', value: '0'},
-  {label: '启用', value: '1'},
+  { label: '禁用', value: '0' },
+  { label: '启用', value: '1' },
 ]
 
 export const columns: BasicColumn[] = [
@@ -17,16 +17,16 @@ export const columns: BasicColumn[] = [
   {
     title: '状态',
     dataIndex: 'status',
-    customRender({text}) {
-      const find = statusOptions.find(opt => opt.value === text);
-      return find?.label || '未知';
-    }
+    customRender({ text }) {
+      const find = statusOptions.find((opt) => opt.value === text)
+      return find?.label || '未知'
+    },
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
-  }
-];
+  },
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -47,10 +47,10 @@ export const searchFormSchema: FormSchema[] = [
       options: statusOptions,
     },
   },
-];
+]
 
 export const formSchema: FormSchema[] = [
-  {label: '', field: 'id', component: 'Input', show: false},
+  { label: '', field: 'id', component: 'Input', show: false },
   {
     label: '允许的表名',
     field: 'tableName',
@@ -73,4 +73,4 @@ export const formSchema: FormSchema[] = [
       options: statusOptions,
     },
   },
-];
+]

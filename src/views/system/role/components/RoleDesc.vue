@@ -4,15 +4,15 @@
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
-  import { ref, useAttrs } from 'vue';
-  import { BasicDrawer, useDrawerInner } from '/src/components/Drawer';
-  import { formDescSchema } from '../role.data';
-  import { Description, useDescription } from '/@/components/Description/index';
-  const emit = defineEmits(['register']);
-  const attrs = useAttrs();
-  const roleData = ref({});
-  const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
-    setDrawerProps({ confirmLoading: false });
-    roleData.value = data.record;
-  });
+import { ref, useAttrs } from 'vue'
+import { BasicDrawer, useDrawerInner } from '/src/components/Drawer'
+import { formDescSchema } from '../role.data'
+import { Description, useDescription } from '/@/components/Description/index'
+const emit = defineEmits(['register'])
+const attrs = useAttrs()
+const roleData = ref({})
+const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
+  setDrawerProps({ confirmLoading: false })
+  roleData.value = data.record
+})
 </script>

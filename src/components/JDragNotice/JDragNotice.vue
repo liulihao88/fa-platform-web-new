@@ -17,38 +17,31 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted } from 'vue';
-  import { useDragNotice } from '/@/hooks/web/useDragNotice';
-  import DynamicNotice from '@/views/monitor/mynews/DynamicNotice.vue';
+import { defineComponent, onMounted } from 'vue'
+import { useDragNotice } from '/@/hooks/web/useDragNotice'
+import DynamicNotice from '@/views/monitor/mynews/DynamicNotice.vue'
 
-  export default defineComponent({
-    name: 'JDragNotice',
-    components: {
-      DynamicNotice,
-    },
-    setup() {
-      const {
-        initDragWebSocket,
-        currentModal,
-        modalParams,
-        modalRegCache,
-        bindParams,
-        reloadPage,
-      } = useDragNotice();
+export default defineComponent({
+  name: 'JDragNotice',
+  components: {
+    DynamicNotice,
+  },
+  setup() {
+    const { initDragWebSocket, currentModal, modalParams, modalRegCache, bindParams, reloadPage } = useDragNotice()
 
-      onMounted(() => {
-        initDragWebSocket();
-      });
+    onMounted(() => {
+      initDragWebSocket()
+    })
 
-      return {
-        currentModal,
-        modalParams,
-        modalRegCache,
-        bindParams,
-        reloadPage,
-      };
-    },
-  });
+    return {
+      currentModal,
+      modalParams,
+      modalRegCache,
+      bindParams,
+      reloadPage,
+    }
+  },
+})
 </script>
 
 <style scoped lang="less"></style>

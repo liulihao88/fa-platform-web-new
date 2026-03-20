@@ -8,7 +8,8 @@
     <CurrentPermissionMode />
 
     <p>
-      当前角色: <a> {{ userStore.getRoleList }} </a>
+      当前角色:
+      <a>{{ userStore.getRoleList }}</a>
     </p>
     <Alert class="mt-4" type="info" message="点击后请查看左侧菜单变化" show-icon />
 
@@ -26,32 +27,32 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { computed, defineComponent } from 'vue';
-  import { Alert } from 'ant-design-vue';
-  import CurrentPermissionMode from '../CurrentPermissionMode.vue';
-  import { useUserStore } from '/@/store/modules/user';
-  import { RoleEnum } from '/@/enums/roleEnum';
-  import { usePermission } from '/@/hooks/web/usePermission';
-  import { PageWrapper } from '/@/components/Page';
+import { computed, defineComponent } from 'vue'
+import { Alert } from 'ant-design-vue'
+import CurrentPermissionMode from '../CurrentPermissionMode.vue'
+import { useUserStore } from '/@/store/modules/user'
+import { RoleEnum } from '/@/enums/roleEnum'
+import { usePermission } from '/@/hooks/web/usePermission'
+import { PageWrapper } from '/@/components/Page'
 
-  export default defineComponent({
-    components: { Alert, CurrentPermissionMode, PageWrapper },
-    setup() {
-      const { changeRole } = usePermission();
-      const userStore = useUserStore();
+export default defineComponent({
+  components: { Alert, CurrentPermissionMode, PageWrapper },
+  setup() {
+    const { changeRole } = usePermission()
+    const userStore = useUserStore()
 
-      return {
-        userStore,
-        RoleEnum,
-        isSuper: computed(() => userStore.getRoleList.includes(RoleEnum.SUPER)),
-        isTest: computed(() => userStore.getRoleList.includes(RoleEnum.TEST)),
-        changeRole,
-      };
-    },
-  });
+    return {
+      userStore,
+      RoleEnum,
+      isSuper: computed(() => userStore.getRoleList.includes(RoleEnum.SUPER)),
+      isTest: computed(() => userStore.getRoleList.includes(RoleEnum.TEST)),
+      changeRole,
+    }
+  },
+})
 </script>
 <style lang="less" scoped>
-  .demo {
-    background-color: @component-background;
-  }
+.demo {
+  background-color: @component-background;
+}
 </style>

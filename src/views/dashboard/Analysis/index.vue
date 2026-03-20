@@ -1,5 +1,5 @@
 <template>
-<!--  <IndexChart v-if="indexStyle === 0"></IndexChart>
+  <!--  <IndexChart v-if="indexStyle === 0"></IndexChart>
   <IndexDef v-if="indexStyle === 1"></IndexDef>
   <IndexBdc v-if="indexStyle == 2"></IndexBdc>
   <IndexTask v-if="indexStyle == 3"></IndexTask>
@@ -12,22 +12,19 @@
       <a-radio :value="3">我的任务</a-radio>
     </a-radio-group>
   </div>-->
-  <div class="welcome">
-    欢迎您进入资金分析平台
-  </div>
-
+  <div class="welcome">欢迎您进入资金分析平台</div>
 </template>
 <script lang="ts" setup>
-  import { ref } from 'vue';
-  import IndexDef from './homePage/IndexDef.vue';
-  import IndexChart from './homePage/IndexChart.vue';
-  import IndexBdc from './homePage/IndexBdc.vue';
-  import IndexTask from './homePage/IndexTask.vue';
+import { ref } from 'vue'
+import IndexDef from './homePage/IndexDef.vue'
+import IndexChart from './homePage/IndexChart.vue'
+import IndexBdc from './homePage/IndexBdc.vue'
+import IndexTask from './homePage/IndexTask.vue'
 
-  const indexStyle = ref(2);
+const indexStyle = ref(2)
 </script>
 <style scoped>
-.welcome{
+.welcome {
   font-size: 32px;
   display: flex;
   align-items: center;

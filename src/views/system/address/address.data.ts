@@ -1,5 +1,5 @@
-import { FormSchema } from '/@/components/Form';
-import { BasicColumn } from '/@/components/Table';
+import { FormSchema } from '/@/components/Form'
+import { BasicColumn } from '/@/components/Table'
 
 export const columns: BasicColumn[] = [
   {
@@ -33,7 +33,7 @@ export const columns: BasicColumn[] = [
     width: 150,
     dataIndex: 'email',
   },
-];
+]
 
 export const searchFormSchema: FormSchema[] = [
   {
@@ -48,4 +48,4 @@ export const searchFormSchema: FormSchema[] = [
     component: 'Input',
     colProps: { span: 6 },
   },
-];
+]
