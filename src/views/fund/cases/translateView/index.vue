@@ -6,7 +6,7 @@ defineOptions({
   name: 'SplitPane',
 })
 
-const showWhich = ref([1, 2])
+const showWhich = ref([])
 
 const settingLR = ref({
   minPercent: 1,
@@ -28,8 +28,8 @@ watch(
       settingLR.value.defaultPercent = 50
     } else if (val.length === 1) {
       val[0] === 1
-        ? (settingLR.value.defaultPercent = settingLR.value.minPercent)
-        : (settingLR.value.defaultPercent = 100 - settingLR.value.minPercent)
+        ? (settingLR.value.defaultPercent = 100 - settingLR.value.minPercent)
+        : (settingLR.value.defaultPercent = settingLR.value.minPercent)
     } else {
       settingLR.value.defaultPercent = 50
     }
