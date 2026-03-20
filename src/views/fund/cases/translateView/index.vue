@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, h } from 'vue'
 import splitpane from '@/components/ReSplitPane'
 
 defineOptions({
@@ -13,6 +13,13 @@ const settingLR = ref({
   defaultPercent: 50,
   split: 'vertical',
 })
+
+const translateResultInfo = `
+<div>关于导入行数：</div>
+<div>1、每个文件的导入行数，对应文件的每一行，包括空行都会导入到系统；每个文件的导入行数相加，则是本案件的导入行数</div>
+<div>2、纵表导入时，每个数据段，只导入一行数据</div>
+<div>3、在生成标准数据的时候，空行会被排除，所以标准数据的导入行数可能小于文件的导入行数</div>
+`
 
 watch(
   showWhich,
@@ -42,17 +49,21 @@ const handleResize = (percent: number) => {
   <div class="h-100%">
     <o-basic-layout class="h-100%">
       <template #header>
-        <o-title title="文件转换相亲">
+        <o-title title="文件转换详情" class="w-100%">
           <o-checkbox
             v-model="showWhich"
             :showAll="false"
             :options="[
-              { label: '显示源文件试图', value: 1 },
+              { label: '显示源文件视图', value: 1 },
               { label: '显示转换结果', value: 2 },
             ]"
           />
 
-          <template #right />
+          <template #right>
+            <o-tooltip :content="translateResultInfo" trigger="click" raw-content>
+              <el-button type="primary">转换结果说明</el-button>
+            </o-tooltip>
+          </template>
         </o-title>
       </template>
       <div class="split-pane h-100%">
