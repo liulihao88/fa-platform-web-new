@@ -162,6 +162,7 @@ defineExpose({
       <el-table
         v-if="!dataIsEmpty"
         :data="tableData"
+        height="420"
         border
         stripe
         row-key="__index"

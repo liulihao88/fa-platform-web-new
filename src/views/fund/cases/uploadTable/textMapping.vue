@@ -194,10 +194,6 @@ defineExpose({
 
 <template>
   <div class="h-100%">
-    <el-button type="primary" :disabled="saveDisabled" @click="save">
-      保存配置 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
-    </el-button>
-    {{ saveDisabled }}
     <el-card ref="headerRef" size="small" class="mb2">
       <o-title :title="fileInfo.fileName">
         <TextMappingInfo />

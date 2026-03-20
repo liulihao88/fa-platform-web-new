@@ -32,22 +32,12 @@ const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsS
       <!-- 全屏 -->
       <LaySidebarFullScreen id="full-screen" />
       <!-- 消息通知 -->
-      <LayNotice id="header-notice" />
+      <!-- <LayNotice id="header-notice" /> -->
       <!-- 退出登录 -->
-      <el-dropdown trigger="click">
-        <span class="el-dropdown-link navbar-bg-hover select-none">
-          <img :src="userAvatar" :style="avatarsStyle" />
-          <p v-if="username" class="dark:text-white">{{ username }}</p>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu class="logout">
-            <el-dropdown-item @click="logout">
-              <IconifyIconOffline :icon="LogoutCircleRLine" style="margin: 5px" />
-              退出系统
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <div class="f-st-ct cp fs-14 set-icon custom-out-system" @click="logout">
+        <IconifyIconOffline :icon="LogoutCircleRLine" style="margin: 5px" />
+        退出系统
+      </div>
       <span class="set-icon navbar-bg-hover" title="打开系统配置" @click="onPanel">
         <IconifyIconOffline :icon="Setting" />
       </span>
@@ -111,5 +101,9 @@ const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsS
     flex-wrap: wrap;
     min-width: 100%;
   }
+}
+
+.custom-out-system {
+  width: 80px !important;
 }
 </style>
