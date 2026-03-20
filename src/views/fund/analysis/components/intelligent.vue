@@ -22,92 +22,56 @@
                 <span class="level-badge">第1级</span>
               </div>
               <div class="condition-cell">
-                <a-select
-                  v-model:value="rootGroups.operate"
-                  :options="relationOptions"
-                  placeholder="选择关系"
-                  style="width: 100%"
-                  @change="(value) => updateGroup({ operate: value })"
-                />
+                <a-select v-model:value="rootGroups.operate" :options="relationOptions" placeholder="选择关系"
+                  style="width: 100%" @change="(value) => updateGroup({ operate: value })" />
               </div>
               <div class="condition-cell">
-                <JSearchSelect
-                  dict="fa_trans_query_col"
-                  :getPopupContainer="retBodyContainer"
-                  style="width: 100%"
-                  @change="(value) => updateItem(item.id, { field: value })"
-                  v-model:value="item.field"
-                  placeholder="选择字段"
-                ></JSearchSelect>
+                <JSearchSelect dict="fa_trans_query_col" :getPopupContainer="retBodyContainer" style="width: 100%"
+                  @change="(value) => updateItem(item.id, { field: value })" v-model:value="item.field"
+                  placeholder="选择字段">
+                </JSearchSelect>
               </div>
               <div class="condition-cell">
-                <JSearchSelect
-                  :getPopupContainer="retBodyContainer"
-                  style="width: 100%"
-                  @change="(value) => updateItem(item.id, { condition: value })"
-                  :dict="getConditionDict(item.field)"
-                  v-model:value="item.condition"
-                  placeholder="选择逻辑"
-                ></JSearchSelect>
+                <JSearchSelect :getPopupContainer="retBodyContainer" style="width: 100%"
+                  @change="(value) => updateItem(item.id, { condition: value })" :dict="getConditionDict(item.field)"
+                  v-model:value="item.condition" placeholder="选择逻辑">
+                </JSearchSelect>
               </div>
               <div class="condition-cell">
                 <!-- 输入框 -->
-                <a-input
-                  v-if="getFieldComponentType(item.field) === 'input'"
-                  v-model:value="item.value"
-                  placeholder="输入值"
-                  allowClear
-                  @change="(e) => updateItem(item.id, { value: e.target.value })"
-                />
+                <a-input v-if="getFieldComponentType(item.field) === 'input'" v-model:value="item.value"
+                  placeholder="输入值" allowClear @change="(e) => updateItem(item.id, { value: e.target.value })" />
                 <!-- 日期选择器 -->
-                <a-date-picker
-                  v-else-if="getFieldComponentType(item.field) === 'date'"
-                  v-model:value="item.value"
-                  style="width: 100%"
-                  placeholder="选择日期"
-                  format="YYYY-MM-DD"
-                  valueFormat="YYYY-MM-DD"
-                  @change="(value) => updateItem(item.id, { value })"
-                />
+                <a-date-picker v-else-if="getFieldComponentType(item.field) === 'date'" v-model:value="item.value"
+                  style="width: 100%" placeholder="选择日期" format="YYYY-MM-DD" valueFormat="YYYY-MM-DD"
+                  @change="(value) => updateItem(item.id, { value })" />
                 <!-- 日期时间选择器 -->
-                <a-date-picker
-                  v-else-if="getFieldComponentType(item.field) === 'datetime'"
-                  v-model:value="item.value"
-                  showTime
-                  style="width: 100%"
-                  placeholder="选择日期时间"
-                  format="YYYY-MM-DD HH:mm:ss"
-                  valueFormat="YYYY-MM-DD HH:mm:ss"
-                  @change="(value) => updateItem(item.id, { value })"
-                />
+                <a-date-picker v-else-if="getFieldComponentType(item.field) === 'datetime'" v-model:value="item.value"
+                  showTime style="width: 100%" placeholder="选择日期时间" format="YYYY-MM-DD HH:mm:ss"
+                  valueFormat="YYYY-MM-DD HH:mm:ss" @change="(value) => updateItem(item.id, { value })" />
                 <!-- 下拉选择器 -->
-                <a-select
-                  v-else-if="getFieldComponentType(item.field) === 'select'"
-                  v-model:value="item.value"
-                  :options="getSelectOptions(item.field)"
-                  placeholder="请选择"
-                  style="width: 100%"
-                  allowClear
-                  @change="(value) => updateItem(item.id, { value })"
-                />
+                <a-select v-else-if="getFieldComponentType(item.field) === 'select'" v-model:value="item.value"
+                  :options="getSelectOptions(item.field)" placeholder="请选择" style="width: 100%" allowClear
+                  @change="(value) => updateItem(item.id, { value })" />
               </div>
               <div class="condition-cell actions-cell">
                 <a-button type="link" size="small" @click="addSameLevelCondition(null, 1)" class="add-same-btn">
-                  <template #icon><PlusOutlined /></template>
+                  <template #icon>
+                    <PlusOutlined />
+                  </template>
                   添加同级
                 </a-button>
-                <a-button
-                  type="link"
-                  size="small"
-                  @click="addSubGroup(item.id, 1)"
-                  class="add-sub-btn"
-                  :disabled="1 >= 5"
-                >
-                  <template #icon><PlusCircleOutlined /></template>
+                <a-button type="link" size="small" @click="addSubGroup(item.id, 1)" class="add-sub-btn"
+                  :disabled="1 >= 5">
+                  <template #icon>
+                    <PlusCircleOutlined />
+                  </template>
                   {{ 1 >= 5 ? '最多5级' : '添加子级' }}
                 </a-button>
                 <a-button type="link" size="small" danger @click="removeCondition(item.id)" class="delete-btn">
-                  <template #icon><DeleteOutlined /></template>
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
                   删除
                 </a-button>
               </div>
@@ -122,99 +86,61 @@
                       <span class="level-badge">第2级</span>
                     </div>
                     <div class="condition-cell">
-                      <a-select
-                        v-model:value="subGroup.operate"
-                        :options="relationOptions"
-                        placeholder="选择关系"
+                      <a-select v-model:value="subGroup.operate" :options="relationOptions" placeholder="选择关系"
                         style="width: 100%"
-                        @change="(value) => updateSubGroup(item.id, subIndex, { operate: value })"
-                      />
+                        @change="(value) => updateSubGroup(item.id, subIndex, { operate: value })" />
                     </div>
                     <div class="condition-cell">
-                      <JSearchSelect
-                        dict="fa_trans_query_col"
-                        :getPopupContainer="retBodyContainer"
-                        v-model:value="subItem.field"
-                        placeholder="选择字段"
-                        style="width: 100%"
-                        allowClear
-                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { field: value })"
-                      />
+                      <JSearchSelect dict="fa_trans_query_col" :getPopupContainer="retBodyContainer"
+                        v-model:value="subItem.field" placeholder="选择字段" style="width: 100%" allowClear
+                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { field: value })" />
                     </div>
                     <div class="condition-cell">
-                      <JSearchSelect
-                        :getPopupContainer="retBodyContainer"
-                        v-model:value="subItem.condition"
-                        :dict="getConditionDict(subItem.field)"
-                        placeholder="选择逻辑"
-                        style="width: 100%"
-                        allowClear
-                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { condition: value })"
-                      />
+                      <JSearchSelect :getPopupContainer="retBodyContainer" v-model:value="subItem.condition"
+                        :dict="getConditionDict(subItem.field)" placeholder="选择逻辑" style="width: 100%" allowClear
+                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { condition: value })" />
+
                     </div>
                     <div class="condition-cell">
                       <!-- 输入框 -->
-                      <a-input
-                        v-if="getFieldComponentType(subItem.field) === 'input'"
-                        v-model:value="subItem.value"
-                        placeholder="输入值"
-                        allowClear
-                        @change="(e) => updateSubItem(item.id, subIndex, subItem.id, { value: e.target.value })"
-                      />
+                      <a-input v-if="getFieldComponentType(subItem.field) === 'input'" v-model:value="subItem.value"
+                        placeholder="输入值" allowClear
+                        @change="(e) => updateSubItem(item.id, subIndex, subItem.id, { value: e.target.value })" />
                       <!-- 日期选择器 -->
-                      <a-date-picker
-                        v-else-if="getFieldComponentType(subItem.field) === 'date'"
-                        v-model:value="subItem.value"
-                        style="width: 100%"
-                        placeholder="选择日期"
-                        format="YYYY-MM-DD"
+                      <a-date-picker v-else-if="getFieldComponentType(subItem.field) === 'date'"
+                        v-model:value="subItem.value" style="width: 100%" placeholder="选择日期" format="YYYY-MM-DD"
                         valueFormat="YYYY-MM-DD"
-                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })"
-                      />
+                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })" />
                       <!-- 日期时间选择器 -->
-                      <a-date-picker
-                        v-else-if="getFieldComponentType(subItem.field) === 'datetime'"
-                        v-model:value="subItem.value"
-                        showTime
-                        style="width: 100%"
-                        placeholder="选择日期时间"
-                        format="YYYY-MM-DD HH:mm:ss"
-                        valueFormat="YYYY-MM-DD HH:mm:ss"
-                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })"
-                      />
+                      <a-date-picker v-else-if="getFieldComponentType(subItem.field) === 'datetime'"
+                        v-model:value="subItem.value" showTime style="width: 100%" placeholder="选择日期时间"
+                        format="YYYY-MM-DD HH:mm:ss" valueFormat="YYYY-MM-DD HH:mm:ss"
+                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })" />
                       <!-- 下拉选择器 -->
-                      <a-select
-                        v-else-if="getFieldComponentType(subItem.field) === 'select'"
-                        v-model:value="subItem.value"
-                        :options="getSelectOptions(subItem.field)"
-                        placeholder="请选择"
-                        style="width: 100%"
-                        allowClear
-                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })"
-                      />
+                      <a-select v-else-if="getFieldComponentType(subItem.field) === 'select'"
+                        v-model:value="subItem.value" :options="getSelectOptions(subItem.field)" placeholder="请选择"
+                        style="width: 100%" allowClear
+                        @change="(value) => updateSubItem(item.id, subIndex, subItem.id, { value })" />
                     </div>
                     <div class="condition-cell actions-cell">
-                      <a-button
-                        type="link"
-                        size="small"
-                        @click="addSameLevelCondition(item.id, 2)"
-                        class="add-same-btn"
-                      >
-                        <template #icon><PlusOutlined /></template>
+                      <a-button type="link" size="small" @click="addSameLevelCondition(item.id, 2)"
+                        class="add-same-btn">
+                        <template #icon>
+                          <PlusOutlined />
+                        </template>
                         添加同级
                       </a-button>
-                      <a-button
-                        type="link"
-                        size="small"
-                        @click="addSubGroup(subItem.id, 2)"
-                        class="add-sub-btn"
-                        :disabled="2 >= 5"
-                      >
-                        <template #icon><PlusCircleOutlined /></template>
+                      <a-button type="link" size="small" @click="addSubGroup(subItem.id, 2)" class="add-sub-btn"
+                        :disabled="2 >= 5">
+                        <template #icon>
+                          <PlusCircleOutlined />
+                        </template>
                         {{ 2 >= 5 ? '最多5级' : '添加子级' }}
                       </a-button>
                       <a-button type="link" size="small" danger @click="removeCondition(subItem.id)" class="delete-btn">
-                        <template #icon><DeleteOutlined /></template>
+                        <template #icon>
+                          <DeleteOutlined />
+                        </template>
                         删除
                       </a-button>
                     </div>
@@ -223,119 +149,69 @@
                   <!-- 第三级子条件 -->
                   <template v-if="subItem.groups && subItem.groups.length > 0">
                     <div v-for="(subGroup3, subIndex3) in subItem.groups" :key="subIndex3" class="sub-group-wrapper">
-                      <div
-                        v-for="(subItem3, subItemIndex3) in subGroup3.items"
-                        :key="subItem3.id"
-                        class="condition-item-wrapper"
-                      >
+                      <div v-for="(subItem3, subItemIndex3) in subGroup3.items" :key="subItem3.id"
+                        class="condition-item-wrapper">
                         <div class="condition-row">
                           <div class="condition-cell level-cell">
                             <span class="level-badge">第3级</span>
                           </div>
                           <div class="condition-cell">
-                            <a-select
-                              v-model:value="subGroup3.operate"
-                              :options="relationOptions"
-                              placeholder="选择关系"
+                            <a-select v-model:value="subGroup3.operate" :options="relationOptions" placeholder="选择关系"
                               style="width: 100%"
-                              @change="(value) => updateSubGroup(subItem.id, subIndex3, { operate: value })"
-                            />
+                              @change="(value) => updateSubGroup(subItem.id, subIndex3, { operate: value })" />
                           </div>
                           <div class="condition-cell">
-                            <JSearchSelect
-                              dict="fa_trans_query_col"
-                              :getPopupContainer="retBodyContainer"
-                              v-model:value="subItem3.field"
-                              placeholder="选择字段"
-                              style="width: 100%"
-                              allowClear
-                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { field: value })"
-                            />
+                            <JSearchSelect dict="fa_trans_query_col" :getPopupContainer="retBodyContainer"
+                              v-model:value="subItem3.field" placeholder="选择字段" style="width: 100%" allowClear
+                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { field: value })" />
                           </div>
                           <div class="condition-cell">
-                            <JSearchSelect
-                              :getPopupContainer="retBodyContainer"
-                              v-model:value="subItem3.condition"
-                              :dict="getConditionDict(subItem3.field)"
-                              placeholder="选择逻辑"
-                              style="width: 100%"
-                              allowClear
-                              @change="
-                                (value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { condition: value })
-                              "
-                            />
+                            <JSearchSelect :getPopupContainer="retBodyContainer" v-model:value="subItem3.condition"
+                              :dict="getConditionDict(subItem3.field)" placeholder="选择逻辑" style="width: 100%" allowClear
+                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { condition: value })" />
+
                           </div>
                           <div class="condition-cell">
                             <!-- 输入框 -->
-                            <a-input
-                              v-if="getFieldComponentType(subItem3.field) === 'input'"
-                              v-model:value="subItem3.value"
-                              placeholder="输入值"
-                              allowClear
-                              @change="
-                                (e) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value: e.target.value })
-                              "
-                            />
+                            <a-input v-if="getFieldComponentType(subItem3.field) === 'input'"
+                              v-model:value="subItem3.value" placeholder="输入值" allowClear
+                              @change="(e) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value: e.target.value })" />
                             <!-- 日期选择器 -->
-                            <a-date-picker
-                              v-else-if="getFieldComponentType(subItem3.field) === 'date'"
-                              v-model:value="subItem3.value"
-                              style="width: 100%"
-                              placeholder="选择日期"
-                              format="YYYY-MM-DD"
+                            <a-date-picker v-else-if="getFieldComponentType(subItem3.field) === 'date'"
+                              v-model:value="subItem3.value" style="width: 100%" placeholder="选择日期" format="YYYY-MM-DD"
                               valueFormat="YYYY-MM-DD"
-                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })"
-                            />
+                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })" />
                             <!-- 日期时间选择器 -->
-                            <a-date-picker
-                              v-else-if="getFieldComponentType(subItem3.field) === 'datetime'"
-                              v-model:value="subItem3.value"
-                              showTime
-                              style="width: 100%"
-                              placeholder="选择日期时间"
-                              format="YYYY-MM-DD HH:mm:ss"
-                              valueFormat="YYYY-MM-DD HH:mm:ss"
-                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })"
-                            />
+                            <a-date-picker v-else-if="getFieldComponentType(subItem3.field) === 'datetime'"
+                              v-model:value="subItem3.value" showTime style="width: 100%" placeholder="选择日期时间"
+                              format="YYYY-MM-DD HH:mm:ss" valueFormat="YYYY-MM-DD HH:mm:ss"
+                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })" />
                             <!-- 下拉选择器 -->
-                            <a-select
-                              v-else-if="getFieldComponentType(subItem3.field) === 'select'"
-                              v-model:value="subItem3.value"
-                              :options="getSelectOptions(subItem3.field)"
-                              placeholder="请选择"
-                              style="width: 100%"
-                              allowClear
-                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })"
-                            />
+                            <a-select v-else-if="getFieldComponentType(subItem3.field) === 'select'"
+                              v-model:value="subItem3.value" :options="getSelectOptions(subItem3.field)"
+                              placeholder="请选择" style="width: 100%" allowClear
+                              @change="(value) => updateSubItem(subItem.id, subIndex3, subItem3.id, { value })" />
                           </div>
                           <div class="condition-cell actions-cell">
-                            <a-button
-                              type="link"
-                              size="small"
-                              @click="addSameLevelCondition(subItem.id, 3)"
-                              class="add-same-btn"
-                            >
-                              <template #icon><PlusOutlined /></template>
+                            <a-button type="link" size="small" @click="addSameLevelCondition(subItem.id, 3)"
+                              class="add-same-btn">
+                              <template #icon>
+                                <PlusOutlined />
+                              </template>
                               添加同级
                             </a-button>
-                            <a-button
-                              type="link"
-                              size="small"
-                              @click="addSubGroup(subItem3.id, 3)"
-                              class="add-sub-btn"
-                              :disabled="3 >= 5"
-                            >
-                              <template #icon><PlusCircleOutlined /></template>
+                            <a-button type="link" size="small" @click="addSubGroup(subItem3.id, 3)" class="add-sub-btn"
+                              :disabled="3 >= 5">
+                              <template #icon>
+                                <PlusCircleOutlined />
+                              </template>
                               {{ 3 >= 5 ? '最多5级' : '添加子级' }}
                             </a-button>
-                            <a-button
-                              type="link"
-                              size="small"
-                              danger
-                              @click="removeCondition(subItem3.id)"
-                              class="delete-btn"
-                            >
-                              <template #icon><DeleteOutlined /></template>
+                            <a-button type="link" size="small" danger @click="removeCondition(subItem3.id)"
+                              class="delete-btn">
+                              <template #icon>
+                                <DeleteOutlined />
+                              </template>
                               删除
                             </a-button>
                           </div>
@@ -343,128 +219,72 @@
 
                         <!-- 第四级子条件 -->
                         <template v-if="subItem3.groups && subItem3.groups.length > 0">
-                          <div
-                            v-for="(subGroup4, subIndex4) in subItem3.groups"
-                            :key="subIndex4"
-                            class="sub-group-wrapper"
-                          >
-                            <div
-                              v-for="(subItem4, subItemIndex4) in subGroup4.items"
-                              :key="subItem4.id"
-                              class="condition-item-wrapper"
-                            >
+                          <div v-for="(subGroup4, subIndex4) in subItem3.groups" :key="subIndex4"
+                            class="sub-group-wrapper">
+                            <div v-for="(subItem4, subItemIndex4) in subGroup4.items" :key="subItem4.id"
+                              class="condition-item-wrapper">
                               <div class="condition-row">
                                 <div class="condition-cell level-cell">
                                   <span class="level-badge">第4级</span>
                                 </div>
                                 <div class="condition-cell">
-                                  <a-select
-                                    v-model:value="subGroup4.operate"
-                                    :options="relationOptions"
-                                    placeholder="选择关系"
-                                    style="width: 100%"
-                                    @change="(value) => updateSubGroup(subItem3.id, subIndex4, { operate: value })"
-                                  />
+                                  <a-select v-model:value="subGroup4.operate" :options="relationOptions"
+                                    placeholder="选择关系" style="width: 100%"
+                                    @change="(value) => updateSubGroup(subItem3.id, subIndex4, { operate: value })" />
                                 </div>
                                 <div class="condition-cell">
-                                  <JSearchSelect
-                                    dict="fa_trans_query_col"
-                                    :getPopupContainer="retBodyContainer"
-                                    v-model:value="subItem4.field"
-                                    placeholder="选择字段"
-                                    style="width: 100%"
-                                    allowClear
-                                    @change="
-                                      (value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { field: value })
-                                    "
-                                  />
+                                  <JSearchSelect dict="fa_trans_query_col" :getPopupContainer="retBodyContainer"
+                                    v-model:value="subItem4.field" placeholder="选择字段" style="width: 100%" allowClear
+                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { field: value })" />
                                 </div>
                                 <div class="condition-cell">
-                                  <JSearchSelect
-                                    :getPopupContainer="retBodyContainer"
-                                    v-model:value="subItem4.condition"
-                                    :dict="getConditionDict(subItem4.field)"
-                                    placeholder="选择逻辑"
-                                    style="width: 100%"
-                                    allowClear
-                                    @change="
-                                      (value) =>
-                                        updateSubItem(subItem3.id, subIndex4, subItem4.id, { condition: value })
-                                    "
-                                  />
+                                  <JSearchSelect :getPopupContainer="retBodyContainer"
+                                    v-model:value="subItem4.condition" :dict="getConditionDict(subItem4.field)"
+                                    placeholder="选择逻辑" style="width: 100%" allowClear
+                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { condition: value })" />
+
                                 </div>
                                 <div class="condition-cell">
                                   <!-- 输入框 -->
-                                  <a-input
-                                    v-if="getFieldComponentType(subItem4.field) === 'input'"
-                                    v-model:value="subItem4.value"
-                                    placeholder="输入值"
-                                    allowClear
-                                    @change="
-                                      (e) =>
-                                        updateSubItem(subItem3.id, subIndex4, subItem4.id, { value: e.target.value })
-                                    "
-                                  />
+                                  <a-input v-if="getFieldComponentType(subItem4.field) === 'input'"
+                                    v-model:value="subItem4.value" placeholder="输入值" allowClear
+                                    @change="(e) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value: e.target.value })" />
                                   <!-- 日期选择器 -->
-                                  <a-date-picker
-                                    v-else-if="getFieldComponentType(subItem4.field) === 'date'"
-                                    v-model:value="subItem4.value"
-                                    style="width: 100%"
-                                    placeholder="选择日期"
-                                    format="YYYY-MM-DD"
-                                    valueFormat="YYYY-MM-DD"
-                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })"
-                                  />
+                                  <a-date-picker v-else-if="getFieldComponentType(subItem4.field) === 'date'"
+                                    v-model:value="subItem4.value" style="width: 100%" placeholder="选择日期"
+                                    format="YYYY-MM-DD" valueFormat="YYYY-MM-DD"
+                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })" />
                                   <!-- 日期时间选择器 -->
-                                  <a-date-picker
-                                    v-else-if="getFieldComponentType(subItem4.field) === 'datetime'"
-                                    v-model:value="subItem4.value"
-                                    showTime
-                                    style="width: 100%"
-                                    placeholder="选择日期时间"
-                                    format="YYYY-MM-DD HH:mm:ss"
-                                    valueFormat="YYYY-MM-DD HH:mm:ss"
-                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })"
-                                  />
+                                  <a-date-picker v-else-if="getFieldComponentType(subItem4.field) === 'datetime'"
+                                    v-model:value="subItem4.value" showTime style="width: 100%" placeholder="选择日期时间"
+                                    format="YYYY-MM-DD HH:mm:ss" valueFormat="YYYY-MM-DD HH:mm:ss"
+                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })" />
                                   <!-- 下拉选择器 -->
-                                  <a-select
-                                    v-else-if="getFieldComponentType(subItem4.field) === 'select'"
-                                    v-model:value="subItem4.value"
-                                    :options="getSelectOptions(subItem4.field)"
-                                    placeholder="请选择"
-                                    style="width: 100%"
-                                    allowClear
-                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })"
-                                  />
+                                  <a-select v-else-if="getFieldComponentType(subItem4.field) === 'select'"
+                                    v-model:value="subItem4.value" :options="getSelectOptions(subItem4.field)"
+                                    placeholder="请选择" style="width: 100%" allowClear
+                                    @change="(value) => updateSubItem(subItem3.id, subIndex4, subItem4.id, { value })" />
                                 </div>
                                 <div class="condition-cell actions-cell">
-                                  <a-button
-                                    type="link"
-                                    size="small"
-                                    @click="addSameLevelCondition(subItem3.id, 4)"
-                                    class="add-same-btn"
-                                  >
-                                    <template #icon><PlusOutlined /></template>
+                                  <a-button type="link" size="small" @click="addSameLevelCondition(subItem3.id, 4)"
+                                    class="add-same-btn">
+                                    <template #icon>
+                                      <PlusOutlined />
+                                    </template>
                                     添加同级
                                   </a-button>
-                                  <a-button
-                                    type="link"
-                                    size="small"
-                                    @click="addSubGroup(subItem4.id, 4)"
-                                    class="add-sub-btn"
-                                    :disabled="4 >= 5"
-                                  >
-                                    <template #icon><PlusCircleOutlined /></template>
+                                  <a-button type="link" size="small" @click="addSubGroup(subItem4.id, 4)"
+                                    class="add-sub-btn" :disabled="4 >= 5">
+                                    <template #icon>
+                                      <PlusCircleOutlined />
+                                    </template>
                                     {{ 4 >= 5 ? '最多5级' : '添加子级' }}
                                   </a-button>
-                                  <a-button
-                                    type="link"
-                                    size="small"
-                                    danger
-                                    @click="removeCondition(subItem4.id)"
-                                    class="delete-btn"
-                                  >
-                                    <template #icon><DeleteOutlined /></template>
+                                  <a-button type="link" size="small" danger @click="removeCondition(subItem4.id)"
+                                    class="delete-btn">
+                                    <template #icon>
+                                      <DeleteOutlined />
+                                    </template>
                                     删除
                                   </a-button>
                                 </div>
@@ -472,132 +292,73 @@
 
                               <!-- 第五级子条件 -->
                               <template v-if="subItem4.groups && subItem4.groups.length > 0">
-                                <div
-                                  v-for="(subGroup5, subIndex5) in subItem4.groups"
-                                  :key="subIndex5"
-                                  class="sub-group-wrapper"
-                                >
-                                  <div
-                                    v-for="(subItem5, subItemIndex5) in subGroup5.items"
-                                    :key="subItem5.id"
-                                    class="condition-item-wrapper"
-                                  >
+                                <div v-for="(subGroup5, subIndex5) in subItem4.groups" :key="subIndex5"
+                                  class="sub-group-wrapper">
+                                  <div v-for="(subItem5, subItemIndex5) in subGroup5.items" :key="subItem5.id"
+                                    class="condition-item-wrapper">
                                     <div class="condition-row">
                                       <div class="condition-cell level-cell">
                                         <span class="level-badge">第5级</span>
                                       </div>
                                       <div class="condition-cell">
-                                        <a-select
-                                          v-model:value="subGroup5.operate"
-                                          :options="relationOptions"
-                                          placeholder="选择关系"
-                                          style="width: 100%"
-                                          @change="
-                                            (value) => updateSubGroup(subItem4.id, subIndex5, { operate: value })
-                                          "
-                                        />
+                                        <a-select v-model:value="subGroup5.operate" :options="relationOptions"
+                                          placeholder="选择关系" style="width: 100%"
+                                          @change="(value) => updateSubGroup(subItem4.id, subIndex5, { operate: value })" />
                                       </div>
                                       <div class="condition-cell">
-                                        <JSearchSelect
-                                          dict="fa_trans_query_col"
-                                          :getPopupContainer="retBodyContainer"
-                                          v-model:value="subItem5.field"
-                                          placeholder="选择字段"
-                                          style="width: 100%"
+                                        <JSearchSelect dict="fa_trans_query_col" :getPopupContainer="retBodyContainer"
+                                          v-model:value="subItem5.field" placeholder="选择字段" style="width: 100%"
                                           allowClear
-                                          @change="
-                                            (value) =>
-                                              updateSubItem(subItem4.id, subIndex5, subItem5.id, { field: value })
-                                          "
-                                        />
+                                          @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { field: value })" />
                                       </div>
                                       <div class="condition-cell">
-                                        <JSearchSelect
-                                          :getPopupContainer="retBodyContainer"
-                                          v-model:value="subItem5.condition"
-                                          :dict="getConditionDict(subItem5.field)"
-                                          placeholder="选择逻辑"
-                                          style="width: 100%"
-                                          allowClear
-                                          @change="
-                                            (value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })
-                                          "
-                                        />
+                                        <JSearchSelect :getPopupContainer="retBodyContainer"
+                                          v-model:value="subItem5.condition" :dict="getConditionDict(subItem5.field)"
+                                          placeholder="选择逻辑" style="width: 100%" allowClear
+                                          @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })" />
+
                                       </div>
                                       <div class="condition-cell">
                                         <!-- 输入框 -->
-                                        <a-input
-                                          v-if="getFieldComponentType(subItem5.field) === 'input'"
-                                          v-model:value="subItem5.value"
-                                          placeholder="输入值"
-                                          allowClear
-                                          @change="
-                                            (e) =>
-                                              updateSubItem(subItem4.id, subIndex5, subItem5.id, {
-                                                value: e.target.value,
-                                              })
-                                          "
-                                        />
+                                        <a-input v-if="getFieldComponentType(subItem5.field) === 'input'"
+                                          v-model:value="subItem5.value" placeholder="输入值" allowClear
+                                          @change="(e) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value: e.target.value })" />
                                         <!-- 日期选择器 -->
-                                        <a-date-picker
-                                          v-else-if="getFieldComponentType(subItem5.field) === 'date'"
-                                          v-model:value="subItem5.value"
-                                          style="width: 100%"
-                                          placeholder="选择日期"
-                                          format="YYYY-MM-DD"
-                                          valueFormat="YYYY-MM-DD"
-                                          @change="
-                                            (value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })
-                                          "
-                                        />
+                                        <a-date-picker v-else-if="getFieldComponentType(subItem5.field) === 'date'"
+                                          v-model:value="subItem5.value" style="width: 100%" placeholder="选择日期"
+                                          format="YYYY-MM-DD" valueFormat="YYYY-MM-DD"
+                                          @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })" />
                                         <!-- 日期时间选择器 -->
-                                        <a-date-picker
-                                          v-else-if="getFieldComponentType(subItem5.field) === 'datetime'"
-                                          v-model:value="subItem5.value"
-                                          showTime
-                                          style="width: 100%"
-                                          placeholder="选择日期时间"
-                                          format="YYYY-MM-DD HH:mm:ss"
+                                        <a-date-picker v-else-if="getFieldComponentType(subItem5.field) === 'datetime'"
+                                          v-model:value="subItem5.value" showTime style="width: 100%"
+                                          placeholder="选择日期时间" format="YYYY-MM-DD HH:mm:ss"
                                           valueFormat="YYYY-MM-DD HH:mm:ss"
-                                          @change="
-                                            (value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })
-                                          "
-                                        />
+                                          @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })" />
                                         <!-- 下拉选择器 -->
-                                        <a-select
-                                          v-else-if="getFieldComponentType(subItem5.field) === 'select'"
-                                          v-model:value="subItem5.value"
-                                          :options="getSelectOptions(subItem5.field)"
-                                          placeholder="请选择"
-                                          style="width: 100%"
-                                          allowClear
-                                          @change="
-                                            (value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })
-                                          "
-                                        />
+                                        <a-select v-else-if="getFieldComponentType(subItem5.field) === 'select'"
+                                          v-model:value="subItem5.value" :options="getSelectOptions(subItem5.field)"
+                                          placeholder="请选择" style="width: 100%" allowClear
+                                          @change="(value) => updateSubItem(subItem4.id, subIndex5, subItem5.id, { value })" />
                                       </div>
                                       <div class="condition-cell actions-cell">
-                                        <a-button
-                                          type="link"
-                                          size="small"
-                                          @click="addSameLevelCondition(subItem4.id, 5)"
-                                          class="add-same-btn"
-                                        >
-                                          <template #icon><PlusOutlined /></template>
+                                        <a-button type="link" size="small"
+                                          @click="addSameLevelCondition(subItem4.id, 5)" class="add-same-btn">
+                                          <template #icon>
+                                            <PlusOutlined />
+                                          </template>
                                           添加同级
                                         </a-button>
                                         <a-button type="link" size="small" disabled class="add-sub-btn">
-                                          <template #icon><PlusCircleOutlined /></template>
+                                          <template #icon>
+                                            <PlusCircleOutlined />
+                                          </template>
                                           最多5级
                                         </a-button>
-                                        <a-button
-                                          type="link"
-                                          size="small"
-                                          danger
-                                          @click="removeCondition(subItem5.id)"
-                                          class="delete-btn"
-                                        >
-                                          <template #icon><DeleteOutlined /></template>
+                                        <a-button type="link" size="small" danger @click="removeCondition(subItem5.id)"
+                                          class="delete-btn">
+                                          <template #icon>
+                                            <DeleteOutlined />
+                                          </template>
                                           删除
                                         </a-button>
                                       </div>
@@ -626,41 +387,36 @@
         <div class="query-actions">
           <!-- 保存筛选条件区域 -->
           <div class="save-condition-area" v-if="saveMode">
-            <a-input
-              v-model:value="conditionName"
-              placeholder="输入筛选条件名称"
-              style="width: 200px; margin-right: 8px"
-              @press-enter="saveFilterCondition"
-            />
-            <a-button type="primary" @click="saveFilterCondition" class="action-btn">确认保存</a-button>
+            <a-input v-model:value="conditionName" placeholder="输入筛选条件名称" style="width: 200px; margin-right: 8px;"
+              @press-enter="saveFilterCondition" />
+            <a-button type="primary" @click="saveFilterCondition" class="action-btn">
+              确认保存
+            </a-button>
           </div>
 
-          <a-button
-            type="dashed"
-            @click="saveMode = !saveMode"
-            class="action-btn"
-            :disabled="!rootGroups.items || rootGroups.items.length === 0"
-          >
-            <template #icon><SaveOutlined /></template>
+          <a-button type="dashed" @click="saveMode = !saveMode" class="action-btn"
+            :disabled="!rootGroups.items || rootGroups.items.length === 0">
+            <template #icon>
+              <SaveOutlined />
+            </template>
             {{ saveMode ? '取消保存' : '保存筛选条件' }}
           </a-button>
 
           <!-- 已保存条件下拉选 -->
-          <a-select
-            v-model:value="selectedSavedCondition"
-            placeholder="选择已保存的条件"
-            style="width: 200px"
-            allowClear
+          <a-select v-model:value="selectedSavedCondition" placeholder="选择已保存的条件" style="width: 200px;" allowClear
             @change="switchSavedCondition"
-            :options="savedConditions.map((item) => ({ label: item.name, value: item.id }))"
-          />
+            :options="savedConditions.map(item => ({ label: item.name, value: item.id }))" />
 
           <a-button type="primary" @click="onSearch" :loading="searchLoading">
-            <template #icon><SearchOutlined /></template>
+            <template #icon>
+              <SearchOutlined />
+            </template>
             查询
           </a-button>
           <a-button @click="resetConditions" class="action-btn">
-            <template #icon><ReloadOutlined /></template>
+            <template #icon>
+              <ReloadOutlined />
+            </template>
             重置条件
           </a-button>
         </div>
@@ -669,38 +425,25 @@
   </a-card>
 
   <!-- 表格部分 -->
-  <BasicTable
-    class="m2"
-    :columns="columns"
-    :dataSource="dataSource"
-    :loading="tableLoading"
-    :scroll="{ x: 2000 }"
-    :row-selection="rowSelection"
-    :pagination="pagination"
-    bordered
-    @change="handleTableChange"
-    rowKey="id"
-    :canColDrag="true"
-    :showTableSetting="true"
-    :tableSetting="{
-      redo: false,
-      size: true,
-      setting: true,
-      fullScreen: true,
-      cacheKey: 'fund-analysis-intelligent-table',
-    }"
-    :canResize="true"
-    :minHeight="300"
-    @register="registerTable"
-  >
+  <BasicTable class="m2" :columns="columns" :dataSource="dataSource" :loading="tableLoading" :scroll="{ x: 2000 }"
+    :row-selection="rowSelection" :pagination="pagination" bordered @change="handleTableChange" rowKey="id"
+    :canColDrag="true" :showTableSetting="true"
+    :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'fund-analysis-intelligent-table' }"
+    :canResize="true" :minHeight="300" @register="registerTable">
     <!--插槽:table标题-->
     <template #tableTitle>
-      <a-button type="primary" @click="exportCurrentPage">导出本页数据</a-button>
+      <a-button type="primary" @click="exportCurrentPage">
+        导出本页数据
+      </a-button>
       <a-button type="primary" @click="exportMarkedData" :disabled="selectedRowKeys.length === 0">
         导出选择数据
       </a-button>
-      <a-button type="primary" @click="exportAllData">导出全部数据</a-button>
-      <a-button type="primary" @click="showArchiveModal">生成卷宗信息</a-button>
+      <a-button type="primary" @click="exportAllData">
+        导出全部数据
+      </a-button>
+      <a-button type="primary" @click="showArchiveModal">
+        生成卷宗信息
+      </a-button>
     </template>
     <template #bodyCell="{ column, record, index }">
       <template v-if="column.key === 'index'">
@@ -735,38 +478,16 @@
   </BasicModal>
 
   <!-- 查看原信息Modal -->
-  <BasicModal
-    v-model:visible="detailModalVisible"
-    title="查看原信息"
-    width="1200px"
-    :useWrapper="true"
-    :footer="null"
-    @cancel="closeDetailModal"
-  >
+  <BasicModal v-model:visible="detailModalVisible" title="查看原信息" width="1200px" :useWrapper="true" :footer="null"
+    @cancel="closeDetailModal">
     <a-tabs v-model:activeKey="activeTab" @change="handleTabChange">
       <!-- 银行客户信息 -->
       <a-tab-pane key="bankCustomer" tab="银行客户信息">
-        <BasicTable
-          :columns="bankCustomerColumns"
-          :dataSource="bankCustomerDataSource"
-          :loading="bankCustomerLoading"
-          :pagination="bankCustomerPagination"
-          bordered
-          size="small"
-          :scroll="{ x: 1500, y: 400 }"
-          @change="handleBankCustomerTableChange"
-          :canColDrag="true"
-          :showTableSetting="true"
-          :tableSetting="{
-            redo: false,
-            size: true,
-            setting: true,
-            fullScreen: true,
-            cacheKey: 'intelligent-bank-customer-table',
-          }"
-          :canResize="true"
-          :minHeight="300"
-        >
+        <BasicTable :columns="bankCustomerColumns" :dataSource="bankCustomerDataSource" :loading="bankCustomerLoading"
+          :pagination="bankCustomerPagination" bordered size="small" :scroll="{ x: 1500, y: 400 }"
+          @change="handleBankCustomerTableChange" :canColDrag="true" :showTableSetting="true"
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-customer-table' }"
+          :canResize="true" :minHeight="300">
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'operation'">
               <a @click="handleCustomerDetail(record)">查看详情</a>
@@ -777,27 +498,12 @@
 
       <!-- 银行交易流水 -->
       <a-tab-pane key="bankTransaction" tab="银行交易流水">
-        <BasicTable
-          :columns="bankTransactionColumns"
-          :dataSource="bankTransactionDataSource"
-          :loading="bankTransactionLoading"
-          :pagination="bankTransactionPagination"
-          bordered
-          size="small"
-          :scroll="{ x: 1500, y: 400 }"
-          @change="handleBankTransactionTableChange"
-          :canColDrag="true"
+        <BasicTable :columns="bankTransactionColumns" :dataSource="bankTransactionDataSource"
+          :loading="bankTransactionLoading" :pagination="bankTransactionPagination" bordered size="small"
+          :scroll="{ x: 1500, y: 400 }" @change="handleBankTransactionTableChange" :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{
-            redo: false,
-            size: true,
-            setting: true,
-            fullScreen: true,
-            cacheKey: 'intelligent-bank-transaction-table',
-          }"
-          :canResize="true"
-          :minHeight="300"
-        >
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-bank-transaction-table' }"
+          :canResize="true" :minHeight="300">
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'operation'">
               <a @click="handleTransactionDetail(record)">查看详情</a>
@@ -808,27 +514,12 @@
 
       <!-- 非银行客户信息 -->
       <a-tab-pane key="nonBankCustomer" tab="非银行客户信息">
-        <BasicTable
-          :columns="nonBankCustomerColumns"
-          :dataSource="nonBankCustomerDataSource"
-          :loading="nonBankCustomerLoading"
-          :pagination="nonBankCustomerPagination"
-          bordered
-          size="small"
-          :scroll="{ x: 1500, y: 400 }"
-          @change="handleNonBankCustomerTableChange"
-          :canColDrag="true"
+        <BasicTable :columns="nonBankCustomerColumns" :dataSource="nonBankCustomerDataSource"
+          :loading="nonBankCustomerLoading" :pagination="nonBankCustomerPagination" bordered size="small"
+          :scroll="{ x: 1500, y: 400 }" @change="handleNonBankCustomerTableChange" :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{
-            redo: false,
-            size: true,
-            setting: true,
-            fullScreen: true,
-            cacheKey: 'intelligent-non-bank-customer-table',
-          }"
-          :canResize="true"
-          :minHeight="300"
-        >
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-customer-table' }"
+          :canResize="true" :minHeight="300">
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'operation'">
               <a @click="handleNonBankCustomerDetail(record)">查看详情</a>
@@ -839,27 +530,12 @@
 
       <!-- 非银行交易流水 -->
       <a-tab-pane key="nonBankTransaction" tab="非银行交易流水">
-        <BasicTable
-          :columns="nonBankTransactionColumns"
-          :dataSource="nonBankTransactionDataSource"
-          :loading="nonBankTransactionLoading"
-          :pagination="nonBankTransactionPagination"
-          bordered
-          size="small"
-          :scroll="{ x: 1500, y: 400 }"
-          @change="handleNonBankTransactionTableChange"
-          :canColDrag="true"
+        <BasicTable :columns="nonBankTransactionColumns" :dataSource="nonBankTransactionDataSource"
+          :loading="nonBankTransactionLoading" :pagination="nonBankTransactionPagination" bordered size="small"
+          :scroll="{ x: 1500, y: 400 }" @change="handleNonBankTransactionTableChange" :canColDrag="true"
           :showTableSetting="true"
-          :tableSetting="{
-            redo: false,
-            size: true,
-            setting: true,
-            fullScreen: true,
-            cacheKey: 'intelligent-non-bank-transaction-table',
-          }"
-          :canResize="true"
-          :minHeight="300"
-        >
+          :tableSetting="{ redo: false, size: true, setting: true, fullScreen: true, cacheKey: 'intelligent-non-bank-transaction-table' }"
+          :canResize="true" :minHeight="300">
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'operation'">
               <a @click="handleNonBankTransactionDetail(record)">查看详情</a>
@@ -1036,12 +712,7 @@
   </BasicDrawer>
 
   <!-- 非银行客户信息详情抽屉 -->
-  <BasicDrawer
-    @register="registerNonBankCustomerDetailDrawer"
-    title="非银行客户信息详情"
-    width="50%"
-    :showFooter="false"
-  >
+  <BasicDrawer @register="registerNonBankCustomerDetailDrawer" title="非银行客户信息详情" width="50%" :showFooter="false">
     <a-descriptions :column="2" bordered size="middle">
       <a-descriptions-item label="文件">{{ nonBankCustomerDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ nonBankCustomerDetailData.rowNum }}</a-descriptions-item>
@@ -1051,9 +722,7 @@
       <a-descriptions-item label="手机号码">{{ nonBankCustomerDetailData.teleNum }}</a-descriptions-item>
       <a-descriptions-item label="店铺号">{{ nonBankCustomerDetailData.portId }}</a-descriptions-item>
       <a-descriptions-item label="结算银行名称">{{ nonBankCustomerDetailData.settlementOrg }}</a-descriptions-item>
-      <a-descriptions-item label="结算账号/卡号">
-        {{ nonBankCustomerDetailData.settlementAccountNum }}
-      </a-descriptions-item>
+      <a-descriptions-item label="结算账号/卡号">{{ nonBankCustomerDetailData.settlementAccountNum }}</a-descriptions-item>
       <a-descriptions-item label="币种">{{ nonBankCustomerDetailData.currNo }}</a-descriptions-item>
       <a-descriptions-item label="账户类型">{{ nonBankCustomerDetailData.accountType }}</a-descriptions-item>
       <a-descriptions-item label="余额">{{ nonBankCustomerDetailData.balence }}</a-descriptions-item>
@@ -1093,12 +762,7 @@
   </BasicDrawer>
 
   <!-- 非银行交易流水详情抽屉 -->
-  <BasicDrawer
-    @register="registerNonBankTransactionDetailDrawer"
-    title="非银行交易流水详情"
-    width="50%"
-    :showFooter="false"
-  >
+  <BasicDrawer @register="registerNonBankTransactionDetailDrawer" title="非银行交易流水详情" width="50%" :showFooter="false">
     <a-descriptions :column="2" bordered size="middle">
       <a-descriptions-item label="文件">{{ nonBankTransactionDetailData.fileName }}</a-descriptions-item>
       <a-descriptions-item label="行号">{{ nonBankTransactionDetailData.rowNum }}</a-descriptions-item>
@@ -1131,9 +795,7 @@
       <a-descriptions-item label="客户种类">{{ nonBankTransactionDetailData.customerType }}</a-descriptions-item>
       <a-descriptions-item label="结算行">{{ nonBankTransactionDetailData.settlementOrg }}</a-descriptions-item>
       <a-descriptions-item label="结算行编码">{{ nonBankTransactionDetailData.settlementOrgCd }}</a-descriptions-item>
-      <a-descriptions-item label="结算账号">
-        {{ nonBankTransactionDetailData.settlementAccountNum }}
-      </a-descriptions-item>
+      <a-descriptions-item label="结算账号">{{ nonBankTransactionDetailData.settlementAccountNum }}</a-descriptions-item>
       <a-descriptions-item label="卡类型">{{ nonBankTransactionDetailData.cardType }}</a-descriptions-item>
       <a-descriptions-item label="设备MAC">{{ nonBankTransactionDetailData.macAddress }}</a-descriptions-item>
       <a-descriptions-item label="交易IP地址">{{ nonBankTransactionDetailData.ipAddress }}</a-descriptions-item>
@@ -1160,13 +822,13 @@ import {
   ReloadOutlined,
   SearchOutlined,
   DeleteOutlined,
-  PlusCircleOutlined,
-} from '@ant-design/icons-vue'
-import { ref, reactive, onMounted, computed } from 'vue'
-import { message } from 'ant-design-vue'
+  PlusCircleOutlined
+} from '@ant-design/icons-vue';
+import { ref, reactive, onMounted, computed } from 'vue';
+import { message } from 'ant-design-vue';
 
 // 引入BasicDrawer组件和相关hook
-import { BasicDrawer, useDrawer } from '/@/components/Drawer'
+import { BasicDrawer, useDrawer } from '/@/components/Drawer';
 
 // 引入相关样式
 import '@vue-office/excel/lib/index.css'
@@ -1180,48 +842,49 @@ import {
   standardCustomerApi,
   standardTransApi,
   standardNonBankCustomerApi,
-  standardNonBankTransApi,
+  standardNonBankTransApi
 } from './../user.api'
 
 // ts语法
-import { useRoute } from 'vue-router'
-import { useRouter } from 'vue-router'
-import { useMethods } from '@/hooks/system/useMethods'
-import JSearchSelect from '@/components/Form/src/jeecg/components/JSearchSelect.vue'
-import { copyTextToClipboard } from '@/hooks/web/useCopyToClipboard'
-import { BasicModal, useModalInner } from '/@/components/Modal'
-import { BasicTable, useTable, TableAction } from '/@/components/Table'
-const { handleExportXls } = useMethods()
-const router = useRouter()
-const { query } = useRoute()
-const archiveModalVisible = ref(false)
-const archiveModalPreviewData = ref('')
+import { useRoute } from 'vue-router';
+import { useRouter } from "vue-router";
+import { useMethods } from "@/hooks/system/useMethods";
+import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
+import { copyTextToClipboard } from '@/hooks/web/useCopyToClipboard';
+import { BasicModal, useModalInner } from '/@/components/Modal';
+import { BasicTable, useTable, TableAction } from '/@/components/Table';
+const { handleExportXls } = useMethods();
+const router = useRouter();
+const { query } = useRoute();
+const archiveModalVisible = ref(false);
+const archiveModalPreviewData = ref('');
 
 // 查看详情相关状态
-const detailData = ref<any>({})
-const [registerDetailDrawer, { openDrawer: openDetailDrawer }] = useDrawer()
+const detailData = ref<any>({});
+const [registerDetailDrawer, { openDrawer: openDetailDrawer }] = useDrawer();
 
 // 详情抽屉相关状态 - 为每个表格创建独立的状态
-const customerDetailData = ref<any>({})
-const [registerCustomerDetailDrawer, { openDrawer: openCustomerDetailDrawer }] = useDrawer()
+const customerDetailData = ref<any>({});
+const [registerCustomerDetailDrawer, { openDrawer: openCustomerDetailDrawer }] = useDrawer();
 
-const transactionDetailData = ref<any>({})
-const [registerTransactionDetailDrawer, { openDrawer: openTransactionDetailDrawer }] = useDrawer()
+const transactionDetailData = ref<any>({});
+const [registerTransactionDetailDrawer, { openDrawer: openTransactionDetailDrawer }] = useDrawer();
 
-const nonBankCustomerDetailData = ref<any>({})
-const [registerNonBankCustomerDetailDrawer, { openDrawer: openNonBankCustomerDetailDrawer }] = useDrawer()
+const nonBankCustomerDetailData = ref<any>({});
+const [registerNonBankCustomerDetailDrawer, { openDrawer: openNonBankCustomerDetailDrawer }] = useDrawer();
 
-const nonBankTransactionDetailData = ref<any>({})
-const [registerNonBankTransactionDetailDrawer, { openDrawer: openNonBankTransactionDetailDrawer }] = useDrawer()
+const nonBankTransactionDetailData = ref<any>({});
+const [registerNonBankTransactionDetailDrawer, { openDrawer: openNonBankTransactionDetailDrawer }] = useDrawer();
+
 
 // 查看原信息相关状态
-const detailModalVisible = ref(false)
-const activeTab = ref('bankCustomer')
-const currentRecord = ref<any>(null)
+const detailModalVisible = ref(false);
+const activeTab = ref('bankCustomer');
+const currentRecord = ref<any>(null);
 
 // 银行客户信息表格状态
-const bankCustomerDataSource = ref([])
-const bankCustomerLoading = ref(false)
+const bankCustomerDataSource = ref([]);
+const bankCustomerLoading = ref(false);
 const bankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
@@ -1229,12 +892,12 @@ const bankCustomerPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
-  pageSizeOptions: ['10', '20', '50', '100'],
-})
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 银行交易流水表格状态
-const bankTransactionDataSource = ref([])
-const bankTransactionLoading = ref(false)
+const bankTransactionDataSource = ref([]);
+const bankTransactionLoading = ref(false);
 const bankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
@@ -1242,12 +905,12 @@ const bankTransactionPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
-  pageSizeOptions: ['10', '20', '50', '100'],
-})
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 非银行客户信息表格状态
-const nonBankCustomerDataSource = ref([])
-const nonBankCustomerLoading = ref(false)
+const nonBankCustomerDataSource = ref([]);
+const nonBankCustomerLoading = ref(false);
 const nonBankCustomerPagination = reactive({
   current: 1,
   pageSize: 10,
@@ -1255,12 +918,12 @@ const nonBankCustomerPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
-  pageSizeOptions: ['10', '20', '50', '100'],
-})
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 非银行交易流水表格状态
-const nonBankTransactionDataSource = ref([])
-const nonBankTransactionLoading = ref(false)
+const nonBankTransactionDataSource = ref([]);
+const nonBankTransactionLoading = ref(false);
 const nonBankTransactionPagination = reactive({
   current: 1,
   pageSize: 10,
@@ -1268,43 +931,43 @@ const nonBankTransactionPagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
-  pageSizeOptions: ['10', '20', '50', '100'],
-})
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 行选择配置 - 增加全选功能
 const rowSelection = computed(() => {
   return {
     selectedRowKeys: selectedRowKeys.value,
     onChange: (selectedKeys: (string | number)[], selectedRows: any[]) => {
-      selectedRowKeys.value = selectedKeys as string[]
-      selectedRowsData.value = selectedRows
+      selectedRowKeys.value = selectedKeys as string[];
+      selectedRowsData.value = selectedRows;
     },
     onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
       if (selected) {
-        selectedRowKeys.value = selectedRows.map((row) => row.id)
+        selectedRowKeys.value = selectedRows.map(row => row.id);
       } else {
-        selectedRowKeys.value = []
+        selectedRowKeys.value = [];
       }
     },
     // 全选相关配置
     checkStrictly: false,
     columnWidth: 60,
-    fixed: true,
-  }
-})
+    fixed: true
+  };
+});
 
-const formRef = ref()
-const tableLoading = ref(false)
-const searchLoading = ref(false)
+const formRef = ref();
+const tableLoading = ref(false);
+const searchLoading = ref(false);
 
 // 选中的行数据
-const selectedRowKeys = ref<string[]>([])
-const selectedRowsData = ref<any[]>([])
+const selectedRowKeys = ref<string[]>([]);
+const selectedRowsData = ref<any[]>([]);
 // 新增状态管理
-const saveMode = ref(false)
-const conditionName = ref('')
-const savedConditions = ref<Array<{ id: string; name: string; conditions: string }>>([])
-const selectedSavedCondition = ref<string>('')
+const saveMode = ref(false);
+const conditionName = ref('');
+const savedConditions = ref<Array<{ id: string, name: string, conditions: string }>>([]);
+const selectedSavedCondition = ref<string>('');
 
 // 分页配置
 const pagination = reactive({
@@ -1315,8 +978,8 @@ const pagination = reactive({
   showSizeChanger: false,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条记录`,
-  pageSizeOptions: ['10', '20', '50', '100'],
-})
+  pageSizeOptions: ['10', '20', '50', '100']
+});
 
 // 表格列配置
 const columns = [
@@ -1326,7 +989,7 @@ const columns = [
     key: 'fileName',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '行号',
@@ -1334,7 +997,7 @@ const columns = [
     key: 'rowNum',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '机构名称',
@@ -1342,7 +1005,7 @@ const columns = [
     key: 'orgName',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '客户号',
@@ -1350,7 +1013,7 @@ const columns = [
     key: 'showCustomerCd',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '客户名称',
@@ -1358,7 +1021,7 @@ const columns = [
     key: 'customerName',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易账号',
@@ -1366,7 +1029,7 @@ const columns = [
     key: 'transAccountNo',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '相关账号',
@@ -1374,7 +1037,7 @@ const columns = [
     key: 'relAccountNo',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '户名',
@@ -1382,7 +1045,7 @@ const columns = [
     key: 'accountName',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '币种',
@@ -1390,7 +1053,7 @@ const columns = [
     key: 'currNo',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易状态',
@@ -1398,7 +1061,7 @@ const columns = [
     key: 'status',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易方向',
@@ -1406,7 +1069,7 @@ const columns = [
     key: 'transWay',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易金额',
@@ -1414,7 +1077,7 @@ const columns = [
     key: 'transAmt',
     align: 'right' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易种类',
@@ -1422,7 +1085,7 @@ const columns = [
     key: 'transType',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '业务日期',
@@ -1430,7 +1093,7 @@ const columns = [
     key: 'bizDate',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '交易时间',
@@ -1438,7 +1101,7 @@ const columns = [
     key: 'transTime',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '余额',
@@ -1446,7 +1109,7 @@ const columns = [
     key: 'balence',
     align: 'center' as const,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '对方机构名称',
@@ -1454,7 +1117,7 @@ const columns = [
     key: 'counterOrgName',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '对方账号',
@@ -1462,7 +1125,7 @@ const columns = [
     key: 'counterAccountNo',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '对方户名',
@@ -1470,16 +1133,16 @@ const columns = [
     key: 'counterName',
     ellipsis: true,
     width: 100,
-    resizable: true,
+    resizable: true
   },
   {
     title: '操作',
     key: 'operation',
     align: 'center' as const,
     width: 220,
-    fixed: 'right' as const,
-  },
-]
+    fixed: 'right' as const
+  }
+];
 
 // 银行客户信息列配置
 const bankCustomerColumns = [
@@ -1501,8 +1164,8 @@ const bankCustomerColumns = [
   { title: '余额', dataIndex: 'balence', width: 100, resizable: true },
   { title: '账户类型', dataIndex: 'accountType', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
-]
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true }
+];
 
 // 银行交易流列配置
 const bankTransactionColumns = [
@@ -1530,8 +1193,8 @@ const bankTransactionColumns = [
   { title: '手续费', dataIndex: 'feeAmt', width: 100, resizable: true },
   { title: '代办人姓名', dataIndex: 'agentName', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
-]
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true }
+];
 
 // 非银行客户信息列配置
 const nonBankCustomerColumns = [
@@ -1554,8 +1217,8 @@ const nonBankCustomerColumns = [
   { title: '商户证件号码', dataIndex: 'idNum', width: 100, resizable: true },
   { title: '工作单位', dataIndex: 'workUnit', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
-]
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true }
+];
 
 // 非银行交易流列配置
 const nonBankTransactionColumns = [
@@ -1587,10 +1250,10 @@ const nonBankTransactionColumns = [
   { title: '结算金额', dataIndex: 'settlementAmt', width: 100, resizable: true },
   { title: '余额', dataIndex: 'balance', width: 100, resizable: true },
   { title: '备注', dataIndex: 'comment', width: 100, resizable: true },
-  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true },
-]
+  { title: '操作', dataIndex: 'operation', width: 120, fixed: 'right' as const, resizable: true }
+];
 
-const dataSource = ref<any[]>([])
+const dataSource = ref<any[]>([]);
 
 const [registerTable, { setPagination, getPaginationRef }] = useTable({
   columns,
@@ -1610,16 +1273,16 @@ const [registerTable, { setPagination, getPaginationRef }] = useTable({
     size: true,
     setting: false,
     fullScreen: false,
-    cacheKey: 'fund-analysis-intelligent-table',
-  },
-})
+    cacheKey: 'fund-analysis-intelligent-table'
+  }
+});
 
 // 动态查询组件相关逻辑
 // 关系枚举
 const relationOptions = [
   { label: '且', value: 'and' },
   { label: '或', value: 'or' },
-]
+];
 
 // 逻辑运算符枚举 - 使用新的数据结构
 const operatorOptions = ref([
@@ -1630,8 +1293,8 @@ const operatorOptions = ref([
   { label: '小于', value: 'lt' },
   { label: '小于等于', value: 'le' },
   { label: '包含', value: 'like' },
-  { label: '不包含', value: 'not_like' },
-])
+  { label: '不包含', value: 'not_like' }
+]);
 
 // 字段枚举 - 使用新的数据结构
 const fieldOptions = ref([
@@ -1649,8 +1312,8 @@ const fieldOptions = ref([
   { value: 'counter_org_cd', label: '对方开户银行' },
   { value: 'counter_name', label: '对方户名' },
   { value: 'counter_account_no', label: '对方账号/卡号' },
-  { value: 'status', label: '交易状态' },
-])
+  { value: 'status', label: '交易状态' }
+]);
 
 // 下拉选选项配置
 const selectOptions = {
@@ -1667,7 +1330,7 @@ const selectOptions = {
   // 交易方向选项
   trans_way: [
     { label: '转入', value: '转入' },
-    { label: '转出', value: '转出' },
+    { label: '转出', value: '转出' }
   ],
   // 交易种类选项
   trans_type: [
@@ -1690,58 +1353,60 @@ const selectOptions = {
     { label: '冲账', value: '冲账' },
     { label: '抹账', value: '抹账' },
     { label: '其他', value: '其他' },
-  ],
-}
+  ]
+};
 
 // 判断字段类型 - 根据要求，trans_amt、biz_date、trans_time字段类型为other，其他均为string
 const getFieldType = (field: string) => {
-  const otherFields = ['balence', 'trans_amt', 'biz_date', 'trans_time']
-  return otherFields.includes(field) ? 'other' : 'string'
-}
+  const otherFields = ['balence', 'trans_amt', 'biz_date', 'trans_time'];
+  return otherFields.includes(field) ? 'other' : 'string';
+};
 
 // 根据字段类型获取对应的逻辑字典
 const getConditionDict = (field: string) => {
-  const fieldType = getFieldType(field)
+  console.log(field, '----');
+
+  const fieldType = getFieldType(field);
   if (fieldType === 'other') {
-    return 'fa_trans_query_rule_nostr'
+    return 'fa_trans_query_rule_nostr';
   } else {
-    return 'fa_trans_query_rule_str'
+    return 'fa_trans_query_rule_str';
   }
-}
+};
 
 // 判断字段类型 - 修复：根据字段名而不是逻辑运算符判断组件类型
 const getFieldComponentType = (field: string) => {
-  console.info('字段类型判断------>', field)
+  console.info('字段类型判断------>', field);
   switch (field) {
     case 'biz_date':
-      return 'date' // 日期选择器
+      return 'date'; // 日期选择器
     case 'trans_time':
-      return 'datetime' // 日期时间选择器
+      return 'datetime'; // 日期时间选择器
     //case 'curr_no':
     case 'trans_way':
       //case 'trans_type':
       //case 'status':
-      return 'select' // 下拉选择器
+      return 'select'; // 下拉选择器
     default:
-      return 'input' // 输入框
+      return 'input'; // 输入框
   }
-}
+};
 // 获取下拉选项
 const getSelectOptions = (field: string) => {
-  return selectOptions[field] || []
-}
+  return selectOptions[field] || [];
+};
 // 新的数据结构接口
 interface ConditionItem {
-  id: string
-  condition: string // 逻辑运算符
-  field: string // 字段
-  value: string // 值
-  groups?: ConditionGroup[] // 子组
+  id: string;
+  condition: string; // 逻辑运算符
+  field: string;     // 字段
+  value: string;     // 值
+  groups?: ConditionGroup[]; // 子组
 }
 
 interface ConditionGroup {
-  operate: string // 关系逻辑操作
-  items: ConditionItem[] // 同级查询元素
+  operate: string;   // 关系逻辑操作
+  items: ConditionItem[]; // 同级查询元素
 }
 
 const retBodyContainer = () => {
@@ -1750,29 +1415,29 @@ const retBodyContainer = () => {
 
 // 判断是否为间隔运算符
 const isIntervalOperator = (operator: string) => {
-  return operator === 'interval_lt' || operator === 'interval_gt'
-}
+  return operator === 'interval_lt' || operator === 'interval_gt';
+};
 
 // 生成唯一ID
 const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2)
-}
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 // 根条件组
 const rootGroups = ref<ConditionGroup>({
   operate: 'and',
-  items: [],
-})
+  items: []
+});
 
 // 添加根级条件
 const addRootCondition = () => {
   if (!rootGroups.value.items) {
-    rootGroups.value.items = []
+    rootGroups.value.items = [];
   }
 
   if (rootGroups.value.items.length >= 10) {
-    message.warning('最多只能添加10个同级条件')
-    return
+    message.warning('最多只能添加10个同级条件');
+    return;
   }
 
   rootGroups.value.items.push({
@@ -1780,15 +1445,15 @@ const addRootCondition = () => {
     condition: '',
     field: '',
     value: '',
-    groups: [],
-  })
-}
+    groups: []
+  });
+};
 
 // 添加同级条件
 const addSameLevelCondition = (parentId: string | null, level: number) => {
   if (level === 1) {
     // 第一级直接添加到根条件
-    addRootCondition()
+    addRootCondition();
   } else {
     // 递归查找父级并添加同级条件
     const findAndAddSameLevel = (items: ConditionItem[]): boolean => {
@@ -1796,87 +1461,83 @@ const addSameLevelCondition = (parentId: string | null, level: number) => {
         if (item.id === parentId) {
           // 找到父级item，在其groups的最后一个组中添加同级条件
           if (!item.groups) {
-            item.groups = [
-              {
-                operate: 'and',
-                items: [],
-              },
-            ]
+            item.groups = [{
+              operate: 'and',
+              items: []
+            }];
           }
           if (item.groups && item.groups.length > 0) {
-            const lastGroup = item.groups[item.groups.length - 1]
+            const lastGroup = item.groups[item.groups.length - 1];
             if (lastGroup.items.length >= 10) {
-              message.warning('最多只能添加10个同级条件')
-              return true
+              message.warning('最多只能添加10个同级条件');
+              return true;
             }
             lastGroup.items.push({
               id: generateId(), // 添加唯一ID
               condition: '',
               field: '',
               value: '',
-              groups: [],
-            })
+              groups: []
+            });
           }
-          return true
+          return true;
         }
         if (item.groups && item.groups.length > 0) {
           for (const group of item.groups) {
-            const found = findAndAddSameLevel(group.items)
-            if (found) return true
+            const found = findAndAddSameLevel(group.items);
+            if (found) return true;
           }
         }
       }
-      return false
-    }
+      return false;
+    };
 
-    findAndAddSameLevel(rootGroups.value.items)
+    findAndAddSameLevel(rootGroups.value.items);
   }
-}
+};
 
 // 添加子组
 const addSubGroup = (parentId: string, level: number) => {
   if (level >= 5) {
-    message.warning('最多只能添加5级条件')
-    return
+    message.warning('最多只能添加5级条件');
+    return;
   }
 
   const findAndAddSubGroup = (items: ConditionItem[]): boolean => {
     for (const item of items) {
       if (item.id === parentId) {
         if (!item.groups) {
-          item.groups = []
+          item.groups = [];
         }
         item.groups.push({
           operate: 'and',
-          items: [
-            {
-              id: generateId(), // 添加唯一ID
-              condition: '',
-              field: '',
-              value: '',
-              groups: [],
-            },
-          ],
-        })
-        return true
+          items: [{
+            id: generateId(), // 添加唯一ID
+            condition: '',
+            field: '',
+            value: '',
+            groups: []
+          }]
+        });
+        return true;
       }
       if (item.groups && item.groups.length > 0) {
         for (const group of item.groups) {
-          const found = findAndAddSubGroup(group.items)
-          if (found) return true
+          const found = findAndAddSubGroup(group.items);
+          if (found) return true;
         }
       }
     }
-    return false
-  }
+    return false;
+  };
 
-  findAndAddSubGroup(rootGroups.value.items)
-}
+  findAndAddSubGroup(rootGroups.value.items);
+};
 
 // 更新组
 const updateGroup = (updates: Partial<ConditionGroup>) => {
-  rootGroups.value = { ...rootGroups.value, ...updates }
-}
+  rootGroups.value = { ...rootGroups.value, ...updates };
+};
 
 // 更新子组
 const updateSubGroup = (parentId: string, groupIndex: number, updates: Partial<ConditionGroup>) => {
@@ -1884,22 +1545,22 @@ const updateSubGroup = (parentId: string, groupIndex: number, updates: Partial<C
     for (const item of items) {
       if (item.id === parentId) {
         if (item.groups && item.groups[groupIndex]) {
-          item.groups[groupIndex] = { ...item.groups[groupIndex], ...updates }
-          return true
+          item.groups[groupIndex] = { ...item.groups[groupIndex], ...updates };
+          return true;
         }
       }
       if (item.groups && item.groups.length > 0) {
         for (const group of item.groups) {
-          const found = findAndUpdateSubGroup(group.items)
-          if (found) return true
+          const found = findAndUpdateSubGroup(group.items);
+          if (found) return true;
         }
       }
     }
-    return false
-  }
+    return false;
+  };
 
-  findAndUpdateSubGroup(rootGroups.value.items)
-}
+  findAndUpdateSubGroup(rootGroups.value.items);
+};
 
 // 更新条件项时，如果字段改变，重置逻辑运算符和值
 const updateItem = (itemId: string, updates: Partial<ConditionItem>) => {
@@ -1909,24 +1570,24 @@ const updateItem = (itemId: string, updates: Partial<ConditionItem>) => {
         // 如果字段改变
         if (updates.field !== undefined && updates.field !== item.field) {
           // 字段改变，重置逻辑运算符和值
-          updates.condition = ''
-          updates.value = ''
+          updates.condition = '';
+          updates.value = '';
         }
-        Object.assign(item, updates)
-        return true
+        Object.assign(item, updates);
+        return true;
       }
       if (item.groups && item.groups.length > 0) {
         for (const group of item.groups) {
-          const found = findAndUpdate(group.items)
-          if (found) return true
+          const found = findAndUpdate(group.items);
+          if (found) return true;
         }
       }
     }
-    return false
-  }
+    return false;
+  };
 
-  findAndUpdate(rootGroups.value.items)
-}
+  findAndUpdate(rootGroups.value.items);
+};
 
 // 同样修改 updateSubItem 方法
 // 同样修改 updateSubItem 方法
@@ -1935,34 +1596,34 @@ const updateSubItem = (parentId: string, groupIndex: number, itemId: string, upd
     for (const item of items) {
       if (item.id === parentId) {
         if (item.groups && item.groups[groupIndex]) {
-          const subItemIndex = item.groups[groupIndex].items.findIndex((subItem) => subItem.id === itemId)
+          const subItemIndex = item.groups[groupIndex].items.findIndex(subItem => subItem.id === itemId);
           if (subItemIndex !== -1) {
-            const currentItem = item.groups[groupIndex].items[subItemIndex]
+            const currentItem = item.groups[groupIndex].items[subItemIndex];
 
             // 如果字段改变
             if (updates.field !== undefined && updates.field !== currentItem.field) {
               // 字段改变，重置逻辑运算符和值
-              updates.condition = ''
-              updates.value = ''
+              updates.condition = '';
+              updates.value = '';
             }
 
-            Object.assign(currentItem, updates)
-            return true
+            Object.assign(currentItem, updates);
+            return true;
           }
         }
       }
       if (item.groups && item.groups.length > 0) {
         for (const group of item.groups) {
-          const found = findAndUpdateSubItem(group.items)
-          if (found) return true
+          const found = findAndUpdateSubItem(group.items);
+          if (found) return true;
         }
       }
     }
-    return false
-  }
+    return false;
+  };
 
-  findAndUpdateSubItem(rootGroups.value.items)
-}
+  findAndUpdateSubItem(rootGroups.value.items);
+};
 
 // 删除条件 - 确保第一级至少保留一个条件
 const removeCondition = (conditionId: string) => {
@@ -1971,54 +1632,53 @@ const removeCondition = (conditionId: string) => {
       if (items[i].id === conditionId) {
         // 检查是否是第一级的唯一条件
         if (items === rootGroups.value.items && items.length === 1) {
-          message.warning('至少需要保留一个查询条件')
-          return true
+          message.warning('至少需要保留一个查询条件');
+          return true;
         }
-        items.splice(i, 1)
-        return true
+        items.splice(i, 1);
+        return true;
       }
       // 添加类型检查以避免"对象可能为未定义"的错误
       if (items[i].groups && items[i].groups!.length > 0) {
         for (const group of items[i].groups!) {
-          const found = findAndRemove(group.items)
-          if (found) return true
+          const found = findAndRemove(group.items);
+          if (found) return true;
         }
       }
     }
-    return false
-  }
+    return false;
+  };
 
   if (rootGroups.value.items) {
-    findAndRemove(rootGroups.value.items)
+    findAndRemove(rootGroups.value.items);
   }
-}
+};
 
 // 重置条件
 const resetConditions = () => {
   rootGroups.value = {
     operate: 'and',
-    items: [
-      {
-        id: generateId(),
-        condition: '',
-        field: '',
-        value: '',
-        groups: [],
-      },
-    ],
-  }
-}
+    items: [{
+      id: generateId(),
+      condition: '',
+      field: '',
+      value: '',
+      groups: []
+    }]
+  };
+};
 
 // 保存筛选条件 - 确保数据结构正确
 const saveFilterCondition = () => {
+
   if (!conditionName.value.trim()) {
-    message.error('请输入筛选条件名称')
-    return
+    message.error('请输入筛选条件名称');
+    return;
   }
 
   if (!rootGroups.value.items || rootGroups.value.items.length === 0) {
-    message.error('请至少添加一个查询条件')
-    return
+    message.error('请至少添加一个查询条件');
+    return;
   }
 
   // 校验条件完整性
@@ -2026,74 +1686,74 @@ const saveFilterCondition = () => {
     if (group.items && group.items.length > 0) {
       for (const item of group.items) {
         if (!item.field || !item.condition) {
-          return false
+          return false;
         }
         if (item.groups && item.groups.length > 0) {
           for (const subGroup of item.groups) {
             if (!validateGroup(subGroup)) {
-              return false
+              return false;
             }
           }
         }
       }
     }
-    return true
-  }
+    return true;
+  };
 
   if (!validateGroup(rootGroups.value)) {
-    message.error('请完善筛选条件配置')
-    return
+    message.error('请完善筛选条件配置');
+    return;
   }
 
   // 处理数据格式，确保与后端一致
   const processGroupForSave = (group: ConditionGroup): any => {
     return {
       operate: group.operate,
-      items: group.items.map((item) => ({
+      items: group.items.map(item => ({
         id: item.id,
         // 注意：这里要交换字段和逻辑运算符的映射
         condition: item.condition,
         field: item.field,
         value: item.value,
-        groups: (item.groups || []).map((subGroup) => processGroupForSave(subGroup)),
-      })),
-    }
-  }
+        groups: (item.groups || []).map(subGroup => processGroupForSave(subGroup))
+      }))
+    };
+  };
 
-  const saveData = processGroupForSave(rootGroups.value)
+  const saveData = processGroupForSave(rootGroups.value);
   const grouptootData = {
-    grouproot: saveData,
+    grouproot: saveData
   }
   const params = {
     caseId: query.caseId,
     name: conditionName.value,
     queryType: 'trans',
-    conditionJson: JSON.stringify(grouptootData), // 包装成数组
-  }
+    conditionJson: JSON.stringify(grouptootData) // 包装成数组
+  };
 
-  console.log('保存的数据:', params)
+  console.log('保存的数据:', params);
 
-  saveQueryConditionApi(params)
-    .then(() => {
-      getQueryConditionList() // 保存成功，刷新下拉选枚举
-      saveMode.value = false
-      conditionName.value = ''
-    })
-    .catch((error) => {
-      console.error('保存失败:', error)
-    })
-}
+  saveQueryConditionApi(params).then(() => {
+    getQueryConditionList(); // 保存成功，刷新下拉选枚举
+    saveMode.value = false;
+    conditionName.value = '';
+  }).catch(error => {
+    console.error('保存失败:', error);
+
+  });
+};
 
 // 切换已保存的条件，回显到查询组件内
 const switchSavedCondition = (conditionId: string) => {
-  const condition = savedConditions.value.find((item) => item.id === conditionId)
+
+  const condition = savedConditions.value.find(item => item.id === conditionId);
   if (condition && condition.conditions) {
     try {
-      const parsedConditions = JSON.parse(condition.conditions)
-      console.log('解析的条件数据:', parsedConditions)
+      const parsedConditions = JSON.parse(condition.conditions);
+      console.log('解析的条件数据:', parsedConditions);
 
       if (parsedConditions) {
-        const savedGroup = parsedConditions.grouproot
+        const savedGroup = parsedConditions.grouproot;
 
         // 递归处理条件数据，修复字段和逻辑运算符的映射
         const processConditionGroup = (group: any): ConditionGroup => {
@@ -2105,108 +1765,108 @@ const switchSavedCondition = (conditionId: string) => {
               condition: item.condition || '',
               field: item.field || '',
               value: item.value || '',
-              groups: (item.groups || []).map((subGroup: any) => processConditionGroup(subGroup)),
-            })),
-          }
-        }
+              groups: (item.groups || []).map((subGroup: any) => processConditionGroup(subGroup))
+            }))
+          };
+        };
 
-        rootGroups.value = processConditionGroup(savedGroup)
+        rootGroups.value = processConditionGroup(savedGroup);
       } else {
         // 如果没有有效条件，创建空条件
         rootGroups.value = {
           operate: 'and',
-          items: [],
-        }
-        addRootCondition()
+          items: []
+        };
+        addRootCondition();
       }
     } catch (error) {
-      console.error('解析保存的条件失败:', error)
+      console.error('解析保存的条件失败:', error);
       // 出错时重置条件
       rootGroups.value = {
         operate: 'and',
-        items: [],
-      }
-      addRootCondition()
+        items: []
+      };
+      addRootCondition();
     }
   } else {
-    message.warning('未找到对应的筛选条件')
+    message.warning('未找到对应的筛选条件');
   }
-}
+};
 
 // 查询筛选条件列表
 const getQueryConditionList = async () => {
   try {
     const params = {
       caseId: query.caseId,
-    }
+    };
 
-    const response = await searchConditionListApi(params)
+    const response = await searchConditionListApi(params);
 
     if (response && response.length) {
-      savedConditions.value = response.map((item) => ({
+      savedConditions.value = response.map(item => ({
         id: item.id,
         name: item.name,
-        conditions: item.conditionJson,
-      }))
+        conditions: item.conditionJson
+      }));
     } else {
-      savedConditions.value = []
+      savedConditions.value = [];
     }
   } catch (error) {
-    console.error('获取查询条件列表失败:', error)
-    savedConditions.value = []
+    console.error('获取查询条件列表失败:', error);
+    savedConditions.value = [];
   }
-}
+};
 
 // 获取智能筛选
 const fetchIntelligentList = async () => {
   try {
-    tableLoading.value = true
+    tableLoading.value = true;
     const params = {
       caseId: query.caseId,
       ids: selectedRowKeys.value,
       conditionJson: JSON.stringify({ grouproot: rootGroups.value }),
       pageNo: pagination.current,
-      pageSize: pagination.pageSize,
-    }
+      pageSize: pagination.pageSize
+    };
 
-    const response = await intelligentTableListApi(params)
+    const response = await intelligentTableListApi(params);
 
     if (response && response.records) {
-      dataSource.value = response.records
-      pagination.total = response.total || 0
+      dataSource.value = response.records;
+      pagination.total = response.total || 0;
       // 更新表格组件中的分页信息
-      setPagination({ total: response.total || 0 })
+      setPagination({ total: response.total || 0 });
     } else {
-      dataSource.value = []
-      pagination.total = 0
-      setPagination({ total: 0 })
+      dataSource.value = [];
+      pagination.total = 0;
+      setPagination({ total: 0 });
     }
   } catch (error) {
-    console.error('获取数据失败:', error)
-    message.error('获取数据失败')
+    console.error('获取数据失败:', error);
+    message.error('获取数据失败');
     // 出错时也更新分页信息
-    setPagination({ total: 0 })
+    setPagination({ total: 0 });
   } finally {
-    tableLoading.value = false
-    searchLoading.value = false
+    tableLoading.value = false;
+    searchLoading.value = false;
   }
-}
+};
 
 // 表格变化处理（分页、排序等）
 const handleTableChange = (pag: any, filters: any, sorter: any) => {
-  pagination.current = pag.current
-  pagination.pageSize = pag.pageSize
+  pagination.current = pag.current;
+  pagination.pageSize = pag.pageSize;
   // 更新表格组件中的分页信息
   //setPagination({ current: pag.current, pageSize: pag.pageSize });
-  fetchIntelligentList()
-}
+  fetchIntelligentList();
+};
 
 // 搜索处理
 const onSearch = () => {
-  console.log(rootGroups.value)
+  console.log(rootGroups.value);
   if (!rootGroups.value.items || rootGroups.value.items.length === 0) {
-    message.error('请至少添加一个查询条件')
-    return
+    message.error('请至少添加一个查询条件');
+    return;
   }
 
   // 校验条件完整性
@@ -2214,80 +1874,80 @@ const onSearch = () => {
     if (group.items && group.items.length > 0) {
       for (const item of group.items) {
         if (!item.field || !item.condition || !item.value) {
-          return false
+          return false;
         }
         if (item.groups && item.groups.length > 0) {
           for (const subGroup of item.groups) {
             if (!validateGroup(subGroup)) {
-              return false
+              return false;
             }
           }
         }
       }
     }
-    return true
-  }
+    return true;
+  };
 
   if (rootGroups.value.items.length == 1) {
-    const item = rootGroups.value.items[0]
+    const item = rootGroups.value.items[0];
     if (item.field) {
       if (!item.condition || !item.value) {
-        message.error('请完善筛选条件配置')
-        return
+        message.error('请完善筛选条件配置');
+        return;
       }
     }
   }
   if (rootGroups.value.items.length > 1 && !validateGroup(rootGroups.value)) {
-    message.error('请完善筛选条件配置')
-    return
+    message.error('请完善筛选条件配置');
+    return;
   }
-  pagination.current = 1
+  pagination.current = 1;
   // 更新表格组件中的分页信息
-  setPagination({ current: 1, total: 0 })
-  searchLoading.value = true
-  fetchIntelligentList()
-}
+  setPagination({ current: 1, total: 0 });
+  searchLoading.value = true;
+  fetchIntelligentList();
+};
 
 // 重置搜索
 const resetSearch = () => {
   if (formRef.value) {
-    formRef.value.resetFields()
+    formRef.value.resetFields();
   }
-  selectedRowKeys.value = []
-  selectedRowsData.value = []
-  pagination.current = 1
+  selectedRowKeys.value = [];
+  selectedRowsData.value = [];
+  pagination.current = 1;
   // 更新表格组件中的分页信息
-  setPagination({ current: 1 })
-  fetchIntelligentList()
-}
+  setPagination({ current: 1 });
+  fetchIntelligentList();
+};
 
 // 导出本页数据
 const exportCurrentPage = async () => {
   const params = {
     caseId: query.caseId,
-    ids: dataSource.value.map((v) => v.id),
+    ids: dataSource.value.map(v => v.id),
     conditionJson: JSON.stringify({ grouproot: rootGroups.value }),
     pageNo: pagination.current,
-    pageSize: pagination.pageSize,
-  }
-  handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post')
-}
+    pageSize: pagination.pageSize
+  };
+  handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post');
+};
 
 // 导出标记数据
 const exportMarkedData = async () => {
   if (selectedRowKeys.value.length === 0) {
-    message.warning('请先选择要导出的数据')
-    return
+    message.warning('请先选择要导出的数据');
+    return;
   }
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
     conditionJson: JSON.stringify({ grouproot: rootGroups.value }),
     pageNo: pagination.current,
-    pageSize: pagination.pageSize,
-  }
-  handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post')
-}
+    pageSize: pagination.pageSize
+  };
+  handleExportXls('智能查询数据列表', exportIntelligentPageData, params, 'post');
+};
 
 // 导出所有数据
 // 导出所有数据
@@ -2298,115 +1958,115 @@ const exportAllData = async () => {
     conditionJson: JSON.stringify({ grouproot: rootGroups.value }),
     pageNo: 1,
     pageSize: pagination.total, // 导出所有数据
-    exportAll: true, // 标识导出所有数据
-  }
-  handleExportXls('智能查询全部数据', exportIntelligentPageData, params, 'post')
-}
+    exportAll: true // 标识导出所有数据
+  };
+  handleExportXls('智能查询全部数据', exportIntelligentPageData, params, 'post');
+};
 
 // 显示卷宗信息弹窗
 const showArchiveModal = async () => {
   if (selectedRowKeys.value.length === 0) {
-    message.warning('请先选择要生成的数据')
-    return
+    message.warning('请先选择要生成的数据');
+    return;
   }
   const params = {
     caseId: query.caseId,
     ids: selectedRowKeys.value,
     conditionJson: JSON.stringify({ grouproot: rootGroups.value }),
     pageNo: pagination.current,
-    pageSize: pagination.pageSize,
-  }
-  const response = await fileContextInfo(params)
-  archiveModalVisible.value = true
-  archiveModalPreviewData.value = response
-}
+    pageSize: pagination.pageSize
+  };
+  const response = await fileContextInfo(params);
+  archiveModalVisible.value = true;
+  archiveModalPreviewData.value = response;
+};
 
 // 发送卷宗信息
 const sendArchive = () => {
-  const success = copyTextToClipboard(archiveModalPreviewData.value)
+  const success = copyTextToClipboard(archiveModalPreviewData.value);
   if (success) {
-    message.success('复制成功！')
+    message.success('复制成功！');
   } else {
-    message.error('复制失败！')
+    message.error('复制失败！');
   }
-}
+};
 
 // 显示详情抽屉（参照系统用户管理实现）
 function handleDetail(record) {
-  detailData.value = record
-  openDetailDrawer(true, record)
+  detailData.value = record;
+  openDetailDrawer(true, record);
 }
 
 // 显示查看原信息弹窗
 const showDetailModal = (record) => {
-  currentRecord.value = record
-  activeTab.value = 'bankCustomer'
-  detailModalVisible.value = true
+  currentRecord.value = record;
+  activeTab.value = 'bankCustomer';
+  detailModalVisible.value = true;
   // 默认加载第一个页签数据
-  loadTabData('bankCustomer')
-}
+  loadTabData('bankCustomer');
+};
 
 // 关闭查看原信息弹窗
 const closeDetailModal = () => {
-  detailModalVisible.value = false
+  detailModalVisible.value = false;
   // 重置所有分页
-  resetAllPagination()
+  resetAllPagination();
   // 清空所有数据
-  bankCustomerDataSource.value = []
-  bankTransactionDataSource.value = []
-  nonBankCustomerDataSource.value = []
-  nonBankTransactionDataSource.value = []
-}
+  bankCustomerDataSource.value = [];
+  bankTransactionDataSource.value = [];
+  nonBankCustomerDataSource.value = [];
+  nonBankTransactionDataSource.value = [];
+};
 
 // 重置所有分页参数
 const resetAllPagination = () => {
-  bankCustomerPagination.current = 1
-  bankCustomerPagination.total = 0
-  bankTransactionPagination.current = 1
-  bankTransactionPagination.total = 0
-  nonBankCustomerPagination.current = 1
-  nonBankCustomerPagination.total = 0
-  nonBankTransactionPagination.current = 1
-  nonBankTransactionPagination.total = 0
-}
+  bankCustomerPagination.current = 1;
+  bankCustomerPagination.total = 0;
+  bankTransactionPagination.current = 1;
+  bankTransactionPagination.total = 0;
+  nonBankCustomerPagination.current = 1;
+  nonBankCustomerPagination.total = 0;
+  nonBankTransactionPagination.current = 1;
+  nonBankTransactionPagination.total = 0;
+};
 
 // 选项卡切换处理
 const handleTabChange = (key) => {
-  loadTabData(key)
-}
+  loadTabData(key);
+};
 
 // 加载选项卡数据
 const loadTabData = async (tabKey) => {
-  if (!currentRecord.value) return
+  if (!currentRecord.value) return;
 
   try {
-    let response
+    let response;
     const params: any = {
       caseId: query.caseId,
       filePageId: currentRecord.value.caseFilePageId,
       rowNum: currentRecord.value.rowNum,
       pageNo: 1,
-      pageSize: 10,
-    }
+      pageSize: 10
+    };
 
     switch (tabKey) {
       case 'bankCustomer':
         // 银行客户信息需要客户号查询条件
         if (!currentRecord.value.customerCd) {
-          message.warning('客户号为空，数据不完整')
-          return
+          message.warning('客户号为空，数据不完整');
+          return;
         }
-        params.customerCd = currentRecord.value.customerCd
-        bankCustomerLoading.value = true
-        response = await standardCustomerApi(params)
-        bankCustomerDataSource.value = response.records || []
-        bankCustomerPagination.total = response.total || 0
-        break
+        params.customerCd = currentRecord.value.customerCd;
+        bankCustomerLoading.value = true;
+        response = await standardCustomerApi(params);
+        bankCustomerDataSource.value = response.records || [];
+        bankCustomerPagination.total = response.total || 0;
+        break;
 
       case 'bankTransaction':
         if (!currentRecord.value.rowNum) {
-          message.warning('行号为空，数据不完整')
-          return
+          message.warning('行号为空，数据不完整');
+          return;
         }
         // 银行交易流水需要交易账号查询条件
         // if (!currentRecord.value.transAccountNo) {
@@ -2415,29 +2075,29 @@ const loadTabData = async (tabKey) => {
         // }
         // params.transAccoutNo = currentRecord.value.transAccountNo;
         // params.transNo = currentRecord.value.transNo;
-        bankTransactionLoading.value = true
-        response = await standardTransApi(params)
-        bankTransactionDataSource.value = response.records || []
-        bankTransactionPagination.total = response.total || 0
-        break
+        bankTransactionLoading.value = true;
+        response = await standardTransApi(params);
+        bankTransactionDataSource.value = response.records || [];
+        bankTransactionPagination.total = response.total || 0;
+        break;
 
       case 'nonBankCustomer':
         // 非银行客户信息需要客户号查询条件
         if (!currentRecord.value.customerCd) {
-          message.warning('客户号为空，数据不完整')
-          return
+          message.warning('客户号为空，数据不完整');
+          return;
         }
-        params.customerCd = currentRecord.value.customerCd
-        nonBankCustomerLoading.value = true
-        response = await standardNonBankCustomerApi(params)
-        nonBankCustomerDataSource.value = response.records || []
-        nonBankCustomerPagination.total = response.total || 0
-        break
+        params.customerCd = currentRecord.value.customerCd;
+        nonBankCustomerLoading.value = true;
+        response = await standardNonBankCustomerApi(params);
+        nonBankCustomerDataSource.value = response.records || [];
+        nonBankCustomerPagination.total = response.total || 0;
+        break;
 
       case 'nonBankTransaction':
         if (!currentRecord.value.rowNum) {
-          message.warning('行号为空，数据不完整')
-          return
+          message.warning('行号为空，数据不完整');
+          return;
         }
         // 非银行交易流水需要交易账号查询条件
         // if (!currentRecord.value.transAccountNo) {
@@ -2446,37 +2106,37 @@ const loadTabData = async (tabKey) => {
         // }
         // params.transAccoutNo = currentRecord.value.transAccountNo;
         // params.transNo = currentRecord.value.transNo;
-        nonBankTransactionLoading.value = true
-        response = await standardNonBankTransApi(params)
-        nonBankTransactionDataSource.value = response.records || []
-        nonBankTransactionPagination.total = response.total || 0
-        break
+        nonBankTransactionLoading.value = true;
+        response = await standardNonBankTransApi(params);
+        nonBankTransactionDataSource.value = response.records || [];
+        nonBankTransactionPagination.total = response.total || 0;
+        break;
     }
   } catch (error) {
-    message.error(`加载数据失败`)
+    message.error(`加载数据失败`);
   } finally {
     // 根据tabKey关闭对应的loading状态
     switch (tabKey) {
       case 'bankCustomer':
-        bankCustomerLoading.value = false
-        break
+        bankCustomerLoading.value = false;
+        break;
       case 'bankTransaction':
-        bankTransactionLoading.value = false
-        break
+        bankTransactionLoading.value = false;
+        break;
       case 'nonBankCustomer':
-        nonBankCustomerLoading.value = false
-        break
+        nonBankCustomerLoading.value = false;
+        break;
       case 'nonBankTransaction':
-        nonBankTransactionLoading.value = false
-        break
+        nonBankTransactionLoading.value = false;
+        break;
     }
   }
-}
+};
 
 // 银行客户信息表格分页变化处理
 const handleBankCustomerTableChange = (pagination) => {
-  bankCustomerPagination.current = pagination.current
-  bankCustomerPagination.pageSize = pagination.pageSize
+  bankCustomerPagination.current = pagination.current;
+  bankCustomerPagination.pageSize = pagination.pageSize;
 
   // 重新加载数据
   const params = {
@@ -2484,24 +2144,22 @@ const handleBankCustomerTableChange = (pagination) => {
     filePageId: currentRecord.value.caseFilePageId,
     customerCd: currentRecord.value?.customerName,
     pageNo: bankCustomerPagination.current,
-    pageSize: bankCustomerPagination.pageSize,
-  }
+    pageSize: bankCustomerPagination.pageSize
+  };
 
-  standardCustomerApi(params)
-    .then((response) => {
-      bankCustomerDataSource.value = response.records || []
-      bankCustomerPagination.total = response.total || 0
-    })
-    .catch((error) => {
-      console.error('加载银行客户信息失败:', error)
-      message.error('加载数据失败')
-    })
-}
+  standardCustomerApi(params).then(response => {
+    bankCustomerDataSource.value = response.records || [];
+    bankCustomerPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载银行客户信息失败:', error);
+    message.error('加载数据失败');
+  });
+};
 
 // 银行交易流水分页变化处理
 const handleBankTransactionTableChange = (pagination) => {
-  bankTransactionPagination.current = pagination.current
-  bankTransactionPagination.pageSize = pagination.pageSize
+  bankTransactionPagination.current = pagination.current;
+  bankTransactionPagination.pageSize = pagination.pageSize;
 
   // 重新加载数据
   const params = {
@@ -2510,24 +2168,22 @@ const handleBankTransactionTableChange = (pagination) => {
     transAccoutNo: currentRecord.value?.transAccountNo,
     transNo: currentRecord.value?.transNo,
     pageNo: bankTransactionPagination.current,
-    pageSize: bankTransactionPagination.pageSize,
-  }
+    pageSize: bankTransactionPagination.pageSize
+  };
 
-  standardTransApi(params)
-    .then((response) => {
-      bankTransactionDataSource.value = response.records || []
-      bankTransactionPagination.total = response.total || 0
-    })
-    .catch((error) => {
-      console.error('加载银行交易流水失败:', error)
-      message.error('加载数据失败')
-    })
-}
+  standardTransApi(params).then(response => {
+    bankTransactionDataSource.value = response.records || [];
+    bankTransactionPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载银行交易流水失败:', error);
+    message.error('加载数据失败');
+  });
+};
 
 // 非银行客户信息表格分页变化处理
 const handleNonBankCustomerTableChange = (pagination) => {
-  nonBankCustomerPagination.current = pagination.current
-  nonBankCustomerPagination.pageSize = pagination.pageSize
+  nonBankCustomerPagination.current = pagination.current;
+  nonBankCustomerPagination.pageSize = pagination.pageSize;
 
   // 重新加载数据
   const params = {
@@ -2535,24 +2191,22 @@ const handleNonBankCustomerTableChange = (pagination) => {
     filePageId: currentRecord.value.caseFilePageId,
     customerCd: currentRecord.value?.customerName,
     pageNo: nonBankCustomerPagination.current,
-    pageSize: nonBankCustomerPagination.pageSize,
-  }
+    pageSize: nonBankCustomerPagination.pageSize
+  };
 
-  standardNonBankCustomerApi(params)
-    .then((response) => {
-      nonBankCustomerDataSource.value = response.records || []
-      nonBankCustomerPagination.total = response.total || 0
-    })
-    .catch((error) => {
-      console.error('加载非银行客户信息失败:', error)
-      message.error('加载数据失败')
-    })
-}
+  standardNonBankCustomerApi(params).then(response => {
+    nonBankCustomerDataSource.value = response.records || [];
+    nonBankCustomerPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载非银行客户信息失败:', error);
+    message.error('加载数据失败');
+  });
+};
 
 // 非银行交易流水分页变化处理
 const handleNonBankTransactionTableChange = (pagination) => {
-  nonBankTransactionPagination.current = pagination.current
-  nonBankTransactionPagination.pageSize = pagination.pageSize
+  nonBankTransactionPagination.current = pagination.current;
+  nonBankTransactionPagination.pageSize = pagination.pageSize;
 
   // 重新加载数据
   const params = {
@@ -2561,49 +2215,47 @@ const handleNonBankTransactionTableChange = (pagination) => {
     transAccoutNo: currentRecord.value?.transAccountNo,
     transNo: currentRecord.value?.transNo,
     pageNo: nonBankTransactionPagination.current,
-    pageSize: nonBankTransactionPagination.pageSize,
-  }
+    pageSize: nonBankTransactionPagination.pageSize
+  };
 
-  standardNonBankTransApi(params)
-    .then((response) => {
-      nonBankTransactionDataSource.value = response.records || []
-      nonBankTransactionPagination.total = response.total || 0
-    })
-    .catch((error) => {
-      console.error('加载非银行交易流水失败:', error)
-      message.error('加载数据失败')
-    })
-}
+  standardNonBankTransApi(params).then(response => {
+    nonBankTransactionDataSource.value = response.records || [];
+    nonBankTransactionPagination.total = response.total || 0;
+  }).catch(error => {
+    console.error('加载非银行交易流水失败:', error);
+    message.error('加载数据失败');
+  });
+};
 
 // 页面初始化
 onMounted(() => {
   // 确保有一个初始条件
   if (!rootGroups.value.items || rootGroups.value.items.length === 0) {
-    addRootCondition()
+    addRootCondition();
   }
-  fetchIntelligentList()
-  getQueryConditionList()
-})
+  fetchIntelligentList();
+  getQueryConditionList();
+});
 
 // 显示详情抽屉 - 为每个表格创建独立的处理函数
 function handleCustomerDetail(record) {
-  customerDetailData.value = record
-  openCustomerDetailDrawer(true, record)
+  customerDetailData.value = record;
+  openCustomerDetailDrawer(true, record);
 }
 
 function handleTransactionDetail(record) {
-  transactionDetailData.value = record
-  openTransactionDetailDrawer(true, record)
+  transactionDetailData.value = record;
+  openTransactionDetailDrawer(true, record);
 }
 
 function handleNonBankCustomerDetail(record) {
-  nonBankCustomerDetailData.value = record
-  openNonBankCustomerDetailDrawer(true, record)
+  nonBankCustomerDetailData.value = record;
+  openNonBankCustomerDetailDrawer(true, record);
 }
 
 function handleNonBankTransactionDetail(record) {
-  nonBankTransactionDetailData.value = record
-  openNonBankTransactionDetailDrawer(true, record)
+  nonBankTransactionDetailData.value = record;
+  openNonBankTransactionDetailDrawer(true, record);
 }
 </script>
 

@@ -231,7 +231,7 @@ async function handleGoToDetail(record: Recordable) {
 }
 
 async function handleGoToAnalysisDetail(record: Recordable) {
-  router.push({ path: '/fund/fundsAnalysis', query: { caseId: record.id } })
+  router.push({ path: '/fund/smartSearch', query: { caseId: record.id } })
 }
 
 /**

@@ -30,111 +30,111 @@
 <o-title title="我说呢" sub-title="test/t2.vue"></o-title>
 *
 */
-import { unref, ref, computed } from 'vue'
+import { unref, ref, computed } from "vue";
 const props = defineProps({
   title: {
     type: String,
-    default: '',
+    default: ""
   },
   size: {
     type: String,
-    default: '', // 默认margin 16px 0
+    default: "" // 默认margin 16px 0
   },
   // 本地开发. 用来对文件命名. 可以快速定位到文件的名字
   subTitle: {
     type: String,
-    default: '',
+    default: ""
   },
   subAttrs: {
     type: Object,
-    default: () => ({}),
+    default: () => ({})
   },
   inner: {
     type: Boolean,
-    defalut: false,
+    defalut: false
   },
   t: {
     type: [String, Number],
-    default: '',
+    default: ""
   },
   b: {
     type: [String, Number],
-    default: '',
+    default: ""
   },
   l: {
     type: [String, Number],
-    default: '',
+    default: ""
   },
   tb: {
-    type: [String, Number],
+    type: [String, Number]
   },
   height: {
     type: [String, Number],
-    default: '',
+    default: ""
   },
   type: {
     type: String, // simple, icon, form
-    default: 'icon',
-  },
-})
+    default: "icon"
+  }
+});
 
 const processWidth = (initValue, isBase = false) => {
-  let value = unref(initValue)
-  let res = ''
+  let value = unref(initValue);
+  let res = "";
   if (!value) {
-    return isBase ? value : {}
-  } else if (typeof value === 'number') {
-    value = String(value)
+    return isBase ? value : {};
+  } else if (typeof value === "number") {
+    value = String(value);
   }
-  if (value === '') {
-    return isBase ? value : {}
-  } else if (typeof value === 'string' && !isNaN(value)) {
-    res = value + 'px'
-  } else if (typeof value === 'string' && /^[0-9]+(\.[0-9]+)?(px|%|em|rem|vw|vh|ch)*$/.test(value)) {
-    res = value
+  if (value === "") {
+    return isBase ? value : {};
+  } else if (typeof value === "string" && !isNaN(value)) {
+    res = value + "px";
+  } else if (typeof value === "string" && /^[0-9]+(\.[0-9]+)?(px|%|em|rem|vw|vh|ch)*$/.test(value)) {
+    res = value;
   } else {
-    console.warn(`${value} is Invalid unit provided`)
-    return value
+    console.warn(`${value} is Invalid unit provided`);
+    return value;
   }
   if (isBase) {
-    return res
+    return res;
   }
-  return { width: res }
-}
+  return { width: res };
+};
 
 const margin = computed(() => {
-  const { t, b, l, tb } = props
+  const { t, b, l, tb } = props;
   if (!t && !b && !l && !tb) {
-    return {}
+    return {};
   } else {
-    let obj: any = {}
+    let obj: any = {};
     if (tb) {
-      obj.marginTop = processWidth(tb, true)
-      obj.marginBottom = processWidth(tb, true)
+      obj.marginTop = processWidth(tb, true);
+      obj.marginBottom = processWidth(tb, true);
     }
     if (t) {
-      obj.marginTop = processWidth(t, true)
+      obj.marginTop = processWidth(t, true);
     }
     if (b) {
-      obj.marginBottom = processWidth(b, true)
+      obj.marginBottom = processWidth(b, true);
     }
     if (l) {
-      obj.marginLeft = processWidth(l, true)
+      obj.marginLeft = processWidth(l, true);
     }
-    return obj
+    return obj;
   }
-})
+});
 
 const parseClass = computed(() => {
-  let type = props.type
-  if (type === 'simple' || type === 'icon') {
-    return 'o-title__top-simple-left'
+  let type = props.type;
+  if (type === "simple" || type === "icon") {
+    return "o-title__top-simple-left";
   }
-  if (type === 'form') {
-    return 'o-title__form-left'
+  if (type === "form") {
+    return "o-title__form-left";
   }
-  return 'o-title__top-left'
-})
+  return "o-title__top-left";
+});
 // copy成功的提示文案
 </script>
 
@@ -191,7 +191,7 @@ const parseClass = computed(() => {
     align-items: center;
     &::before {
       position: absolute;
-      content: '';
+      content: "";
       width: 3px;
       left: -8px;
       top: 5px;
