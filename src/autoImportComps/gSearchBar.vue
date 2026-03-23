@@ -21,8 +21,9 @@
                         style="width: 100%" @change="handleSearch" />
                 </a-form-item>
                 <div v-if="rowIndex === formRows.length - 1" class="form-actions">
-                    <a-button type="primary" @click="handleSearch">搜索</a-button>
-                    <a-button @click="handleReset">重置</a-button>
+                    <a-button v-if="hasMoreItems" @click="handleShowMore" :icon="h(showMore ? UpOutlined : DownOutlined)">{{ showMore ? '收起' : '更多' }}</a-button>
+                    <a-button type="primary" @click="handleSearch" :icon="h(SearchOutlined)">搜索</a-button>
+                    <a-button @click="handleReset" :icon="h(RestOutlined)">重置</a-button>
                 </div>
             </div>
         </a-form>
@@ -30,8 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted,h } from 'vue'
 import { initDictOptions } from '/@/utils/dict/index';
+import { UpOutlined,DownOutlined,SearchOutlined,RestOutlined } from '@ant-design/icons-vue';
 
 interface FormItem {
     prop: string
@@ -45,6 +47,7 @@ interface FormItem {
     format?: 'YYYY/MM/DD'
     dict?: string
     stringToNumber?: boolean
+    isMore?: boolean
 }
 
 interface SearchBarProps {
@@ -99,13 +102,20 @@ const emit = defineEmits<{
 }>()
 
 const form = ref<Record<string, any>>({})
+const showMore = ref(false)
+
+// 检查是否有需要显示更多的项
+const hasMoreItems = computed(() => {
+    return props.items.some(item => item.isMore)
+})
 
 // 计算表单行数据
 const formRows = computed(() => {
+    const filteredItems = props.items.filter(item => !item.isMore || showMore.value)
     const rows: FormItem[][] = []
 
-    for (let i = 0; i < props.items.length; i += props.itemsPerRow) {
-        const row = props.items.slice(i, i + props.itemsPerRow)
+    for (let i = 0; i < filteredItems.length; i += props.itemsPerRow) {
+        const row = filteredItems.slice(i, i + props.itemsPerRow)
         rows.push(row)
     }
 
@@ -114,6 +124,10 @@ const formRows = computed(() => {
 
 const handleSearch = () => {
     emit('search', form.value)
+}
+
+const handleShowMore = () => {
+    showMore.value = !showMore.value
 }
 
 const handleReset = () => {
@@ -126,6 +140,7 @@ const handleReset = () => {
 .search-form {
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .form-row {
@@ -146,7 +161,6 @@ const handleReset = () => {
 :deep(.ant-form-item-label) {
     width: 100px;
     min-width: 100px;
-    text-align: left;
     padding-right: 8px;
 }
 
