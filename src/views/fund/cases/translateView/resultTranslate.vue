@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
+import { $toast, notEmpty } from '@oeos-components/utils'
 import { getCaseFileTransInfo, bankCustomerPageList } from '@/api/analysis.ts'
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const data = ref([])
+const total = ref(0)
 
 const fileId = route.query.fileId
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')
 const activeSheetId = ref('')
+const detailVisible = ref(false)
+const detailData = ref<Record<string, any>>({})
 const sendTableParams = ref({
   filePageId: filePageId.value,
   pageNo: 1,
@@ -21,22 +25,114 @@ const sendTableParams = ref({
 
 const sheetList = ref([])
 
-const tableData = [
+// 表格列定义
+const bankCustomerPageListColumns = ref([
+  { label: '文件', prop: 'fileName', width: 100, resizable: true },
+  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
+  { label: '银行名称', prop: 'orgName', width: 100, resizable: true },
+  { label: '客户号', prop: 'showCustomerId', width: 100, resizable: true },
+  { label: '客户种类', prop: 'customerType', width: 100, resizable: true },
+  { label: '客户名称', prop: 'customerName', width: 100, resizable: true },
+  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
+  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
+  { label: '客户证件种类', prop: 'idType', width: 100, resizable: true },
+  { label: '客户证件号码', prop: 'idNum', width: 100, resizable: true },
+  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
+  { label: '工作单位', prop: 'workUnit', width: 100, resizable: true },
+  { label: '账号', prop: 'accountNum', width: 100, resizable: true },
+  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
+  { label: '币种', prop: 'currNo', width: 100, resizable: true },
+  { label: '余额', prop: 'balence', width: 100, resizable: true },
+  { label: '账户类型', prop: 'accountType', width: 100, resizable: true },
+  { label: '备注', prop: 'comment', width: 100, resizable: true },
+])
+
+const bankTransPageListColumns = ref([
+  { label: '文件2', prop: 'fileName', width: 100, resizable: true },
+  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
+  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
+  { label: '户名', prop: 'accountName', width: 100, resizable: true },
+  { label: '账号', prop: 'accountNum', width: 100, resizable: true },
+  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
+  { label: '流水号', prop: 'transNo', width: 100, resizable: true },
+  { label: '交易渠道', prop: 'channel', width: 100, resizable: true },
+  { label: '币种', prop: 'currNo', width: 100, resizable: true },
+  { label: '交易方向', prop: 'transWay', width: 100, resizable: true },
+  { label: '交易金额', prop: 'transAmt', width: 100, resizable: true },
+  { label: '贷方发生额', prop: 'creditAmt', width: 100, resizable: true },
+  { label: '余额', prop: 'balence', width: 100, resizable: true },
+  { label: '交易种类', prop: 'transType', width: 100, resizable: true },
+  { label: '业务日期', prop: 'bizDate', width: 100, resizable: true },
+  { label: '交易时间', prop: 'transTime', width: 100, resizable: true },
+  { label: '对方机构名称', prop: 'counterOrgName', width: 100, resizable: true },
+  { label: '对方账号', prop: 'counterAccountNo', width: 100, resizable: true },
+  { label: '客户号', prop: 'showCustomerId', width: 100, resizable: true },
+  { label: '客户名称', prop: 'customerName', width: 100, resizable: true },
+  { label: '结算金额', prop: 'settlementAmt', width: 100, resizable: true },
+  { label: '手续费', prop: 'feeAmt', width: 100, resizable: true },
+  { label: '代办人姓名', prop: 'agentName', width: 100, resizable: true },
+  { label: '备注', prop: 'comment', width: 100, resizable: true },
+])
+
+// 表格列定义
+const nonBankCustomerPageListColumns = ref([
+  { label: '文件', prop: 'fileName', width: 100, resizable: true },
+  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
+  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
+  { label: '商户号', prop: 'showMerchantId', width: 100, resizable: true },
+  { label: '商户名称', prop: 'merchantName', width: 100, resizable: true },
+  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
+  { label: '店铺号', prop: 'portId', width: 100, resizable: true },
+  { label: '结算银行名称', prop: 'settlementOrg', width: 100, resizable: true },
+  { label: '结算账号/卡号', prop: 'settlementAccountNum', width: 100, resizable: true },
+  { label: '币种', prop: 'currNo', width: 100, resizable: true },
+  { label: '账户类型', prop: 'accountType', width: 100, resizable: true },
+  { label: '余额', prop: 'balence', width: 100, resizable: true },
+  { label: '客户种类', prop: 'customerType', width: 100, resizable: true },
+  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
+  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
+  { label: '商户证件种类', prop: 'idType', width: 100, resizable: true },
+  { label: '商户证件号码', prop: 'idNum', width: 100, resizable: true },
+  { label: '工作单位', prop: 'workUnit', width: 100, resizable: true },
+  { label: '备注', prop: 'comment', width: 100, resizable: true },
+])
+
+const nonBankTransPageListColumns = ref([
+  { label: '文件', prop: 'fileName', width: 100, resizable: true },
+  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
+  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
+  { label: '商户号', prop: 'showMerchantId', width: 100, resizable: true },
+  { label: '商户名称', prop: 'merchantName', width: 100, resizable: true },
+  { label: '店铺号', prop: 'portId', width: 100, resizable: true },
+  { label: '订单号', prop: 'orderNo', width: 100, resizable: true },
+  { label: '商品名称', prop: 'productName', width: 100, resizable: true },
+  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
+  { label: '流水号', prop: 'transNo', width: 100, resizable: true },
+  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
+  { label: '户名', prop: 'customerName', width: 100, resizable: true },
+  { label: '币种', prop: 'currNo', width: 100, resizable: true },
+  { label: '交易方向', prop: 'transWay', width: 100, resizable: true },
+  { label: '交易金额', prop: 'transAmt', width: 100, resizable: true },
+  { label: '贷方发生额', prop: 'creditAmt', width: 100, resizable: true },
+  { label: '交易种类', prop: 'transType', width: 100, resizable: true },
+  { label: '业务日期', prop: 'bizDate', width: 100, resizable: true },
+  { label: '交易时间', prop: 'transTime', width: 100, resizable: true },
+  { label: '交易卡开户行', prop: 'openOrgCd', width: 100, resizable: true },
+  { label: '客户号', prop: 'customerId', width: 100, resizable: true },
+  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
+  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
+  { label: '证件种类', prop: 'idType', width: 100, resizable: true },
+  { label: '证件号码', prop: 'idNum', width: 100, resizable: true },
+  { label: '结算金额', prop: 'settlementAmt', width: 100, resizable: true },
+  { label: '余额', prop: 'balance', width: 100, resizable: true },
+  { label: '备注', prop: 'comment', width: 100, resizable: true },
+])
+
+const columns = [
   {
-    index: 41,
-    file: '光大银行 - ...',
-    rowNo: 43,
-    bankName: '中国光大银...',
-    customerNo: '',
-    customerType: '',
-  },
-  {
-    index: 42,
-    file: '光大银行 - ...',
-    rowNo: 44,
-    bankName: '中国光大银...',
-    customerNo: '',
-    customerType: '',
+    label: '序号',
+    prop: 'index',
+    width: 70,
   },
 ]
 
@@ -52,7 +148,7 @@ init()
 const initTable = async () => {
   let res = await await bankCustomerPageList(activeTab.value, sendTableParams.value)
   data.value = res.records
-  data.value = res.total
+  total.value = res.total
 }
 
 const handleSheetClick = async (sheet: any) => {
@@ -62,6 +158,47 @@ const handleSheetClick = async (sheet: any) => {
   sendTableParams.value.pageNo = 1
   await initTable()
 }
+
+const columnsMap = {
+  bankCustomerPageList: bankCustomerPageListColumns.value,
+  bankTransPageList: bankTransPageListColumns.value,
+  nonBankCustomerPageList: nonBankCustomerPageListColumns.value,
+  nonBankTransPageList: nonBankTransPageListColumns.value,
+}
+const tabLabelMap = {
+  bankCustomerPageList: '银行客户信息',
+  bankTransPageList: '银行交易流水',
+  nonBankCustomerPageList: '非银行客户信息',
+  nonBankTransPageList: '非银行交易流水',
+}
+const detailRow = (row: Record<string, any>) => {
+  detailData.value = row || {}
+  detailVisible.value = true
+}
+const detailTitle = computed(() => `${tabLabelMap[activeTab.value] || '详情'}详情`)
+const detailDescOptions = computed(() => {
+  return (columnsMap[activeTab.value] || []).map((item) => ({
+    label: item.label,
+    value: detailData.value?.[item.prop] ?? '--',
+  }))
+})
+const activeTabColumns = computed(() => {
+  if (notEmpty(columnsMap[activeTab.value])) {
+    return columnsMap[activeTab.value].concat([
+      {
+        key: 'operation',
+        label: '操作',
+        btns: [
+          {
+            content: '详情',
+            handler: detailRow,
+          },
+        ],
+      },
+    ])
+  }
+  return columnsMap[activeTab.value] || []
+})
 
 watch(
   activeTab,
@@ -78,7 +215,7 @@ watch(
 
     <div class="result-body">
       <div class="sheet-panel">
-        <div class="sheet-title">文件页码</div>
+        <div class="sheet-label">文件页码</div>
         <div class="sheet-list">
           <div
             v-for="sheet in sheetList"
@@ -100,31 +237,14 @@ watch(
         </el-tabs>
 
         <div class="table-card">
-          <div class="table-toolbar">
-            <el-icon class="setting-icon"><Setting /></el-icon>
-          </div>
-
-          <el-table :data="tableData" border style="width: 100%">
-            <el-table-column prop="index" label="序号" width="70" />
-            <el-table-column prop="file" label="文件" min-width="110" />
-            <el-table-column prop="rowNo" label="行号" width="90" />
-            <el-table-column prop="bankName" label="银行名称" min-width="120" />
-            <el-table-column prop="customerNo" label="客户号" min-width="100" />
-            <el-table-column prop="customerType" label="客户种类" min-width="110" />
-            <el-table-column label="操作" width="120" fixed="right">
-              <template #default>
-                <el-button link type="primary">查看详情</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <div class="pagination-wrap">
-            <span class="page-total">第 41-42 条，共 42 条</span>
-            <el-pagination layout="prev, pager, next, jumper" :total="42" :page-size="10" :current-page="5" />
-          </div>
+          <o-table :columns="activeTabColumns" :data="data" :total="total" height="440" />
         </div>
       </div>
     </div>
+
+    <o-dialog v-model="detailVisible" :title="detailTitle" width="960px" :showConfirm="false">
+      <o-descriptions :options="detailDescOptions" :column="3" />
+    </o-dialog>
   </div>
 </template>
 
@@ -161,7 +281,7 @@ watch(
   border-radius: 4px;
 }
 
-.sheet-title {
+.sheet-label {
   margin-bottom: 12px;
   font-size: 15px;
   font-weight: 600;
