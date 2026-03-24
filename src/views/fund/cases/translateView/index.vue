@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, watch, h } from 'vue'
 import splitpane from '@/components/ReSplitPane'
+import OriginTranslate from '@/views/fund/cases/translateView/originTranslate.vue'
+import ResultTranslate from '@/views/fund/cases/translateView/resultTranslate.vue'
+import { $toast, getStorage } from '@oeos-components/utils'
+import { useDetail } from '@/hooks'
+const { toDetail } = useDetail()
 
 defineOptions({
   name: 'SplitPane',
@@ -13,6 +18,16 @@ const settingLR = ref({
   defaultPercent: 50,
   split: 'vertical',
 })
+
+const handleClose = () => {
+  // return router.push({
+  //   name: 'Cases',
+  //   query: {
+  //     caseId: getStorage('caseId'),
+  //   },
+  // })
+  toDetail('Cases', { caseId: getStorage('caseId') })
+}
 
 const translateResultInfo = `
 <div>关于导入行数：</div>
@@ -47,6 +62,7 @@ const handleResize = (percent: number) => {
 
 <template>
   <div class="h-100%">
+    <g-close @click="handleClose" />
     <o-basic-layout class="h-100%">
       <template #header>
         <o-title title="文件转换详情" class="w-100%">
@@ -72,14 +88,14 @@ const handleResize = (percent: number) => {
           <template #paneL>
             <!-- 自定义左侧面板的内容 -->
             <el-scrollbar class="pane-scrollbar">
-              <div class="pane-content f-ct-ct">A</div>
+              <OriginTranslate />
             </el-scrollbar>
           </template>
           <!-- #paneR 表示指定该组件为右侧面板 -->
           <template #paneR>
             <!-- 再次将右侧面板进行拆分 -->
             <el-scrollbar class="pane-scrollbar">
-              <div class="pane-content f-ct-ct">B</div>
+              <ResultTranslate />
             </el-scrollbar>
           </template>
         </splitpane>

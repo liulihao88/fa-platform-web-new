@@ -147,6 +147,26 @@ export const updateFaFileConfig = (data) => {
 }
 
 /**
+ * 文件转换相亲
+ */
+// 获取转换页码的table数据 fa/caseStandardData/bankCustomerPageList
+export const bankCustomerPageList = (lastUrl, data) => {
+  return request(`fa/caseStandardData/${lastUrl}`, 'post', { data })
+}
+// // 银行交易流水
+// export const bankTransPageList = (data) => {
+//   return request('fa/caseStandardData/bankTransPageList', 'post', { data })
+// }
+// // 非银行客户信息
+// export const nonBankCustomerPageList = (data) => {
+//   return request('fa/caseStandardData/nonBankCustomerPageList', 'post', { data })
+// }
+// // 非银行交易流水
+// export const nonBankTransPageList = (data) => {
+//   return request('fa/caseStandardData/nonBankTransPageList', 'post', { data })
+// }
+
+/**
  *
  * 定时任务
  * @param params
