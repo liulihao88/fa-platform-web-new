@@ -13,7 +13,7 @@ import {
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
 import { useDetail } from '@/hooks'
-// const { initToDetail } = useDetail()
+const { initToDetail, toDetail } = useDetail()
 // initToDetail()
 const { proxy } = getCurrentInstance()
 
@@ -185,6 +185,16 @@ const orgTableDialogSuccess = async (orgId) => {
   }
 }
 
+const handleClose = () => {
+  // return router.push({
+  //   name: 'Cases',
+  //   query: {
+  //     caseId: getStorage('caseId'),
+  //   },
+  // })
+  toDetail('Cases', { caseId: getStorage('caseId') })
+}
+
 proxy.$initTableHeight(headerRef)
 
 defineExpose({
@@ -213,6 +223,7 @@ defineExpose({
         </template>
       </o-title>
     </el-card>
+    <g-close @click="handleClose" />
 
     <el-row :gutter="16" :style="{ height: $tableHeight.value + 'px' }">
       <el-col :span="3">
