@@ -51,7 +51,7 @@ const bankCustomerPageListColumns = ref([
 ])
 
 const bankTransPageListColumns = ref([
-  { label: '文件2', prop: 'fileName', width: 100, resizable: true },
+  { label: '文件', prop: 'fileName', width: 100, resizable: true },
   { label: '行号', prop: 'rowNum', width: 100, resizable: true },
   { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
   { label: '户名', prop: 'accountName', width: 100, resizable: true },
@@ -218,6 +218,12 @@ const activeTabColumns = computed(() => {
 
 let resizeObserver: ResizeObserver | null = null
 
+const update = (number, size) => {
+  sendTableParams.value.pageNo = number
+  sendTableParams.value.pageSize = size
+  initTable()
+}
+
 onMounted(async () => {
   await updateTableHeight()
   resizeObserver = new ResizeObserver(() => {
@@ -272,7 +278,14 @@ watch(
         </el-tabs>
 
         <div ref="tableCardRef" class="table-card">
-          <o-table :columns="activeTabColumns" :data="data" :total="total" :height="tableHeight" />
+          <o-table
+            :columns="activeTabColumns"
+            :data="data"
+            :total="total"
+            :height="tableHeight"
+            :pageSize="sendTableParams.pageSize"
+            @update="update"
+          />
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ defineOptions({
 const showWhich = ref([])
 
 const settingLR = ref({
-  minPercent: 1,
+  minPercent: 0,
   defaultPercent: 50,
   split: 'vertical',
 })
