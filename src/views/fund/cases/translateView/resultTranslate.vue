@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
 import { getCaseFileTransInfo, bankCustomerPageList } from '@/api/analysis.ts'
-
 import { useRouter, useRoute } from 'vue-router'
+
 const router = useRouter()
 const route = useRoute()
 const data = ref([])
 const total = ref(0)
+const tableCardRef = ref<HTMLElement | null>(null)
+const tableHeight = ref(400)
 
 const fileId = route.query.fileId
 
@@ -17,6 +19,7 @@ const filePageId = ref('')
 const activeSheetId = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
+const TABLE_PAGINATION_HEIGHT = 50
 const sendTableParams = ref({
   filePageId: filePageId.value,
   pageNo: 1,
@@ -145,6 +148,19 @@ const init = async () => {
   await initTable()
 }
 init()
+
+const updateTableHeight = async () => {
+  await nextTick()
+  if (!tableCardRef.value) return
+  const style = window.getComputedStyle(tableCardRef.value)
+  const paddingTop = parseFloat(style.paddingTop) || 0
+  const paddingBottom = parseFloat(style.paddingBottom) || 0
+  tableHeight.value = Math.max(
+    tableCardRef.value.clientHeight - paddingTop - paddingBottom - TABLE_PAGINATION_HEIGHT,
+    240,
+  )
+}
+
 const initTable = async () => {
   let res = await await bankCustomerPageList(activeTab.value, sendTableParams.value)
   data.value = res.records
@@ -200,10 +216,29 @@ const activeTabColumns = computed(() => {
   return columnsMap[activeTab.value] || []
 })
 
+let resizeObserver: ResizeObserver | null = null
+
+onMounted(async () => {
+  await updateTableHeight()
+  resizeObserver = new ResizeObserver(() => {
+    updateTableHeight()
+  })
+  if (tableCardRef.value) {
+    resizeObserver.observe(tableCardRef.value)
+  }
+  window.addEventListener('resize', updateTableHeight)
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  window.removeEventListener('resize', updateTableHeight)
+})
+
 watch(
   activeTab,
-  (val) => {
+  async () => {
     initTable()
+    await updateTableHeight()
   },
   {},
 )
@@ -236,8 +271,8 @@ watch(
           <el-tab-pane label="非银行交易流水" name="nonBankTransPageList" />
         </el-tabs>
 
-        <div class="table-card">
-          <o-table :columns="activeTabColumns" :data="data" :total="total" height="440" />
+        <div ref="tableCardRef" class="table-card">
+          <o-table :columns="activeTabColumns" :data="data" :total="total" :height="tableHeight" />
         </div>
       </div>
     </div>
