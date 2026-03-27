@@ -435,13 +435,11 @@ async function handleConfirmSave() {
       queryType: 'trans',
       conditionJson: JSON.stringify(rootGroups.value),
     })
-    message.success('保存成功')
     showSaveInput.value = false
     conditionName.value = ''
     await loadSavedConditions()
   } catch (error) {
     console.error('保存条件失败:', error)
-    message.error('保存失败')
   }
 }
 

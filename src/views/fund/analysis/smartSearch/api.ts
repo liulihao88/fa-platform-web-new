@@ -37,3 +37,10 @@ export const getInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInv
 export const updateInvolvedPersonApi = (params) => defHttp.post({ url: '/fa/caseInvolved/saveOrUpdateInvolvedRelation', params });
 export const getCompanyOrPersonDetailApi = (params) => defHttp.post({ url: '/fa/caseInvolved/detail', params });
 export const fileContextInfo = (params) => defHttp.post({ url: '/fa/caseStandardData/generateTransText', params });
+export const standardCustomerApi = (params) =>
+  defHttp.post({ url: '/fa/caseStandardData/bankCustomerPageList', params })
+export const standardTransApi = (params) => defHttp.post({ url: '/fa/caseStandardData/bankTransPageList', params })
+export const standardNonBankCustomerApi = (params) =>
+  defHttp.post({ url: '/fa/caseStandardData/nonBankCustomerPageList', params })
+export const standardNonBankTransApi = (params) =>
+  defHttp.post({ url: '/fa/caseStandardData/nonBankTransPageList', params })
