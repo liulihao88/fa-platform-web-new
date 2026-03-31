@@ -2,17 +2,23 @@
 import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
-import { getCaseFileTransInfo, bankCustomerPageList } from '@/api/analysis.ts'
+import { getCaseFileTransInfo, bankCustomerPageList, getStandardDataPageList } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'translate', // standard
+  },
+})
+
 const data = ref([])
 const total = ref(0)
 const tableCardRef = ref<HTMLElement | null>(null)
 const tableHeight = ref(400)
-
-const fileId = route.query.fileId
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')
@@ -139,15 +145,30 @@ const columns = [
   },
 ]
 
-const init = async () => {
-  let res = await getCaseFileTransInfo({ fileId: fileId })
-  sheetList.value = res.filePages
-  filePageId.value = sheetList.value[0]?.pageId || ''
-  activeSheetId.value = filePageId.value
-  sendTableParams.value.filePageId = filePageId.value
+const apiMap = {
+  translate: getCaseFileTransInfo,
+  standard: getStandardDataPageList,
+}
+
+const init = async (sendFileId = '') => {
+  let res = await apiMap[props.type]({ fileId: sendFileId || route.query.fileId })
+  if (props.type === 'standard') {
+    sheetList.value = res
+    filePageId.value = res[0].pageId
+    activeSheetId.value = filePageId.value
+    sendTableParams.value.filePageId = filePageId.value
+  } else {
+    sheetList.value = res.filePages
+    filePageId.value = sheetList.value[0]?.pageId || ''
+    activeSheetId.value = filePageId.value
+    sendTableParams.value.filePageId = filePageId.value
+  }
+
   await initTable()
 }
-init()
+if (props.type === 'translate') {
+  init()
+}
 
 const updateTableHeight = async () => {
   await nextTick()
@@ -248,12 +269,15 @@ watch(
   },
   {},
 )
+
+defineExpose({
+  init,
+})
 </script>
 
 <template>
   <div class="result-translate">
     <div class="panel-header">转换结果</div>
-
     <div class="result-body">
       <div class="sheet-panel">
         <div class="sheet-label">文件页码</div>

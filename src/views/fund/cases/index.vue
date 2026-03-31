@@ -9,6 +9,7 @@ const REPEATE_VIEW = 'REPEATE_VIEW'
 import { ref, getCurrentInstance, computed } from 'vue'
 import { getCaseInfoById, getCommonDictionary } from '@/api/analysis.ts'
 import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
+import StandardDataView from '@/views/fund/cases/standardDataView/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
 import { useRouter, useRoute } from 'vue-router'
 import { useDetail } from '@/hooks'
@@ -45,14 +46,14 @@ const descOptions = computed(() => {
       label: '案件名称',
       value: caseDetails.value.caseName,
       attrs: {
-        width: '100px',
+        width: '150px',
       },
     },
     {
       label: '部门受案号',
       value: caseDetails.value.invoiceCount,
       attrs: {
-        width: '100px',
+        width: '150px',
       },
     },
     {
@@ -140,8 +141,16 @@ const activeStatus = computed(() => {
         </el-steps>
       </div>
 
-      <o-tabs v-model="currentTab" :options="tabsOptions" size="small" />
-      <UploadTable v-if="currentTab === UPLOAD" />
+      <o-tabs v-model="currentTab" :options="tabsOptions" size="small">
+        <template #[UPLOAD]>
+          <UploadTable />
+        </template>
+        <template #[STANDARD_VIEW]>
+          <StandardDataView />
+        </template>
+      </o-tabs>
+      <!-- <UploadTable v-if="currentTab === UPLOAD" /> -->
+      <!-- <StandardDataView v-if="currentTab === STANDARD_VIEW" /> -->
     </o-basic-layout>
   </div>
 </template>

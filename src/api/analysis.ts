@@ -147,7 +147,7 @@ export const updateFaFileConfig = (data) => {
 }
 
 /**
- * 文件转换相亲
+ * 文件转换详情
  */
 // 获取转换页码的table数据 fa/caseStandardData/bankCustomerPageList
 export const bankCustomerPageList = (lastUrl, data) => {
@@ -165,6 +165,22 @@ export const bankCustomerPageList = (lastUrl, data) => {
 // export const nonBankTransPageList = (data) => {
 //   return request('fa/caseStandardData/nonBankTransPageList', 'post', { data })
 // }
+
+/**
+ * 标准数据查看
+ */
+
+// 文件列表
+export const getStandardDataFileList = (params) => {
+  return request('fa/caseStandardData/filePageList', {
+    params: params,
+  })
+}
+
+// 点击文件列表更小文件页码 fa/caseStandardData/pageList
+export const getStandardDataPageList = (data) => {
+  return request(`fa/caseStandardData/pageList`, 'post', { data })
+}
 
 /**
  *
