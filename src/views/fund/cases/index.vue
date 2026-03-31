@@ -10,6 +10,7 @@ import { ref, getCurrentInstance, computed } from 'vue'
 import { getCaseInfoById, getCommonDictionary } from '@/api/analysis.ts'
 import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
 import StandardDataView from '@/views/fund/cases/standardDataView/index.vue'
+import RepeatDataView from '@/views/fund/cases/repeatDataView/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
 import { useRouter, useRoute } from 'vue-router'
 import { useDetail } from '@/hooks'
@@ -147,6 +148,9 @@ const activeStatus = computed(() => {
         </template>
         <template #[STANDARD_VIEW]>
           <StandardDataView />
+        </template>
+        <template #[REPEATE_VIEW]>
+          <RepeatDataView />
         </template>
       </o-tabs>
       <!-- <UploadTable v-if="currentTab === UPLOAD" /> -->

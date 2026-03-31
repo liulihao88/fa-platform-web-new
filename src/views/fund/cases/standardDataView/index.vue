@@ -197,7 +197,7 @@ onMounted(() => {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 76px;
+    min-height: 50px;
     padding: 0 18px 0 44px;
     font-size: 14px;
     font-weight: 400;
