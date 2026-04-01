@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, nextTick, watch } from 'vue'
-import { $toast } from '@oeos-components/utils'
+import { $toast, isEmpty } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -138,8 +138,8 @@ watch(
     <div class="repeat-page__wrap">
       <o-flex align="center" class="repeat-page__toolbar">
         <div>
-          <o-button type="primary" @click="exportData">导出数据</o-button>
-          <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
+          <o-button type="primary" :disabled="isEmpty(displayData)" @click="exportData">导出数据</o-button>
+          <o-button type="primary" :disabled="!selectedCount" @click="exportSelectedData">导出选择数据</o-button>
         </div>
         <div class="repeat-page__selection-bar">
           <span class="repeat-page__selection-icon">i</span>

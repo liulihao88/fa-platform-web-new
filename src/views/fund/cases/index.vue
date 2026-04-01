@@ -1,7 +1,5 @@
 <script lang="ts">
 const UPLOAD = 'UPLOAD'
-const MANAGE = 'MANAGE'
-const SEARCH = 'SEARCH'
 const STANDARD_VIEW = 'STANDARD_VIEW'
 const REPEATE_VIEW = 'REPEATE_VIEW'
 </script>
@@ -13,16 +11,16 @@ import StandardDataView from '@/views/fund/cases/standardDataView/index.vue'
 import RepeatDataView from '@/views/fund/cases/repeatDataView/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
 import { useRouter, useRoute } from 'vue-router'
-import { useDetail } from '@/hooks'
-// const { initToDetail } = useDetail()
-// initToDetail()
+import { useCommonHook } from '@/store'
+
+const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
 
 const router = useRouter()
 const route = useRoute()
 const caseId = route.query.caseId
 const caseDetails: any = ref({})
-const caseStatusOptions: any = ref([])
+const caseStatusOptions: any = ref(getDictItems('fa_case_process_status') ?? [])
 
 const init = async () => {
   Promise.allSettled([getCaseInfoById({ caseId: caseId }), getCommonDictionary('fa_case_process_status')]).then(
@@ -78,14 +76,6 @@ const tabsOptions = [
     label: '上传文件',
     value: UPLOAD,
   },
-  // {
-  //   label: '涉案人管理',
-  //   value: MANAGE,
-  // },
-  // {
-  //   label: '涉案人交易查询',
-  //   value: SEARCH,
-  // },
   {
     label: '标准数据查看',
     value: STANDARD_VIEW,
@@ -95,29 +85,6 @@ const tabsOptions = [
     value: REPEATE_VIEW,
   },
 ]
-
-// <a-tab-pane key="1" tab="上传文件">
-//      <tab1 :filteredFiles="filteredFiles" :fileProcessOptions="fileProcessOptions" @timerUpdate="timerUpdate" ref="tab1Ref" :caseInfo="caseInfo"></tab1>
-//   </a-tab-pane>
-
-//   <a-tab-pane key="2" tab="涉案人管理" force-render>
-//     <tab2
-//       :idCardTypeOptions="idCardTypeOptions"
-//       :involvedRelateOptions="involvedRelateOptions"
-//       :involvedKindOptions="involvedKindOptions"
-//     ></tab2>
-//   </a-tab-pane>
-//   <a-tab-pane key="5" tab="涉案人交易查询">
-//     <tab5></tab5>
-//   </a-tab-pane>
-//   <a-tab-pane key="3" tab="标准数据查看">
-//     <tab3
-//         :filteredFiles="filteredFiles"
-//     ></tab3>
-//   </a-tab-pane>
-//   <a-tab-pane key="4" tab="重复数据查看">
-//     <tab4></tab4>
-//   </a-tab-pane>
 
 const activeStatus = computed(() => {
   return (
