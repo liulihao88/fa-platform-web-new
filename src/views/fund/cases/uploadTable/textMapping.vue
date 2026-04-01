@@ -153,6 +153,7 @@ const save = async () => {
   // // 调用API保存配置
   await updateFaFileConfig(sendData)
   $toast('保存成功')
+  init()
 }
 
 const selectOrg = () => {
@@ -171,10 +172,6 @@ const textMappingTableInit = (emitTableData) => {
   }
   return false
 }
-
-const dialogTitle = computed(() => {
-  return '字段映射 - ' + fileInfo.value.fileName
-})
 
 const orgTableDialogSuccess = async (orgId) => {
   orgCode.value = orgId

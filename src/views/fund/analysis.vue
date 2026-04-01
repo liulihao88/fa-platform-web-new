@@ -134,6 +134,7 @@ const columns = [
     key: 'operation',
     label: '操作',
     width: 240,
+    maxBtns: 4,
     btns: [
       {
         content: '数据处理',
@@ -144,13 +145,24 @@ const columns = [
         handler: filterRow,
       },
       {
-        content: '编辑',
         handler: editRow,
+        reConfirm: !proxy.$dev,
+        comp: 'o-icon',
+        attrs: {
+          name: 'edit',
+          content: '编辑',
+        },
       },
       {
         content: '删除',
         handler: deleteRow,
         reConfirm: !proxy.$dev,
+        comp: 'o-icon',
+        attrs: {
+          name: 'delete',
+          type: 'svg',
+          content: '删除',
+        },
       },
     ],
   },
