@@ -190,6 +190,15 @@ export const getCaseDuplicateData = (params) => {
   return request(`fa/caseDuplicateData/list`, { params })
 }
 
+// 导出重复数据 fa/caseDuplicateData/exportXls
+export const exportDataApi = (params) => {
+  return request(`fa/caseDuplicateData/exportXls`, 'post', {
+    data: params,
+    download: true,
+    fileName: '重复数据列表.xlsx',
+  })
+}
+
 /**
  *
  * 定时任务

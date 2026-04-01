@@ -2,7 +2,12 @@
 import { computed, ref, nextTick, watch } from 'vue'
 import { $toast } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
+import { useRouter, useRoute } from 'vue-router'
 
+import { useMethods } from '@/hooks'
+
+const { exportXls } = useMethods()
+const { query } = useRoute()
 interface RepeatRecord {
   id: string
   file1Name: string
@@ -45,7 +50,7 @@ const selectedMap = ref(new Map<string, any>())
 
 const init = async () => {
   let sendParams = {
-    caseId: '2034799048267980802',
+    caseId: query.caseId,
     pageNo: currentPage.value,
     pageSize: pageSize.value,
   }
@@ -89,6 +94,11 @@ const clearSelected = () => {
 
 const exportData = () => {
   $toast(`导出全部数据，共 ${response.value.total} 条`, 's')
+  const params = {
+    caseId: query.caseId,
+    ids: [],
+  }
+  exportXls('重复数据列表', 'fa/caseDuplicateData/exportXls', params, false, 'post')
 }
 
 const exportSelectedData = () => {
@@ -97,7 +107,12 @@ const exportSelectedData = () => {
     return
   }
 
-  $toast(`导出选择数据，共 ${selectedCount.value} 条`, 's')
+  const params = {
+    caseId: query.caseId,
+    ids: Array.from(selectedMap.value.keys()),
+  }
+  console.log(`94 params`, params)
+  exportXls('重复数据列表', 'fa/caseDuplicateData/exportXls', params, false, 'post')
 }
 
 const indexMethod = (index) => {
@@ -121,27 +136,21 @@ watch(
 <template>
   <div class="repeat-page">
     <div class="repeat-page__wrap">
-      <div class="repeat-page__toolbar">
-        <o-button type="primary" @click="exportData">导出数据</o-button>
-        <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
-      </div>
-
-      <div class="repeat-page__selection-bar">
-        <span class="repeat-page__selection-icon">i</span>
-        <template v-if="selectedCount">
-          <span>已选中 {{ selectedCount }} 条记录(可跨页)</span>
-          <span class="repeat-page__selection-split">|</span>
-          <span class="repeat-page__selection-clear" @click="clearSelected">清空</span>
-        </template>
-        <span v-else>未选中任何数据</span>
-      </div>
-
-      <!-- <div class="repeat-page__group-header">
-        <div class="repeat-page__group-header-empty" />
-        <div class="repeat-page__group-header-empty repeat-page__group-header-empty--index" />
-        <div class="repeat-page__group-header-title">文件一</div>
-        <div class="repeat-page__group-header-title">文件二</div>
-      </div> -->
+      <o-flex align="center" class="repeat-page__toolbar">
+        <div>
+          <o-button type="primary" @click="exportData">导出数据</o-button>
+          <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
+        </div>
+        <div class="repeat-page__selection-bar">
+          <span class="repeat-page__selection-icon">i</span>
+          <template v-if="selectedCount">
+            <span>已选中 {{ selectedCount }} 条记录(可跨页)</span>
+            <span class="repeat-page__selection-split">|</span>
+            <span class="repeat-page__selection-clear" @click="clearSelected">清空</span>
+          </template>
+          <span v-else>未选中任何数据</span>
+        </div>
+      </o-flex>
 
       <o-table
         ref="tableRef"
@@ -152,7 +161,7 @@ watch(
         :currentPage="currentPage"
         row-key="id"
         :index="indexMethod"
-        height="560"
+        height="450"
         class="repeat-page__table"
         @selection-change="handleSelectionChange"
         @update="handleUpdate"
@@ -204,7 +213,6 @@ watch(
 <style scoped lang="scss">
 .repeat-page {
   height: 100%;
-  padding: 10px 14px 22px;
   background: #fff;
 
   &__top-line {
@@ -223,8 +231,7 @@ watch(
 
   &__toolbar {
     display: flex;
-    gap: 16px;
-    padding: 16px;
+    padding: 0 16px;
     border-bottom: 1px solid #ebeef5;
 
     :deep(.el-button) {

@@ -2,7 +2,12 @@
 import { computed, ref, nextTick, watch } from 'vue'
 import { $toast } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
+import { useRouter, useRoute } from 'vue-router'
 
+import { useMethods } from '@/hooks'
+
+const { exportXls } = useMethods()
+const { query } = useRoute()
 interface RepeatRecord {
   id: string
   file1Name: string
@@ -89,6 +94,11 @@ const clearSelected = () => {
 
 const exportData = () => {
   $toast(`导出全部数据，共 ${response.value.total} 条`, 's')
+  const params = {
+    caseId: '2034799048267980802',
+    ids: [],
+  }
+  exportXls('重复数据列表', 'fa/caseDuplicateData/exportXls', params, false, 'post')
 }
 
 const exportSelectedData = () => {
@@ -97,7 +107,12 @@ const exportSelectedData = () => {
     return
   }
 
-  $toast(`导出选择数据，共 ${selectedCount.value} 条`, 's')
+  const params = {
+    caseId: '2034799048267980802',
+    ids: Array.from(selectedMap.value.keys()),
+  }
+  console.log(`94 params`, params)
+  exportXls('重复数据列表', 'fa/caseDuplicateData/exportXls', params, false, 'post')
 }
 
 const indexMethod = (index) => {
