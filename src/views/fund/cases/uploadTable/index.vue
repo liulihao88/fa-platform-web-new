@@ -3,7 +3,7 @@ import { ref, getCurrentInstance, useTemplateRef, computed } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
 import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
-import { getStorage, $toast } from '@oeos-components/utils'
+import { getStorage, $toast, clone } from '@oeos-components/utils'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
@@ -16,14 +16,14 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const baseSearch = {
+const baseSearch = ref({
   fileStatus: '',
   pageNo: 1,
   pageSize: 10,
   caseId: getStorage('caseId'),
   fileName: '',
   folder: '',
-}
+})
 
 // 进度条显示规则
 const progressMap = {
@@ -58,7 +58,6 @@ const statusMap: any = {
 
 const filterStatusOptions = computed(() => {
   let statusOptions = getDictItems('fa_file_process_status')
-  console.log(`59 statusOptions`, statusOptions)
   if (!statusOptions || statusOptions.length === 0) {
     return []
   }
@@ -116,26 +115,30 @@ const items = [
 ]
 
 const handleSearch = (form) => {
-  console.log(`07 form`, form)
-  baseSearch.fileStatus = form?.fileStatus
-  baseSearch.folder = form?.folder
-  baseSearch.fileName = form?.fileName
+  baseSearch.value.pageNo = 1
+  baseSearch.value.fileStatus = form?.fileStatus
+  baseSearch.value.folder = form?.folder
+  baseSearch.value.fileName = form?.fileName
   init()
 }
 
 const total = ref(0)
 const data = ref([])
-const init = async () => {
-  baseSearch.fileStatus = baseSearch.fileStatus ? statusMap[baseSearch.fileStatus] : []
-  let res = await getCasefileList(baseSearch)
+const init = async (isReset) => {
+  if (isReset) {
+    baseSearch.value.pageNo = 1
+  }
+  const sendParams = clone(baseSearch.value)
+  sendParams.fileStatus = baseSearch.value.fileStatus ? statusMap[baseSearch.value.fileStatus] : []
+  let res = await getCasefileList(sendParams)
   data.value = res.records ?? []
   total.value = res.total
 }
 init()
 
 const update = (pageNo: number, pageSize: number) => {
-  baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  baseSearch.value.pageNo = pageNo
+  baseSearch.value.pageSize = pageSize
   init()
 }
 
@@ -167,7 +170,7 @@ const columns = [
     label: '状态',
     prop: 'status',
     useSlot: true,
-    width: 100,
+    width: 120,
     align: 'center',
   },
   {
@@ -279,7 +282,7 @@ async function textRow(row) {
 
 async function deleteRow(row) {
   await deleteCasefile({ fileId: row.id })
-  init()
+  init(true)
 }
 </script>
 
@@ -298,13 +301,16 @@ async function deleteRow(row) {
     :total="total"
     height="460"
     :pageSize="baseSearch.pageSize"
+    :pageNumber="baseSearch.pageNo"
     @update="update"
   >
     <template #status="{ row, value }">
       <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
         {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
       </el-tag>
-      <el-tag type="primary">{{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}</el-tag>
+      <el-tag v-else type="primary">
+        {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
+      </el-tag>
     </template>
     <template #progress="{ row }">
       <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
