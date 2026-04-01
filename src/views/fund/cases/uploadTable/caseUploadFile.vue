@@ -5,14 +5,12 @@ import CaseUploadImage from '@/views/fund/cases/uploadTable/caseUploadImage.vue'
 const { proxy } = getCurrentInstance()
 const fileInfoRef = ref()
 const isShow = ref()
-const isShowInfo = ref()
 
 const emits = defineEmits(['close'])
-const uploadFileHandle = () => {
+const open = () => {
   isShow.value = true
 }
 const showUploadInfo = () => {
-  // isShowInfo.value = true
   fileInfoRef.value.open()
 }
 
@@ -28,11 +26,14 @@ watch(
     immediate: true,
   },
 )
+
+defineExpose({
+  open: open,
+})
 </script>
 
 <template>
   <div>
-    <o-button type="primary" @click="uploadFileHandle">上传文件</o-button>
     <o-dialog ref="dialogRef" v-model="isShow" title="上传文件">
       <o-flex align="top">
         <div>

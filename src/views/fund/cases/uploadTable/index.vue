@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, useTemplateRef } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
 import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
@@ -7,6 +7,7 @@ import { getStorage, $toast } from '@oeos-components/utils'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
+const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 
 import { useDetail } from '@/hooks'
 const { toDetail } = useDetail()
@@ -64,18 +65,17 @@ const handleSearch = (form) => {
 const total = ref(0)
 const data = ref([])
 const init = async () => {
-  // let params = {
-  //   pageNo: 1,
-  //   pageSize: 10,
-  //   caseId: getStorage('caseId'),
-  //   folder: '',
-  //   fileName: '',
-  // }
   let res = await getCasefileList(baseSearch)
   data.value = res.records ?? []
   total.value = res.total
 }
 init()
+
+const update = (pageNo: number, pageSize: number) => {
+  baseSearch.pageNo = pageNo
+  baseSearch.pageSize = pageSize
+  init()
+}
 
 const checkFilesNames = (record) => {
   const { sourceFile, fileName } = record
@@ -215,11 +215,22 @@ async function deleteRow(row) {
 </script>
 
 <template>
-  <CaseUploadFile class="mb" @close="init" />
-  <div>
-    <g-search-bar :items="items" :itemsPerRow="4" @search="handleSearch" @reset="handleSearch" />
-  </div>
-  <o-table ref="tableRef" :columns="columns" :data="data" :total="total">
+  <CaseUploadFile ref="caseUploadFileRef" class="mb" @close="init" />
+  <o-flex class="w-100%">
+    <g-search-bar :items="items" :itemsPerRow="4" class="f-1" @search="handleSearch" @reset="handleSearch" />
+    <o-button type="primary" icon="el-icon-upload" width="100" class="ml2" @click="caseUploadFileRef?.open()">
+      上传文件
+    </o-button>
+  </o-flex>
+  <o-table
+    ref="tableRef"
+    :columns="columns"
+    :data="data"
+    :total="total"
+    height="460"
+    :pageSize="baseSearch.pageSize"
+    @update="update"
+  >
     <template #status="{ row, value }">
       <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
         {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}

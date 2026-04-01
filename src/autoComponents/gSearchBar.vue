@@ -13,8 +13,8 @@
           />
           <o-select
             v-else-if="item.type === 'select'"
-            style="width: 100%"
             v-model="form[item.prop]"
+            style="width: 100%"
             :placeholder="item.placeholder || `请选择${item.label}`"
             :clearable="item.clearable || true"
             :options="getItemOptions(item)"
@@ -150,8 +150,6 @@ const handleReset = () => {
 
 .form-actions {
   display: flex;
-  gap: 8px;
-  padding-bottom: 4px;
   margin-left: auto;
 }
 </style>
