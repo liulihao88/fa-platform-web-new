@@ -232,22 +232,16 @@ watch(
   &__toolbar {
     display: flex;
     padding: 0 16px;
-    border-bottom: 1px solid #ebeef5;
-
-    :deep(.el-button) {
-      min-width: 132px;
-      height: 42px;
-      font-size: 16px;
-    }
+    margin: 8px 0;
   }
 
   &__selection-bar {
     display: flex;
     gap: 12px;
     align-items: center;
-    padding: 8px 20px;
-    margin: 12px 16px;
-    font-size: 16px;
+    height: 100%;
+    padding: 4px 20px;
+    margin: 0 16px;
     color: #303133;
     background: #dff3ff;
     border: 1px solid #4bb8ff;
