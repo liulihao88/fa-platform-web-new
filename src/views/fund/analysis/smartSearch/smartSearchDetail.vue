@@ -388,7 +388,7 @@ onMounted(() => {
 
 <template>
   <div class="h-100%">
-    <div class="mb-4 mt-4 bg-white p-4 rounded">
+    <div class="mb-4  bg-white p-4 rounded">
       <a-row>
         <a-col span="6">
           案件名称：{{ detail.caseName }}

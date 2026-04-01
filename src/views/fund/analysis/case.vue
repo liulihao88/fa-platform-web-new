@@ -46,16 +46,16 @@
           ></tab1>
         </a-tab-pane>
 
-        <a-tab-pane key="2" tab="涉案人管理" force-render>
+        <!-- <a-tab-pane key="2" tab="涉案人管理" force-render>
           <tab2
             :idCardTypeOptions="idCardTypeOptions"
             :involvedRelateOptions="involvedRelateOptions"
             :involvedKindOptions="involvedKindOptions"
           ></tab2>
-        </a-tab-pane>
-        <a-tab-pane key="5" tab="涉案人交易查询">
+        </a-tab-pane> -->
+        <!-- <a-tab-pane key="5" tab="涉案人交易查询">
           <tab5></tab5>
-        </a-tab-pane>
+        </a-tab-pane> -->
         <a-tab-pane key="3" tab="标准数据查看">
           <tab3 :filteredFiles="filteredFiles"></tab3>
         </a-tab-pane>
@@ -78,7 +78,7 @@ import tab2 from './components/tab2/table.vue'
 import tab3 from './components/tab3/table.vue'
 import tab4 from './components/tab4/table.vue'
 import tab5 from './components/tab5/index.vue'
-
+import { initDictOptions } from '/@/utils/dict/index';
 const { query } = useRoute()
 const activeKey = ref('1')
 const caseInfo = ref({})
@@ -133,20 +133,20 @@ const formattedAcceptTime = computed(() => {
 onMounted(() => {
   fetechStepOptions()
   //fetchStandardFileList()
-  getCommonDictionary('fa_case_process_status').then((res: []) => {
+  initDictOptions('fa_case_process_status').then((res: []) => {
     stepOptions.value = res
   })
-  getCommonDictionary('fa_file_process_status').then((res: []) => {
+  initDictOptions('fa_file_process_status').then((res: []) => {
     fileProcessOptions.value = res
   })
-  getCommonDictionary('fa_involved_person_relation').then((res: []) => {
+  initDictOptions('fa_involved_person_relation').then((res: []) => {
     involvedRelateOptions.value = res
   })
-  getCommonDictionary('fa_involved_person_type').then((res: []) => {
+  initDictOptions('fa_involved_person_type').then((res: []) => {
     involvedKindOptions.value = res
   })
 
-  getCommonDictionary('fa_id_type').then((res: []) => {
+  initDictOptions('fa_id_type').then((res: []) => {
     idCardTypeOptions.value = res
   })
 })

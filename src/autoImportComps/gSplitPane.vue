@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full h-full relative" :class="{ 'flex-col': splitSet.split === 'horizontal' }">
+    <div class="flex w-full h-full relative bg-white" :class="{ 'flex-col': splitSet.split === 'horizontal' }">
         <div class="overflow-hidden transition-all duration-100 ease-out" ref="paneLeftRef"
             :style="{ flexBasis: `${currentPercent}%` }" :class="{
                 'min-w-[5%] max-w-[95%]': splitSet.split === 'vertical',

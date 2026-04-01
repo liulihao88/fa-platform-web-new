@@ -1,5 +1,6 @@
 <template>
-    <div class="case-deal-search">
+  <div  class="h-100% bg-white flex flex-col">
+      <div class="case-deal-search">
         <h3>涉案人交易查询</h3>
         <div class="form-row">
             <div class="form-group">
@@ -21,11 +22,11 @@
     </div>
      <gSearchBar :items="searchItems" @search="onSearch" @reset="resetSearch" />
       <!-- 表格部分 -->
-    <BasicTable class="m2" :columns="tableColumns" :dataSource="dataSource" :loading="tableLoading"
+    <BasicTable class="m2 flex-1" :columns="tableColumns" :dataSource="dataSource" :loading="tableLoading"
       :scroll="{ x: 2000 }" :row-selection="rowSelection" :pagination="pagination" bordered @change="handleTableChange"
       rowKey="id" :canColDrag="true" :showTableSetting="false"
       :tableSetting="{ redo: false, size: true, setting: true, fullScreen: false, cacheKey: 'fund-analysis-intelligent-table' }"
-      :canResize="true" :minHeight="300" @register="registerTable">
+      :canResize="true"  @register="registerTable">
       <!--插槽:table标题-->
       <template #tableTitle>
         <a-button type="primary" @click="exportCurrentPage">
@@ -54,6 +55,7 @@
         </template>
       </template> -->
     </BasicTable>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -329,7 +331,7 @@ const [registerTable, { setPagination }] = useTable({
 <style scoped lang="scss">
 .case-deal-search {
     padding: 20px;
-    
+    background-color: #fff;
     h3 {
         margin-bottom: 20px;
         font-size: 16px;

@@ -20,7 +20,9 @@
     "gen:icon": "esno ./build/generate/icon/index.ts",
     "batch:prettier": "prettier --write \"{src,build}/**/*.{js,ts,json,tsx,css,scss,vue,html,md}\" \"*.{js,ts,json,tsx,css,scss,vue,html,md}\"",
     "upgrade:log": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "husky:install": "husky install"
+    "husky:install": "husky install",
+    "deploy":"sh -x deploy.sh",
+    "deploy-no-bulid":"sh -x deploy.sh -k"
   },
   "dependencies": {
     "@ant-design/colors": "^7.2.0",

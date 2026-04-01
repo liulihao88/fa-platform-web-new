@@ -1,6 +1,5 @@
 <template>
     <div class="h-100% bg-white p-4">
-
         <gSearchBar :items="searchItems" @search="onSearch" @reset="resetSearch" />
         <!-- 表格部分 -->
         <BasicTable :columns="columns" :dataSource="dataSource" :loading="tableLoading" bordered size="small"

@@ -60,8 +60,11 @@ export const repeatFileTableApi = (params) => defHttp.get({ url: '/fa/caseDuplic
 export const caseFilePageListApi = (params) => defHttp.get({ url: '/fa/casefile/pageList', params })
 
 export const getCompanyOrPersonDetailApi = (params) => defHttp.post({ url: '/fa/caseInvolved/detail', params })
+import { useGlobSetting } from '/@/hooks/setting'
+const glob = useGlobSetting()
+const urlPrefix = glob.urlPrefix
 export const uploadFileApi = (params, isReturnResponse) => {
-  return defHttp.uploadFile({ url: '/fa/casefile/upload' }, params, { isReturnResponse })
+  return defHttp.uploadFile({ url: `${urlPrefix}/jeecgboot/fa/casefile/upload` }, params, { isReturnResponse })
 }
 // 获取文件流信息，供预览使用
 export const getFileStreamByFileId = (params, responseType = 'arraybuffer') =>

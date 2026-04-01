@@ -1,5 +1,5 @@
 <template>
-    <div class="flex bg-gray-100 overflow-hidden" :class="{ 'flex-col': mode === 'vertical' }">
+    <div class="flex bg-white overflow-hidden" :class="{ 'flex-col': mode === 'vertical' }">
         <div v-for="(tab, index) in tabs" :key="tab.prop"
             class="flex-1 mb-2 px-4 py-3 text-center cursor-pointer transition-all duration-300 border border-gray-300"
             :class="{

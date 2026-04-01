@@ -244,10 +244,10 @@ function getDropDownAction(record) {
       onClick: handleEdit.bind(null, record),
       //  auth: 'casefiles:fa_case_info:edit'
     },
-    // {
-    //   label: '详情',
-    //   onClick: handleDetail.bind(null, record),
-    // },
+    {
+      label: '详情',
+      onClick: handleDetail.bind(null, record),
+    },
     {
       label: '删除',
       popConfirm: {

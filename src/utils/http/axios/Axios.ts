@@ -126,7 +126,8 @@ export class VAxios {
       formData.append(customFilename, params.file)
     }
     const glob = useGlobSetting()
-    config.baseURL = glob.uploadUrl
+    console.log(glob,'glob')
+    // config.baseURL = glob.uploadUrl
     if (params.data) {
       Object.keys(params.data).forEach((key) => {
         const value = params.data![key]
@@ -152,6 +153,7 @@ export class VAxios {
         },
       })
       .then((res: any) => {
+        console.log(res,'res')
         //--@updateBy-begin----author:liusq---date:20210914------for:上传判断是否包含回调方法------
         if (callback?.success && isFunction(callback?.success)) {
           callback?.success(res?.data)

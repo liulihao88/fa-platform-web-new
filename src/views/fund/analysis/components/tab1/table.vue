@@ -1,4 +1,5 @@
 ﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿
+import { useGlobSetting } from '/@/hooks/setting'
 <template>
   <div>
     <!-- 搜索卡片 -->
@@ -61,7 +62,7 @@
           <a-button type="primary" class="ml2" @click="batchDeleteFiles">删除选择文件</a-button>
           <!--<a-button class="ml2" type="primary" @click="confirmFileConvert">文件转换确认</a-button>-->
         </template>
-        <template #bodyCell="{ column, record, index }">
+c ns  glob = useGlobSetting()<template #bodyCell="{ column, record, index }">
           <template v-if="column.key === 'index'">
             {{ index + 1 }}
           </template>
@@ -78,7 +79,7 @@
           <template v-else-if="column.key === 'operation'">
             <div class="table-operations">
               <a-button
-                v-if="checkFilesNames(record)"
+                :disabled="!checkFilesNames(record)"
                 class="ml1"
                 size="small"
                 type="primary"
@@ -87,7 +88,7 @@
                 字段映射
               </a-button>
               <a-button
-                v-if="checkFilesNames(record)"
+                :disabled="!checkFilesNames(record)"
                 class="ml1"
                 size="small"
                 type="primary"
@@ -1916,7 +1917,7 @@ const onFileListUpload = (data) => {
     file: data.file,
     data: { caseId: query.caseId },
   }
-
+  console.log('params', params)
   uploadFileApi(params, true).then((res) => {
     if (res.code === 200) {
       // 上传成功，更新文件状态
@@ -2310,11 +2311,9 @@ const previewFile = (record, type) => {
 
 // 实际加载文件内容的方法
 const loadFileContent = (record, responseType, fileInfo, type) => {
-  const globSetting = useGlobSetting()
-  const domainUrl = globSetting.domainUrl // 这就是 VITE_GLOB_DOMAIN_URL 的值
-
-  // const API_DOMAIN = import.meta.env.VITE_GLOB_DOMAIN_URL
-  const previewUrl = domainUrl + '/' + fileInfo.fileViewUrl
+  const domainUrl = `${window.location.origin}/jeecgboot/`
+  const previewUrl = domainUrl + fileInfo.fileViewUrl
+  console.log('previewUrl', previewUrl)
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
     fileStreamInfo.value = previewUrl
     fileLoading.value = false

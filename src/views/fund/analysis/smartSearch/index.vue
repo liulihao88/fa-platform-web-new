@@ -23,7 +23,7 @@ import caseManage from './caseManage.vue'
 import caseDealSearch from './caseDealSearch.vue'
 
 const splitSet = reactive({
-    minPercent: 10,
+    minPercent: 0,
     defaultPercent: 15,
     split: 'vertical',
 })
