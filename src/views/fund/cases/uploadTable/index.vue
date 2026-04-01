@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, useTemplateRef } from 'vue'
+import { ref, getCurrentInstance, useTemplateRef, computed } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
 import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
@@ -17,7 +17,7 @@ const router = useRouter()
 const route = useRoute()
 
 const baseSearch = {
-  status: '',
+  fileStatus: '',
   pageNo: 1,
   pageSize: 10,
   caseId: getStorage('caseId'),
@@ -35,6 +35,67 @@ const progressMap = {
   '102': 100,
 }
 
+/**
+   * 下拉菜单	查询状态
+转换失败	900 解压失败
+	901 格式不支持
+	902 入库异常
+	904 转换异常
+	9字开头
+自动运行中	001	待验证
+	002	待入库
+	100	配置完成
+	101	解析完成
+待配置	003	入库完成
+已完成	102	合并完成
+   */
+const statusMap: any = {
+  '900': ['900', '901', '902', '904', '999', '201'],
+  '001': ['000', '001', '002', '004', '005', '100'],
+  '003': ['003'],
+  '102': ['101', '102'],
+}
+
+const filterStatusOptions = computed(() => {
+  let statusOptions = getDictItems('fa_file_process_status')
+  console.log(`59 statusOptions`, statusOptions)
+  if (!statusOptions || statusOptions.length === 0) {
+    return []
+  }
+  let resultOptions: any = []
+  statusOptions.forEach((v) => {
+    if (statusMap['900'].includes(v.value)) {
+      if (!resultOptions.some((option) => option.value === '900')) {
+        resultOptions.push({
+          label: '转换失败',
+          value: '900',
+        })
+      }
+    }
+    if (statusMap['001'].includes(v.value)) {
+      if (!resultOptions.some((option) => option.value === '001')) {
+        resultOptions.push({
+          label: '自动运行中',
+          value: '001',
+        })
+      }
+    }
+    if (['003'].includes(v.value)) {
+      resultOptions.push({
+        label: '待配置',
+        value: '003',
+      })
+    }
+    if (['102'].includes(v.value)) {
+      resultOptions.push({
+        label: '已完成',
+        value: '102',
+      })
+    }
+  })
+  return resultOptions
+})
+
 const items = [
   // {
   //   label: '文件名称',
@@ -48,15 +109,15 @@ const items = [
   },
   {
     label: '状态',
-    prop: 'status',
+    prop: 'fileStatus',
     type: 'select',
-    dict: 'fa_file_process_status',
+    options: filterStatusOptions.value,
   },
 ]
 
 const handleSearch = (form) => {
   console.log(`07 form`, form)
-  baseSearch.status = form?.status
+  baseSearch.fileStatus = form?.fileStatus
   baseSearch.folder = form?.folder
   baseSearch.fileName = form?.fileName
   init()
@@ -65,6 +126,7 @@ const handleSearch = (form) => {
 const total = ref(0)
 const data = ref([])
 const init = async () => {
+  baseSearch.fileStatus = baseSearch.fileStatus ? statusMap[baseSearch.fileStatus] : []
   let res = await getCasefileList(baseSearch)
   data.value = res.records ?? []
   total.value = res.total

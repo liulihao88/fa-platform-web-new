@@ -122,7 +122,10 @@ instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     if (config.joinTimeStamp) {
       mergeParams = { ...mergeParams, _t: Date.now() }
     }
-    const qsParams = qs.stringify(mergeParams)
+    const qsParams = qs.stringify(mergeParams, {
+      arrayFormat: 'brackets',
+      skipNulls: false,
+    })
     if (qsParams) {
       config.url = baseUrl + '?' + qsParams
     } else {

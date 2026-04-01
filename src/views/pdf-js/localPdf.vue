@@ -7,7 +7,10 @@ const file = ref('/image/1.pdf')
 file.value = 'https://501351981.github.io/vue-office/examples/dist/static/test-files/test.pdf'
 // disableRange:禁用范围; disableStream:禁用流;  disableAutoFetch: 禁用自动获取;
 iframeUrl.value =
-  '/pdf/web/viewer.html?file=' + file.value + '&disableRange=true&disableAutoFetch=false&disableStream=true'
+  window.location.origin +
+  '/pdf/web/viewer.html?file=' +
+  file.value +
+  '&disableRange=true&disableAutoFetch=false&disableStream=true'
 console.log(`77 iframeUrl.value`, iframeUrl.value)
 </script>
 
