@@ -183,6 +183,14 @@ export const getStandardDataPageList = (data) => {
 }
 
 /**
+ * 重复数据查看 /fa/caseDuplicateData/list
+ */
+
+export const getCaseDuplicateData = (params) => {
+  return request(`fa/caseDuplicateData/list`, { params })
+}
+
+/**
  *
  * 定时任务
  * @param params

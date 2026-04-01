@@ -1,299 +1,324 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
-import { Setting } from '@element-plus/icons-vue'
-import { $toast, notEmpty } from '@oeos-components/utils'
-import { getCaseFileTransInfo, bankCustomerPageList } from '@/api/analysis.ts'
-import { useRouter, useRoute } from 'vue-router'
+import { computed, ref, nextTick, watch } from 'vue'
+import { $toast } from '@oeos-components/utils'
+import { getCaseDuplicateData } from '@/api/analysis.ts'
 
-const router = useRouter()
-const route = useRoute()
-const data = ref([])
-const total = ref(0)
-const tableCardRef = ref<HTMLElement | null>(null)
-const tableHeight = ref(400)
+interface RepeatRecord {
+  id: string
+  file1Name: string
+  file1LineNumber: number
+  file1Amount: number
+  file1OtherInfo: string
+  file2Name: string
+  file2LineNumber: number
+  file2Amount: number
+  file2OtherInfo: string
+}
 
-const fileId = route.query.fileId
+const displayData = ref()
+const tableRef = ref()
+const syncingSelection = ref(false)
 
-const activeTab = ref('bankCustomerPageList')
-const filePageId = ref('')
-const activeSheetId = ref('')
-const detailVisible = ref(false)
-const detailData = ref<Record<string, any>>({})
-const TABLE_PAGINATION_HEIGHT = 50
-const sendTableParams = ref({
-  filePageId: filePageId.value,
-  pageNo: 1,
-  pageSize: 10,
-})
+const syncSelection = async () => {
+  await nextTick()
+  if (!tableRef.value) return
 
-const sheetList = ref([])
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    displayData.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
+}
 
-// 表格列定义
-const bankCustomerPageListColumns = ref([
-  { label: '文件', prop: 'fileName', width: 100, resizable: true },
-  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
-  { label: '银行名称', prop: 'orgName', width: 100, resizable: true },
-  { label: '客户号', prop: 'showCustomerId', width: 100, resizable: true },
-  { label: '客户种类', prop: 'customerType', width: 100, resizable: true },
-  { label: '客户名称', prop: 'customerName', width: 100, resizable: true },
-  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
-  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
-  { label: '客户证件种类', prop: 'idType', width: 100, resizable: true },
-  { label: '客户证件号码', prop: 'idNum', width: 100, resizable: true },
-  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
-  { label: '工作单位', prop: 'workUnit', width: 100, resizable: true },
-  { label: '账号', prop: 'accountNum', width: 100, resizable: true },
-  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
-  { label: '币种', prop: 'currNo', width: 100, resizable: true },
-  { label: '余额', prop: 'balence', width: 100, resizable: true },
-  { label: '账户类型', prop: 'accountType', width: 100, resizable: true },
-  { label: '备注', prop: 'comment', width: 100, resizable: true },
-])
+const response = ref({})
 
-const bankTransPageListColumns = ref([
-  { label: '文件', prop: 'fileName', width: 100, resizable: true },
-  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
-  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
-  { label: '户名', prop: 'accountName', width: 100, resizable: true },
-  { label: '账号', prop: 'accountNum', width: 100, resizable: true },
-  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
-  { label: '流水号', prop: 'transNo', width: 100, resizable: true },
-  { label: '交易渠道', prop: 'channel', width: 100, resizable: true },
-  { label: '币种', prop: 'currNo', width: 100, resizable: true },
-  { label: '交易方向', prop: 'transWay', width: 100, resizable: true },
-  { label: '交易金额', prop: 'transAmt', width: 100, resizable: true },
-  { label: '贷方发生额', prop: 'creditAmt', width: 100, resizable: true },
-  { label: '余额', prop: 'balence', width: 100, resizable: true },
-  { label: '交易种类', prop: 'transType', width: 100, resizable: true },
-  { label: '业务日期', prop: 'bizDate', width: 100, resizable: true },
-  { label: '交易时间', prop: 'transTime', width: 100, resizable: true },
-  { label: '对方机构名称', prop: 'counterOrgName', width: 100, resizable: true },
-  { label: '对方账号', prop: 'counterAccountNo', width: 100, resizable: true },
-  { label: '客户号', prop: 'showCustomerId', width: 100, resizable: true },
-  { label: '客户名称', prop: 'customerName', width: 100, resizable: true },
-  { label: '结算金额', prop: 'settlementAmt', width: 100, resizable: true },
-  { label: '手续费', prop: 'feeAmt', width: 100, resizable: true },
-  { label: '代办人姓名', prop: 'agentName', width: 100, resizable: true },
-  { label: '备注', prop: 'comment', width: 100, resizable: true },
-])
-
-// 表格列定义
-const nonBankCustomerPageListColumns = ref([
-  { label: '文件', prop: 'fileName', width: 100, resizable: true },
-  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
-  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
-  { label: '商户号', prop: 'showMerchantId', width: 100, resizable: true },
-  { label: '商户名称', prop: 'merchantName', width: 100, resizable: true },
-  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
-  { label: '店铺号', prop: 'portId', width: 100, resizable: true },
-  { label: '结算银行名称', prop: 'settlementOrg', width: 100, resizable: true },
-  { label: '结算账号/卡号', prop: 'settlementAccountNum', width: 100, resizable: true },
-  { label: '币种', prop: 'currNo', width: 100, resizable: true },
-  { label: '账户类型', prop: 'accountType', width: 100, resizable: true },
-  { label: '余额', prop: 'balence', width: 100, resizable: true },
-  { label: '客户种类', prop: 'customerType', width: 100, resizable: true },
-  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
-  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
-  { label: '商户证件种类', prop: 'idType', width: 100, resizable: true },
-  { label: '商户证件号码', prop: 'idNum', width: 100, resizable: true },
-  { label: '工作单位', prop: 'workUnit', width: 100, resizable: true },
-  { label: '备注', prop: 'comment', width: 100, resizable: true },
-])
-
-const nonBankTransPageListColumns = ref([
-  { label: '文件', prop: 'fileName', width: 100, resizable: true },
-  { label: '行号', prop: 'rowNum', width: 100, resizable: true },
-  { label: '机构名称', prop: 'orgName', width: 100, resizable: true },
-  { label: '商户号', prop: 'showMerchantId', width: 100, resizable: true },
-  { label: '商户名称', prop: 'merchantName', width: 100, resizable: true },
-  { label: '店铺号', prop: 'portId', width: 100, resizable: true },
-  { label: '订单号', prop: 'orderNo', width: 100, resizable: true },
-  { label: '商品名称', prop: 'productName', width: 100, resizable: true },
-  { label: '手机号码', prop: 'teleNum', width: 100, resizable: true },
-  { label: '流水号', prop: 'transNo', width: 100, resizable: true },
-  { label: '卡号', prop: 'cardNum', width: 100, resizable: true },
-  { label: '户名', prop: 'customerName', width: 100, resizable: true },
-  { label: '币种', prop: 'currNo', width: 100, resizable: true },
-  { label: '交易方向', prop: 'transWay', width: 100, resizable: true },
-  { label: '交易金额', prop: 'transAmt', width: 100, resizable: true },
-  { label: '贷方发生额', prop: 'creditAmt', width: 100, resizable: true },
-  { label: '交易种类', prop: 'transType', width: 100, resizable: true },
-  { label: '业务日期', prop: 'bizDate', width: 100, resizable: true },
-  { label: '交易时间', prop: 'transTime', width: 100, resizable: true },
-  { label: '交易卡开户行', prop: 'openOrgCd', width: 100, resizable: true },
-  { label: '客户号', prop: 'customerId', width: 100, resizable: true },
-  { label: '营业执照', prop: 'licenseNum', width: 100, resizable: true },
-  { label: '法人姓名', prop: 'legalPersonName', width: 100, resizable: true },
-  { label: '证件种类', prop: 'idType', width: 100, resizable: true },
-  { label: '证件号码', prop: 'idNum', width: 100, resizable: true },
-  { label: '结算金额', prop: 'settlementAmt', width: 100, resizable: true },
-  { label: '余额', prop: 'balance', width: 100, resizable: true },
-  { label: '备注', prop: 'comment', width: 100, resizable: true },
-])
-
-const columns = [
-  {
-    label: '序号',
-    prop: 'index',
-    width: 70,
-  },
-]
+const currentPage = ref(1)
+const pageSize = ref(10)
+const selectedMap = ref(new Map<string, any>())
 
 const init = async () => {
-  let res = await getCaseFileTransInfo({ fileId: fileId })
-  sheetList.value = res.filePages
-  filePageId.value = sheetList.value[0]?.pageId || ''
-  activeSheetId.value = filePageId.value
-  sendTableParams.value.filePageId = filePageId.value
-  await initTable()
+  let sendParams = {
+    caseId: '2034799048267980802',
+    pageNo: currentPage.value,
+    pageSize: pageSize.value,
+  }
+  let res = await getCaseDuplicateData(sendParams)
+  response.value = res
+  displayData.value = res.records
+  await syncSelection()
 }
 init()
 
-const updateTableHeight = async () => {
-  await nextTick()
-  if (!tableCardRef.value) return
-  const style = window.getComputedStyle(tableCardRef.value)
-  const paddingTop = parseFloat(style.paddingTop) || 0
-  const paddingBottom = parseFloat(style.paddingBottom) || 0
-  tableHeight.value = Math.max(
-    tableCardRef.value.clientHeight - paddingTop - paddingBottom - TABLE_PAGINATION_HEIGHT,
-    240,
-  )
-}
+const columns = [] as any[]
 
-const initTable = async () => {
-  let res = await await bankCustomerPageList(activeTab.value, sendTableParams.value)
-  data.value = res.records
-  total.value = res.total
-}
+const formatLine = (lineNumber: number) => `第${lineNumber}行`
+const formatAmount = (amount: number) => `¥${amount}`
+const selectedCount = computed(() => selectedMap.value.size)
 
-const handleSheetClick = async (sheet: any) => {
-  activeSheetId.value = sheet.pageId
-  filePageId.value = sheet.pageId
-  sendTableParams.value.filePageId = sheet.pageId
-  sendTableParams.value.pageNo = 1
-  await initTable()
-}
+const handleSelectionChange = (rows: RepeatRecord[]) => {
+  if (syncingSelection.value) return
 
-const columnsMap = {
-  bankCustomerPageList: bankCustomerPageListColumns.value,
-  bankTransPageList: bankTransPageListColumns.value,
-  nonBankCustomerPageList: nonBankCustomerPageListColumns.value,
-  nonBankTransPageList: nonBankTransPageListColumns.value,
-}
-const tabLabelMap = {
-  bankCustomerPageList: '银行客户信息',
-  bankTransPageList: '银行交易流水',
-  nonBankCustomerPageList: '非银行客户信息',
-  nonBankTransPageList: '非银行交易流水',
-}
-const detailRow = (row: Record<string, any>) => {
-  detailData.value = row || {}
-  detailVisible.value = true
-}
-const detailTitle = computed(() => `${tabLabelMap[activeTab.value] || '详情'}详情`)
-const detailDescOptions = computed(() => {
-  return (columnsMap[activeTab.value] || []).map((item) => ({
-    label: item.label,
-    value: detailData.value?.[item.prop] ?? '--',
-  }))
-})
-const activeTabColumns = computed(() => {
-  if (notEmpty(columnsMap[activeTab.value])) {
-    return columnsMap[activeTab.value].concat([
-      {
-        key: 'operation',
-        label: '操作',
-        btns: [
-          {
-            content: '详情',
-            handler: detailRow,
-          },
-        ],
-      },
-    ])
-  }
-  return columnsMap[activeTab.value] || []
-})
+  const currentPageIds = new Set(displayData.value.map((item) => item.id))
 
-let resizeObserver: ResizeObserver | null = null
-
-const update = (number, size) => {
-  sendTableParams.value.pageNo = number
-  sendTableParams.value.pageSize = size
-  initTable()
-}
-
-onMounted(async () => {
-  await updateTableHeight()
-  resizeObserver = new ResizeObserver(() => {
-    updateTableHeight()
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
   })
-  if (tableCardRef.value) {
-    resizeObserver.observe(tableCardRef.value)
-  }
-  window.addEventListener('resize', updateTableHeight)
-})
 
-onUnmounted(() => {
-  resizeObserver?.disconnect()
-  window.removeEventListener('resize', updateTableHeight)
-})
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
+}
+
+const handleUpdate = (pageNo: number, size: number) => {
+  currentPage.value = pageNo
+  pageSize.value = size
+  init()
+}
+
+const clearSelected = () => {
+  selectedMap.value.clear()
+  tableRef.value?.$refs.tableRef.clearSelection()
+}
+
+const exportData = () => {
+  $toast(`导出全部数据，共 ${response.value.total} 条`, 's')
+}
+
+const exportSelectedData = () => {
+  if (!selectedCount.value) {
+    $toast('请先选择数据', 'w')
+    return
+  }
+
+  $toast(`导出选择数据，共 ${selectedCount.value} 条`, 's')
+}
+
+const indexMethod = (index) => {
+  console.log(`37 index`, index)
+  // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
+  return (currentPage.value - 1) * pageSize.value + index + 1
+}
 
 watch(
-  activeTab,
-  async () => {
-    initTable()
-    await updateTableHeight()
+  selectedMap,
+  (val) => {
+    console.log(`14 103行 test/t2.vue val`, val)
   },
-  {},
+  {
+    deep: true,
+    immediate: true,
+  },
 )
 </script>
 
 <template>
-  <o-basic-layout title="转换结果">
-    <div class="result-translate">
-      <div class="result-body">
-        <div class="sheet-panel">
-          <div class="sheet-label">文件页码</div>
-          <div class="sheet-list">
-            <div
-              v-for="sheet in sheetList"
-              :key="sheet.pageId"
-              :class="['sheet-item', { 'is-active': activeSheetId === sheet.pageId }]"
-              @click="handleSheetClick(sheet)"
-            >
-              {{ sheet.pageName }}
-            </div>
-          </div>
-        </div>
-
-        <div class="content-panel">
-          <el-tabs v-model="activeTab" class="result-tabs">
-            <el-tab-pane label="银行客户信息" name="bankCustomerPageList" />
-            <el-tab-pane label="银行交易流水" name="bankTransPageList" />
-            <el-tab-pane label="非银行客户信息" name="nonBankCustomerPageList" />
-            <el-tab-pane label="非银行交易流水" name="nonBankTransPageList" />
-          </el-tabs>
-
-          <div ref="tableCardRef" class="table-card">
-            <o-table
-              :columns="activeTabColumns"
-              :data="data"
-              :total="total"
-              :height="tableHeight"
-              :pageSize="sendTableParams.pageSize"
-              @update="update"
-            />
-          </div>
-        </div>
+  <div class="repeat-page">
+    <div class="repeat-page__wrap">
+      <div class="repeat-page__toolbar">
+        <o-button type="primary" @click="exportData">导出数据</o-button>
+        <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
       </div>
 
-      <o-dialog v-model="detailVisible" :title="detailTitle" width="960px" :showConfirm="false">
-        <o-descriptions :options="detailDescOptions" :column="3" />
-      </o-dialog>
+      <div class="repeat-page__selection-bar">
+        <span class="repeat-page__selection-icon">i</span>
+        <template v-if="selectedCount">
+          <span>已选中 {{ selectedCount }} 条记录(可跨页)</span>
+          <span class="repeat-page__selection-split">|</span>
+          <span class="repeat-page__selection-clear" @click="clearSelected">清空</span>
+        </template>
+        <span v-else>未选中任何数据</span>
+      </div>
+
+      <!-- <div class="repeat-page__group-header">
+        <div class="repeat-page__group-header-empty" />
+        <div class="repeat-page__group-header-empty repeat-page__group-header-empty--index" />
+        <div class="repeat-page__group-header-title">文件一</div>
+        <div class="repeat-page__group-header-title">文件二</div>
+      </div> -->
+
+      <o-table
+        ref="tableRef"
+        :columns="columns"
+        :data="displayData"
+        :total="response.total"
+        :pageSize="pageSize"
+        :currentPage="currentPage"
+        row-key="id"
+        :index="indexMethod"
+        height="560"
+        class="repeat-page__table"
+        @selection-change="handleSelectionChange"
+        @update="handleUpdate"
+      >
+        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
+        <!-- <el-table-column prop="index" label="序号1" width="70" align="center" /> -->
+        <el-table-column label="文件一" align="center">
+          <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+          <el-table-column label="行号" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatLine(row.file1LineNumber) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="发生金额" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatAmount(row.file1Amount) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="其他信息" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ row.file1OtherInfo || '--' }}
+            </template>
+          </el-table-column>
+        </el-table-column>
+
+        <el-table-column label="文件二" align="center">
+          <el-table-column prop="file2Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+          <el-table-column label="行号" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatLine(row.file2LineNumber) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="发生金额" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatAmount(row.file2Amount) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="其他信息" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ row.file2OtherInfo || '--' }}
+            </template>
+          </el-table-column>
+        </el-table-column>
+      </o-table>
     </div>
-  </o-basic-layout>
+  </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.repeat-page {
+  height: 100%;
+  padding: 10px 14px 22px;
+  background: #fff;
+
+  &__top-line {
+    height: 6px;
+    margin-bottom: 8px;
+    background: #ebf5ff;
+    border: 1px solid #8fd0ff;
+    border-radius: 3px;
+  }
+
+  &__wrap {
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #ebeef5;
+  }
+
+  &__toolbar {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #ebeef5;
+
+    :deep(.el-button) {
+      min-width: 132px;
+      height: 42px;
+      font-size: 16px;
+    }
+  }
+
+  &__selection-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 20px;
+    margin: 12px 16px;
+    font-size: 16px;
+    color: #303133;
+    background: #dff3ff;
+    border: 1px solid #4bb8ff;
+    border-radius: 8px;
+  }
+
+  &__selection-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    background: #1890ff;
+    border-radius: 50%;
+  }
+
+  &__selection-split {
+    color: #96a3b5;
+  }
+
+  &__selection-clear {
+    color: #1890ff;
+    cursor: pointer;
+  }
+
+  &__group-header {
+    display: grid;
+    grid-template-columns: 58px 62px minmax(600px, 1fr) minmax(600px, 1fr);
+    background: #fff;
+    border-bottom: 1px solid #ebeef5;
+  }
+
+  &__group-header-empty,
+  &__group-header-title {
+    height: 48px;
+    border-right: 1px solid #ebeef5;
+  }
+
+  &__group-header-empty--index {
+    border-right: 1px solid #ebeef5;
+  }
+
+  &__group-header-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #303133;
+  }
+
+  &__group-header-title:last-child {
+    border-right: 0;
+  }
+
+  :deep(.el-table th.el-table__cell) {
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #303133;
+    background: #fff;
+  }
+
+  :deep(.el-table td.el-table__cell) {
+    padding: 14px 0;
+    font-size: 14px;
+    color: #606266;
+  }
+
+  :deep(.el-table .cell) {
+    line-height: 1.4;
+  }
+
+  :deep(.el-table__body .el-table__row:hover > td.el-table__cell) {
+    background: #f8fbff;
+  }
+}
+</style>

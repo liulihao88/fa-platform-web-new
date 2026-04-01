@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, nextTick, watch } from 'vue'
+import { $toast } from '@oeos-components/utils'
+import { getCaseDuplicateData } from '@/api/analysis.ts'
 
 interface RepeatRecord {
   id: string
@@ -13,267 +15,187 @@ interface RepeatRecord {
   file2OtherInfo: string
 }
 
-const response = {
-  records: [
-    {
-      id: '2037330845207945218',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 456,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 456,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330845350551554',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 177,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 177,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330845526712321',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 444,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 444,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330845950337025',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 486,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 486,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330846365573122',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 484,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 484,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330846785003521',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 417,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 417,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330847170879489',
-      file1Name: '1/广发银行-脱敏.xlsx',
-      file1LineNumber: 345,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '广发银行-脱敏.xlsx',
-      file2LineNumber: 345,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330847590309890',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 331,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 331,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330847938437121',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 466,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 466,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-    {
-      id: '2037330848215261185',
-      file1Name: '广发银行-脱敏.xlsx',
-      file1LineNumber: 366,
-      file1Amount: 0,
-      file1OtherInfo: '徐磊',
-      file2Name: '1/广发银行-脱敏.xlsx',
-      file2LineNumber: 366,
-      file2Amount: 0,
-      file2OtherInfo: '',
-    },
-  ] as RepeatRecord[],
-  total: 500,
-  size: 10,
-  current: 1,
-  pages: 50,
+const displayData = ref()
+const tableRef = ref()
+const syncingSelection = ref(false)
+
+const syncSelection = async () => {
+  await nextTick()
+  if (!tableRef.value) return
+
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    displayData.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
 }
 
-const currentPage = ref(response.current)
-const pageSize = ref(response.size)
-const selectedRows = ref<RepeatRecord[]>([])
+const response = ref({})
 
-const allRecords = computed(() =>
-  Array.from({ length: response.total }, (_, index) => {
-    const source = response.records[index % response.records.length]
-    return {
-      ...source,
-      id: `${source.id}-${index + 1}`,
-      index: index + 1,
-    }
-  }),
-)
+const currentPage = ref(1)
+const pageSize = ref(10)
+const selectedMap = ref(new Map<string, any>())
 
-const tableData = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  const end = start + pageSize.value
-  return allRecords.value.slice(start, end)
-})
+const init = async () => {
+  let sendParams = {
+    caseId: '2034799048267980802',
+    pageNo: currentPage.value,
+    pageSize: pageSize.value,
+  }
+  let res = await getCaseDuplicateData(sendParams)
+  response.value = res
+  displayData.value = res.records
+  await syncSelection()
+}
+init()
 
-const columns = [
-  {
-    type: 'selection',
-    width: 58,
-    align: 'center',
-  },
-  {
-    label: '序号',
-    prop: 'index',
-    width: 62,
-    align: 'center',
-  },
-  {
-    label: '文件名称',
-    prop: 'file1Name',
-    minWidth: 220,
-    align: 'center',
-  },
-  {
-    label: '行号',
-    prop: 'file1LineNumber',
-    minWidth: 120,
-    align: 'center',
-    useSlot: true,
-  },
-  {
-    label: '发生金额',
-    prop: 'file1Amount',
-    minWidth: 120,
-    align: 'center',
-    useSlot: true,
-  },
-  {
-    label: '其他信息',
-    prop: 'file1OtherInfo',
-    minWidth: 140,
-    align: 'center',
-    useSlot: true,
-  },
-  {
-    label: '文件名称',
-    prop: 'file2Name',
-    minWidth: 220,
-    align: 'center',
-  },
-  {
-    label: '行号',
-    prop: 'file2LineNumber',
-    minWidth: 120,
-    align: 'center',
-    useSlot: true,
-  },
-  {
-    label: '发生金额',
-    prop: 'file2Amount',
-    minWidth: 120,
-    align: 'center',
-    useSlot: true,
-  },
-  {
-    label: '其他信息',
-    prop: 'file2OtherInfo',
-    minWidth: 140,
-    align: 'center',
-    useSlot: true,
-  },
-] as any[]
+const columns = [] as any[]
 
 const formatLine = (lineNumber: number) => `第${lineNumber}行`
 const formatAmount = (amount: number) => `¥${amount}`
+const selectedCount = computed(() => selectedMap.value.size)
 
 const handleSelectionChange = (rows: RepeatRecord[]) => {
-  selectedRows.value = rows
+  if (syncingSelection.value) return
+
+  const currentPageIds = new Set(displayData.value.map((item) => item.id))
+
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
+  })
+
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
 }
 
 const handleUpdate = (pageNo: number, size: number) => {
   currentPage.value = pageNo
   pageSize.value = size
+  init()
 }
+
+const clearSelected = () => {
+  selectedMap.value.clear()
+  tableRef.value?.$refs.tableRef.clearSelection()
+}
+
+const exportData = () => {
+  $toast(`导出全部数据，共 ${response.value.total} 条`, 's')
+}
+
+const exportSelectedData = () => {
+  if (!selectedCount.value) {
+    $toast('请先选择数据', 'w')
+    return
+  }
+
+  $toast(`导出选择数据，共 ${selectedCount.value} 条`, 's')
+}
+
+const indexMethod = (index) => {
+  console.log(`37 index`, index)
+  // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
+  return (currentPage.value - 1) * pageSize.value + index + 1
+}
+
+watch(
+  selectedMap,
+  (val) => {
+    console.log(`14 103行 test/t2.vue val`, val)
+  },
+  {
+    deep: true,
+    immediate: true,
+  },
+)
 </script>
 
 <template>
   <div class="repeat-page">
     <div class="repeat-page__wrap">
-      <div class="repeat-page__group-header">
+      <div class="repeat-page__toolbar">
+        <o-button type="primary" @click="exportData">导出数据</o-button>
+        <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
+      </div>
+
+      <div class="repeat-page__selection-bar">
+        <span class="repeat-page__selection-icon">i</span>
+        <template v-if="selectedCount">
+          <span>已选中 {{ selectedCount }} 条记录(可跨页)</span>
+          <span class="repeat-page__selection-split">|</span>
+          <span class="repeat-page__selection-clear" @click="clearSelected">清空</span>
+        </template>
+        <span v-else>未选中任何数据</span>
+      </div>
+
+      <!-- <div class="repeat-page__group-header">
         <div class="repeat-page__group-header-empty" />
         <div class="repeat-page__group-header-empty repeat-page__group-header-empty--index" />
         <div class="repeat-page__group-header-title">文件一</div>
         <div class="repeat-page__group-header-title">文件二</div>
-      </div>
+      </div> -->
 
       <o-table
+        ref="tableRef"
         :columns="columns"
-        :data="tableData"
+        :data="displayData"
         :total="response.total"
         :pageSize="pageSize"
         :currentPage="currentPage"
-        :showIndex="false"
+        row-key="id"
+        :index="indexMethod"
         height="560"
         class="repeat-page__table"
         @selection-change="handleSelectionChange"
         @update="handleUpdate"
       >
-        <template #file1LineNumber="{ value }">
-          {{ formatLine(value) }}
-        </template>
-        <template #file1Amount="{ value }">
-          {{ formatAmount(value) }}
-        </template>
-        <template #file1OtherInfo="{ value }">
-          {{ value || '--' }}
-        </template>
-        <template #file2LineNumber="{ value }">
-          {{ formatLine(value) }}
-        </template>
-        <template #file2Amount="{ value }">
-          {{ formatAmount(value) }}
-        </template>
-        <template #file2OtherInfo="{ value }">
-          {{ value || '--' }}
-        </template>
+        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
+        <!-- <el-table-column prop="index" label="序号1" width="70" align="center" /> -->
+        <el-table-column label="文件一" align="center">
+          <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+          <el-table-column label="行号" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatLine(row.file1LineNumber) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="发生金额" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatAmount(row.file1Amount) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="其他信息" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ row.file1OtherInfo || '--' }}
+            </template>
+          </el-table-column>
+        </el-table-column>
+
+        <el-table-column label="文件二" align="center">
+          <el-table-column prop="file2Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+          <el-table-column label="行号" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatLine(row.file2LineNumber) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="发生金额" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ formatAmount(row.file2Amount) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="其他信息" min-width="140" align="center">
+            <template #default="{ row }">
+              {{ row.file2OtherInfo || '--' }}
+            </template>
+          </el-table-column>
+        </el-table-column>
       </o-table>
     </div>
   </div>
@@ -297,6 +219,54 @@ const handleUpdate = (pageNo: number, size: number) => {
     overflow: hidden;
     background: #fff;
     border: 1px solid #ebeef5;
+  }
+
+  &__toolbar {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #ebeef5;
+
+    :deep(.el-button) {
+      min-width: 132px;
+      height: 42px;
+      font-size: 16px;
+    }
+  }
+
+  &__selection-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 20px;
+    margin: 12px 16px;
+    font-size: 16px;
+    color: #303133;
+    background: #dff3ff;
+    border: 1px solid #4bb8ff;
+    border-radius: 8px;
+  }
+
+  &__selection-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    background: #1890ff;
+    border-radius: 50%;
+  }
+
+  &__selection-split {
+    color: #96a3b5;
+  }
+
+  &__selection-clear {
+    color: #1890ff;
+    cursor: pointer;
   }
 
   &__group-header {
