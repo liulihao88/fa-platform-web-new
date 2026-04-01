@@ -150,8 +150,52 @@ export default [
     ],
   },
   {
+    path: '/test3',
+    component: Layout,
+    redirect: '/test/t3',
+    meta: {
+      // icon: testSvg,
+      showLink: use$dev(),
+      title: '测试页3',
+      rank: 0,
+    },
+    children: [
+      {
+        path: '/test/t3',
+        name: 'T3',
+        component: () => import('@/views/test/t3.vue'),
+        meta: {
+          title: '测试页3',
+          showLink: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/test4',
+    component: Layout,
+    redirect: '/test/t4',
+    meta: {
+      // icon: testSvg,
+      showLink: use$dev(),
+      title: '测试页4',
+      rank: 0,
+    },
+    children: [
+      {
+        path: '/test/t4',
+        name: 'T4',
+        component: () => import('@/views/test/t4.vue'),
+        meta: {
+          title: '测试页4',
+          showLink: true,
+        },
+      },
+    ],
+  },
+  {
     path: '/mergeTest',
-    redirect: '/mergeTest/t3',
+    redirect: '/mergeTest/t5',
     component: Layout,
     meta: {
       showLink: use$dev(),
@@ -160,26 +204,6 @@ export default [
       title: '合并测试页',
     },
     children: [
-      {
-        path: '/mergeTest/t3',
-        name: 'T3',
-        component: () => import('@/views/test/t3.vue'),
-        meta: {
-          title: '测试页33',
-          // icon: testSvg,
-          showLink: true,
-        },
-      },
-      {
-        path: '/mergeTest/t4',
-        name: 'T4',
-        component: () => import('@/views/test/t4.vue'),
-        meta: {
-          title: '测试页44',
-          // icon: testSvg,
-          showLink: true,
-        },
-      },
       {
         path: '/mergeTest/t5',
         name: 'T5',
