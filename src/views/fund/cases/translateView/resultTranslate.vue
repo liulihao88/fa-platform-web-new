@@ -8,6 +8,8 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+const emits = defineEmits(['initFileInfo'])
+
 const props = defineProps({
   type: {
     type: String,
@@ -162,6 +164,7 @@ const init = async (sendFileId = '') => {
     filePageId.value = sheetList.value[0]?.pageId || ''
     activeSheetId.value = filePageId.value
     sendTableParams.value.filePageId = filePageId.value
+    emits('initFileInfo', res)
   }
 
   await initTable()
