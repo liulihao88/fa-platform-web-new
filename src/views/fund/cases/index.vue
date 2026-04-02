@@ -23,18 +23,14 @@ const caseDetails: any = ref({})
 const caseStatusOptions: any = ref(getDictItems('fa_case_process_status') ?? [])
 
 const init = async () => {
-  Promise.allSettled([getCaseInfoById({ caseId: caseId }), getCommonDictionary('fa_case_process_status')]).then(
-    (results) =>
-      results.forEach((result, idx) => {
-        if (result.status === 'fulfilled') {
-          if (idx === 0) {
-            caseDetails.value = result.value
-          }
-          if (idx === 1) {
-            caseStatusOptions.value = result.value
-          }
+  Promise.allSettled([getCaseInfoById({ caseId: caseId })]).then((results) =>
+    results.forEach((result, idx) => {
+      if (result.status === 'fulfilled') {
+        if (idx === 0) {
+          caseDetails.value = result.value
         }
-      }),
+      }
+    }),
   )
 }
 init()

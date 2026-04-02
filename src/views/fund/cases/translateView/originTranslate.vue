@@ -24,6 +24,7 @@ const loadFileContent = (type) => {
   // const previewUrl = 'http://192.168.56.228:8080/jeecg-boot' + '/' + fileInfo.value.fileViewUrl
   // const previewUrl = '/image/1.pdf'
   const previewUrl = window.location.origin + '/jeecgboot/' + fileInfo.value.fileViewUrl
+  console.log(`16 fileInfo.value.fileViewUrl`, fileInfo.value.fileViewUrl)
   // console.log(`53 previewUrl`, previewUrl)
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
     fileStreamInfo.value = previewUrl

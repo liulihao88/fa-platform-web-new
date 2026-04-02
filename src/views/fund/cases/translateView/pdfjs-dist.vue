@@ -44,6 +44,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed, toRaw } from 'vue'
 import * as pdfjsLib from 'pdfjs-dist'
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 
 const props = defineProps({
   url: {
@@ -52,10 +53,12 @@ const props = defineProps({
   },
 })
 
-// 在浏览器环境中动态设置worker
+// 让 Vite 为 worker 产出可部署的静态资源 URL，避免线上去访问 /node_modules。
 if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `/node_modules/pdfjs-dist/build/pdf.worker.min.mjs`
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 }
+
+const cMapUrl = `${import.meta.env.BASE_URL}static/pdf/web/cmaps/`
 
 // 响应式数据
 const pdfDoc = ref(null)
@@ -109,7 +112,7 @@ const loadPDF = async () => {
     // 使用流式加载以提高大文件性能
     loadingTask.value = pdfjsLib.getDocument({
       url: props.url,
-      cMapUrl: '/node_modules/pdfjs-dist/cmaps/',
+      cMapUrl,
       cMapPacked: true,
     })
     pdfDoc.value = await loadingTask.value.promise
@@ -479,7 +482,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .pdf-controls {
