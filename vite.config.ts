@@ -6,7 +6,6 @@ import { root, alias, wrapperEnv, pathResolve, __APP_INFO__ } from './build/util
 
 export default ({ mode }: ConfigEnv): UserConfigExport => {
   const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_PUBLIC_PATH, VITE_PROXY } = wrapperEnv(loadEnv(mode, root))
-  console.log(`14 VITE_PROXY`, VITE_PROXY)
   return {
     base: VITE_PUBLIC_PATH,
     root,

@@ -8,7 +8,7 @@ file.value = 'https://501351981.github.io/vue-office/examples/dist/static/test-f
 // disableRange:禁用范围; disableStream:禁用流;  disableAutoFetch: 禁用自动获取;
 iframeUrl.value =
   window.location.origin +
-  '/pdf/web/viewer.html?file=' +
+  '/static/pdf/web/viewer.html?file=' +
   file.value +
   '&disableRange=true&disableAutoFetch=false&disableStream=true'
 console.log(`77 iframeUrl.value`, iframeUrl.value)
@@ -16,7 +16,6 @@ console.log(`77 iframeUrl.value`, iframeUrl.value)
 
 <template>
   <div>
-    211321
     <iframe
       id="searchshow"
       :src="iframeUrl"
