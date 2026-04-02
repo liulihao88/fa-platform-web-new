@@ -81,15 +81,7 @@ onMounted(() => {
 <template>
   <div class="standard-data-layout">
     <div v-loading="loading" class="standard-data-view">
-      <o-input v-model="searchParams.fileName">
-        <!-- <template #append>
-          <el-button type="primary" @click="handleSearch">
-            <el-icon :size="20">
-              <Search />
-            </el-icon>
-          </el-button>
-        </template> -->
-
+      <o-input v-model="searchParams.fileName" placeholder="请输入文件名称">
         <template #append>
           <el-button :icon="Search" @click="handleSearch" />
         </template>
@@ -253,10 +245,6 @@ onMounted(() => {
     transform: translateY(-50%) rotate(-28deg);
   }
 
-  :deep(.o-input) {
-    width: 100%;
-  }
-
   :deep(.o-input .el-input-group__append) {
     padding: 0;
     background: #fff;
@@ -276,11 +264,11 @@ onMounted(() => {
   }
 
   :deep(.o-input .el-button) {
-    width: 80px;
+    width: 40px;
     margin: 0;
     background: #409eff;
     border: 0;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 2px 2px 0;
   }
 
   :deep(.o-input .el-button .el-icon) {
