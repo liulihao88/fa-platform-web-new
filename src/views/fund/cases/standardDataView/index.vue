@@ -81,43 +81,49 @@ onMounted(() => {
 <template>
   <div class="standard-data-layout">
     <div v-loading="loading" class="standard-data-view">
-      <div class="standard-data-view__panel">
-        <o-input v-model="searchParams.fileName">
-          <template #append>
-            <el-button type="primary" @click="handleSearch">
-              <el-icon :size="20">
-                <Search />
-              </el-icon>
-            </el-button>
-          </template>
-        </o-input>
+      <o-input v-model="searchParams.fileName">
+        <!-- <template #append>
+          <el-button type="primary" @click="handleSearch">
+            <el-icon :size="20">
+              <Search />
+            </el-icon>
+          </el-button>
+        </template> -->
 
-        <div class="standard-data-view__pagination">
-          <el-button plain :disabled="searchParams.pageNo <= 1" @click="changePage('prev')">上一页</el-button>
-          <div class="standard-data-view__page-text">第 {{ searchParams.pageNo }} 页，共 {{ totalPages }} 页</div>
-          <el-button plain :disabled="searchParams.pageNo >= totalPages" @click="changePage('next')">下一页</el-button>
-        </div>
+        <template #append>
+          <el-button :icon="Search" @click="handleSearch" />
+        </template>
+      </o-input>
 
-        <div class="standard-data-view__list">
-          <div
-            v-for="item in lists"
-            :key="item.id || item.fileId || item.fileName"
-            :class="[
-              'standard-data-view__item',
-              {
-                'is-active': (item.id || item.fileId || item.fileName) === activeId,
-              },
-            ]"
-            @click="setActiveRow(item)"
-          >
-            <div class="standard-data-view__item-name">{{ item.fileOriginName || item.fileName || '-' }}</div>
-            <div v-if="(item.id || item.fileId || item.fileName) === activeId" class="standard-data-view__watermark">
-              管理员 2019
-            </div>
+      <div class="standard-data-view__pagination fs-12">
+        <el-button plain :disabled="searchParams.pageNo <= 1" size="small" @click="changePage('prev')">
+          上一页
+        </el-button>
+        <div class="standard-data-view__page-text">{{ searchParams.pageNo }}/{{ totalPages }}</div>
+        <el-button plain :disabled="searchParams.pageNo >= totalPages" size="small" @click="changePage('next')">
+          下一页
+        </el-button>
+      </div>
+
+      <div class="standard-data-view__list">
+        <div
+          v-for="item in lists"
+          :key="item.id || item.fileId || item.fileName"
+          :class="[
+            'standard-data-view__item',
+            {
+              'is-active': (item.id || item.fileId || item.fileName) === activeId,
+            },
+          ]"
+          @click="setActiveRow(item)"
+        >
+          <div class="standard-data-view__item-name">{{ item.fileOriginName || item.fileName || '-' }}</div>
+          <div v-if="(item.id || item.fileId || item.fileName) === activeId" class="standard-data-view__watermark">
+            <!-- 管理员 -->
           </div>
-
-          <el-empty v-if="!lists.length && !loading" description="暂无标准数据文件" />
         </div>
+
+        <el-empty v-if="!lists.length && !loading" description="暂无标准数据文件" />
       </div>
     </div>
 
@@ -140,14 +146,13 @@ onMounted(() => {
 }
 
 .standard-data-view {
-  flex: 0 0 300px;
-  min-width: 300px;
+  flex: 0 0 240px;
+  min-width: 240px;
   padding: 0;
   background: #fff;
 
   &__panel {
     height: 100%;
-    padding: 12px;
     background: #fff;
     border: 1px solid #ebeef5;
     border-radius: 4px;
@@ -261,15 +266,6 @@ onMounted(() => {
     box-shadow: none;
   }
 
-  :deep(.o-input .el-input__wrapper) {
-    min-height: 46px;
-    padding: 0 22px;
-    border: 1px solid #dcdfe6;
-    border-right: 0;
-    border-radius: 4px 0 0 4px;
-    box-shadow: none;
-  }
-
   :deep(.o-input .el-input__inner) {
     font-size: 14px;
     color: #303133;
@@ -280,8 +276,7 @@ onMounted(() => {
   }
 
   :deep(.o-input .el-button) {
-    width: 86px;
-    height: 44px;
+    width: 80px;
     margin: 0;
     background: #409eff;
     border: 0;

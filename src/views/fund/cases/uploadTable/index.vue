@@ -219,12 +219,12 @@ const columns = [
       {
         content: '字段映射',
         handler: textRow,
-        isShow: checkFilesNames,
+        disabled: (row) => !checkFilesNames(row),
       },
       {
         content: '转换查看',
         handler: translateRow,
-        isShow: checkFilesNames,
+        disabled: (row) => !checkFilesNames(row),
       },
       {
         content: '删除',
