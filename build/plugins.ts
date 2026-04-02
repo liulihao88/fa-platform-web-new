@@ -1,4 +1,5 @@
 import { cdn } from './cdn'
+import { syncPdfjsDistAssetsBuildPlugin, syncPdfjsDistAssetsPlugin } from './pdfjs'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { viteBuildInfo } from './info'
@@ -26,6 +27,8 @@ export function getPluginsList(VITE_CDN: boolean, VITE_COMPRESSION: ViteCompress
         },
       },
     }),
+    syncPdfjsDistAssetsPlugin(),
+    syncPdfjsDistAssetsBuildPlugin(),
     tailwindcss(),
     vue(),
     // jsx、tsx语法支持

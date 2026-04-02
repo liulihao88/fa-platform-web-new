@@ -57,7 +57,11 @@ if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerPort = new PdfjsWorker()
 }
 
-const cMapUrl = `/static/pdfjs-dist/cmaps/`
+const pdfjsAssetBaseUrl = `${import.meta.env.BASE_URL}static/pdfjs-dist/`
+const cMapUrl = `${pdfjsAssetBaseUrl}cmaps/`
+const standardFontDataUrl = `${pdfjsAssetBaseUrl}standard_fonts/`
+const wasmUrl = `${pdfjsAssetBaseUrl}wasm/`
+const iccUrl = `${pdfjsAssetBaseUrl}iccs/`
 
 // 响应式数据
 const pdfDoc = ref(null)
@@ -113,6 +117,9 @@ const loadPDF = async () => {
       url: props.url,
       cMapUrl,
       cMapPacked: true,
+      standardFontDataUrl,
+      wasmUrl,
+      iccUrl,
     })
     pdfDoc.value = await loadingTask.value.promise
   } catch (error) {
