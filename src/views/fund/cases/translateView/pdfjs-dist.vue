@@ -58,35 +58,7 @@ if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
 }
 
-const pdfjsDistCMapAssets = import.meta.glob('/node_modules/pdfjs-dist/cmaps/*.bcmap', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-})
-
-const pdfjsDistCMapUrls = Object.fromEntries(
-  Object.entries(pdfjsDistCMapAssets).map(([path, url]) => [path.split('/').pop(), url]),
-)
-
-class PdfjsDistBinaryDataFactory {
-  async fetch({ kind, filename }) {
-    if (kind !== 'cMapUrl') {
-      throw new Error(`Unsupported binary asset kind: ${kind}`)
-    }
-
-    const assetUrl = pdfjsDistCMapUrls[filename]
-    if (!assetUrl) {
-      throw new Error(`Unable to resolve pdfjs-dist cMap asset: ${filename}`)
-    }
-
-    const response = await fetch(assetUrl)
-    if (!response.ok) {
-      throw new Error(`Unable to load pdfjs-dist cMap asset: ${filename}`)
-    }
-
-    return new Uint8Array(await response.arrayBuffer())
-  }
-}
+const cMapUrl = `/static/pdf/web/cmaps/`
 
 // 响应式数据
 const pdfDoc = ref(null)
@@ -140,10 +112,8 @@ const loadPDF = async () => {
     // 使用流式加载以提高大文件性能
     loadingTask.value = pdfjsLib.getDocument({
       url: props.url,
-      cMapUrl: 'pdfjs-dist/cmaps/',
+      cMapUrl,
       cMapPacked: true,
-      BinaryDataFactory: PdfjsDistBinaryDataFactory,
-      useWorkerFetch: false,
     })
     pdfDoc.value = await loadingTask.value.promise
   } catch (error) {

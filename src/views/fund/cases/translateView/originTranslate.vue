@@ -4,7 +4,6 @@ import PdfjsDist from '@/views/fund/cases/translateView/pdfjs-dist.vue'
 import { getFileInfoItem } from '@/api/analysis.ts'
 import { $toast, confirm } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
-const fileName = '2/光大银行 - 脱敏.xlsx'
 const MAX_FILE_SIZE = 10 // 10MB
 const currentFileType = ref('')
 const responseType = ref('arraybuffer')
@@ -75,7 +74,7 @@ const previewFile = async (type = 'normal') => {
     <div class="toolbar">
       <div class="file-info">
         <span class="label">文件名称:</span>
-        <span class="value">{{ fileName }}</span>
+        <span class="value">{{ pFileInfo.fileName }}</span>
       </div>
 
       <div class="actions">
