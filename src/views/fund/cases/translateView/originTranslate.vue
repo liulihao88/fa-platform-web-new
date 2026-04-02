@@ -1,32 +1,39 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, computed } from 'vue'
 import PdfjsDist from '@/views/fund/cases/translateView/pdfjs-dist.vue'
 import { getFileInfoItem } from '@/api/analysis.ts'
+import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
+//引入相关样式
+import '@vue-office/excel/lib/v3/index.css'
 import { $toast, confirm } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
 const MAX_FILE_SIZE = 10 // 10MB
+const EXCEL_EXTENSIONS = ['.xls', '.xlsx', '.xlsm']
 const currentFileType = ref('')
 const responseType = ref('arraybuffer')
 const fileInfo = ref({})
 const iframeUrl = ref('')
-const fileStreamInfo = ref()
+const loading = ref(false)
 
 const props = defineProps({
   pFileInfo: {
-    type: String,
+    type: Object,
     required: true,
+    defult: () => ({}),
   },
 })
 
+const onExcelError = (error) => {
+  loading.value = false
+  $toast('Excel文件渲染失败', 'e')
+}
+
 const loadFileContent = (type) => {
-  console.log('loadFileContent')
   // const previewUrl = 'http://192.168.56.228:8080/jeecg-boot' + '/' + fileInfo.value.fileViewUrl
   // const previewUrl = '/image/1.pdf'
   const previewUrl = window.location.origin + '/jeecgboot/' + fileInfo.value.fileViewUrl
-  console.log(`16 fileInfo.value.fileViewUrl`, fileInfo.value.fileViewUrl)
-  // console.log(`53 previewUrl`, previewUrl)
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
-    fileStreamInfo.value = previewUrl
+    iframeUrl.value = previewUrl
     return
   } else if (['pdf'].includes(currentFileType.value)) {
     if (type === 'fast') {
@@ -38,7 +45,6 @@ const loadFileContent = (type) => {
         '&disableRange=true&disableAutoFetch=false&disableStream=true'
       iframeUrl.value = pdfPreviewUrl
     }
-    console.log(`18 iframeUrl.value`, iframeUrl.value)
 
     return
   }
@@ -48,7 +54,6 @@ const previewFile = async (type = 'normal') => {
   let res = await getFileInfoItem({ fileId: props.pFileInfo.id })
   fileInfo.value = res
   const fileSize = fileInfo.value.fileSize || 0
-  console.log(`86 fileSize`, fileSize)
   currentFileType.value = (fileInfo.value.fileType || '').toLowerCase()
   responseType.value = currentFileType.value === 'csv' ? 'arraybuffer' : 'arraybuffer'
 
@@ -67,6 +72,12 @@ const previewFile = async (type = 'normal') => {
     loadFileContent(type)
   }
 }
+
+const isExcel = computed(() => ['xls', 'xlsx', 'xlsm'].includes(currentFileType.value))
+const isExcelFile = computed(() => {
+  const fileName = props.pFileInfo?.fileName?.toLowerCase() ?? ''
+  return EXCEL_EXTENSIONS.some((extension) => fileName.endsWith(extension))
+})
 </script>
 
 <template>
@@ -79,20 +90,37 @@ const previewFile = async (type = 'normal') => {
 
       <div class="actions">
         <el-button class="cp" type="primary" @click="previewFile('normal')">预览文件</el-button>
-        <el-button class="cp" type="primary" @click="previewFile('fast')">快速预览文件</el-button>
+        <el-button v-if="!isExcelFile" class="cp" type="primary" @click="previewFile('fast')">快速预览文件</el-button>
       </div>
     </div>
 
     <div class="preview-area">
       <template v-if="iframeUrl">
-        <iframe
-          v-if="iframeUrl.startsWith('/static')"
-          id="searchshow"
+        <VueOfficeExcel
+          v-if="isExcel"
           :src="iframeUrl"
-          frameborder="0"
-          style="width: 100%; height: 100%; overflow: auto"
+          :options="{
+            transformImage: true,
+            xls: true,
+          }"
+          :pagination="true"
+          :page-size="20"
+          style=" width: 100%;height: 100%"
+          :min-col-width="100"
+          max-col-width="100%"
+          @rendered="loading = false"
+          @error="onExcelError"
         />
-        <PdfjsDist v-else :url="iframeUrl" style="width: 100%; height: 100%; overflow: auto" />
+        <template v-else>
+          <iframe
+            v-if="iframeUrl.startsWith('/static')"
+            id="searchshow"
+            :src="iframeUrl"
+            frameborder="0"
+            style="width: 100%; height: 100%; overflow: auto"
+          />
+          <PdfjsDist v-else :url="iframeUrl" style="width: 100%; height: 100%; overflow: auto" />
+        </template>
       </template>
       <div v-if="!iframeUrl" class="preview-placeholder">点击"预览文件"按钮加载文件内容</div>
     </div>

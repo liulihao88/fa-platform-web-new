@@ -160,7 +160,7 @@ const columns = [
   {
     label: '源文件',
     prop: 'sourceFile',
-    width: 150,
+    width: 200,
   },
   {
     label: '文件夹',
@@ -214,7 +214,7 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 200,
+    width: 180,
     btns: [
       {
         content: '字段映射',

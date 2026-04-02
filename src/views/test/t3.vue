@@ -1,23 +1,18 @@
-﻿<script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
-const { proxy } = getCurrentInstance()
-const iframeUrl = ref('')
-
-const file = ref('/image/2.pdf')
-// file.value = 'https://501351981.github.io/vue-office/examples/dist/static/test-files/test.pdf'
-// disableRange:禁用范围; disableStream:禁用流;  disableAutoFetch: 禁用自动获取;
-iframeUrl.value =
-  '/static/pdf/web/viewer.html?file=' + file.value + '&disableRange=true&disableAutoFetch=false&disableStream=true'
-</script>
-
-<template>
-  <div>
-    <iframe
-      id="searchshow"
-      :src="iframeUrl"
-      frameborder="0"
-      style="width: 100%; height: 100vh; overflow: auto"
-      loading="lazy"
-    />
-  </div>
+﻿<template>
+  <vue-office-excel :src="excel" style="height: 100vh" @rendered="renderedHandler" @error="errorHandler" />
 </template>
+
+<script setup lang="ts">
+//引入VueOfficeExcel组件
+import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
+//引入相关样式
+import '@vue-office/excel/lib/v3/index.css'
+
+const excel = 'http://static.shanhuxueyuan.com/demo/excel.xlsx' //设置文档地址
+const renderedHandler = () => {
+  console.log('渲染完成')
+}
+const errorHandler = () => {
+  console.log('渲染失败')
+}
+</script>
