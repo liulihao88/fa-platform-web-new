@@ -919,7 +919,7 @@ html[dir='rtl'] #sidebarContent {
   position: absolute;
   top: 32px;
   right: 0;
-  bottom: 300px;
+  bottom: 0px;
   left: 0;
   outline: none;
 }

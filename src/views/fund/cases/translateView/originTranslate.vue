@@ -21,7 +21,8 @@ const props = defineProps({
 const loadFileContent = (type) => {
   console.log('loadFileContent')
   // const previewUrl = 'http://192.168.56.228:8080/jeecg-boot' + '/' + fileInfo.value.fileViewUrl
-  const previewUrl = '/image/2.pdf'
+  // const previewUrl = '/image/1.pdf'
+  const previewUrl = '/jeecgboot/' + fileInfo.value.fileViewUrl
   // console.log(`53 previewUrl`, previewUrl)
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
     fileStreamInfo.value = previewUrl
@@ -69,8 +70,6 @@ const previewFile = async (type = 'normal') => {
 
 <template>
   <div class="origin-translate">
-    <div class="panel-header">源文件视图</div>
-
     <div class="toolbar">
       <div class="file-info">
         <span class="label">文件名称:</span>
@@ -90,9 +89,9 @@ const previewFile = async (type = 'normal') => {
         id="searchshow"
         :src="iframeUrl"
         frameborder="0"
-        style=" width: 100%; height: 100%;overflow: auto"
+        style="width: 100%; height: 100%; overflow: auto"
       />
-      <!-- <div class="preview-placeholder">点击"预览文件"按钮加载文件内容</div> -->
+      <div v-if="!iframeUrl" class="preview-placeholder">点击"预览文件"按钮加载文件内容</div>
     </div>
   </div>
 </template>
@@ -150,12 +149,21 @@ const previewFile = async (type = 'normal') => {
 }
 
 .preview-area {
+  display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  min-height: 0;
   padding: 24px;
   color: #909399;
   background: linear-gradient(0deg, rgb(0 0 0 / 1%), rgb(0 0 0 / 1%)), #fff;
+}
+
+.preview-area iframe {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  border: 0;
 }
 
 .preview-placeholder {

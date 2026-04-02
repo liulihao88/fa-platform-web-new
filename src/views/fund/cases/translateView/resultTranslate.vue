@@ -280,7 +280,6 @@ defineExpose({
 
 <template>
   <div class="result-translate">
-    <div class="panel-header">转换结果</div>
     <div class="result-body">
       <div class="sheet-panel">
         <div class="sheet-label">文件页码</div>

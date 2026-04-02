@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable no-var */
 
 'use strict'
 
@@ -275,6 +276,7 @@ var Stepper = (function StepperClosure() {
     return simpleObj
   }
 
+  // eslint-disable-next-line no-shadow
   function Stepper(panel, pageIndex, initialBreakPoints) {
     this.panel = panel
     this.breakPoint = 0

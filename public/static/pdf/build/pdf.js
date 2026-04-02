@@ -864,6 +864,7 @@
             script.onerror = function () {
               reject(new Error(`Cannot load script at: ${script.src}`))
             }
+
             ;(document.head || document.documentElement).appendChild(script)
           })
         }
@@ -4128,6 +4129,7 @@
                   this._onUnsupportedFeature({
                     featureId: _util.UNSUPPORTED_FEATURES.errorFontLoadNative,
                   })
+
                   ;(0, _util.warn)(`Failed to load font '${nativeFontFace.family}': '${ex}'.`)
                   font.disableFontFace = true
                   throw ex

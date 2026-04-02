@@ -16,13 +16,11 @@ console.log(`77 iframeUrl.value`, iframeUrl)
 </script>
 
 <template>
-  <div>
-    <iframe
-      id="searchshow"
-      :src="iframeUrl"
-      frameborder="0"
-      style="width: 100%; height: 100vh; overflow: auto"
-      loading="lazy"
-    />
-  </div>
+  <iframe
+    id="searchshow"
+    :src="iframeUrl"
+    frameborder="0"
+    style="width: 100%; height: 100vh; overflow: auto"
+    loading="lazy"
+  />
 </template>

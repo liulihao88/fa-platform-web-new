@@ -4148,6 +4148,7 @@
             compatibilityParams.disableCreateObjectURL = true
           }
         })()
+
         ;(function checkCanvasSizeLimitation() {
           if (isIOS || isAndroid) {
             compatibilityParams.maxCanvasPixels = 5242880
