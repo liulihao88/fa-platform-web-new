@@ -44,7 +44,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, computed, toRaw } from 'vue'
 import * as pdfjsLib from 'pdfjs-dist'
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import PdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker'
 
 const props = defineProps({
   url: {
@@ -53,12 +53,11 @@ const props = defineProps({
   },
 })
 
-// 让 Vite 为 worker 产出可部署的静态资源 URL，避免线上去访问 /node_modules。
 if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc
+  pdfjsLib.GlobalWorkerOptions.workerPort = new PdfjsWorker()
 }
 
-const cMapUrl = `/static/pdf/web/cmaps/`
+const cMapUrl = `/static/pdfjs-dist/cmaps/`
 
 // 响应式数据
 const pdfDoc = ref(null)
