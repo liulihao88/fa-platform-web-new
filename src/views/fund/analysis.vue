@@ -77,6 +77,7 @@ const columns = [
   {
     label: '案件名称',
     prop: 'caseCode',
+    width: 150,
   },
   {
     label: '案由',
@@ -85,12 +86,11 @@ const columns = [
   {
     label: '部门受案号',
     prop: 'sysOrgCode',
-    width: 100,
   },
   {
     label: '受理时间',
     prop: 'createTime',
-    width: 100,
+    ...proxy.TIME_WIDTH_ATTRS,
   },
   {
     label: '文件处理状态',
@@ -133,7 +133,7 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 240,
+    width: 200,
     maxBtns: 4,
     btns: [
       {

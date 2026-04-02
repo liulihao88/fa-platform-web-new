@@ -14,6 +14,7 @@ const fileName = '2/光大银行 - 脱敏.xlsx'
 
       <div class="actions">
         <el-button type="primary">预览文件</el-button>
+        <!-- jeecgboot/fa/casefile/getFileInfo/ff8080819c97a11d019d47b703710b19?fileId=ff8080819c97a11d019d47b703710b19&_t=1775101175071 -->
         <el-button type="primary">快速预览文件</el-button>
       </div>
     </div>

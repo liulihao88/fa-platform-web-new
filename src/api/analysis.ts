@@ -149,6 +149,11 @@ export const updateFaFileConfig = (data) => {
 /**
  * 文件转换详情
  */
+
+// 获取文件类型
+export const getFileInfoItem = (params) => {
+  return request(`/fa/casefile/getFileInfo/${params.fileId}`, { params })
+}
 // 获取转换页码的table数据 fa/caseStandardData/bankCustomerPageList
 export const bankCustomerPageList = (lastUrl, data) => {
   return request(`fa/caseStandardData/${lastUrl}`, 'post', { data })

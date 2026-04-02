@@ -10,6 +10,6 @@ export const BOOLEAN_OPTIONS = [
 ]
 
 export const TIME_WIDTH_ATTRS = {
-  width: 180,
+  width: 160,
   align: 'center',
 }

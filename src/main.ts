@@ -10,6 +10,8 @@ import { injectResponsiveStorage } from '@/utils/responsive'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
 
+import * as globalData from '@/assets/constants'
+
 import Table from '@pureadmin/table'
 // import PureDescriptions from "@pureadmin/descriptions";
 
@@ -71,6 +73,9 @@ Object.keys(utils).forEach((v) => {
 const $dev = import.meta.env.MODE === 'development'
 app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
 app.config.globalProperties.$show = true
+Object.keys(globalData).forEach((v) => {
+  app.config.globalProperties[v] = globalData[v]
+})
 
 getPlatformConfig(app).then(async (config) => {
   setupStore(app)
