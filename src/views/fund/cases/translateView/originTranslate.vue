@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from 'vue'
+import { ref, getCurrentInstance, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import PdfjsDist from '@/views/fund/cases/translateView/pdfjs-dist.vue'
 import { getFileInfoItem } from '@/api/analysis.ts'
 import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
@@ -14,6 +14,12 @@ const responseType = ref('arraybuffer')
 const fileInfo = ref({})
 const iframeUrl = ref('')
 const loading = ref(false)
+const previewAreaRef = ref<HTMLElement | null>(null)
+const excelRenderKey = ref(0)
+let resizeObserver: ResizeObserver | null = null
+let lastPreviewWidth = 0
+let resizeThrottleTimer: ReturnType<typeof setTimeout> | null = null
+const RESIZE_THROTTLE_DELAY = 200
 
 const props = defineProps({
   pFileInfo: {
@@ -78,6 +84,54 @@ const isExcelFile = computed(() => {
   const fileName = props.pFileInfo?.fileName?.toLowerCase() ?? ''
   return EXCEL_EXTENSIONS.some((extension) => fileName.endsWith(extension))
 })
+
+const refreshExcelView = async () => {
+  await nextTick()
+  if (!isExcel.value || !iframeUrl.value) return
+  excelRenderKey.value += 1
+}
+
+const handlePreviewResize = async () => {
+  const currentWidth = previewAreaRef.value?.clientWidth || 0
+  if (!currentWidth || currentWidth === lastPreviewWidth) return
+  lastPreviewWidth = currentWidth
+  await refreshExcelView()
+}
+
+const schedulePreviewResize = () => {
+  if (resizeThrottleTimer) return
+  resizeThrottleTimer = setTimeout(async () => {
+    resizeThrottleTimer = null
+    await handlePreviewResize()
+  }, RESIZE_THROTTLE_DELAY)
+}
+
+onMounted(() => {
+  resizeObserver = new ResizeObserver(() => {
+    schedulePreviewResize()
+  })
+
+  if (previewAreaRef.value) {
+    lastPreviewWidth = previewAreaRef.value.clientWidth || 0
+    resizeObserver.observe(previewAreaRef.value)
+  }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  if (resizeThrottleTimer) {
+    clearTimeout(resizeThrottleTimer)
+    resizeThrottleTimer = null
+  }
+})
+
+watch(
+  () => iframeUrl.value,
+  async () => {
+    await nextTick()
+    lastPreviewWidth = previewAreaRef.value?.clientWidth || 0
+  },
+)
 </script>
 
 <template>
@@ -94,10 +148,11 @@ const isExcelFile = computed(() => {
       </div>
     </div>
 
-    <div class="preview-area">
+    <div ref="previewAreaRef" class="preview-area">
       <template v-if="iframeUrl">
         <VueOfficeExcel
           v-if="isExcel"
+          :key="excelRenderKey"
           :src="iframeUrl"
           :options="{
             transformImage: true,
@@ -105,7 +160,7 @@ const isExcelFile = computed(() => {
           }"
           :pagination="true"
           :page-size="20"
-          style=" width: 100%;height: 100%"
+          style="width: 100%; height: 100%"
           :min-col-width="100"
           max-col-width="100%"
           @rendered="loading = false"
