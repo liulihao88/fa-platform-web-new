@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, getCurrentInstance } from 'vue'
+import PdfjsDist from '@/views/fund/cases/translateView/pdfjs-dist.vue'
 import { getFileInfoItem } from '@/api/analysis.ts'
 import { $toast, confirm } from '@oeos-components/utils'
 const { proxy } = getCurrentInstance()
@@ -77,20 +78,22 @@ const previewFile = async (type = 'normal') => {
       </div>
 
       <div class="actions">
-        <el-button type="primary" @click="previewFile('normal')">预览文件</el-button>
-        <!-- jeecgboot/fa/casefile/getFileInfo/ff8080819c97a11d019d47b703710b19?fileId=ff8080819c97a11d019d47b703710b19&_t=1775101175071 -->
-        <el-button type="primary" @click="previewFile('fast')">快速预览文件</el-button>
+        <el-button class="cp" type="primary" @click="previewFile('normal')">预览文件</el-button>
+        <el-button class="cp" type="primary" @click="previewFile('fast')">快速预览文件</el-button>
       </div>
     </div>
 
     <div class="preview-area">
-      <iframe
-        v-if="iframeUrl.startsWith('/static')"
-        id="searchshow"
-        :src="iframeUrl"
-        frameborder="0"
-        style="width: 100%; height: 100%; overflow: auto"
-      />
+      <template v-if="iframeUrl">
+        <iframe
+          v-if="iframeUrl.startsWith('/static')"
+          id="searchshow"
+          :src="iframeUrl"
+          frameborder="0"
+          style="width: 100%; height: 100%; overflow: auto"
+        />
+        <PdfjsDist v-else :url="iframeUrl" style="width: 100%; height: 100%; overflow: auto" />
+      </template>
       <div v-if="!iframeUrl" class="preview-placeholder">点击"预览文件"按钮加载文件内容</div>
     </div>
   </div>
@@ -149,25 +152,19 @@ const previewFile = async (type = 'normal') => {
 }
 
 .preview-area {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  padding: 24px;
+  width: 100%;
+  height: 100%;
   color: #909399;
   background: linear-gradient(0deg, rgb(0 0 0 / 1%), rgb(0 0 0 / 1%)), #fff;
 }
 
-.preview-area iframe {
-  display: block;
-  flex: 1;
-  min-height: 0;
-  border: 0;
-}
-
 .preview-placeholder {
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   font-size: 14px;
 }
 </style>
