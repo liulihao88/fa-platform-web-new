@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process'
 import dayjs from 'dayjs'
 import { readdir, stat } from 'node:fs'
 import { fileURLToPath } from 'node:url'
@@ -35,10 +36,67 @@ const alias: Record<string, string> = {
   '@build': pathResolve(),
 }
 
+type GitCommitInfo = {
+  hash: string
+  shortHash: string
+  authorName: string
+  authorEmail: string
+  authorDate: string
+  subject: string
+  body: string
+}
+
+const getGitCommandOutput = (command: string) => {
+  try {
+    return execSync(command, {
+      cwd: root,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .toString()
+      .trim()
+  } catch {
+    return ''
+  }
+}
+
+const parseGitCommit = (raw: string): GitCommitInfo | null => {
+  if (!raw) return null
+  const [hash = '', shortHash = '', authorName = '', authorEmail = '', authorDate = '', subject = '', ...bodyLines] =
+    raw.split('\n')
+  if (!hash) return null
+  return {
+    hash,
+    shortHash,
+    authorName,
+    authorEmail,
+    authorDate,
+    subject,
+    body: bodyLines.join('\n').trim(),
+  }
+}
+
+const getGitInfo = () => {
+  const latestCommit = parseGitCommit(
+    getGitCommandOutput('git log -1 --pretty=format:"%H%n%h%n%an%n%ae%n%ad%n%s%n%b" --date=iso'),
+  )
+
+  const recentLogs = getGitCommandOutput('git log -5 --pretty=format:"%h | %ad | %an | %s" --date=iso')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  return {
+    branch: getGitCommandOutput('git rev-parse --abbrev-ref HEAD'),
+    latestCommit,
+    recentLogs,
+  }
+}
+
 /** 平台的名称、版本、运行所需的`node`和`pnpm`版本、依赖、最后构建时间的类型提示 */
 const __APP_INFO__ = {
   pkg: { name, version, engines, dependencies, devDependencies },
   lastBuildTime: dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+  git: getGitInfo(),
 }
 
 /** 处理环境变量 */

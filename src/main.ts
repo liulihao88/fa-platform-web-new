@@ -34,6 +34,38 @@ import AutoImportComps from '@/autoComponents'
 const app = createApp(App)
 import { installOeos } from '@/plugins/customMain'
 
+// 查看打包时间
+const printBuildGitInfo = () => {
+  const gitInfo = __APP_INFO__.git
+  const latestCommit = gitInfo.latestCommit
+
+  console.group('[build git info]')
+  console.table({
+    authorName: latestCommit.authorName || '-',
+    buildTime: __APP_INFO__.lastBuildTime || '-',
+    subject: latestCommit.subject || '-',
+    branch: gitInfo.branch || '-',
+    shortHash: latestCommit.shortHash || '-',
+  })
+
+  if (latestCommit) {
+    if (latestCommit.body) {
+      console.warn('body:\n' + latestCommit.body)
+    }
+  } else {
+    console.warn('No git commit info found in build metadata.')
+  }
+
+  if (gitInfo.recentLogs.length) {
+    console.log('recentLogs:\n' + gitInfo.recentLogs.join('\n'))
+  }
+
+  console.groupEnd()
+  return gitInfo
+}
+
+window.b = printBuildGitInfo
+
 // 自定义指令
 import * as directives from '@/directives'
 Object.keys(directives).forEach((key) => {
