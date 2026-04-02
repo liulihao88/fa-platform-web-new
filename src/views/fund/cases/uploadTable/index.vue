@@ -124,7 +124,7 @@ const handleSearch = (form) => {
 
 const total = ref(0)
 const data = ref([])
-const init = async (isReset) => {
+const init = async (isReset = false) => {
   if (isReset) {
     baseSearch.value.pageNo = 1
   }
