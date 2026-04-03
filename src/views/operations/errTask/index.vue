@@ -267,8 +267,8 @@ proxy.$initTableHeight(headerRef, true)
         <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
       </template>
     </o-table>
+    <error-handler-dialog ref="errorHandlerDialogRef" @success="init" />
   </div>
-  <error-handler-dialog ref="errorHandlerDialogRef" @success="init" />
 </template>
 
 <style scoped lang="scss"></style>
