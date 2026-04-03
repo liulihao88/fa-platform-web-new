@@ -2,6 +2,7 @@
   <div class="search-bar" :style="{ '--items-per-row': itemsPerRow }">
     <el-form :model="form" :inline="false" class="search-form" label-suffix=":" @keyup.enter="handleSearch">
       <div v-for="(row, rowIndex) in formRows" :key="rowIndex" class="form-row">
+        <slot />
         <el-form-item v-for="(item, index) in row" :key="index" :label="item.label" :prop="item.prop">
           <o-input
             v-if="item.type === 'input'"
@@ -151,5 +152,16 @@ const handleReset = () => {
 .form-actions {
   display: flex;
   margin-left: auto;
+}
+
+.search-bar {
+  padding: 16px;
+  background-color: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+}
+
+.search-bar :deep(.el-form-item) {
+  margin-bottom: 0;
 }
 </style>

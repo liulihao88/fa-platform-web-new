@@ -35,6 +35,7 @@ defineEmits<{
   display: flex;
   gap: 12px;
   align-items: center;
+  min-width: 400px;
   height: 100%;
   padding: 4px 20px;
   color: #303133;
