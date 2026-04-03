@@ -111,6 +111,17 @@ const columns = [
         },
       },
       {
+        content: '立即执行',
+        type: 'primary',
+        reConfirm: !proxy.$dev,
+        title: '确认立即执行吗？',
+        handler: (value, row) => {
+          runQuartzJob({ id: value.id }).then((res) => {
+            init()
+          })
+        },
+      },
+      {
         handler: editRow,
         ...proxy.EDIT_ATTRS,
       },
@@ -121,17 +132,6 @@ const columns = [
           })
         },
         ...proxy.getDeleteAttrs(),
-      },
-      {
-        content: '立即执行',
-        type: 'primary',
-        reConfirm: !proxy.$dev,
-        title: '确认立即执行吗？',
-        handler: (value, row) => {
-          runQuartzJob({ id: value.id }).then((res) => {
-            init()
-          })
-        },
       },
     ],
   },

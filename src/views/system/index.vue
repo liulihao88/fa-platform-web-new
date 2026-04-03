@@ -71,14 +71,14 @@ const columns = [
     label: '操作',
     btns: [
       {
-        handler: editRow,
-        ...proxy.EDIT_ATTRS,
-      },
-      {
         content: '字典配置',
         handler: (value, row) => {
           dictDetailDrawerRef.value.open(value)
         },
+      },
+      {
+        handler: editRow,
+        ...proxy.EDIT_ATTRS,
       },
       {
         handler: (value, row) => {
