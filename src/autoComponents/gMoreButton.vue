@@ -7,9 +7,9 @@
         :type="btn.type"
         :size="btn.size"
         :icon="btn.icon"
-        :disabled="btn.disabled"
-        @click="handleButtonClick(btn)"
+        :disabled="isDisabled(btn)"
         class="mr-2"
+        @click="handleButtonClick(btn)"
       >
         {{ btn.content }}
       </el-button>
@@ -18,13 +18,13 @@
 
     <!-- 更多按钮 -->
     <el-dropdown v-if="moreButtons.length > 0 || appendDom.length > 0" :trigger="trigger" class="ml-2">
-      <el-button icon="el-icon-arrow-down" type="primary" plain v-if="mode == 'opt'">批量操作</el-button>
-      <el-button icon="el-icon-more" type="text" v-else></el-button>
+      <el-button v-if="mode == 'opt'" icon="el-icon-arrow-down" type="primary" plain>批量操作</el-button>
+      <el-button v-else icon="el-icon-more" type="text" />
       <template #dropdown>
         <el-dropdown-menu>
           <!-- 从btns配置生成的按钮 -->
           <el-dropdown-item v-for="(btn, index) in moreButtons" :key="index" :class="{ hidden: !btn.content }">
-            <el-button type="text" :disabled="btn.disabled" @click="handleButtonClick(btn)" class="w-full text-left">
+            <el-button type="text" :disabled="isDisabled(btn)" class="w-full text-left" @click="handleButtonClick(btn)">
               {{ btn.content }}
             </el-button>
           </el-dropdown-item>
@@ -57,7 +57,7 @@ interface ButtonConfig {
   type?: 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'text'
   size?: 'large' | 'default' | 'small'
   icon?: string
-  disabled?: boolean
+  disabled?: boolean | ((...args: any[]) => boolean)
   handler?: (...args: any[]) => void
   tag?: boolean
   visible?: boolean | (() => boolean)
@@ -83,7 +83,9 @@ const baseButtons = computed(() => {
     }
     return btn.visible !== false
   })
-  if (props.showNum && props.showNum > 0) {
+  if (props.showNum === undefined) {
+    return allButtons
+  } else if (props.showNum && props.showNum > 0) {
     return allButtons.slice(0, props.showNum)
   } else if (props.showIndex && props.showIndex.length > 0) {
     return props.showIndex.map((index) => allButtons[index]).filter(Boolean)
@@ -119,9 +121,16 @@ function shouldConfirm(btn: ButtonConfig): boolean {
   return btn.reConfirm === true
 }
 
+function isDisabled(btn: ButtonConfig, ...args: any[]): boolean {
+  if (typeof btn.disabled === 'function') {
+    return btn.disabled(...args)
+  }
+  return btn.disabled === true
+}
+
 // 处理按钮点击
 async function handleButtonClick(btn: ButtonConfig, ...args: any[]) {
-  if (btn.disabled) return
+  if (isDisabled(btn, ...args)) return
 
   if (shouldConfirm(btn)) {
     try {

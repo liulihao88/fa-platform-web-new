@@ -212,9 +212,10 @@ proxy.$initTableHeight(headerRef, true)
 
 <template>
   <div>
-    <div ref="headerRef">
-      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <g-more-button :btns="moreBtns" :show-num="1" mode="opt" trigger="hover" class="mb-2" />
+    <div ref="headerRef" class="mb2">
+      <g-search-bar :items="items" :itemsPerRow="5" @search="handleSearch" @reset="handleSearch">
+        <g-more-button :btns="moreBtns" mode="opt" trigger="hover" />
+      </g-search-bar>
     </div>
     <o-table
       ref="tableRef"

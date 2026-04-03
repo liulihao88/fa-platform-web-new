@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, computed } from 'vue'
 import TaskDialog from '@/views/fund/taskDialog.vue'
 import {
   getQuartzJobList,
@@ -212,12 +212,13 @@ const moreBtns = [
     content: '批量删除',
     type: 'primary',
     reConfirm: !proxy.$dev,
+    icon: 'el-icon-delete',
+    disabled: () => selectIds.value.length === 0,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchQuartzJob(ids)
       handleSearch({})
     },
-    visible: () => selectIds.value.length > 0,
   },
 ]
 const init = async () => {
@@ -231,9 +232,10 @@ proxy.$initTableHeight(headerRef, true)
 
 <template>
   <div>
-    <div ref="headerRef">
-      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <g-more-button :btns="moreBtns" :show-num="3" mode="opt" trigger="hover" class="mb-2" />
+    <div ref="headerRef" class="mb2">
+      <g-search-bar :items="items" :itemsPerRow="4" @search="handleSearch" @reset="handleSearch">
+        <g-more-button :btns="moreBtns" :show-num="4" mode="opt" trigger="hover" />
+      </g-search-bar>
     </div>
     <o-table
       ref="tableRef"

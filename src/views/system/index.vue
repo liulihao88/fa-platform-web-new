@@ -55,10 +55,12 @@ const columns = [
   {
     label: '字典名称',
     prop: 'dictName',
+    width: 300,
   },
   {
     label: '字典编码',
     prop: 'dictCode',
+    width: 300,
   },
   {
     label: '描述',
@@ -67,7 +69,7 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 240,
+    width: 180,
     btns: [
       {
         content: '编辑',
@@ -210,11 +212,10 @@ proxy.$initTableHeight(headerRef, true)
 
 <template>
   <div>
-    <div ref="headerRef">
-      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <div class="mb-2 flex items-center">
-        <g-more-button :btns="moreBtns" :show-num="5" mode="opt" trigger="hover" />
-      </div>
+    <div ref="headerRef" class="mb2">
+      <g-search-bar :items="items" :itemsPerRow="4" @search="handleSearch" @reset="handleSearch">
+        <g-more-button :btns="moreBtns" mode="opt" trigger="hover" />
+      </g-search-bar>
     </div>
     <o-table
       ref="tableRef"
