@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { $toast } from '@oeos-components/utils'
+import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
 
 type ErrorHandlerParams = {
@@ -118,11 +118,11 @@ function handleClose() {
 function handleProcess(row: ErrorRecord) {
   router.push({
     path: '/operation/configfile',
-    query: {
-      errorId: row.id,
-      caseId: currentParams.value.caseId,
-      caseFileId: currentParams.value.caseFileId,
-    },
+    // query: {
+    //   errorId: row.id,
+    //   caseId: currentParams.value.caseId,
+    //   caseFileId: currentParams.value.caseFileId,
+    // },
   })
 }
 
