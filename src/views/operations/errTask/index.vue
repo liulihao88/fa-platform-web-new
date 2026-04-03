@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, getCurrentInstance } from 'vue'
-import { useRouter } from 'vue-router'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
+import ErrorHandlerDialog from './errorHandlerDialog.vue'
 
 type ErrTaskRecord = {
   id: string
@@ -17,12 +17,12 @@ type ErrTaskRecord = {
   successTime?: string
 }
 
-const router = useRouter()
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
 
 const headerRef = ref()
 const tableRef = ref()
+const errorHandlerDialogRef = ref()
 const data = ref<ErrTaskRecord[]>([])
 const total = ref(0)
 const syncingSelection = ref(false)
@@ -127,7 +127,7 @@ const columns = [
     label: '处理进度',
     prop: 'progress',
     useSlot: true,
-    width: 180,
+    minWidth: 100,
   },
   {
     label: '所属机构',
@@ -152,7 +152,7 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 140,
+    width: 100,
     btns: [
       {
         content: '错误处理',
@@ -220,13 +220,9 @@ function handleUpdate(pageNo, pageSize) {
 }
 
 function handleErrorProcess(row: ErrTaskRecord) {
-  router.push({
-    path: '/operation/configfile',
-    query: {
-      errorId: row.id,
-      caseId: row.caseId,
-      caseFileId: row.id,
-    },
+  errorHandlerDialogRef.value?.open({
+    caseId: row.caseId,
+    caseFileId: row.id,
   })
 }
 
@@ -272,6 +268,7 @@ proxy.$initTableHeight(headerRef, true)
       </template>
     </o-table>
   </div>
+  <error-handler-dialog ref="errorHandlerDialogRef" @success="init" />
 </template>
 
 <style scoped lang="scss"></style>

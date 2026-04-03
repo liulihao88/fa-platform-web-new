@@ -96,6 +96,24 @@ export const getCaseNameFilePageList = (params) => {
   })
 }
 
+export const getCaseNameFileById = (data) => {
+  return request(`fa/casefile/getCaseNameFileById`, 'post', {
+    data,
+  })
+}
+
+export const getFaErrorMessageList = (params) => {
+  return request(`fa/faErrorMessage/list`, {
+    params,
+  })
+}
+
+export const confirmFaErrorProcess = (data) => {
+  return request(`fa/faErrorMessage/errorProcess`, 'post', {
+    data,
+  })
+}
+
 // 删除文件
 export const deleteCasefile = (data) => {
   return request(`fa/casefile/deleteFile`, 'post', {
