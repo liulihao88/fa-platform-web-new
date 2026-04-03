@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue'
+import { computed, nextTick, ref, getCurrentInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
@@ -22,9 +22,11 @@ const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
 
 const headerRef = ref()
+const tableRef = ref()
 const data = ref<ErrTaskRecord[]>([])
 const total = ref(0)
-const selectedRows = ref<ErrTaskRecord[]>([])
+const syncingSelection = ref(false)
+const selectedMap = ref(new Map<string, ErrTaskRecord>())
 
 const baseSearch = {
   order: 'desc',
@@ -53,11 +55,9 @@ const progressMap = {
 }
 
 const errorStatusList = ['900', '901', '902', '904', '999', '201']
+const selectedCount = computed(() => selectedMap.value.size)
 
 const columns = [
-  {
-    type: 'selection',
-  },
   {
     label: '案件名称',
     prop: 'caseName',
@@ -127,8 +127,40 @@ function getStatusText(status: string) {
   return target?.text || target?.label || status || '--'
 }
 
+async function syncSelection() {
+  await nextTick()
+  if (!tableRef.value?.$refs?.tableRef) return
+
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    data.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
+}
+
 function handleSelectionChange(rows: ErrTaskRecord[]) {
-  selectedRows.value = rows
+  if (syncingSelection.value) return
+
+  const currentPageIds = new Set(data.value.map((item) => item.id))
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
+  })
+
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
+}
+
+function clearSelected() {
+  selectedMap.value.clear()
+  tableRef.value?.$refs?.tableRef?.clearSelection()
 }
 
 function handleSearch(form) {
@@ -158,6 +190,7 @@ async function init() {
   const res = await getCaseNameFilePageList(baseSearch)
   data.value = res?.records ?? []
   total.value = res?.total ?? 0
+  await syncSelection()
 }
 
 init()
@@ -165,15 +198,12 @@ proxy.$initTableHeight(headerRef, true)
 </script>
 
 <template>
-  <div>
+  <div class="err-task-page">
     <div ref="headerRef">
       <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <el-alert
-        class="mb-3"
-        type="info"
-        :closable="false"
-        :title="selectedRows.length ? `已选中 ${selectedRows.length} 条数据` : '未选中任何数据'"
-      />
+      <o-flex align="center" class="err-task-page__toolbar">
+        <gSelectedCount :count="selectedCount" @clear="clearSelected" />
+      </o-flex>
     </div>
     <o-table
       ref="tableRef"
@@ -182,9 +212,11 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :page-size="baseSearch.pageSize"
+      row-key="id"
       @selection-change="handleSelectionChange"
       @update="handleUpdate"
     >
+      <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
       <template #status="{ value }">
         <el-tag v-if="errorStatusList.includes(value)" type="danger">
           {{ getStatusText(value) }}
@@ -208,3 +240,12 @@ proxy.$initTableHeight(headerRef, true)
     </o-table>
   </div>
 </template>
+
+<style scoped lang="scss">
+.err-task-page {
+  &__toolbar {
+    padding: 0 16px;
+    margin: 8px 0;
+  }
+}
+</style>

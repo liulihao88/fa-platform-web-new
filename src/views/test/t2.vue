@@ -141,15 +141,7 @@ watch(
         <o-button type="primary" @click="exportSelectedData">导出选择数据</o-button>
       </div>
 
-      <div class="repeat-page__selection-bar">
-        <span class="repeat-page__selection-icon">i</span>
-        <template v-if="selectedCount">
-          <span>已选中 {{ selectedCount }} 条记录(可跨页)</span>
-          <span class="repeat-page__selection-split">|</span>
-          <span class="repeat-page__selection-clear" @click="clearSelected">清空</span>
-        </template>
-        <span v-else>未选中任何数据</span>
-      </div>
+      <gSelectedCount :count="selectedCount" @clear="clearSelected" />
 
       <!-- <div class="repeat-page__group-header">
         <div class="repeat-page__group-header-empty" />
@@ -247,41 +239,6 @@ watch(
       height: 42px;
       font-size: 16px;
     }
-  }
-
-  &__selection-bar {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    padding: 8px 20px;
-    margin: 12px 16px;
-    font-size: 16px;
-    color: #303133;
-    background: #dff3ff;
-    border: 1px solid #4bb8ff;
-    border-radius: 8px;
-  }
-
-  &__selection-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
-    background: #1890ff;
-    border-radius: 50%;
-  }
-
-  &__selection-split {
-    color: #96a3b5;
-  }
-
-  &__selection-clear {
-    color: #1890ff;
-    cursor: pointer;
   }
 
   &__group-header {
