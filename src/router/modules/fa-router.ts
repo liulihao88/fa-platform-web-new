@@ -105,6 +105,44 @@ export default [
     ],
   },
   {
+    path: '/operation',
+    component: Layout,
+    redirect: '/operation/errtask',
+    meta: {
+      title: '系统运营',
+      icon: 'ri/computer-line',
+    },
+    children: [
+      {
+        path: '/operation/errtask',
+        name: 'ErrTask',
+        component: () => import('@/views/operations/errTask/index.vue'),
+        meta: {
+          title: '上传任务差错处理',
+          icon: 'ep/document',
+        },
+      },
+      {
+        path: '/operation/configfile',
+        name: 'FundFileConfig',
+        component: () => import('@/views/operations/fundFileConfig/index.vue'),
+        meta: {
+          title: '资金文件配置',
+          icon: 'ep/setting',
+        },
+      },
+      {
+        path: '/operation/configorg',
+        name: 'OrgConfig',
+        component: () => import('@/views/operations/orgConfig/index.vue'),
+        meta: {
+          title: '机构配置',
+          icon: 'ep/setting',
+        },
+      },
+    ],
+  },
+  {
     path: '/test',
     component: Layout,
     redirect: '/test/t1',

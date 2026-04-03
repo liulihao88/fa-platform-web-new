@@ -90,6 +90,12 @@ export const getCasefileList = (params) => {
   })
 }
 
+export const getCaseNameFilePageList = (params) => {
+  return request(`fa/casefile/getCaseNameFilePageList`, {
+    params,
+  })
+}
+
 // 删除文件
 export const deleteCasefile = (data) => {
   return request(`fa/casefile/deleteFile`, 'post', {
