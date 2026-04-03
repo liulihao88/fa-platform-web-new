@@ -146,7 +146,6 @@ const columns = [
       },
       {
         handler: editRow,
-        reConfirm: !proxy.$dev,
         comp: 'o-icon',
         attrs: {
           name: 'edit',
