@@ -6,5 +6,6 @@ const { proxy } = getCurrentInstance()
 <template>
   <div>
     <div>test/t1.vue</div>
+    {{ proxy.getDeleteAttrs() }}
   </div>
 </template>

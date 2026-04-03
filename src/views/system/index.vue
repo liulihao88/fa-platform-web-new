@@ -82,14 +82,12 @@ const columns = [
         },
       },
       {
-        content: '删除',
-        type: 'danger',
-        reConfirm: !proxy.$dev,
         handler: (value, row) => {
           deleteDict({ id: value.id }).then((res) => {
             init()
           })
         },
+        ...proxy.getDeleteAttrs(),
       },
     ],
   },
@@ -186,13 +184,14 @@ const moreBtns = [
   {
     content: '回收站',
     type: 'primary',
-    icon: 'el-icon-folder-delete',
+    icon: 'el-icon-delete-filled',
     handler: recycleBin,
   },
   {
     content: '批量删除',
     type: 'primary',
     reConfirm: !proxy.$dev,
+    icon: 'el-icon-delete',
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchDict(ids)

@@ -66,9 +66,7 @@ const columns = [
         },
       },
       {
-        content: '删除',
-        type: 'danger',
-        reConfirm: !proxy.$dev,
+        ...proxy.getDeleteAttrs(),
         handler: async (value, row) => {
           await deleteDictItem(value.id)
           handleSearch({})
@@ -113,10 +111,10 @@ defineExpose({
 <template>
   <o-dialog ref="dialogRef" v-model="isShow" type="drawer" title="字典列表" size="800" :showConfirm="false">
     <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" :showNum="1"></g-more-button>
+    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" :showNum="1" />
     <o-table ref="tableRef" height="300px" :columns="columns" :data="data" :showIndex="false" @update="handleUpdate">
       <template #itemColor="{ row }">
-        <g-color-picker mode="view" v-model="row.itemColor" />
+        <g-color-picker v-model="row.itemColor" mode="view" />
       </template>
     </o-table>
     <dictItemDialog ref="dictItemDialogRef" @success="handleSearch" />

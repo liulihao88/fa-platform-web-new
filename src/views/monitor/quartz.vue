@@ -115,14 +115,12 @@ const columns = [
         handler: editRow,
       },
       {
-        content: '删除',
-        type: 'danger',
-        reConfirm: !proxy.$dev,
         handler: (value, row) => {
           deleteQuartzJob({ id: value.id }).then((res) => {
             init()
           })
         },
+        ...proxy.getDeleteAttrs(),
       },
       {
         content: '立即执行',

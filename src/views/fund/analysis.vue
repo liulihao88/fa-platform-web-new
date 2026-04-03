@@ -153,15 +153,8 @@ const columns = [
         },
       },
       {
-        content: '删除',
+        ...proxy.getDeleteAttrs(),
         handler: deleteRow,
-        reConfirm: !proxy.$dev,
-        comp: 'o-icon',
-        attrs: {
-          name: 'delete',
-          type: 'svg',
-          content: '删除',
-        },
       },
     ],
   },

@@ -1,3 +1,4 @@
+import { getStorage } from '@oeos-components/utils'
 export const BOOLEAN_OPTIONS = [
   {
     label: '是',
@@ -13,3 +14,14 @@ export const TIME_WIDTH_ATTRS = {
   width: 160,
   align: 'center',
 }
+
+export const getDeleteAttrs = () => ({
+  comp: 'o-icon',
+  attrs: {
+    name: 'delete',
+    type: 'svg',
+    content: '删除',
+  },
+  // reConfirm: !getStorage('fa-$dev'),
+  reConfirm: true,
+})
