@@ -36,12 +36,11 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 100,
     fixed: 'right',
     btns: [
       {
-        content: '编辑',
         handler: handleEdit,
+        ...proxy.EDIT_ATTRS,
       },
     ],
   },

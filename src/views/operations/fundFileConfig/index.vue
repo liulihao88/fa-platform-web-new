@@ -59,8 +59,8 @@ const columns = [
     fixed: 'right',
     btns: [
       {
-        content: '编辑',
         handler: handleEdit,
+        ...proxy.EDIT_ATTRS,
       },
     ],
   },

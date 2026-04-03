@@ -59,11 +59,10 @@ const columns = [
     fixed: 'right',
     btns: [
       {
-        content: '编辑',
-        type: 'primary',
         handler: async (value, row) => {
           edit(value)
         },
+        ...proxy.EDIT_ATTRS,
       },
       {
         ...proxy.getDeleteAttrs(),

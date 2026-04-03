@@ -15,6 +15,15 @@ export const TIME_WIDTH_ATTRS = {
   align: 'center',
 }
 
+export const EDIT_ATTRS = {
+  comp: 'o-icon',
+  attrs: {
+    name: 'edit',
+    type: 'svg',
+    content: '编辑',
+  },
+}
+
 export const getDeleteAttrs = () => ({
   comp: 'o-icon',
   attrs: {

@@ -69,11 +69,10 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 180,
     btns: [
       {
-        content: '编辑',
         handler: editRow,
+        ...proxy.EDIT_ATTRS,
       },
       {
         content: '字典配置',

@@ -146,11 +146,7 @@ const columns = [
       },
       {
         handler: editRow,
-        comp: 'o-icon',
-        attrs: {
-          name: 'edit',
-          content: '编辑',
-        },
+        ...proxy.EDIT_ATTRS,
       },
       {
         ...proxy.getDeleteAttrs(),

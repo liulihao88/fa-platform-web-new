@@ -41,13 +41,7 @@ const columns = [
     label: '操作',
     btns: [
       {
-        content: '编辑',
-        comp: 'o-icon',
-        attrs: {
-          name: 'edit',
-          type: 'svg',
-          content: '编辑',
-        },
+        ...proxy.EDIT_ATTRS,
       },
     ],
   },

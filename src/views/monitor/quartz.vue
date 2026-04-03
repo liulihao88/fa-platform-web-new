@@ -111,8 +111,8 @@ const columns = [
         },
       },
       {
-        content: '编辑',
         handler: editRow,
+        ...proxy.EDIT_ATTRS,
       },
       {
         handler: (value, row) => {
@@ -212,6 +212,7 @@ const moreBtns = [
     reConfirm: !proxy.$dev,
     icon: 'el-icon-delete',
     disabled: () => selectIds.value.length === 0,
+    visible: () => selectIds.value.length !== 0,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchQuartzJob(ids)
