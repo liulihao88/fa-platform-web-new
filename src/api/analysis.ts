@@ -114,6 +114,42 @@ export const confirmFaErrorProcess = (data) => {
   })
 }
 
+export const getFaFilesConfigureList = (params) => {
+  return request(`fa/faFilesConfigure/list`, {
+    params,
+  })
+}
+
+export const addFaFilesConfigure = (data) => {
+  return request(`fa/faFilesConfigure/add`, 'post', {
+    data,
+  })
+}
+
+export const editFaFilesConfigure = (data) => {
+  return request(`fa/faFilesConfigure/edit`, 'post', {
+    data,
+  })
+}
+
+export const getFaOrgsConfigureList = (params) => {
+  return request(`fa/faOrgsConfigure/list`, {
+    params,
+  })
+}
+
+export const addFaOrgsConfigure = (data) => {
+  return request(`fa/faOrgsConfigure/add`, 'post', {
+    data,
+  })
+}
+
+export const editFaOrgsConfigure = (data) => {
+  return request(`fa/faOrgsConfigure/edit`, 'post', {
+    data,
+  })
+}
+
 // 删除文件
 export const deleteCasefile = (data) => {
   return request(`fa/casefile/deleteFile`, 'post', {
