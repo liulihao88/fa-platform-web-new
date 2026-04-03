@@ -60,7 +60,7 @@ interface ButtonConfig {
   disabled?: boolean | ((...args: any[]) => boolean)
   handler?: (...args: any[]) => void
   tag?: boolean
-  visible?: boolean | (() => boolean)
+  isShow?: boolean | (() => boolean)
   reConfirm?: boolean | (() => boolean)
   confirmMsg?: string
 }
@@ -75,14 +75,16 @@ const props = defineProps<{
 
 const slots = defineSlots()
 
+function isShow(btn: ButtonConfig): boolean {
+  if (typeof btn.isShow === 'function') {
+    return btn.isShow()
+  }
+  return btn.isShow !== false
+}
+
 // 计算基础按钮和更多按钮
 const baseButtons = computed(() => {
-  const allButtons = (props.btns || []).filter((btn) => {
-    if (typeof btn.visible === 'function') {
-      return btn.visible()
-    }
-    return btn.visible !== false
-  })
+  const allButtons = (props.btns || []).filter((btn) => isShow(btn))
   if (props.showNum === undefined) {
     return allButtons
   } else if (props.showNum && props.showNum > 0) {
@@ -94,12 +96,7 @@ const baseButtons = computed(() => {
 })
 
 const moreButtons = computed(() => {
-  const allButtons = (props.btns || []).filter((btn) => {
-    if (typeof btn.visible === 'function') {
-      return btn.visible()
-    }
-    return btn.visible !== false
-  })
+  const allButtons = (props.btns || []).filter((btn) => isShow(btn))
   return allButtons.filter((btn) => !baseButtons.value.includes(btn))
 })
 

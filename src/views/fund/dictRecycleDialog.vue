@@ -71,7 +71,7 @@ const btns = [
       handleSearch()
       emits('refresh')
     },
-    visible: () => selectIds.value.length > 0,
+    isShow: () => selectIds.value.length > 0,
   },
   {
     content: '批量删除',
@@ -82,7 +82,7 @@ const btns = [
       await deleteBatchDictPermanently(ids)
       handleSearch()
     },
-    visible: () => selectIds.value.length > 0,
+    isShow: () => selectIds.value.length > 0,
   },
 ]
 const handleSelectionChange = (val) => {
@@ -106,7 +106,7 @@ defineExpose({
 
 <template>
   <o-dialog ref="dialogRef" v-model="isShow" title="字典回收站" width="800px" :showConfirm="false">
-    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2"></g-more-button>
+    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" />
     <o-table
       ref="tableRef"
       height="300px"

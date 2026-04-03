@@ -212,7 +212,7 @@ const moreBtns = [
     reConfirm: !proxy.$dev,
     icon: 'el-icon-delete',
     disabled: () => selectIds.value.length === 0,
-    visible: () => selectIds.value.length !== 0,
+    isShow: () => selectIds.value.length !== 0,
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchQuartzJob(ids)
@@ -232,8 +232,8 @@ proxy.$initTableHeight(headerRef, true)
 <template>
   <div>
     <div ref="headerRef" class="mb2">
-      <g-search-bar :items="items" :itemsPerRow="4" @search="handleSearch" @reset="handleSearch">
-        <g-more-button :btns="moreBtns" :show-num="4" mode="opt" trigger="hover" />
+      <g-search-bar :items="items" :itemsPerRow="3" @search="handleSearch" @reset="handleSearch">
+        <g-more-button :btns="moreBtns" mode="opt" trigger="hover" />
       </g-search-bar>
     </div>
     <o-table

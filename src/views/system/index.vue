@@ -196,7 +196,7 @@ const moreBtns = [
       await deleteBatchDict(ids)
       handleSearch({})
     },
-    visible: () => selectIds.value.length > 0,
+    isShow: () => selectIds.value.length > 0,
   },
 ]
 const init = async () => {
