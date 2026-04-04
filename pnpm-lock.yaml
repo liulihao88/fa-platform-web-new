@@ -4,13 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@oeos-components/utils': link:../../Library/pnpm/global/5/node_modules/@oeos-components/utils
+
 importers:
 
   .:
     dependencies:
       '@oeos-components/utils':
-        specifier: ^0.0.23
-        version: 0.0.23(typescript@5.9.3)
+        specifier: ^0.0.25
+        version: 0.0.25(typescript@5.9.3)
       '@pureadmin/descriptions':
         specifier: ^1.2.1
         version: 1.2.1(echarts@6.0.0)(element-plus@2.13.0(vue@3.5.22(typescript@5.9.3)))(typescript@5.9.3)
@@ -75,8 +78,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       oeos-components:
-        specifier: ^0.3.95
-        version: 0.3.95(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@2.6.1))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1))
+        specifier: ^0.3.96
+        version: 0.3.96(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@2.6.1))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1))
       path-browserify:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1339,11 +1342,8 @@ packages:
     resolution: {integrity: sha512-ze46EW5xW+UxDvinvPkYt2MzR355Az1lA3bpX8KDialgnCwr+IbkBij/udbUEC6ZFbidPkfK1eKl4ESN7gMY+w==}
     engines: {node: '>=18.12.0'}
 
-  '@oeos-components/utils@0.0.19':
-    resolution: {integrity: sha512-eBbhebiA4Al6QJu1jXLJebHzfzC59YEwN8t/d7GuCVjl/E8CrjCkUIZukCN/6mQO+f12FBYjGV1afhB93C8cCQ==}
-
-  '@oeos-components/utils@0.0.23':
-    resolution: {integrity: sha512-8IbBMdSGTqERasHdQBcUQ1ukhasRMtkQ6CFyKsrnIMq3wKl5WC+lfbkxj5tTGlAUBdwQlkEXzyUq/OTvIl6ELQ==}
+  '@oeos-components/utils@0.0.25':
+    resolution: {integrity: sha512-r5pAuznFasqylJA/PO6Wq2R7vu+r55QMSmqoizRqg9SYndNEUCMq7AIlwRZtYSXL06v0r/JLubIHKu+cgDRnng==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -2944,8 +2944,8 @@ packages:
     resolution: {integrity: sha512-w+5mJ3GuFL+NjVtJlvydShqE1eN3h3PbI7/5LAsYJP/2qtuMXjfL2LpHSRqo4b4eSF5K/DH1JXKUAHSB2UW50g==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.43.0:
-    resolution: {integrity: sha512-SKCT8AsWvYzBBuUqMk4NPwFlSdqLpJwmy6AP322ERn8W2YLIB6JBXnwMI2Qsh2gfphT3q7EKAxKb23cvFHFwKA==}
+  es-toolkit@1.45.1:
+    resolution: {integrity: sha512-/jhoOj/Fx+A+IIyDNOvO3TItGmlMKhtX8ISAHKE90c4b/k1tqaqEZ+uUqfpU8DMnW5cgNJv606zS55jGvza0Xw==}
 
   esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
@@ -4269,8 +4269,8 @@ packages:
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
 
-  oeos-components@0.3.95:
-    resolution: {integrity: sha512-xofHdUEH4R3kb48M3lbU9fazRIVCkqQktDRkloNlsMQDNjUuQwKCAnt8y+X+xonyVaME378wE1p4WWOrfnveuA==}
+  oeos-components@0.3.96:
+    resolution: {integrity: sha512-nZhUA5XWzs7vunB/K4HsEM8+57U3okNlWYhz1VqUkimqphOhj50B5kYcK9iDAK6C0m6T/W/c59/IVw6sxJGvlQ==}
 
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
@@ -6900,27 +6900,14 @@ snapshots:
       - magicast
     optional: true
 
-  '@oeos-components/utils@0.0.19(typescript@5.9.3)':
-    dependencies:
-      '@vue/reactivity': 3.5.22
-      '@vue/shared': 3.5.22
-      consola: 3.4.2
-      element-plus: 2.13.0(vue@3.4.15(typescript@5.9.3))
-      es-toolkit: 1.43.0
-      lodash-es: 4.17.21
-      vue: 3.4.15(typescript@5.9.3)
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - typescript
-
-  '@oeos-components/utils@0.0.23(typescript@5.9.3)':
+  '@oeos-components/utils@0.0.25(typescript@5.9.3)':
     dependencies:
       '@vue/reactivity': 3.5.22
       '@vue/shared': 3.5.22
       consola: 3.4.2
       dayjs: 1.11.19
       element-plus: 2.13.0(vue@3.4.15(typescript@5.9.3))
-      es-toolkit: 1.43.0
+      es-toolkit: 1.45.1
       lodash-es: 4.17.21
       qs: 6.15.0
       vue: 3.4.15(typescript@5.9.3)
@@ -8719,7 +8706,7 @@ snapshots:
       is-date-object: 1.1.0
       is-symbol: 1.1.1
 
-  es-toolkit@1.43.0: {}
+  es-toolkit@1.45.1: {}
 
   esbuild@0.18.20:
     optionalDependencies:
@@ -10088,14 +10075,14 @@ snapshots:
 
   obug@2.1.1: {}
 
-  oeos-components@0.3.95(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@2.6.1))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1)):
+  oeos-components@0.3.96(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@2.6.1))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1)):
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.22(typescript@5.9.3))
       '@fortawesome/fontawesome-svg-core': 6.7.2
       '@fortawesome/free-solid-svg-icons': 6.7.2
       '@fortawesome/vue-fontawesome': 3.1.2(@fortawesome/fontawesome-svg-core@6.7.2)(vue@3.5.22(typescript@5.9.3))
       '@iconify/json': 2.2.447
-      '@oeos-components/utils': 0.0.19(typescript@5.9.3)
+      '@oeos-components/utils': link:../../Library/pnpm/global/5/node_modules/@oeos-components/utils
       '@rollup/plugin-terser': 0.4.4(rollup@4.52.5)
       '@typescript-eslint/eslint-plugin': 5.62.0(@typescript-eslint/parser@5.62.0(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/parser': 5.62.0(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)

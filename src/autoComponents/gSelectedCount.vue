@@ -20,7 +20,11 @@ defineEmits<{
     <span class="g-selected-count__icon">i</span>
     <template v-if="count">
       <span>
-        已选中 {{ count }} 条记录
+        已选中
+        <span class="cl-blue">
+          {{ count }}
+        </span>
+        条记录
         <span v-if="crossPage">(可跨页)</span>
       </span>
       <span class="g-selected-count__split">|</span>
@@ -35,7 +39,7 @@ defineEmits<{
   display: flex;
   gap: 12px;
   align-items: center;
-  min-width: 400px;
+  min-width: 350px;
   height: 100%;
   padding: 4px 20px;
   color: #303133;

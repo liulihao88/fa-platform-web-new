@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, getCurrentInstance } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
+const { appContext, proxy } = getCurrentInstance()
 
 type ErrorHandlerParams = {
   caseId?: string
@@ -41,16 +42,10 @@ const pagination = ref({
 
 const columns = [
   {
-    label: '序号',
-    prop: 'index',
-    width: 80,
-    align: 'center',
-    useSlot: true,
-  },
-  {
     label: '错误种类',
     prop: 'errorType',
-    minWidth: 140,
+    minWidth: 100,
+    align: 'center',
     useSlot: true,
   },
   {
@@ -62,25 +57,23 @@ const columns = [
   {
     label: '处理状态',
     prop: 'ifProcessed',
-    width: 120,
+    width: 100,
     align: 'center',
     useSlot: true,
   },
   {
     label: '处理时间',
     prop: 'procDate',
-    width: 180,
+    ...proxy.TIME_WIDTH_ATTRS,
   },
   {
     label: '创建时间',
     prop: 'createTime',
-    width: 180,
+    ...proxy.TIME_WIDTH_ATTRS,
   },
   {
     key: 'operation',
     label: '操作',
-    width: 80,
-    fixed: 'right',
     btns: [
       {
         content: '匹配',
@@ -91,9 +84,10 @@ const columns = [
 ]
 
 const dialogTitle = computed(() => {
-  const caseName = fileInfo.value.caseName || '--'
-  const fileName = fileInfo.value.fileName || '--'
-  return `错误处理 · ${caseName} / ${fileName}`
+  // const caseName = fileInfo.value.caseName || '--'
+  // const fileName = fileInfo.value.fileName || '--'
+  // return `错误处理 · ${caseName} / ${fileName}`
+  return '错误处理'
 })
 
 function getErrorTypeText(errorType?: string) {
@@ -169,11 +163,7 @@ async function fetchErrorList() {
 async function handleBatchProcess() {
   if (!currentParams.value.caseId || !currentParams.value.caseFileId) return
 
-  await confirm('确定要标记当前文件的错误记录为已处理吗？', '确认处理完成', {
-    type: 'warning',
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-  })
+  await confirm('确定要标记当前文件的错误记录为已处理吗？')
 
   submitLoading.value = true
   try {
@@ -206,16 +196,16 @@ defineExpose({
 
 <template>
   <o-dialog v-model="isShow" :title="dialogTitle" width="1100px" :showConfirm="false">
-    <div class="error-handler">
-      <div class="error-handler__meta">
-        <span>案件名称：{{ fileInfo.caseName || '--' }}</span>
-        <span>文件名称：{{ fileInfo.fileName || '--' }}</span>
-      </div>
-
-      <div class="error-handler__actions">
-        <el-button type="primary" :loading="submitLoading" @click="handleBatchProcess">处理完成</el-button>
-        <el-button @click="handleClose">暂时返回</el-button>
-      </div>
+    <div>
+      <o-flex justify="space-between" align="center" class="w-100% mb2">
+        <o-descriptions class="f-1 mr2" label-width="100">
+          <el-descriptions-item label="案件名称">{{ fileInfo.caseName || '--' }}</el-descriptions-item>
+          <el-descriptions-item label="文件名称">{{ fileInfo.fileName || '--' }}</el-descriptions-item>
+        </o-descriptions>
+        <el-button type="primary" :loading="submitLoading" icon="el-icon-select" @click="handleBatchProcess">
+          处理完成
+        </el-button>
+      </o-flex>
 
       <o-table
         :height="420"
@@ -227,9 +217,6 @@ defineExpose({
         row-key="id"
         @update="handleUpdate"
       >
-        <template #index="{ index }">
-          {{ (pagination.pageNo - 1) * pagination.pageSize + index + 1 }}
-        </template>
         <template #errorType="{ value }">
           <o-tag type="danger">{{ getErrorTypeText(value) }}</o-tag>
         </template>
@@ -243,21 +230,4 @@ defineExpose({
   </o-dialog>
 </template>
 
-<style scoped lang="scss">
-.error-handler {
-  &__meta {
-    display: flex;
-    gap: 32px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    line-height: 22px;
-    color: #606266;
-  }
-
-  &__actions {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-}
-</style>
+<style scoped lang="scss"></style>
