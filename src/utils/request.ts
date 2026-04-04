@@ -157,7 +157,11 @@ instance.interceptors.response.use(
       return Promise.resolve(response)
     }
     // 处理二进制响应
-    if (response.config.responseType === 'blob' || response.config.responseType === 'arraybuffer') {
+    if (
+      (response.config.responseType === 'blob' || response.config.responseType === 'arraybuffer') &&
+      response.status >= 200 &&
+      response.status < 300
+    ) {
       // 如果有fileName，触发下载
       if (response.config.fileName) {
         const blob = new Blob([response.data], { type: response.config.fileType || '' })
@@ -170,8 +174,7 @@ instance.interceptors.response.use(
       }
       return Promise.resolve(response.data)
     }
-    // TODO 这里应该判断状态码，待确定
-    if (response.status === 200) {
+    if (response.status >= 200 && response.status < 300) {
       if (response.data.code !== 0 && response.data.code !== 200) {
         if (response.config.showError) {
           $toast(response.data.message || '请求错误', 'e', { closeAll: true })
