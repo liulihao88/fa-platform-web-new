@@ -169,7 +169,7 @@ async function fetchErrorList() {
 async function handleBatchProcess() {
   if (!currentParams.value.caseId || !currentParams.value.caseFileId) return
 
-  await ElMessageBox.confirm('确定要标记当前文件的错误记录为已处理吗？', '确认处理完成', {
+  await confirm('确定要标记当前文件的错误记录为已处理吗？', '确认处理完成', {
     type: 'warning',
     confirmButtonText: '确定',
     cancelButtonText: '取消',

@@ -133,7 +133,6 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 200,
     maxBtns: 4,
     btns: [
       {
