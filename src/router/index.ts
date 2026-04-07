@@ -25,9 +25,12 @@ import { type DataInfo, userKey, removeToken, multipleTabsKey } from '@/utils/au
  * 如何匹配所有文件请看：https://github.com/mrmlnc/fast-glob#basic-syntax
  * 如何排除文件请看：https://cn.vitejs.dev/guide/features.html#negative-patterns
  */
-const modules: Record<string, any> = import.meta.glob(['./modules/**/*.ts', '!./modules/**/remaining.ts'], {
-  eager: true,
-})
+const modules: Record<string, any> = import.meta.glob(
+  ['./modules/**/*.ts', '!./modules/**/remaining.ts', '!./modules/**/fa-router.ts'],
+  {
+    eager: true,
+  },
+)
 
 /** 原始静态路由（未做任何处理） */
 const routes = []

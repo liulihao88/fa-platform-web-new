@@ -1,6 +1,6 @@
 const Layout = () => import('@/layout/index.vue')
 // import spaceManagementSvg from "@/assets/svg/menu/space-management.svg?raw";
-import { getCurrentInstance, computed } from 'vue'
+import { getCurrentInstance } from 'vue'
 
 export function use$dev() {
   const instance = getCurrentInstance()
@@ -14,6 +14,7 @@ export function use$dev() {
 export default [
   {
     path: '/fund',
+    id: '/fund',
     component: Layout,
     redirect: '/fund/analysis',
     meta: {
@@ -21,9 +22,10 @@ export default [
     },
     children: [
       {
+        id: 'fund_analysis',
         path: '/fund/analysis',
         name: 'Analysis',
-        component: () => import('@/views/fund/analysis.vue'),
+        component: 'fund/analysis',
         meta: {
           title: '案件文件管理',
           // showParent: false,
@@ -31,8 +33,9 @@ export default [
       },
       {
         path: '/fund/cases',
+        id: '/fund/cases',
         name: 'Cases',
-        component: () => import('@/views/fund/cases/index.vue'),
+        component: 'fund/cases/index',
         meta: {
           title: '数据处理',
           showLink: false,
@@ -43,7 +46,7 @@ export default [
       {
         path: '/fund/textMapping',
         name: 'TextMapping',
-        component: () => import('@/views/fund/cases/uploadTable/textMapping.vue'),
+        component: 'fund/cases/uploadTable/textMapping',
         meta: {
           title: '字段映射',
           showLink: false,
@@ -54,7 +57,7 @@ export default [
       {
         path: '/fund/translateView',
         name: 'TranslateView',
-        component: () => import('@/views/fund/cases/translateView/index.vue'),
+        component: 'fund/cases/translateView/index',
         meta: {
           title: '转换查看',
           showLink: false,
@@ -66,7 +69,7 @@ export default [
       {
         path: '/fund/fundsAnalysis',
         name: 'FundsAnalysis',
-        component: () => import('@/views/fund/fundsAnalysis/index.vue'),
+        component: 'fund/fundsAnalysis/index',
         meta: {
           title: '智能筛查',
           showLink: false,
@@ -78,6 +81,7 @@ export default [
   },
   {
     path: '/monitor',
+    id: '/isystem',
     component: Layout,
     redirect: '/monitor/quartz',
     meta: {
@@ -87,7 +91,7 @@ export default [
       {
         path: '/monitor/quartz',
         name: 'Quartz',
-        component: () => import('@/views/monitor/quartz.vue'),
+        component: 'monitor/quartz',
         meta: {
           title: '定时任务',
           // showParent: true
@@ -96,7 +100,7 @@ export default [
       {
         path: '/system/dict',
         name: 'Dict',
-        component: () => import('@/views/system/index.vue'),
+        component: 'system/index',
         meta: {
           title: '数据字典',
           // showParent: true
@@ -106,6 +110,7 @@ export default [
   },
   {
     path: '/operation',
+    id: '/operation',
     component: Layout,
     redirect: '/operation/errtask',
     meta: {
@@ -116,7 +121,7 @@ export default [
       {
         path: '/operation/errtask',
         name: 'ErrTask',
-        component: () => import('@/views/operations/errTask/index.vue'),
+        component: 'operations/errTask/index',
         meta: {
           title: '上传任务差错处理',
           icon: 'ep/document',
@@ -125,7 +130,7 @@ export default [
       {
         path: '/operation/configfile',
         name: 'FundFileConfig',
-        component: () => import('@/views/operations/fundFileConfig/index.vue'),
+        component: 'operations/fundFileConfig/index',
         meta: {
           title: '资金文件配置',
           icon: 'ep/setting',
@@ -134,7 +139,7 @@ export default [
       {
         path: '/operation/configorg',
         name: 'OrgConfig',
-        component: () => import('@/views/operations/orgConfig/index.vue'),
+        component: 'operations/orgConfig/index',
         meta: {
           title: '机构配置',
           icon: 'ep/setting',
@@ -156,7 +161,7 @@ export default [
       {
         path: '/test/t1',
         name: 'T1',
-        component: () => import('@/views/test/t1.vue'),
+        component: 'test/t1',
         meta: {
           title: '测试页1',
           // icon: testSvg,
@@ -179,7 +184,7 @@ export default [
       {
         path: '/test/t2',
         name: 'T2',
-        component: () => import('@/views/test/t2.vue'),
+        component: 'test/t2',
         meta: {
           title: '测试页2',
           showLink: true,
@@ -201,7 +206,7 @@ export default [
       {
         path: '/test/t3',
         name: 'T3',
-        component: () => import('@/views/test/t3.vue'),
+        component: 'test/t3',
         meta: {
           title: '测试页3',
           showLink: true,
@@ -223,7 +228,7 @@ export default [
       {
         path: '/test/t4',
         name: 'T4',
-        component: () => import('@/views/test/t4.vue'),
+        component: 'test/t4',
         meta: {
           title: '测试页4',
           showLink: true,
@@ -245,7 +250,7 @@ export default [
       {
         path: '/mergeTest/t5',
         name: 'T5',
-        component: () => import('@/views/test/t5.vue'),
+        component: 'test/t5',
         meta: {
           title: '测试页55',
           // icon: testSvg,
@@ -255,7 +260,7 @@ export default [
       {
         path: '/mergeTest/t6',
         name: 'T6',
-        component: () => import('@/views/test/t6.vue'),
+        component: 'test/t6',
         meta: {
           title: '测试页6',
           // icon: testSvg,

@@ -14,8 +14,9 @@ import { bg, avatar, illustration } from './utils/static'
 import { useRenderIcon } from '@/components/ReIcon/src/hooks'
 import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
 import { getCodeInfo, login } from '@/api/login'
-import { type DataInfo, setToken, removeToken, userKey } from '@/utils/auth'
-import { validForm, setStorage, tryCatch, $toast, debounce } from '@oeos-components/utils'
+import { setToken } from '@/utils/auth'
+import { getLoginProfile } from '@/utils/loginProfile'
+import { validForm, tryCatch, $toast, debounce } from '@oeos-components/utils'
 import { useCommonHook } from '@/store/common'
 const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook()
 console.log(`81 setCommonItems`, setCommonItems)
@@ -85,13 +86,23 @@ const randCodeData = reactive<any>({
 //   });
 // };
 
-const onLogin = async () => {
+const onLogin = async (type = '') => {
   await validForm(formDataRef.value)
   let sendData = {
     captcha: formData.captcha,
     checkKey: randCodeData.checkKey,
     password: formData.password,
     username: formData.username,
+  }
+  if (type === 'jcg') {
+    sendData.username = 'fauser'
+    sendData.password = '123456@WSX'
+  } else if (type === 'yy') {
+    sendData.username = 'andy'
+    sendData.password = '123456@WSX'
+  } else if (type === 'admin') {
+    sendData.username = 'admin'
+    sendData.password = '1qaz@WSX'
   }
   const { data, error } = await tryCatch(login(sendData), loading)
   console.log(`56 error`, error)
@@ -101,14 +112,34 @@ const onLogin = async () => {
     return
   }
   console.log(`73 data`, data)
+  const loginProfile = getLoginProfile(formData.username)
+  const backendUserInfo = data.userInfo || {}
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  const accessToken = typeof data.token === 'string' ? data.token : data.token?.accessToken
+  const refreshToken = typeof data.token === 'string' ? data.token : data.token?.refreshToken || accessToken
 
-  setToken(data.token)
-  setCommonItems('sysAllDictItems', data.sysAllDictItems)
+  setToken({
+    accessToken,
+    refreshToken,
+    expires: data.token?.expires || expiresAt,
+    avatar: loginProfile?.avatar || backendUserInfo.avatar || '',
+    username: loginProfile?.username || backendUserInfo.username || formData.username,
+    nickname: loginProfile?.nickname || backendUserInfo.realname || backendUserInfo.nickname || formData.username,
+    roles: loginProfile?.roles || ['admin'],
+    permissions: loginProfile?.permissions || ['*:*:*'],
+  })
+  setCommonItems('sysAllDictItems', data.sysAllDictItems || {})
+  setCommonItems('userInfo', {
+    ...backendUserInfo,
+    username: loginProfile?.username || backendUserInfo.username || formData.username,
+    realname: loginProfile?.nickname || backendUserInfo.realname || backendUserInfo.nickname || formData.username,
+    roles: loginProfile?.roles || ['admin'],
+    permissions: loginProfile?.permissions || ['*:*:*'],
+  })
   initRouter().then(() => {
     disabled.value = true
     router
-      .push('/fund/analysis')
-      // .push("/")
+      .push(getTopMenu(true).path)
       .then(() => {
         $toast('登录成功')
       })
@@ -132,7 +163,7 @@ function handleChangeCheckCode() {
       const ret = await worker.recognize(res as any)
       formData.captcha = ret.data.text
       console.log(`24 ret.data.text`, ret.data.text)
-      formData.captcha = ret.data.text.replace(' ', '').replace('\n', '')
+      formData.captcha = ret.data.text.replace(' ', '').replace('\n', '').replace('.', '').replace('?', '')
     })
     .catch(() => {
       randCodeData.randCodeImage = ''
@@ -231,15 +262,50 @@ useEventListener(document, 'keydown', ({ code }) => {
             </Motion>
 
             <Motion :delay="250">
+              <div>
+                <el-button
+                  class="w-full mt-4!"
+                  size="default"
+                  type="primary"
+                  :loading="loading"
+                  :disabled="disabled"
+                  @click="onLogin('admin')"
+                >
+                  admin登录
+                </el-button>
+              </div>
+              <div>
+                <el-button
+                  class="w-full mt-4!"
+                  size="default"
+                  type="primary"
+                  :loading="loading"
+                  :disabled="disabled"
+                  @click="onLogin('jcg')"
+                >
+                  检察官登录
+                </el-button>
+              </div>
+              <div>
+                <el-button
+                  class="w-full mt-4!"
+                  size="default"
+                  type="primary"
+                  :loading="loading"
+                  :disabled="disabled"
+                  @click="onLogin('yy')"
+                >
+                  运营登录
+                </el-button>
+              </div>
               <el-button
                 class="w-full mt-4!"
                 size="default"
-                type="primary"
                 :loading="loading"
                 :disabled="disabled"
-                @click="onLogin()"
+                @click="onLogin('admin')"
               >
-                登录
+                正常登录
               </el-button>
             </Motion>
           </el-form>

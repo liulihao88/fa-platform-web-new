@@ -6,9 +6,12 @@ import {
   createWebHashHistory,
 } from 'vue-router'
 import { router } from './index'
+const Layout = () => import('@/layout/index.vue')
 import { isProxy, toRaw } from 'vue'
 import { useTimeoutFn } from '@vueuse/core'
 import { isString, cloneDeep, isAllEmpty, intersection, storageLocal, isIncludeAllChildren } from '@pureadmin/utils'
+import { clone, $toast, isEmpty } from '@oeos-components/utils'
+import { setStorage } from '@oeos-components/utils'
 import { getConfig } from '@/config'
 import { buildHierarchyTree } from '@/utils/tree'
 import { userKey, type DataInfo } from '@/utils/auth'
@@ -18,6 +21,7 @@ import { usePermissionStoreHook } from '@/store/modules/permission'
 const IFrame = () => import('@/layout/frame.vue')
 // https://cn.vitejs.dev/guide/features.html#glob-import
 const modulesRoutes = import.meta.glob('/src/views/**/*.{vue,tsx}')
+import FaRouter from '@/router/modules/fa-router.ts'
 
 // 动态路由
 import { getAsyncRoutes } from '@/api/routes'
@@ -111,13 +115,12 @@ function findRouteByPath(path: string, routes: RouteRecordRaw[]) {
   }
 }
 
-/** 动态路由注册完成后，再添加全屏404（页面不存在）页面，避免刷新动态路由页面时误跳转到404页面 */
 function addPathMatch() {
   if (!router.hasRoute('pathMatch')) {
     router.addRoute({
-      path: '/:pathMatch(.*)*',
-      name: 'PageNotFound',
-      component: () => import('@/views/error/404.vue'),
+      path: '/:pathMatch(.*)',
+      name: 'pathMatch',
+      redirect: '/error/404',
       meta: {
         title: '404',
         showLink: false,
@@ -128,6 +131,7 @@ function addPathMatch() {
 
 /** 处理动态路由（后端返回的路由） */
 function handleAsyncRoutes(routeList) {
+  console.log(`75 routeList`, routeList)
   if (routeList.length === 0) {
     usePermissionStoreHook().handleWholeMenus(routeList)
   } else {
@@ -142,8 +146,6 @@ function handleAsyncRoutes(routeList) {
         ascending(router.options.routes[0].children)
         if (!router.hasRoute(v?.name)) router.addRoute(v)
         const flattenRouters: any = router.getRoutes().find((n) => n.path === '/')
-        // 保持router.options.routes[0].children与path为"/"的children一致，防止数据不一致导致异常
-        flattenRouters.children = router.options.routes[0].children
         router.addRoute(flattenRouters)
       }
     })
@@ -160,32 +162,82 @@ function handleAsyncRoutes(routeList) {
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
 function initRouter() {
-  if (getConfig()?.CachingAsyncRoutes) {
-    // 开启动态路由缓存本地localStorage
-    const key = 'async-routes'
-    const asyncRouteList = storageLocal().getItem(key) as any
-    if (asyncRouteList && asyncRouteList?.length > 0) {
-      return new Promise((resolve) => {
-        handleAsyncRoutes(asyncRouteList)
-        resolve(router)
-      })
-    } else {
-      return new Promise((resolve) => {
-        getAsyncRoutes().then(({ data }) => {
-          handleAsyncRoutes(cloneDeep(data))
-          storageLocal().setItem(key, data)
-          resolve(router)
-        })
-      })
-    }
-  } else {
-    return new Promise((resolve) => {
-      getAsyncRoutes().then(({ data }) => {
+  return new Promise((resolve, reject) => {
+    getAsyncRoutes().then((remoteData) => {
+      if (!remoteData) {
+        return reject()
+      }
+      if (remoteData?.menu?.length === 0) {
+        $toast('登录失败，该用户无系统权限，请联系管理员！', 'e')
+        reject()
+        return
+      } else {
+        const data = mergeMenus(FaRouter, remoteData.menu)
         handleAsyncRoutes(cloneDeep(data))
         resolve(router)
-      })
+      }
     })
-  }
+  })
+}
+
+function mergeMenus(baseMenus, remoteMenus) {
+  const mergedMenus = []
+  baseMenus.forEach((baseItem) => {
+    const remoteItem = remoteMenus.find((item) => item.path === baseItem.id)
+    if (remoteItem) {
+      // 如果在remoteMenus中找到了匹配的id，则合并这两个菜单项
+      if (remoteItem.visable !== false) {
+        const mergedItem = {
+          ...baseItem,
+          meta: {
+            ...baseItem.meta,
+            title: remoteItem.meta?.title ?? baseItem.meta?.title,
+          },
+          path: remoteItem.link || baseItem.path,
+          children: baseItem.children,
+        }
+        console.log(`96 mergedItem`, mergedItem)
+        mergedMenus.push(mergedItem)
+      }
+    } else {
+      // 如果没有找到匹配的id，则直接添加baseItem
+      if (!baseItem.id) {
+        mergedMenus.push(baseItem)
+      }
+    }
+  })
+
+  return mergedMenus
+}
+
+function mergeSubMenus(baseChildren, remoteSubMenus) {
+  const mergedChildren = []
+  baseChildren.forEach((baseChild) => {
+    const remoteChild = remoteSubMenus?.find((item) => item.id === baseChild.id)
+    if (remoteChild) {
+      // 如果在remoteSubMenus中找到了匹配的id，则合并这两个子菜单项
+      if (remoteChild.visable) {
+        const mergedChild = {
+          ...baseChild,
+          meta: {
+            ...baseChild.meta,
+            title: remoteChild.title ?? baseChild.meta.title,
+            children: mergeSubMenus(baseChild.meta.children || [], remoteChild.submenu || []),
+          },
+          path: remoteChild.link || baseChild.path,
+        }
+
+        mergedChildren.push(mergedChild)
+      }
+    } else {
+      // 如果没有找到匹配的id，则直接添加baseChild
+      if (!baseChild.id) {
+        mergedChildren.push(baseChild)
+      }
+    }
+  })
+
+  return mergedChildren
 }
 
 /**
@@ -284,6 +336,9 @@ function addAsyncRoutes(arrRoutes: Array<RouteRecordRaw>) {
         ? modulesRoutesKeys.findIndex((ev) => ev.includes(v.component as any))
         : modulesRoutesKeys.findIndex((ev) => ev.includes(v.path))
       v.component = modulesRoutes[modulesRoutesKeys[index]]
+      if (index === -1) {
+        v.component = Layout
+      }
     }
     if (v?.children && v.children.length) {
       addAsyncRoutes(v.children)
@@ -320,7 +375,7 @@ function getAuths(): Array<string> {
   return router.currentRoute.value.meta.auths as Array<string>
 }
 
-/** 是否有按钮级别的权限（根据路由`meta`中的`auths`字段进行判断）*/
+/** 是否有按钮级别的权限 */
 function hasAuth(value: string | Array<string>): boolean {
   if (!value) return false
   /** 从当前路由的`meta`字段里获取按钮级别的所有自定义`code`值 */

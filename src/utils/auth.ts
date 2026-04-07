@@ -46,7 +46,7 @@ export function getToken(): DataInfo<number> {
  * 将`avatar`、`username`、`nickname`、`roles`、`permissions`、`refreshToken`、`expires`这七条信息放在key值为`user-info`的localStorage里（利用`multipleTabsKey`当浏览器完全关闭后自动销毁）
  */
 export function setToken(data: DataInfo<Date>) {
-  setStorage(ConfigEnum.TOKEN, data)
+  setStorage(ConfigEnum.TOKEN, data.accessToken)
   let expires = 0
   const { accessToken, refreshToken } = data
   const { isRemembered, loginDay } = useUserStoreHook()
@@ -116,6 +116,7 @@ export function removeToken() {
   Cookies.remove(TokenKey)
   Cookies.remove(multipleTabsKey)
   storageLocal().removeItem(userKey)
+  localStorage.removeItem(ConfigEnum.TOKEN)
 }
 
 /** 格式化token（jwt格式） */
