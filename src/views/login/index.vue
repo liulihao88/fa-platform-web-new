@@ -163,7 +163,10 @@ function handleChangeCheckCode() {
       const ret = await worker.recognize(res as any)
       formData.captcha = ret.data.text
       console.log(`24 ret.data.text`, ret.data.text)
-      formData.captcha = ret.data.text.replace(' ', '').replace('\n', '').replace('.', '').replace('?', '')
+      formData.captcha = ret.data.text.replace(/[\s.?]+/g, '')
+      if (formData.captcha.length !== 4) {
+        handleChangeCheckCode()
+      }
     })
     .catch(() => {
       randCodeData.randCodeImage = ''
