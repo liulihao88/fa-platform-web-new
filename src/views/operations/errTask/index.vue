@@ -152,7 +152,6 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 100,
     btns: [
       {
         content: '错误处理',

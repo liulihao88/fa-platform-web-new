@@ -214,7 +214,6 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
-    width: 180,
     btns: [
       {
         content: '字段映射',

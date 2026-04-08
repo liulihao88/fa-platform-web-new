@@ -110,7 +110,6 @@ const tableColumns = [
   {
     label: '操作',
     prop: '',
-    width: 220,
     fixed: 'right',
     btns: [
       {
@@ -228,7 +227,7 @@ proxy.$initTableHeight(headerRef, true)
         :page-size="30"
         @selection-change="handleSelectionChange"
         @update="handleUpdate"
-      ></o-table>
+      />
     </o-basic-layout>
   </div>
 </template>

@@ -29,7 +29,6 @@ const columns = [
   {
     label: '操作',
     prop: 'action',
-    width: 200,
     fixed: 'right',
     btns: [
       {
