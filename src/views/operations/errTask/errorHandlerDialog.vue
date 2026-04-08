@@ -217,6 +217,7 @@ defineExpose({
         :loading="loading"
         :total="total"
         :page-size="pagination.pageSize"
+        :pageNumber="pagination.pageNo"
         row-key="id"
         @update="handleUpdate"
       >

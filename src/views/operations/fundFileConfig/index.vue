@@ -125,6 +125,7 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :page-size="baseSearch.pageSize"
+      :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"
     >

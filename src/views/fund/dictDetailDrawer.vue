@@ -120,6 +120,7 @@ defineExpose({
       :data="data"
       :showIndex="false"
       :page-size="baseSearch.pageSize"
+      :pageNumber="baseSearch.pageNo"
       @update="handleUpdate"
     >
       <template #itemColor="{ row }">

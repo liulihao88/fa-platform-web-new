@@ -143,6 +143,7 @@ defineExpose({
         height="400"
         highlight-current-row
         :page-size="baseSearch.pageSize"
+        :pageNumber="baseSearch.pageNo"
         :showIndex="false"
         @update="update"
         @current-change="handleCurrentChange"

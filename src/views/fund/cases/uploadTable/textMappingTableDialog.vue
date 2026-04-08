@@ -175,6 +175,7 @@ defineExpose({
       :showIndex="false"
       height="400"
       :page-size="baseSearch.pageSize"
+      :pageNumber="baseSearch.pageNo"
       @current-change="handleCurrentChange"
       @update="update"
     >

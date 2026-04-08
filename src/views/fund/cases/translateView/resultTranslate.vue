@@ -313,6 +313,7 @@ defineExpose({
             :total="total"
             :height="tableHeight"
             :pageSize="sendTableParams.pageSize"
+            :pageNumber="sendTableParams.pageNo"
             @update="update"
           />
         </div>
