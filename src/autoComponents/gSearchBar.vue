@@ -1,46 +1,50 @@
 <template>
   <div class="search-bar" :style="{ '--items-per-row': itemsPerRow }">
     <div class="search-layout">
-      <div v-if="hasDefaultSlot" class="search-extra">
-        <slot />
-      </div>
+      <div class="search-scroll">
+        <div class="search-scroll-inner">
+          <div v-if="hasDefaultSlot" class="search-extra">
+            <slot />
+          </div>
 
-      <el-form :model="form" :inline="false" class="search-form" label-suffix=":" @keyup.enter="handleSearch">
-        <div class="form-grid">
-          <el-form-item v-for="(item, index) in row" :key="index" label="" :prop="item.prop">
-            <o-input
-              v-if="item.type === 'input'"
-              v-model="form[item.prop]"
-              :placeholder="item.placeholder || `请输入${item.label}`"
-              :clearable="item.clearable || true"
-              style="width: 100%"
-              :title="item.label"
-              @clear="handleSearch"
-            />
-            <o-select
-              v-else-if="item.type === 'select'"
-              v-model="form[item.prop]"
-              style="width: 100%"
-              :placeholder="item.placeholder || `请选择${item.label}`"
-              :clearable="item.clearable || true"
-              :title="item.label"
-              :options="getItemOptions(item)"
-              @change="handleSearch"
-            />
-            <o-date-range
-              v-else-if="item.type === 'date'"
-              v-model="form[item.prop]"
-              :title="item.label"
-              :value-format="item.valueFormat || 'YYYY-MM-DD'"
-              :format="item.format || 'YYYY-MM-DD'"
-              :type="item.dateType || 'date'"
-              :placeholder="item.placeholder || `请选择${item.label}`"
-              style="width: 100%"
-              @change="handleSearch"
-            />
-          </el-form-item>
+          <el-form :model="form" :inline="false" class="search-form" label-suffix=":" @keyup.enter="handleSearch">
+            <div class="form-grid">
+              <el-form-item v-for="(item, index) in row" :key="index" label="" :prop="item.prop">
+                <o-input
+                  v-if="item.type === 'input'"
+                  v-model="form[item.prop]"
+                  :placeholder="item.placeholder || `请输入${item.label}`"
+                  :clearable="item.clearable || true"
+                  style="width: 100%"
+                  :title="item.label"
+                  @clear="handleSearch"
+                />
+                <o-select
+                  v-else-if="item.type === 'select'"
+                  v-model="form[item.prop]"
+                  style="width: 100%"
+                  :placeholder="item.placeholder || `请选择${item.label}`"
+                  :clearable="item.clearable || true"
+                  :title="item.label"
+                  :options="getItemOptions(item)"
+                  @change="handleSearch"
+                />
+                <o-date-range
+                  v-else-if="item.type === 'date'"
+                  v-model="form[item.prop]"
+                  :title="item.label"
+                  :value-format="item.valueFormat || 'YYYY-MM-DD'"
+                  :format="item.format || 'YYYY-MM-DD'"
+                  :type="item.dateType || 'date'"
+                  :placeholder="item.placeholder || `请选择${item.label}`"
+                  style="width: 100%"
+                  @change="handleSearch"
+                />
+              </el-form-item>
+            </div>
+          </el-form>
         </div>
-      </el-form>
+      </div>
 
       <div class="form-actions">
         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
@@ -110,74 +114,26 @@ const handleReset = () => {
 </script>
 
 <style scoped>
-@media (width <= 1200px) {
-  .form-row .el-form-item {
-    flex: 0 0 calc((100% - 16px) / 2);
-  }
-}
-
-@media (width <= 768px) {
-  .form-row {
-    flex-direction: column;
-  }
-
-  .form-row .el-form-item {
-    flex: 0 0 100%;
-  }
-
-  .form-actions {
-    align-self: flex-end;
-    margin-top: 8px;
-    margin-left: 0;
-  }
-}
-
-@media (width <= 1600px) {
-  .form-grid {
-    grid-template-columns: repeat(3, minmax(220px, 1fr));
-  }
-}
-
-@media (width <= 1280px) {
-  .form-grid {
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-  }
-}
-
-@media (width <= 900px) {
-  .search-layout {
-    flex-direction: column;
-  }
-
-  .search-extra,
-  .search-form,
-  .form-actions {
-    width: 100%;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    justify-content: flex-end;
-    padding-bottom: 0;
-  }
-}
-
-@media (width <= 768px) {
-  .form-actions {
-    margin-left: 0;
-  }
-}
-
 .search-form {
-  flex: 1;
+  flex: 1 0 auto;
   min-width: 0;
 }
 
 .search-layout {
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.search-scroll {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.search-scroll-inner {
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   align-items: stretch;
 }
@@ -190,8 +146,10 @@ const handleReset = () => {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(var(--items-per-row, 3), minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
 .form-actions {
@@ -224,5 +182,19 @@ const handleReset = () => {
   flex: 0 0 auto;
 }
 
-/* 响应式调整 */
+@media (width <= 900px) {
+  .search-scroll {
+    flex-basis: 100%;
+  }
+
+  .form-actions {
+    justify-content: flex-end;
+    width: 100%;
+    padding-bottom: 0;
+  }
+}
+
+.search-form[data-items-per-row='1'] .form-grid {
+  grid-template-columns: 1fr;
+}
 </style>
