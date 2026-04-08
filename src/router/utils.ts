@@ -192,6 +192,7 @@ function mergeMenus(baseMenus, remoteMenus) {
           meta: {
             ...baseItem.meta,
             title: remoteItem.meta?.title ?? baseItem.meta?.title,
+            icon: remoteItem.meta?.icon ?? remoteItem.icon ?? baseItem.meta?.icon,
           },
           path: remoteItem.link || baseItem.path,
           children: baseItem.children,
@@ -221,7 +222,8 @@ function mergeSubMenus(baseChildren, remoteSubMenus) {
           ...baseChild,
           meta: {
             ...baseChild.meta,
-            title: remoteChild.title ?? baseChild.meta.title,
+            title: remoteChild.meta?.title ?? remoteChild.title ?? baseChild.meta.title,
+            icon: remoteChild.meta?.icon ?? remoteChild.icon ?? baseChild.meta?.icon,
             children: mergeSubMenus(baseChild.meta.children || [], remoteChild.submenu || []),
           },
           path: remoteChild.link || baseChild.path,

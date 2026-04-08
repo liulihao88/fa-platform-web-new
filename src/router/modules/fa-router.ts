@@ -19,6 +19,7 @@ export default [
     redirect: '/fund/analysis',
     meta: {
       title: '案件文件管理',
+      icon: 'ep/document',
     },
     children: [
       {
@@ -86,6 +87,7 @@ export default [
     redirect: '/monitor/quartz',
     meta: {
       title: '系统管理',
+      icon: 'ep/setting',
     },
     children: [
       {
@@ -155,6 +157,7 @@ export default [
       // icon: testSvg,
       showLink: use$dev(),
       title: '测试页',
+      icon: 'ri/information-line',
       rank: 0,
     },
     children: [
@@ -178,6 +181,7 @@ export default [
       // icon: testSvg,
       showLink: use$dev(),
       title: '测试页2',
+      icon: 'ri/information-line',
       rank: 0,
     },
     children: [
@@ -200,6 +204,7 @@ export default [
       // icon: testSvg,
       showLink: use$dev(),
       title: '测试页3',
+      icon: 'ri/information-line',
       rank: 0,
     },
     children: [
@@ -222,6 +227,7 @@ export default [
       // icon: testSvg,
       showLink: use$dev(),
       title: '测试页4',
+      icon: 'ri/information-line',
       rank: 0,
     },
     children: [
@@ -245,6 +251,7 @@ export default [
       // icon: testSvg,
       rank: 0,
       title: '合并测试页',
+      icon: 'ri/information-line',
     },
     children: [
       {
