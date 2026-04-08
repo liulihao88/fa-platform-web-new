@@ -246,53 +246,46 @@ defineExpose({
       <el-col :span="21">
         <div class="bg-white h-100%">
           <o-basic-layout>
-            <o-flex justify="space-between" class="mapping-toolbar">
-              <div class="mapping-toolbar__filters">
-                <o-select
-                  v-model="adjForm.adjTransAmt"
-                  class="mapping-toolbar__select"
-                  title="交易金额调整项"
-                  :options="BOOLEAN_OPTIONS"
-                  width="200"
-                />
-                <o-select
-                  v-model="adjForm.adjCreditAmt"
-                  class="mapping-toolbar__select"
-                  title="贷款金额调整项"
-                  :options="BOOLEAN_OPTIONS"
-                  width="200"
-                />
-                <o-select
-                  v-model="adjForm.adjSettlementAmt"
-                  class="mapping-toolbar__select"
-                  title="结算金额调整项"
-                  :options="BOOLEAN_OPTIONS"
-                  width="200"
-                />
-              </div>
-              <o-flex align="center" class="mapping-toolbar__actions" style="white-space: nowrap">
-                <div
-                  class="mr cl-65 fs-14"
-                  width="100%"
-                  :content="
-                    saveDisabled
-                      ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
-                      : '多个数据块配置后一起保存'
-                  "
-                >
-                  {{
-                    saveDisabled
-                      ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
-                      : '多个数据块配置后一起保存'
-                  }}
+            <div class="mapping-toolbar">
+              <div class="mapping-toolbar__scroll">
+                <div class="mapping-toolbar__scroll-inner">
+                  <div class="mapping-toolbar__filters">
+                    <o-select
+                      v-model="adjForm.adjTransAmt"
+                      class="mapping-toolbar__select"
+                      title="交易金额调整项"
+                      :options="BOOLEAN_OPTIONS"
+                      width="200"
+                    />
+                    <o-select
+                      v-model="adjForm.adjCreditAmt"
+                      class="mapping-toolbar__select"
+                      title="贷款金额调整项"
+                      :options="BOOLEAN_OPTIONS"
+                      width="200"
+                    />
+                    <o-select
+                      v-model="adjForm.adjSettlementAmt"
+                      class="mapping-toolbar__select"
+                      title="结算金额调整项"
+                      :options="BOOLEAN_OPTIONS"
+                      width="200"
+                    />
+                  </div>
+                  <div class="mapping-toolbar__hint cl-65 fs-14">
+                    {{
+                      saveDisabled
+                        ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
+                        : '多个数据块配置后一起保存'
+                    }}
+                  </div>
                 </div>
+              </div>
+              <div class="mapping-toolbar__buttons">
                 <el-button type="primary" :disabled="!saveDisabled" @click="save('update')">更新配置</el-button>
                 <el-button type="primary" :disabled="saveDisabled" @click="save()">保存配置</el-button>
-                <!-- <el-button :disabled="!!saveDisabled">
-                  暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
-                </el-button> -->
-              </o-flex>
-            </o-flex>
+              </div>
+            </div>
             <TextMappingTable
               v-if="notEmpty(fileInfo) && orgCode"
               ref="textMappingTableRef"
@@ -310,18 +303,6 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
-
-
-@media (width <= 1400px) {
-  .mapping-toolbar {
-    flex-wrap: wrap;
-  }
-
-  .mapping-toolbar__actions {
-    width: 100%;
-  }
-}
-
 .sheet-item {
   justify-content: space-between;
   padding: 10px 12px;
@@ -344,8 +325,24 @@ defineExpose({
 }
 
 .mapping-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.mapping-toolbar__scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto hidden;
+}
+
+.mapping-toolbar__scroll-inner {
+  display: flex;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  min-width: max-content;
 }
 
 .mapping-toolbar__filters {
@@ -355,23 +352,28 @@ defineExpose({
   align-items: flex-start;
 }
 
-.mapping-toolbar__select {
-  flex: 0 0 200px;
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
-}
-
-.mapping-toolbar__actions {
-  flex: 1 1 auto;
-  min-width: 0;
+.mapping-toolbar__hint {
+  flex: 0 0 auto;
+  line-height: 1.5;
   text-align: right;
-  word-break: break-all;
+  word-break: normal;
+  white-space: nowrap;
 }
 
-// .mapping-toolbar__select :deep(.el-input),
-// .mapping-toolbar__select :deep(.el-select),
+.mapping-toolbar__buttons {
+  display: flex;
+  flex: 0 0 auto;
+}
+
 .mapping-toolbar__select :deep(.el-select__wrapper) {
-  min-width: 60px !important;
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+}
+
+@media (width <= 1400px) {
+  .mapping-toolbar__scroll-inner {
+    gap: 12px;
+  }
 }
 </style>
