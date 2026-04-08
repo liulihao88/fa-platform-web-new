@@ -298,13 +298,7 @@ useEventListener(document, 'keydown', ({ code }) => {
                   运营登录
                 </el-button>
               </div>
-              <el-button
-                class="w-full mt-4!"
-                size="default"
-                :loading="loading"
-                :disabled="disabled"
-                @click="onLogin('admin')"
-              >
+              <el-button class="w-full mt-4!" size="default" :loading="loading" :disabled="disabled" @click="onLogin()">
                 正常登录
               </el-button>
             </Motion>
