@@ -236,6 +236,13 @@ export const bankCustomerPageList = (lastUrl, data) => {
 // }
 
 /**
+ * 涉案人 管理
+ */
+export const caseInvolvedList = (data) => {
+  return request('fa/caseInvolved/list', 'post', { data })
+}
+
+/**
  * 标准数据查看
  */
 
