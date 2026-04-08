@@ -23,7 +23,7 @@ export default [
     },
     children: [
       {
-        id: 'fund_analysis',
+        id: '/fund/analysis',
         path: '/fund/analysis',
         name: 'Analysis',
         component: 'fund/analysis',
@@ -33,8 +33,8 @@ export default [
         },
       },
       {
-        path: '/fund/cases',
         id: '/fund/cases',
+        path: '/fund/cases',
         name: 'Cases',
         component: 'fund/cases/index',
         meta: {

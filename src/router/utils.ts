@@ -195,9 +195,8 @@ function mergeMenus(baseMenus, remoteMenus) {
             icon: remoteItem.meta?.icon ?? remoteItem.icon ?? baseItem.meta?.icon,
           },
           path: remoteItem.link || baseItem.path,
-          children: baseItem.children,
+          children: mergeSubMenus(baseItem.children || [], remoteItem.children || []),
         }
-        console.log(`96 mergedItem`, mergedItem)
         mergedMenus.push(mergedItem)
       }
     } else {
@@ -211,35 +210,33 @@ function mergeMenus(baseMenus, remoteMenus) {
   return mergedMenus
 }
 
-function mergeSubMenus(baseChildren, remoteSubMenus) {
-  const mergedChildren = []
-  baseChildren.forEach((baseChild) => {
-    const remoteChild = remoteSubMenus?.find((item) => item.id === baseChild.id)
-    if (remoteChild) {
-      // 如果在remoteSubMenus中找到了匹配的id，则合并这两个子菜单项
-      if (remoteChild.visable) {
-        const mergedChild = {
-          ...baseChild,
+function mergeSubMenus(baseMenus, remoteMenus) {
+  const mergedMenus = []
+  baseMenus.forEach((baseItem) => {
+    const remoteItem = remoteMenus.find((item) => item.path === baseItem.id)
+    if (remoteItem) {
+      // 如果在remoteMenus中找到了匹配的id，则合并这两个菜单项
+      if (remoteItem.visable !== false) {
+        const mergedItem = {
+          ...baseItem,
           meta: {
-            ...baseChild.meta,
-            title: remoteChild.meta?.title ?? remoteChild.title ?? baseChild.meta.title,
-            icon: remoteChild.meta?.icon ?? remoteChild.icon ?? baseChild.meta?.icon,
-            children: mergeSubMenus(baseChild.meta.children || [], remoteChild.submenu || []),
+            ...baseItem.meta,
+            title: remoteItem.meta?.title ?? baseItem.meta?.title,
+            icon: remoteItem.meta?.icon ?? remoteItem.icon ?? baseItem.meta?.icon,
           },
-          path: remoteChild.link || baseChild.path,
+          path: remoteItem.link || baseItem.path,
         }
-
-        mergedChildren.push(mergedChild)
+        mergedMenus.push(mergedItem)
       }
     } else {
-      // 如果没有找到匹配的id，则直接添加baseChild
-      if (!baseChild.id) {
-        mergedChildren.push(baseChild)
+      // 如果没有找到匹配的id，则直接添加baseItem
+      if (!baseItem.id) {
+        mergedMenus.push(baseItem)
       }
     }
   })
 
-  return mergedChildren
+  return mergedMenus
 }
 
 /**
