@@ -1,5 +1,5 @@
 <template>
-  <div class="inline-block ml-2">
+  <div class="inline-block">
     <!-- 基础按钮 -->
     <template v-for="(btn, index) in baseButtons" :key="index">
       <el-button
