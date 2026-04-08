@@ -94,30 +94,157 @@ const activeStatus = computed(() => {
 <template>
   <div class="h-100%">
     <o-basic-layout class="h-100%">
-      <div>
+      <div class="case-page__header">
         <o-descriptions :options="descOptions" :column="4" />
-        <!-- 'wait' | 'process' | 'finish' | 'error' | 'success' -->
-        <el-steps :active="activeStatus" simple finish-status="finish" process-status="finish" class="mtb2">
-          <el-step v-for="(v, i) in caseStatusOptions" :key="v.value" :title="v.label">
-            <template #title>{{ Number(i) + 1 }} {{ v.label }}</template>
-            <template #icon />
-          </el-step>
-        </el-steps>
       </div>
 
-      <o-tabs v-model="currentTab" :options="tabsOptions" size="small">
-        <template #[UPLOAD]>
-          <UploadTable />
-        </template>
-        <template #[STANDARD_VIEW]>
-          <StandardDataView />
-        </template>
-        <template #[REPEATE_VIEW]>
-          <RepeatDataView />
-        </template>
-      </o-tabs>
-      <!-- <UploadTable v-if="currentTab === UPLOAD" /> -->
-      <!-- <StandardDataView v-if="currentTab === STANDARD_VIEW" /> -->
+      <div class="case-page__nav">
+        <div class="case-page__tabs" role="tablist" aria-label="案件数据页签">
+          <button
+            v-for="tab in tabsOptions"
+            :key="tab.value"
+            :class="['case-page__tab', { 'case-page__tab--active': currentTab === tab.value }]"
+            type="button"
+            role="tab"
+            :aria-selected="currentTab === tab.value"
+            @click="currentTab = tab.value"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <div class="case-page__steps-scroll">
+          <el-steps
+            :active="activeStatus"
+            simple
+            finish-status="finish"
+            process-status="finish"
+            class="case-page__steps"
+            size="small"
+          >
+            <el-step v-for="(v, i) in caseStatusOptions" :key="v.value" :title="v.label">
+              <template #title>{{ Number(i) + 1 }} {{ v.label }}</template>
+              <template #icon />
+            </el-step>
+          </el-steps>
+        </div>
+      </div>
+
+      <div v-if="currentTab === UPLOAD" class="case-page__content">
+        <UploadTable />
+      </div>
+      <div v-else-if="currentTab === STANDARD_VIEW" class="case-page__content">
+        <StandardDataView />
+      </div>
+      <div v-else class="case-page__content">
+        <RepeatDataView />
+      </div>
     </o-basic-layout>
   </div>
 </template>
+
+<style scoped lang="scss">
+.case-page__header {
+  margin-bottom: 12px;
+}
+
+.case-page__nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  margin-bottom: 12px;
+}
+
+.case-page__tabs {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.case-page__tab {
+  position: relative;
+  padding: 8px 10px;
+  color: var(--el-text-color-regular);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.case-page__tab:hover,
+.case-page__tab--active {
+  color: var(--el-color-primary);
+  border-bottom-color: var(--el-color-primary);
+}
+
+.case-page__steps-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: auto hidden;
+}
+
+.case-page__steps {
+  width: 100%;
+  min-width: 0;
+}
+
+.case-page__steps :deep(.el-step.is-simple) {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0 2px;
+}
+
+.case-page__steps :deep(.el-step__title) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.case-page__steps :deep(.el-step.is-simple .el-step__arrow) {
+  margin: 0;
+  transform: scale(0.72);
+  transform-origin: center;
+}
+
+.case-page__steps :deep(.el-step__main) {
+  min-width: 0;
+}
+
+.case-page__content {
+  min-width: 0;
+}
+
+@media (width <= 1440px) {
+  .case-page__tab {
+    padding: 8px;
+  }
+
+  .case-page__steps :deep(.el-step.is-simple) {
+    padding: 0 1px;
+  }
+}
+
+@media (width <= 1200px) {
+  .case-page__tab {
+    padding: 6px;
+  }
+
+  .case-page__steps :deep(.el-step.is-simple) {
+    padding: 0;
+  }
+}
+
+:deep(.el-steps--simple) {
+  padding: 6px 2px;
+}
+
+:deep(.el-step__title) {
+  min-width: 100px;
+}
+</style>
