@@ -4,6 +4,7 @@ import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
 import { getCaseFileTransInfo, bankCustomerPageList, getStandardDataPageList } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
+import { useGlobalTablePageSize } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
@@ -28,11 +29,13 @@ const activeSheetId = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
 const TABLE_PAGINATION_HEIGHT = 50
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const sendTableParams = ref({
   filePageId: filePageId.value,
   pageNo: 1,
   pageSize: 10,
 })
+syncPageSize(sendTableParams.value)
 
 const sheetList = ref([])
 
@@ -244,7 +247,7 @@ let resizeObserver: ResizeObserver | null = null
 
 const update = (number, size) => {
   sendTableParams.value.pageNo = number
-  sendTableParams.value.pageSize = size
+  updatePageSize(sendTableParams.value, size)
   initTable()
 }
 

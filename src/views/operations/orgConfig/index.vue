@@ -2,6 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaOrgsConfigureList } from '@/api/analysis'
 import OrgDialog from './orgDialog.vue'
+import { useGlobalTablePageSize } from '@/hooks'
 
 type OrgRecord = {
   id: string
@@ -13,6 +14,7 @@ type OrgRecord = {
 }
 
 const { proxy } = getCurrentInstance()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const dialogRef = ref()
@@ -24,6 +26,7 @@ const baseSearch = {
   pageSize: 10,
   orgName: '',
 }
+syncPageSize(baseSearch)
 
 const items = [{ label: '机构名称', prop: 'orgName', type: 'input', placeholder: '请输入机构名称' }]
 
@@ -78,7 +81,7 @@ function handleSearch(form) {
 
 function handleUpdate(pageNo, pageSize) {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   init()
 }
 

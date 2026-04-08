@@ -9,8 +9,9 @@ const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
 const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 
-import { useDetail } from '@/hooks'
+import { useDetail, useGlobalTablePageSize } from '@/hooks'
 const { toDetail } = useDetail()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
@@ -24,6 +25,7 @@ const baseSearch = ref({
   fileName: '',
   folder: '',
 })
+syncPageSize(baseSearch.value)
 
 // 进度条显示规则
 const progressMap = {
@@ -138,7 +140,7 @@ init()
 
 const update = (pageNo: number, pageSize: number) => {
   baseSearch.value.pageNo = pageNo
-  baseSearch.value.pageSize = pageSize
+  updatePageSize(baseSearch.value, pageSize)
   init()
 }
 

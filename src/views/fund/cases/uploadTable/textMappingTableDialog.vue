@@ -3,6 +3,8 @@ import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
 import { getFileConfigPageList } from '@/api/analysis'
 import { $toast, notEmpty } from '@oeos-components/utils'
+import { useGlobalTablePageSize } from '@/hooks'
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const emits = defineEmits(['success'])
 
@@ -27,9 +29,10 @@ const baseSearch = ref({
   orgCode: props.orgCode,
   mappingTitle: props.mappingTitle,
 })
+syncPageSize(baseSearch.value)
 
 const pageNo = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(baseSearch.value.pageSize)
 
 const items = [
   {
@@ -101,10 +104,8 @@ const reset = () => {
 }
 
 const init = async () => {
-  let sendParams = {
-    pageNo: 1,
-    pageSize: 10,
-  }
+  pageNo.value = baseSearch.value.pageNo
+  pageSize.value = baseSearch.value.pageSize
   let res = await getFileConfigPageList(baseSearch.value)
   data.value = res.records
   total.value = res.total
@@ -139,7 +140,9 @@ const handleSearch = (form) => {
 const update = async (no, size) => {
   console.log(`47 no`, no)
   baseSearch.value.pageNo = no
-  baseSearch.value.pageSize = size
+  updatePageSize(baseSearch.value, size)
+  pageNo.value = no
+  pageSize.value = baseSearch.value.pageSize
   init()
 }
 

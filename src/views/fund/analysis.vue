@@ -9,8 +9,9 @@ const { proxy } = getCurrentInstance()
 const route = useRoute()
 import { useCommonHook } from '@/store'
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
-import { useDetail } from '@/hooks'
+import { useDetail, useGlobalTablePageSize } from '@/hooks'
 const { toDetail } = useDetail()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const baseSearch = {
   order: 'desc',
@@ -23,6 +24,7 @@ const baseSearch = {
   processStatus: '',
   processDate: '',
 }
+syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 const headerRef = ref()
@@ -177,7 +179,7 @@ async function filterRow(row) {
 }
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   handleSearch({})
 }
 const handleSearch = (form) => {
@@ -209,6 +211,7 @@ proxy.$initTableHeight(headerRef, true)
       :columns="columns"
       :data="data"
       :total="total"
+      :page-size="baseSearch.pageSize"
       :height="$tableHeight.value"
       @update="handleUpdate"
     >

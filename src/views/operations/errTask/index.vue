@@ -3,6 +3,7 @@ import { computed, nextTick, ref, getCurrentInstance } from 'vue'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
 import ErrorHandlerDialog from './errorHandlerDialog.vue'
+import { useGlobalTablePageSize } from '@/hooks'
 
 type ErrTaskRecord = {
   id: string
@@ -19,6 +20,7 @@ type ErrTaskRecord = {
 
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const tableRef = ref()
@@ -35,6 +37,7 @@ const baseSearch = {
   column: 'createTime',
   caseName: '',
 }
+syncPageSize(baseSearch)
 
 const items = [
   {
@@ -214,7 +217,7 @@ function handleSearch(form) {
 
 function handleUpdate(pageNo, pageSize) {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   init()
 }
 

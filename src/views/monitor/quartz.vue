@@ -12,6 +12,8 @@ import {
 import { getType, $toast } from '@oeos-components/utils'
 import { exportQuartzJob } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
+import { useGlobalTablePageSize } from '@/hooks'
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const items = [
   {
@@ -48,6 +50,7 @@ const baseSearch = {
   jobClassName: '',
   status: '',
 }
+syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedMap.value.size)
@@ -215,7 +218,7 @@ function clearSelected() {
 
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   init()
 }
 const moreBtns = [

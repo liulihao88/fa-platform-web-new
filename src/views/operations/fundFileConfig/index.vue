@@ -2,6 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaFilesConfigureList } from '@/api/analysis'
 import ConfigDialog from './configDialog.vue'
+import { useGlobalTablePageSize } from '@/hooks'
 
 type FileConfigRecord = {
   id: string
@@ -19,6 +20,7 @@ type FileConfigRecord = {
 }
 
 const { proxy } = getCurrentInstance()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const tableRef = ref()
@@ -33,6 +35,7 @@ const baseSearch = {
   alias: '',
   owner: '',
 }
+syncPageSize(baseSearch)
 
 const items = [
   { label: '标准数据', prop: 'metaData', type: 'input', placeholder: '请输入标准数据' },
@@ -91,7 +94,7 @@ function handleSearch(form) {
 
 function handleUpdate(pageNo, pageSize) {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   init()
 }
 

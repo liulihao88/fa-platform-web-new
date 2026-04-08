@@ -3,6 +3,8 @@ import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
 import { $toast, notEmpty, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
+import { useGlobalTablePageSize } from '@/hooks'
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const emits = defineEmits(['success'])
 
@@ -17,6 +19,7 @@ const baseSearch = ref({
   pageSize: 10,
   orgName: '',
 })
+syncPageSize(baseSearch.value)
 
 const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
@@ -96,7 +99,7 @@ const handleSearch = (form) => {
 const update = async (no, size) => {
   console.log(`47 no`, no)
   baseSearch.value.pageNo = no
-  baseSearch.value.pageSize = size
+  updatePageSize(baseSearch.value, size)
   init()
 }
 

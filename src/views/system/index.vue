@@ -11,7 +11,9 @@ import { uploadFile } from '@/utils/request'
 import { useUserStore } from '@/store/modules/user'
 // const userStore = useUserStore()
 import { useCommonHook } from '@/store'
+import { useGlobalTablePageSize } from '@/hooks'
 const { setCommonItems } = useCommonHook()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const items = [
   {
     label: '字典名称',
@@ -45,6 +47,7 @@ const baseSearch = {
   dictName: '',
   dictCode: '',
 }
+syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 
@@ -152,7 +155,7 @@ const recycleBin = async () => {
 
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   handleSearch({})
 }
 const moreBtns = [
@@ -222,7 +225,7 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :showIndex="false"
-      :page-size="30"
+      :page-size="baseSearch.pageSize"
       @selection-change="handleSelectionChange"
       @update="handleUpdate"
     >

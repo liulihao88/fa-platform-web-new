@@ -4,7 +4,9 @@ import smartSearch from './smartSearch.vue'
 import { ref, getCurrentInstance, reactive } from 'vue'
 import { exportTransListData, getCaseInfoById, getTransList } from '@/api/analysis'
 import { isEmpty } from '@oeos-components/utils'
+import { useGlobalTablePageSize } from '@/hooks'
 const { proxy } = getCurrentInstance()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const route = useRoute()
 const detail = reactive<Record<string, any>>({})
 const headerRef = ref<HTMLDivElement>()
@@ -135,7 +137,7 @@ const handleSelectionChange = (val) => {
 }
 const handleUpdate = (pageNo, pageSize) => {
   baseQuery.value.pageNo = pageNo
-  baseQuery.value.pageSize = pageSize
+  updatePageSize(baseQuery.value, pageSize)
   handleSearch(null)
 }
 const exportCurrentPage = async () => {
@@ -186,6 +188,7 @@ const baseQuery = ref({
   pageNo: 1,
   pageSize: 10,
 })
+syncPageSize(baseQuery.value)
 const handleSearch = async (params) => {
   console.log(params)
   if (!isEmpty(params)) {
@@ -224,7 +227,7 @@ proxy.$initTableHeight(headerRef, true)
         :data="data"
         :total="total"
         :showIndex="false"
-        :page-size="30"
+        :page-size="baseQuery.pageSize"
         @selection-change="handleSelectionChange"
         @update="handleUpdate"
       />

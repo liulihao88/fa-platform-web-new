@@ -2,7 +2,9 @@
 import dictItemDialog from './dictItemDialog.vue'
 import { getDictItemList, deleteDictItem } from '@/api/analysis'
 import { ref, getCurrentInstance, watch } from 'vue'
+import { useGlobalTablePageSize } from '@/hooks'
 const { proxy } = getCurrentInstance()
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const emits = defineEmits(['refresh'])
 const total = ref(0)
 const isShow = ref(false)
@@ -14,6 +16,7 @@ const baseSearch = {
   itemText: '',
   status: '',
 }
+syncPageSize(baseSearch)
 const items = [
   {
     label: '名称',
@@ -87,7 +90,7 @@ const handleSearch = (form) => {
 }
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
-  baseSearch.pageSize = pageSize
+  updatePageSize(baseSearch, pageSize)
   handleSearch({})
 }
 const init = async () => {
@@ -110,7 +113,15 @@ defineExpose({
   <o-dialog ref="dialogRef" v-model="isShow" type="drawer" title="字典列表" size="800" :showConfirm="false">
     <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
     <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" :showNum="1" />
-    <o-table ref="tableRef" height="300px" :columns="columns" :data="data" :showIndex="false" @update="handleUpdate">
+    <o-table
+      ref="tableRef"
+      height="300px"
+      :columns="columns"
+      :data="data"
+      :showIndex="false"
+      :page-size="baseSearch.pageSize"
+      @update="handleUpdate"
+    >
       <template #itemColor="{ row }">
         <g-color-picker v-model="row.itemColor" mode="view" />
       </template>
