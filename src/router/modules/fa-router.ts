@@ -81,36 +81,6 @@ export default [
     ],
   },
   {
-    path: '/monitor',
-    id: '/isystem',
-    component: Layout,
-    redirect: '/monitor/quartz',
-    meta: {
-      title: '系统管理',
-      icon: 'ep/setting',
-    },
-    children: [
-      {
-        path: '/monitor/quartz',
-        name: 'Quartz',
-        component: 'monitor/quartz',
-        meta: {
-          title: '定时任务',
-          // showParent: true
-        },
-      },
-      {
-        path: '/system/dict',
-        name: 'Dict',
-        component: 'system/index',
-        meta: {
-          title: '数据字典',
-          // showParent: true
-        },
-      },
-    ],
-  },
-  {
     path: '/operation',
     id: '/operation',
     component: Layout,
@@ -121,6 +91,7 @@ export default [
     },
     children: [
       {
+        id: '/operation/errtask',
         path: '/operation/errtask',
         name: 'ErrTask',
         component: 'operations/errTask/index',
@@ -130,6 +101,7 @@ export default [
         },
       },
       {
+        id: '/operation/configfile',
         path: '/operation/configfile',
         name: 'FundFileConfig',
         component: 'operations/fundFileConfig/index',
@@ -139,6 +111,7 @@ export default [
         },
       },
       {
+        id: '/operation/configorg',
         path: '/operation/configorg',
         name: 'OrgConfig',
         component: 'operations/orgConfig/index',
@@ -149,6 +122,39 @@ export default [
       },
     ],
   },
+  {
+    path: '/monitor',
+    id: '/isystem',
+    component: Layout,
+    redirect: '/monitor/quartz',
+    meta: {
+      title: '系统管理',
+      icon: 'ep/setting',
+    },
+    children: [
+      {
+        id: '/monitor/quartz',
+        path: '/monitor/quartz',
+        name: 'Quartz',
+        component: 'monitor/quartz',
+        meta: {
+          title: '定时任务',
+          // showParent: true
+        },
+      },
+      {
+        id: '/system/dict',
+        path: '/system/dict',
+        name: 'Dict',
+        component: 'system/index',
+        meta: {
+          title: '数据字典',
+          // showParent: true
+        },
+      },
+    ],
+  },
+
   {
     path: '/test',
     component: Layout,
