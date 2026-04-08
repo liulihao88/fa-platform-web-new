@@ -21,7 +21,7 @@ withDefaults(
 )
 
 const { username, userAvatar, avatarsStyle } = useNav()
-const { setCommonItems, userInfo } = useCommonHook()
+const { setCommonItems } = useCommonHook()
 const userStore = useUserStoreHook()
 const passwordDialogRef = ref<InstanceType<typeof PasswordDialog>>()
 
@@ -34,7 +34,6 @@ async function handleCommand(command: 'password' | 'cache' | 'logout') {
       }
       passwordDialogRef.value?.open({
         username: userStore.username,
-        phone: userInfo?.phone || '',
       })
       break
     case 'cache':

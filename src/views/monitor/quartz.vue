@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from 'vue'
+import { ref, getCurrentInstance, computed, nextTick } from 'vue'
 import TaskDialog from '@/views/fund/taskDialog.vue'
 import {
   getQuartzJobList,
@@ -28,10 +28,13 @@ const items = [
     dict: 'quartz_status',
   },
 ]
-const selectIds = ref([])
 const { proxy } = getCurrentInstance()
 const headerRef = ref()
+const tableRef = ref()
+const syncingSelection = ref(false)
+const selectedMap = ref(new Map<string, any>())
 const handleSearch = (form) => {
+  baseSearch.pageNo = 1
   baseSearch.jobClassName = form?.jobClassName
   baseSearch.status = form?.status
   init()
@@ -47,11 +50,9 @@ const baseSearch = {
 }
 const data = ref([])
 const total = ref(0)
+const selectedCount = computed(() => selectedMap.value.size)
 
 const columns = [
-  {
-    type: 'selection',
-  },
   {
     label: '任务类名',
     prop: 'jobClassName',
@@ -167,7 +168,7 @@ const onImportXls = async () => {
  */
 const onExportXls = async () => {
   const params = {
-    selections: selectIds.value.length > 0 ? selectIds.value.join(',') : '',
+    selections: selectedCount.value > 0 ? Array.from(selectedMap.value.keys()).join(',') : '',
     column: 'createTime',
     order: 'desc',
   }
@@ -176,15 +177,46 @@ const onExportXls = async () => {
 /**
  * 选中
  */
-const handleSelectionChange = (val) => {
-  console.log(val)
-  selectIds.value = val.map((item) => item.id)
+const handleSelectionChange = (rows) => {
+  if (syncingSelection.value) return
+
+  const currentPageIds = new Set(data.value.map((item) => item.id))
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
+  })
+
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
+}
+
+async function syncSelection() {
+  await nextTick()
+  if (!tableRef.value?.$refs?.tableRef) return
+
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    data.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
+}
+
+function clearSelected() {
+  selectedMap.value.clear()
+  tableRef.value?.$refs?.tableRef?.clearSelection()
 }
 
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
   baseSearch.pageSize = pageSize
-  handleSearch({})
+  init()
 }
 const moreBtns = [
   {
@@ -210,12 +242,13 @@ const moreBtns = [
     type: 'primary',
     reConfirm: !proxy.$dev,
     icon: 'el-icon-delete',
-    disabled: () => selectIds.value.length === 0,
-    isShow: () => selectIds.value.length !== 0,
+    disabled: () => selectedCount.value === 0,
+    isShow: () => selectedCount.value !== 0,
     handler: async () => {
-      const ids = selectIds.value.join(',')
+      const ids = Array.from(selectedMap.value.keys()).join(',')
       await deleteBatchQuartzJob(ids)
-      handleSearch({})
+      clearSelected()
+      init()
     },
   },
 ]
@@ -223,6 +256,7 @@ const init = async () => {
   let res = await getQuartzJobList(baseSearch)
   data.value = res?.records
   total.value = res?.total
+  await syncSelection()
 }
 init()
 proxy.$initTableHeight(headerRef, true)
@@ -232,6 +266,7 @@ proxy.$initTableHeight(headerRef, true)
   <div>
     <div ref="headerRef" class="mb2">
       <g-search-bar :items="items" :itemsPerRow="3" @search="handleSearch" @reset="handleSearch">
+        <gSelectedCount :count="selectedCount" class="mr" @clear="clearSelected" />
         <g-more-button :btns="moreBtns" mode="opt" trigger="hover" />
       </g-search-bar>
     </div>
@@ -242,10 +277,12 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :showIndex="false"
-      :page-size="30"
+      :page-size="baseSearch.pageSize"
+      row-key="id"
       @selection-change="handleSelectionChange"
       @update="handleUpdate"
     >
+      <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
       <template #status="{ row }">
         <el-tag :type="row.status == '0' ? 'success' : 'danger'">{{ row.status == '0' ? '正常' : '停止' }}</el-tag>
       </template>

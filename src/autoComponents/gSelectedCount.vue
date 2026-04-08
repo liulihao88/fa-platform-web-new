@@ -39,7 +39,7 @@ defineEmits<{
   display: flex;
   gap: 12px;
   align-items: center;
-  min-width: 350px;
+  min-width: 330px;
   height: 100%;
   padding: 4px 20px;
   color: #303133;
