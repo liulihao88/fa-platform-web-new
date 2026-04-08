@@ -18,14 +18,11 @@ export const useCommonStore = defineStore('common', {
   actions: {
     refreshHandler() {
       this.refresh = false
-      console.log(`33 this.refresh`, this.refresh)
       nextTick(() => {
-        console.log(`33 this.refresh`, this.refresh)
         this.refresh = true
       })
     },
     setCommonItems(key, obj) {
-      console.log(`18 key`, key)
       this[key] = obj
     },
     getDictItems(code) {

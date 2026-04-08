@@ -15,7 +15,6 @@ import { useRenderIcon } from '@/components/ReIcon/src/hooks'
 import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
 import { getCodeInfo, login } from '@/api/login'
 import { setToken } from '@/utils/auth'
-import { getLoginProfile } from '@/utils/loginProfile'
 import { validForm, tryCatch, $toast, debounce } from '@oeos-components/utils'
 import { useCommonHook } from '@/store/common'
 const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook()
@@ -111,8 +110,6 @@ const onLogin = async (type = '') => {
     handleChangeCheckCode()
     return
   }
-  console.log(`73 data`, data)
-  const loginProfile = getLoginProfile(formData.username)
   const backendUserInfo = data.userInfo || {}
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   const accessToken = typeof data.token === 'string' ? data.token : data.token?.accessToken
@@ -122,19 +119,19 @@ const onLogin = async (type = '') => {
     accessToken,
     refreshToken,
     expires: data.token?.expires || expiresAt,
-    avatar: loginProfile?.avatar || backendUserInfo.avatar || '',
-    username: loginProfile?.username || backendUserInfo.username || formData.username,
-    nickname: loginProfile?.nickname || backendUserInfo.realname || backendUserInfo.nickname || formData.username,
-    roles: loginProfile?.roles || ['admin'],
-    permissions: loginProfile?.permissions || ['*:*:*'],
+    avatar: backendUserInfo.avatar || '',
+    username: backendUserInfo.username || formData.username,
+    nickname: backendUserInfo.realname || backendUserInfo.nickname || formData.username,
+    roles: backendUserInfo.roles || [],
+    permissions: backendUserInfo.permissions || [],
   })
   setCommonItems('sysAllDictItems', data.sysAllDictItems || {})
   setCommonItems('userInfo', {
     ...backendUserInfo,
-    username: loginProfile?.username || backendUserInfo.username || formData.username,
-    realname: loginProfile?.nickname || backendUserInfo.realname || backendUserInfo.nickname || formData.username,
-    roles: loginProfile?.roles || ['admin'],
-    permissions: loginProfile?.permissions || ['*:*:*'],
+    username: backendUserInfo.username || formData.username,
+    realname: backendUserInfo.realname || backendUserInfo.nickname || formData.username,
+    roles: backendUserInfo.roles || [],
+    permissions: backendUserInfo.permissions || [],
   })
   initRouter().then(() => {
     disabled.value = true
@@ -163,7 +160,7 @@ function handleChangeCheckCode() {
       const ret = await worker.recognize(res as any)
       formData.captcha = ret.data.text
       console.log(`24 ret.data.text`, ret.data.text)
-      formData.captcha = ret.data.text.replace(/[\s.?]+/g, '')
+      formData.captcha = ret.data.text.replace(/[\s.?)()]+/g, '')
       if (formData.captcha.length !== 4) {
         handleChangeCheckCode()
       }

@@ -6,11 +6,9 @@ import LayNavMix from '../lay-sidebar/NavMix.vue'
 import LaySidebarFullScreen from '../lay-sidebar/components/SidebarFullScreen.vue'
 import LaySidebarBreadCrumb from '../lay-sidebar/components/SidebarBreadCrumb.vue'
 import LaySidebarTopCollapse from '../lay-sidebar/components/SidebarTopCollapse.vue'
+import UserDropdown from '../user-dropdown/index.vue'
 
-import LogoutCircleRLine from '~icons/ri/logout-circle-r-line'
-import Setting from '~icons/ri/settings-3-line'
-
-const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsStyle, toggleSideBar } = useNav()
+const { layout, device, pureApp, toggleSideBar } = useNav()
 </script>
 
 <template>
@@ -33,14 +31,7 @@ const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsS
       <LaySidebarFullScreen id="full-screen" />
       <!-- 消息通知 -->
       <!-- <LayNotice id="header-notice" /> -->
-      <!-- 退出登录 -->
-      <div class="f-st-ct cp fs-14 set-icon custom-out-system mr2" @click="logout">
-        <IconifyIconOffline :icon="LogoutCircleRLine" style="margin: 5px" />
-        退出系统
-      </div>
-      <!-- <span class="set-icon navbar-bg-hover" title="打开系统配置" @click="onPanel">
-        <IconifyIconOffline :icon="Setting" />
-      </span> -->
+      <UserDropdown />
     </div>
   </div>
 </template>
@@ -91,19 +82,5 @@ const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsS
     float: left;
     margin-left: 16px;
   }
-}
-
-.logout {
-  width: 120px;
-
-  ::v-deep(.el-dropdown-menu__item) {
-    display: inline-flex;
-    flex-wrap: wrap;
-    min-width: 100%;
-  }
-}
-
-.custom-out-system {
-  width: 80px !important;
 }
 </style>

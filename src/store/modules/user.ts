@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { type userType, store, router, resetRouter, routerArrays, storageLocal } from '../utils'
 import { type UserResult, type RefreshTokenResult, getLogin, refreshTokenApi } from '@/api/user'
+import { useCommonHook } from '@/store/common'
 import { useMultiTagsStoreHook } from './multiTags'
 import { type DataInfo, setToken, removeToken, userKey } from '@/utils/auth'
 
@@ -65,7 +66,11 @@ export const useUserStore = defineStore('pure-user', {
     },
     /** 前端登出（不调用接口） */
     logOut() {
+      useCommonHook().setCommonItems('userInfo', {})
+      useCommonHook().setCommonItems('sysAllDictItems', {})
+      this.avatar = ''
       this.username = ''
+      this.nickname = ''
       this.roles = []
       this.permissions = []
       removeToken()

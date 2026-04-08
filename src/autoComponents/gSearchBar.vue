@@ -7,13 +7,14 @@
 
       <el-form :model="form" :inline="false" class="search-form" label-suffix=":" @keyup.enter="handleSearch">
         <div class="form-grid">
-          <el-form-item v-for="(item, index) in row" :key="index" :label="item.label" :prop="item.prop">
+          <el-form-item v-for="(item, index) in row" :key="index" label="" :prop="item.prop">
             <o-input
               v-if="item.type === 'input'"
               v-model="form[item.prop]"
               :placeholder="item.placeholder || `请输入${item.label}`"
               :clearable="item.clearable || true"
               style="width: 100%"
+              :title="item.label"
               @clear="handleSearch"
             />
             <o-select
@@ -22,12 +23,14 @@
               style="width: 100%"
               :placeholder="item.placeholder || `请选择${item.label}`"
               :clearable="item.clearable || true"
+              :title="item.label"
               :options="getItemOptions(item)"
               @change="handleSearch"
             />
-            <el-date-picker
+            <o-date-range
               v-else-if="item.type === 'date'"
               v-model="form[item.prop]"
+              :title="item.label"
               :value-format="item.valueFormat || 'YYYY-MM-DD'"
               :format="item.format || 'YYYY-MM-DD'"
               :type="item.dateType || 'date'"
@@ -107,7 +110,6 @@ const handleReset = () => {
 </script>
 
 <style scoped>
-
 @media (width <= 1200px) {
   .form-row .el-form-item {
     flex: 0 0 calc((100% - 16px) / 2);
