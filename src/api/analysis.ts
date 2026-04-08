@@ -205,6 +205,10 @@ export const getFileConfigPageList = (params) => {
 export const updateFaFileConfig = (data) => {
   return request('fa/casefile/updateFileConfig', 'post', { data })
 }
+// 更新配置
+export const updateFaFileConfigModify = (data) => {
+  return request('fa/casefile/redoFileConfig', 'post', { data })
+}
 
 /**
  * 文件转换详情
@@ -212,7 +216,7 @@ export const updateFaFileConfig = (data) => {
 
 // 获取文件类型
 export const getFileInfoItem = (params) => {
-  return request(`/fa/casefile/getFileInfo/${params.fileId}`, { params })
+  return request(`fa/casefile/getFileInfo/${params.fileId}`, { params })
 }
 // 获取转换页码的table数据 fa/caseStandardData/bankCustomerPageList
 export const bankCustomerPageList = (lastUrl, data) => {

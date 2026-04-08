@@ -9,6 +9,7 @@ import {
   faOrgsConfigureList,
   faOrgsConfigureAllList,
   updateFaFileConfig,
+  updateFaFileConfigModify,
 } from '@/api/analysis.ts'
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
@@ -131,28 +132,30 @@ const handlePageClick = async (index) => {
   }
 }
 
-const save = async () => {
+const save = async (type = '') => {
   await validSelectBankCompay()
   await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
     title: '确认操作',
   })
   // 准备请求参数
   const sendData = {
-    // faFileParameters: titleConfigData.value.result.flatMap((dataBlock) =>
-    //   dataBlock.dataBlockStucts.map((struct) => struct.faFileParameter),
-    // ),
     faFileParameters: textMappingTableRef.value.sourceColumns.map((struct) => struct.faFileParameter),
     orgCode: orgCode.value,
     pageId: pageId.value,
     adjTransAmt: adjForm.value.adjTransAmt,
     adjCreditAmt: adjForm.value.adjCreditAmt,
     adjSettlementAmt: adjForm.value.adjSettlementAmt,
-    // saveType: 1, 保存,  2,  暂存, 3, 更新
   }
 
-  // // 调用API保存配置
-  await updateFaFileConfig(sendData)
-  $toast('保存成功')
+  if (type === 'update') {
+    await updateFaFileConfigModify(sendData)
+    $toast('更新成功')
+  } else {
+    // // 调用API保存配置
+    await updateFaFileConfig(sendData)
+    $toast('保存成功')
+  }
+
   init()
 }
 
@@ -244,7 +247,7 @@ defineExpose({
         <div class="bg-white h-100%">
           <o-basic-layout>
             <o-flex justify="space-between">
-              <o-flex :gap="16">
+              <o-flex :gap="16" class="o-a">
                 <o-select v-model="adjForm.adjTransAmt" title="交易金额调整项" :options="BOOLEAN_OPTIONS" width="200" />
                 <o-select
                   v-model="adjForm.adjCreditAmt"
@@ -260,14 +263,15 @@ defineExpose({
                 />
               </o-flex>
               <div>
-                <span class="mr cl-65">
+                <span class="mr cl-65 fs-14">
                   {{
                     saveDisabled
                       ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
                       : '多个数据块配置后一起保存'
                   }}
                 </span>
-                <el-button type="primary" :disabled="saveDisabled" @click="save">保存配置</el-button>
+                <el-button type="primary" :disabled="!saveDisabled" @click="save('update')">更新配置</el-button>
+                <el-button type="primary" :disabled="saveDisabled" @click="save()">保存配置</el-button>
                 <!-- <el-button :disabled="!!saveDisabled">
                   暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
                 </el-button> -->
