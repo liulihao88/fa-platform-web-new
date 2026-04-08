@@ -4,9 +4,10 @@ import { $toast, isEmpty } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
 
-import { useMethods } from '@/hooks'
+import { useMethods, useGlobalTablePageSize } from '@/hooks'
 
 const { exportXls } = useMethods()
+const { syncPageSize, globalPageSize, updatePageSize } = useGlobalTablePageSize()
 const { query } = useRoute()
 interface RepeatRecord {
   id: string
@@ -45,7 +46,8 @@ const syncSelection = async () => {
 const response = ref({})
 
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(globalPageSize.value)
+syncPageSize(pageSize, 'value')
 const selectedMap = ref(new Map<string, any>())
 
 const init = async () => {
@@ -83,7 +85,7 @@ const handleSelectionChange = (rows: RepeatRecord[]) => {
 
 const handleUpdate = (pageNo: number, size: number) => {
   currentPage.value = pageNo
-  pageSize.value = size
+  updatePageSize(pageSize, size, 'value')
   init()
 }
 
@@ -150,7 +152,7 @@ watch(
         :data="displayData"
         :total="response.total"
         :pageSize="pageSize"
-        :currentPage="currentPage"
+        :pageNumber="currentPage"
         row-key="id"
         :index="indexMethod"
         height="450"
