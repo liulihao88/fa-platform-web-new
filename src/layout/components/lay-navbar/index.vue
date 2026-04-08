@@ -34,13 +34,13 @@ const { layout, device, logout, onPanel, pureApp, username, userAvatar, avatarsS
       <!-- 消息通知 -->
       <!-- <LayNotice id="header-notice" /> -->
       <!-- 退出登录 -->
-      <div class="f-st-ct cp fs-14 set-icon custom-out-system" @click="logout">
+      <div class="f-st-ct cp fs-14 set-icon custom-out-system mr2" @click="logout">
         <IconifyIconOffline :icon="LogoutCircleRLine" style="margin: 5px" />
         退出系统
       </div>
-      <span class="set-icon navbar-bg-hover" title="打开系统配置" @click="onPanel">
+      <!-- <span class="set-icon navbar-bg-hover" title="打开系统配置" @click="onPanel">
         <IconifyIconOffline :icon="Setting" />
-      </span>
+      </span> -->
     </div>
   </div>
 </template>
