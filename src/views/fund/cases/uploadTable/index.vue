@@ -281,12 +281,11 @@ async function deleteRow(row) {
 
 <template>
   <CaseUploadFile ref="caseUploadFileRef" class="mb" @close="init" />
-  <o-flex class="w-100%">
-    <g-search-bar :items="items" :itemsPerRow="4" class="f-1" @search="handleSearch" @reset="handleSearch" />
+  <g-search-bar :items="items" class="f-1 mb2" @search="handleSearch" @reset="handleSearch">
     <o-button type="primary" icon="el-icon-upload" width="100" class="ml2" @click="caseUploadFileRef?.open()">
       上传文件
     </o-button>
-  </o-flex>
+  </g-search-bar>
   <o-table
     ref="tableRef"
     :columns="columns"

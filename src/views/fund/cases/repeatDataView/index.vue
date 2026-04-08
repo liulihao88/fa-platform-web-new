@@ -141,7 +141,7 @@ watch(
           <o-button type="primary" :disabled="isEmpty(displayData)" @click="exportData">导出数据</o-button>
           <o-button type="primary" :disabled="!selectedCount" @click="exportSelectedData">导出选择数据</o-button>
         </div>
-        <gSelectedCount :count="selectedCount" @clear="clearSelected" />
+        <gSelectedCount :count="selectedCount" class="ml2" @clear="clearSelected" />
       </o-flex>
 
       <o-table

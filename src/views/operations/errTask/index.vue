@@ -242,7 +242,7 @@ proxy.$initTableHeight(headerRef, true)
     <div ref="headerRef">
       <o-flex class="w-100% mb2">
         <g-search-bar :items="items" :itemsPerRow="2" class="f-1" @search="handleSearch" @reset="handleSearch">
-          <gSelectedCount :count="selectedCount" class="mr2" @clear="clearSelected" />
+          <gSelectedCount :count="selectedCount" @clear="clearSelected" />
         </g-search-bar>
       </o-flex>
     </div>
