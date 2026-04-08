@@ -246,36 +246,52 @@ defineExpose({
       <el-col :span="21">
         <div class="bg-white h-100%">
           <o-basic-layout>
-            <o-flex justify="space-between">
-              <o-flex :gap="16" class="o-a">
-                <o-select v-model="adjForm.adjTransAmt" title="交易金额调整项" :options="BOOLEAN_OPTIONS" width="200" />
+            <o-flex justify="space-between" class="mapping-toolbar">
+              <div class="mapping-toolbar__filters">
+                <o-select
+                  v-model="adjForm.adjTransAmt"
+                  class="mapping-toolbar__select"
+                  title="交易金额调整项"
+                  :options="BOOLEAN_OPTIONS"
+                  width="200"
+                />
                 <o-select
                   v-model="adjForm.adjCreditAmt"
+                  class="mapping-toolbar__select"
                   title="贷款金额调整项"
                   :options="BOOLEAN_OPTIONS"
                   width="200"
                 />
                 <o-select
                   v-model="adjForm.adjSettlementAmt"
+                  class="mapping-toolbar__select"
                   title="结算金额调整项"
                   :options="BOOLEAN_OPTIONS"
                   width="200"
                 />
-              </o-flex>
-              <div>
-                <span class="mr cl-65 fs-14">
+              </div>
+              <o-flex align="center" class="mapping-toolbar__actions" style="white-space: nowrap">
+                <div
+                  class="mr cl-65 fs-14"
+                  width="100%"
+                  :content="
+                    saveDisabled
+                      ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
+                      : '多个数据块配置后一起保存'
+                  "
+                >
                   {{
                     saveDisabled
                       ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
                       : '多个数据块配置后一起保存'
                   }}
-                </span>
+                </div>
                 <el-button type="primary" :disabled="!saveDisabled" @click="save('update')">更新配置</el-button>
                 <el-button type="primary" :disabled="saveDisabled" @click="save()">保存配置</el-button>
                 <!-- <el-button :disabled="!!saveDisabled">
                   暂存为草稿 =>{{ typeof saveDisabled }} => {{ saveDisabled }}
                 </el-button> -->
-              </div>
+              </o-flex>
             </o-flex>
             <TextMappingTable
               v-if="notEmpty(fileInfo) && orgCode"
@@ -294,6 +310,18 @@ defineExpose({
 </template>
 
 <style scoped lang="scss">
+
+
+@media (width <= 1400px) {
+  .mapping-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .mapping-toolbar__actions {
+    width: 100%;
+  }
+}
+
 .sheet-item {
   justify-content: space-between;
   padding: 10px 12px;
@@ -313,5 +341,37 @@ defineExpose({
   background: #ecf5ff;
   border-color: #409eff;
   box-shadow: inset 0 0 0 1px #409eff;
+}
+
+.mapping-toolbar {
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.mapping-toolbar__filters {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.mapping-toolbar__select {
+  flex: 0 0 200px;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+}
+
+.mapping-toolbar__actions {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+  word-break: break-all;
+}
+
+// .mapping-toolbar__select :deep(.el-input),
+// .mapping-toolbar__select :deep(.el-select),
+.mapping-toolbar__select :deep(.el-select__wrapper) {
+  min-width: 60px !important;
 }
 </style>
