@@ -272,7 +272,12 @@ export const fileContextInfo = (data) => {
 }
 
 export const payeeListApi = (params) => {
-  return request('fa/caseStandardData/payeeList', { params })
+  const baseParams = {
+    column: 'createTime',
+    order: 'desc',
+  }
+  const finalParams = { ...baseParams, ...params }
+  return request('fa/caseStandardData/payeeList', { params: finalParams })
 }
 
 export const entityTransListApi = (data) => {

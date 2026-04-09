@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
@@ -22,6 +22,7 @@ const archiveVisible = ref(false)
 const archiveText = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
+const toTableRef = ref<any>(null)
 
 const queryParams = reactive({
   pageNo: 1,
@@ -41,6 +42,7 @@ const extraParams = reactive({
 
 const fromSelectedRows = ref<Record<string, any>[]>([])
 const toSelectedRows = ref<Record<string, any>[]>([])
+const toPendingRow = ref<Record<string, any> | null>(null)
 const fromPersonData = ref<Record<string, any>[]>([])
 const toPersonData = ref<Record<string, any>[]>([])
 const pickerLoading = ref(false)
@@ -59,6 +61,7 @@ const personColumns = [
 ] as any[]
 
 const payeeColumns = [
+  { prop: 'radio', width: 58, align: 'center', useSlot: true },
   { label: '交易对方卡号', prop: 'counterCardNum', minWidth: 160 },
   { label: '交易对方名称', prop: 'counterName', minWidth: 160 },
   { label: '交易对方账号', prop: 'counterAccountNo', minWidth: 160 },
@@ -99,12 +102,23 @@ const detailDescOptions = computed(() =>
   })),
 )
 
+const toSelectedPayeeId = computed({
+  get: () => toPendingRow.value?.id || '',
+  set: (value: string) => {
+    const matchedRow = toPersonData.value.find((item) => item.id === value) || null
+    toPendingRow.value = matchedRow
+    nextTick(() => {
+      toTableRef.value?.$refs?.tableRef?.setCurrentRow(matchedRow || null)
+    })
+  },
+})
+
 function handleFromSelection(rows: Record<string, any>[]) {
   fromSelectedRows.value = rows.slice(0, 1)
 }
 
-function handleToSelection(rows: Record<string, any>[]) {
-  toSelectedRows.value = rows.slice(0, 1)
+function handleToCurrentChange(row?: Record<string, any>) {
+  toPendingRow.value = row || null
 }
 
 function handleDetail(record: Record<string, any>) {
@@ -235,9 +249,23 @@ async function loadToPersons() {
     })
     toPersonData.value = res?.records || res || []
     toPersonTotal.value = res?.total || toPersonData.value.length || 0
+    await nextTick()
+    syncToCurrentRow()
   } finally {
     pickerLoading.value = false
   }
+}
+
+function syncToCurrentRow() {
+  const current = toPendingRow.value
+  const tableRef = toTableRef.value?.$refs?.tableRef
+  if (!tableRef) return
+  if (!current) {
+    tableRef.setCurrentRow(null)
+    return
+  }
+  const matchedRow = toPersonData.value.find((item) => item.id === current.id)
+  tableRef.setCurrentRow(matchedRow || null)
 }
 
 async function showFromPerson() {
@@ -246,7 +274,7 @@ async function showFromPerson() {
 }
 
 async function showToPerson() {
-  toSelectedRows.value = []
+  toPendingRow.value = toSelectedRows.value[0] || null
   toPickerVisible.value = true
   await loadToPersons()
 }
@@ -285,11 +313,12 @@ function confirmFromPerson() {
 }
 
 function confirmToPerson() {
-  if (!toSelectedRows.value.length) {
+  if (!toPendingRow.value) {
     $toast('请选择交易对方', 'w')
     return
   }
-  extraParams.payeeld = toSelectedRows.value[0].counterCustomerId
+  toSelectedRows.value = [toPendingRow.value]
+  extraParams.payeeld = toPendingRow.value.counterCustomerId
   toPickerVisible.value = false
   fetchList()
 }
@@ -301,6 +330,7 @@ function clearFromPerson() {
 }
 
 function clearToPerson() {
+  toPendingRow.value = null
   toSelectedRows.value = []
   extraParams.payeeld = ''
   fetchList()
@@ -377,7 +407,7 @@ fetchList()
       </div>
     </o-dialog>
 
-    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :showConfirm="false" :enableConfirm="false">
+    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" @confirm="confirmToPerson">
       <g-search-bar
         class="mb-3"
         :items="toPersonSearchItems"
@@ -386,22 +416,25 @@ fetchList()
         @reset="handleToPersonReset"
       />
       <o-table
+        ref="toTableRef"
         :columns="payeeColumns"
         :data="toPersonData"
         :total="toPersonTotal"
         :loading="pickerLoading"
         :pageSize="toPersonSearchForm.pageSize"
         :pageNumber="toPersonSearchForm.pageNo"
+        row-key="id"
         height="400"
-        @selection-change="handleToSelection"
+        highlight-current-row
+        @current-change="handleToCurrentChange"
         @update="handleToPersonUpdate"
       >
-        <el-table-column type="selection" width="58" align="center" />
+        <template #radio="{ row }">
+          <div class="radio-cell">
+            <el-radio v-model="toSelectedPayeeId" :value="row.id" />
+          </div>
+        </template>
       </o-table>
-      <div class="case-deal-page__dialog-footer">
-        <el-button icon="el-icon-close" @click="toPickerVisible = false">取消</el-button>
-        <el-button type="primary" icon="el-icon-check" @click="confirmToPerson">确定</el-button>
-      </div>
     </o-dialog>
 
     <o-dialog v-model="archiveVisible" title="卷宗信息预览" width="1200px" :showConfirm="false">
@@ -467,5 +500,11 @@ fetchList()
   display: flex;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+.radio-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
