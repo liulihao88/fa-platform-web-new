@@ -76,6 +76,8 @@ const handleDataByCurrentIndex = () => {
   sourceColumns.value = data.value.dataBlockStucts ?? []
 }
 
+const getColumnLabel = (column) => column.faFileParameter.newMetaData?.trim() || ''
+
 const noMappingFields = computed(() => {
   return (
     data.value?.noMappingTitle
@@ -151,7 +153,7 @@ defineExpose({
       </div>
     </div>
 
-    <o-tabs v-model="currentIndex" :options="tabsOptions" @change="handleDataByCurrentIndex()" />
+    <o-tabs v-model="currentIndex" :options="tabsOptions" @tabChange="handleDataByCurrentIndex()" />
     <div class="mapping-table-wrapper">
       <el-table
         v-if="!dataIsEmpty"
@@ -170,8 +172,8 @@ defineExpose({
         <el-table-column
           v-for="(column, columnIndex) in sourceColumns"
           :key="column.faFileParameter.id"
-          :label="column.faFileParameter.newMetaData?.trim() || '未映射'"
-          :min-width="((column.faFileParameter.newMetaData?.trim() || '未映射').length + 2) * 14"
+          :label="column.faFileParameter.newMetaData?.trim() || ''"
+          :min-width="((column.faFileParameter.newMetaData?.trim() || '').length + 2) * 14"
           align="center"
           :class-name="
             column.faFileParameter.newMetaData?.trim() ? 'group-column' : 'group-column unmapped-group-column'
@@ -179,7 +181,9 @@ defineExpose({
         >
           <template #header>
             <div class="config-header-cell">
-              <span>{{ column.faFileParameter.newMetaData?.trim() || '未映射' }}</span>
+              <span :class="{ 'header-placeholder': !getColumnLabel(column) }">
+                {{ getColumnLabel(column) || '未映射' }}
+              </span>
               <el-button link type="primary" :icon="Edit" @click="handleColumnHeader(column, columnIndex)" />
             </div>
           </template>
@@ -270,6 +274,10 @@ defineExpose({
   display: inline-flex;
   gap: 6px;
   align-items: center;
+}
+
+:deep(.config-header-cell .header-placeholder) {
+  visibility: hidden;
 }
 
 :deep(.config-header-actions .el-button) {
