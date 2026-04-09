@@ -135,9 +135,12 @@ const handlePageClick = async (index) => {
 
 const save = async (type = '') => {
   await validSelectBankCompay()
-  await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
-    title: '确认操作',
-  })
+  if (isEmpty(type)) {
+    await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
+      title: '确认操作',
+    })
+  }
+
   // 准备请求参数
   const sendData = {
     faFileParameters: textMappingTableRef.value.sourceColumns.map((struct) => struct.faFileParameter),
@@ -150,14 +153,11 @@ const save = async (type = '') => {
 
   if (type === 'update') {
     await redoFileConfig(sendData)
-    $toast('更新成功')
   } else if (type === 'draft') {
     await draftFileConfig(sendData)
-    $toast('暂存草稿成功')
   } else {
     // // 调用API保存配置
     await updateFaFileConfig(sendData)
-    $toast('保存成功')
   }
 
   init()
@@ -177,6 +177,7 @@ const textMappingTableInit = (emitTableData) => {
     isConfigured.value = true
     return
   }
+  isConfigured.value = false
   return false
 }
 
@@ -289,15 +290,15 @@ defineExpose({
               </div>
               <div class="mapping-toolbar__buttons">
                 <el-button
-                  v-if="isConfigured && orgCode"
+                  v-if="!isConfigured && orgCode"
                   type="primary"
                   icon="el-icon-document"
-                  :disabled="!isConfigured"
                   @click="save('draft')"
                 >
                   暂存草稿
                 </el-button>
                 <el-button
+                  v-if="isConfigured && orgCode"
                   type="primary"
                   icon="el-icon-refresh-right"
                   :disabled="!isConfigured || !orgCode"
