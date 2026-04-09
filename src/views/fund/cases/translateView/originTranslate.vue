@@ -143,8 +143,11 @@ watch(
       </div>
 
       <div class="actions">
-        <el-button class="cp" type="primary" @click="previewFile('normal')">预览文件</el-button>
-        <el-button v-if="!isExcelFile" class="cp" type="primary" @click="previewFile('fast')">快速预览文件</el-button>
+        <o-button type="primary" @click="previewFile('normal')">预览文件</o-button>
+        <o-button v-if="!isExcelFile" class="cp" type="primary" @click="previewFile('fast')">快速预览文件</o-button>
+        <o-tooltip content="快速预览文件使用懒加载技术, 无法全局搜索" placement="top" class="ml">
+          <o-icon name="warning" />
+        </o-tooltip>
       </div>
     </div>
 
@@ -230,7 +233,6 @@ watch(
 .actions {
   display: flex;
   flex-shrink: 0;
-  gap: 10px;
   align-items: center;
 }
 
