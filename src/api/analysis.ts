@@ -246,6 +246,38 @@ export const caseInvolvedList = (data) => {
   return request('fa/caseInvolved/list', 'post', { data })
 }
 
+export const updatePersonRelationApi = (data) => {
+  return request('fa/caseInvolved/updateInvolvedType', 'post', { data })
+}
+
+export const getInvolvedRelationApi = (data) => {
+  return request('fa/caseInvolved/relationList', 'post', { data })
+}
+
+export const getInvolvedPersonApi = (data) => {
+  return request('fa/caseInvolved/involvedPersonList', 'post', { data })
+}
+
+export const updateInvolvedPersonApi = (data) => {
+  return request('fa/caseInvolved/saveOrUpdateInvolvedRelation', 'post', { data })
+}
+
+export const getCompanyOrPersonDetailApi = (data) => {
+  return request('fa/caseInvolved/detail', 'post', { data })
+}
+
+export const fileContextInfo = (data) => {
+  return request('fa/caseStandardData/generateTransText', 'post', { data })
+}
+
+export const payeeListApi = (params) => {
+  return request('fa/caseStandardData/payeeList', { params })
+}
+
+export const entityTransListApi = (data) => {
+  return request('fa/caseStandardData/entityTransList', 'post', { data })
+}
+
 /**
  * 标准数据查看
  */

@@ -25,7 +25,7 @@
                 <div class="condition-cell">
                   <el-select
                     v-model="rootGroups.operate"
-                    :options="getColumnOptions(props.columns.find((c) => c.prop === 'operate'))"
+                    :options="relationOptions"
                     placeholder="选择关系"
                     size="small"
                     style="width: 100%"
@@ -56,14 +56,14 @@
                 </div>
                 <div class="condition-cell actions-cell">
                   <el-button type="primary" size="small" @click="addSameLevelCondition(null, 1)">添加同级</el-button>
-                  <el-button type="success" size="small" @click="addSubGroup(item.id, 1)" :disabled="1 >= 5">
+                  <el-button type="success" size="small" :disabled="1 >= 5" @click="addSubGroup(item.id, 1)">
                     {{ 1 >= 5 ? '最多5级' : '添加子级' }}
                   </el-button>
                   <el-button
                     type="danger"
                     size="small"
-                    @click="removeCondition(item.id)"
                     :disabled="rootGroups.items.length === 1"
+                    @click="removeCondition(item.id)"
                   >
                     删除
                   </el-button>
@@ -85,7 +85,7 @@
                       <div class="condition-cell">
                         <el-select
                           v-model="subGroup.operate"
-                          :options="getColumnOptions(props.columns.find((c) => c.prop === 'operate'))"
+                          :options="relationOptions"
                           placeholder="选择关系"
                           size="small"
                           style="width: 100%"
@@ -124,7 +124,7 @@
                         <el-button type="primary" size="small" @click="addSameLevelCondition(item.id, 2)">
                           添加同级
                         </el-button>
-                        <el-button type="success" size="small" @click="addSubGroup(subItem.id, 2)" :disabled="2 >= 5">
+                        <el-button type="success" size="small" :disabled="2 >= 5" @click="addSubGroup(subItem.id, 2)">
                           {{ 2 >= 5 ? '最多5级' : '添加子级' }}
                         </el-button>
                         <el-button type="danger" size="small" @click="removeCondition(subItem.id)">删除</el-button>
@@ -146,7 +146,7 @@
                             <div class="condition-cell">
                               <el-select
                                 v-model="subGroup3.operate"
-                                :options="getColumnOptions(props.columns.find((c) => c.prop === 'operate'))"
+                                :options="relationOptions"
                                 placeholder="选择关系"
                                 size="small"
                                 style="width: 100%"
@@ -188,8 +188,8 @@
                               <el-button
                                 type="success"
                                 size="small"
-                                @click="addSubGroup(subItem3.id, 3)"
                                 :disabled="3 >= 5"
+                                @click="addSubGroup(subItem3.id, 3)"
                               >
                                 {{ 3 >= 5 ? '最多5级' : '添加子级' }}
                               </el-button>
@@ -218,7 +218,7 @@
                                   <div class="condition-cell">
                                     <el-select
                                       v-model="subGroup4.operate"
-                                      :options="getColumnOptions(props.columns.find((c) => c.prop === 'operate'))"
+                                      :options="relationOptions"
                                       placeholder="选择关系"
                                       size="small"
                                       style="width: 100%"
@@ -264,8 +264,8 @@
                                     <el-button
                                       type="success"
                                       size="small"
-                                      @click="addSubGroup(subItem4.id, 4)"
                                       :disabled="4 >= 5"
+                                      @click="addSubGroup(subItem4.id, 4)"
                                     >
                                       {{ 4 >= 5 ? '最多5级' : '添加子级' }}
                                     </el-button>
@@ -294,7 +294,7 @@
                                         <div class="condition-cell">
                                           <el-select
                                             v-model="subGroup5.operate"
-                                            :options="getColumnOptions(props.columns.find((c) => c.prop === 'operate'))"
+                                            :options="relationOptions"
                                             placeholder="选择关系"
                                             size="small"
                                             style="width: 100%"
@@ -368,7 +368,7 @@
         <div class="footer-left">
           <el-button @click="handleSave">保存条件</el-button>
           <div v-if="showSaveInput" class="save-input-area">
-            <el-input v-model="conditionName" placeholder="输入条件名称" style="width: 200px"></el-input>
+            <el-input v-model="conditionName" placeholder="输入条件名称" style="width: 200px" />
             <el-button type="primary" @click="handleConfirmSave">确认保存</el-button>
             <el-button @click="handleCancel">取消保存</el-button>
           </div>
@@ -441,6 +441,10 @@ interface SmartScreeningProps {
   modelValue?: ConditionGroup
   caseId?: string | number | null
 }
+const relationOptions = [
+  { label: '且', value: 'and' },
+  { label: '或', value: 'or' },
+]
 
 const props = withDefaults(defineProps<SmartScreeningProps>(), {
   columns: () => [
@@ -785,176 +789,17 @@ function handleReset() {
 </script>
 
 <style scoped>
-.smart-screening {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;
-}
 
-.screening-header {
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eaeaea;
-  padding-bottom: 10px;
-}
-
-.screening-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.screening-content {
-  width: 100%;
-}
-
-.screening-table {
-  border: 1px solid #eaeaea;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.table-header {
-  display: flex;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #eaeaea;
-  font-weight: bold;
-}
-
-.header-cell {
-  padding: 12px;
-  text-align: center;
-  border-right: 1px solid #eaeaea;
-}
-
-.header-cell:last-child {
-  border-right: none;
-}
-
-.header-cell.level {
-  width: 120px;
-}
-
-.header-cell.relation {
-  width: 300px;
-}
-
-.header-cell.field {
-  width: 300px;
-}
-
-.header-cell.logic {
-  width: 300px;
-}
-
-.header-cell.value {
-  flex: 1;
-  min-width: 200px;
-}
-
-.header-cell.action {
-  width: 300px;
-}
-
-.table-body {
-  min-height: 50px;
-}
-
-.condition-group {
-  border-bottom: 1px solid #eaeaea;
-}
-
-.condition-row {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  position: relative;
-}
-
-.condition-row::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background-color: #eaeaea;
-}
-
-.condition-cell {
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.condition-cell.level-cell {
-  width: 80px;
-}
-
-.condition-cell {
-  width: 300px;
-}
-
-.condition-cell.value {
-  flex: 1;
-  min-width: 200px;
-  justify-content: flex-start;
-}
-
-.condition-cell.actions-cell {
-  width: 250px;
-  gap: 8px;
-  justify-content: flex-start;
-}
-
-.sub-group-wrapper {
-  margin-left: 40px;
-  border-left: 1px solid #eaeaea;
-  padding-left: 20px;
-}
-
-.empty-state {
-  padding: 40px 0;
-  text-align: center;
-}
-
-.screening-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 20px;
-  border-top: 1px solid #eaeaea;
-}
-
-.footer-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.save-input-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.footer-right {
-  display: flex;
-  gap: 10px;
-}
 
 /* 响应式调整 */
-@media (max-width: 1200px) {
+@media (width <= 1200px) {
   .header-cell.action {
     width: 200px;
   }
 
   .condition-cell.actions-cell {
-    width: 200px;
     gap: 4px;
+    width: 200px;
   }
 
   .condition-cell.actions-cell .el-button {
@@ -963,7 +808,7 @@ function handleReset() {
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .smart-screening {
     padding: 10px;
   }
@@ -1021,24 +866,182 @@ function handleReset() {
   }
 
   .condition-cell.actions-cell {
-    width: 150px;
     flex-wrap: wrap;
+    width: 150px;
   }
 
   .sub-group-wrapper {
-    margin-left: 20px;
     padding-left: 10px;
+    margin-left: 20px;
   }
 
   .screening-footer {
     flex-direction: column;
-    align-items: flex-start;
     gap: 10px;
+    align-items: flex-start;
   }
 
   .footer-right {
-    width: 100%;
     justify-content: space-between;
+    width: 100%;
   }
+}
+
+.smart-screening {
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.screening-header {
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.screening-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.screening-content {
+  width: 100%;
+}
+
+.screening-table {
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+}
+
+.table-header {
+  display: flex;
+  font-weight: bold;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.header-cell {
+  padding: 12px;
+  text-align: center;
+  border-right: 1px solid #eaeaea;
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+.header-cell.level {
+  width: 120px;
+}
+
+.header-cell.relation {
+  width: 300px;
+}
+
+.header-cell.field {
+  width: 300px;
+}
+
+.header-cell.logic {
+  width: 300px;
+}
+
+.header-cell.value {
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-cell.action {
+  width: 300px;
+}
+
+.table-body {
+  min-height: 50px;
+}
+
+.condition-group {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.condition-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.condition-row::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  content: '';
+  background-color: #eaeaea;
+}
+
+.condition-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  padding: 0 12px;
+}
+
+.condition-cell.level-cell {
+  width: 80px;
+}
+
+.condition-cell.value {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 200px;
+}
+
+.condition-cell.actions-cell {
+  gap: 8px;
+  justify-content: flex-start;
+  width: 250px;
+}
+
+.sub-group-wrapper {
+  padding-left: 20px;
+  margin-left: 40px;
+  border-left: 1px solid #eaeaea;
+}
+
+.empty-state {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.screening-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid #eaeaea;
+}
+
+.footer-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.save-input-area {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.footer-right {
+  display: flex;
+  gap: 10px;
 }
 </style>

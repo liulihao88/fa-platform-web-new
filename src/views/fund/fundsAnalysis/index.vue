@@ -1,237 +1,90 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router'
-import smartSearch from './smartSearch.vue'
-import { ref, getCurrentInstance, reactive } from 'vue'
-import { exportTransListData, getCaseInfoById, getTransList } from '@/api/analysis'
-import { isEmpty } from '@oeos-components/utils'
-import { useGlobalTablePageSize } from '@/hooks'
-const { proxy } = getCurrentInstance()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
-const route = useRoute()
-const detail = reactive<Record<string, any>>({})
-const headerRef = ref<HTMLDivElement>()
-const columns = [
-  { label: '关系', prop: 'operate', type: 'select', dict: 'fa_trans_query_operate' },
-  { label: '字段', prop: 'field', type: 'select', dict: 'fa_trans_query_rule_str' },
-  { label: '逻辑', prop: 'condition', type: 'select', dict: 'fa_trans_query_rule_nostr' },
-  { label: '值', prop: 'value', type: 'input' },
-] as any[]
+import { computed, ref } from 'vue'
+import SmartSearchDetail from './smartSearchDetail.vue'
+import CaseManage from './caseManage.vue'
+import CaseDealSearch from './caseDealSearch.vue'
 
-const tableColumns = [
-  {
-    type: 'selection',
-  },
-  {
-    label: '文件名称',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '行号',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '机构名称',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '客户号',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '客户名称',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '交易账号',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '相关账号',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '户名',
-    prop: '',
-  },
-  {
-    label: '币种',
-    prop: '',
-  },
-  {
-    label: '交易状态',
-    prop: '',
-  },
-  {
-    label: '交易方向',
-    prop: '',
-  },
-  {
-    label: '交易金额',
-    prop: '',
-  },
-  {
-    label: '交易种类',
-    prop: '',
-  },
-  {
-    label: '业务日期',
-    prop: '',
-  },
-  {
-    label: '交易时间',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '金额',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '对方机构名称',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '对方账号',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '对方户名',
-    prop: '',
-    width: 100,
-  },
-  {
-    label: '操作',
-    prop: '',
-    fixed: 'right',
-    btns: [
-      {
-        content: '查看原信息',
-        type: 'primary',
-        handler: () => {},
-      },
-      {
-        content: '查看详情',
-        type: 'primary',
-        handler: () => {},
-      },
-    ],
-  },
+const activeTab = ref('smartSearchDetail')
+
+const tabs = [
+  { label: '智能筛查', value: 'smartSearchDetail' },
+  { label: '涉案人管理', value: 'caseManage' },
+  { label: '涉案人交易查询', value: 'caseDealSearch' },
 ]
-const data = ref([])
-const total = ref(0)
-const selectIds = ref([])
-const conditionJson = ref(null)
-const handleSelectionChange = (val) => {
-  console.log(val)
-  selectIds.value = val.map((item) => item.id)
+
+const componentMap: Record<string, any> = {
+  smartSearchDetail: SmartSearchDetail,
+  caseManage: CaseManage,
+  caseDealSearch: CaseDealSearch,
 }
-const handleUpdate = (pageNo, pageSize) => {
-  baseQuery.value.pageNo = pageNo
-  updatePageSize(baseQuery.value, pageSize)
-  handleSearch(null)
-}
-const exportCurrentPage = async () => {
-  await exportTransListData({
-    caseId,
-    conditionJson: conditionJson.value,
-    ...baseQuery.value,
-  })
-}
-const exportMarkedData = () => {}
-const exportAllData = async () => {
-  await exportTransListData({
-    caseId,
-    conditionJson: conditionJson.value,
-    ...baseQuery.value,
-    exportAll: true,
-  })
-}
-const showArchiveModal = () => {}
-const moreBtns = [
-  {
-    content: '导出本页数据',
-    type: 'primary',
-    handler: exportCurrentPage,
-  },
-  {
-    content: '导出选择数据',
-    type: 'primary',
-    handler: exportMarkedData,
-  },
-  {
-    content: '导出全部数据',
-    type: 'primary',
-    handler: exportAllData,
-  },
-  {
-    content: '生成卷宗信息',
-    type: 'primary',
-    handler: showArchiveModal,
-  },
-]
-const caseId = route.query.caseId as string
-const getCaseInfo = async () => {
-  const res = await getCaseInfoById({ caseId })
-  Object.assign(detail, res)
-}
-const baseQuery = ref({
-  pageNo: 1,
-  pageSize: 10,
-})
-syncPageSize(baseQuery.value)
-const handleSearch = async (params) => {
-  console.log(params)
-  if (!isEmpty(params)) {
-    conditionJson.value = JSON.stringify({ grouproot: params })
-  }
-  const obj = {
-    caseId,
-    conditionJson: conditionJson.value,
-    ...baseQuery.value,
-  }
-  const res = await getTransList(obj)
-  total.value = res.total
-  data.value = res.records
-}
-getCaseInfo()
-proxy.$initTableHeight(headerRef, true)
+
+const currentComponent = computed(() => componentMap[activeTab.value] || SmartSearchDetail)
 </script>
 
 <template>
-  <div class="h-100%">
-    <o-basic-layout class="h-100%">
-      <div ref="headerRef" class="mb-2">
-        <el-descriptions :column="4" border>
-          <el-descriptions-item label="案件名称">{{ detail.caseName }}</el-descriptions-item>
-          <el-descriptions-item label="部门受案号">{{ detail.departmentCaseNumber }}</el-descriptions-item>
-          <el-descriptions-item label="受理日期">{{ detail.acceptTime }}</el-descriptions-item>
-          <el-descriptions-item label="案由">{{ detail.caseReason }}</el-descriptions-item>
-        </el-descriptions>
-        <smartSearch class="mt-2" :columns="columns" :caseId="caseId" @query="handleSearch" />
-        <g-more-button :btns="moreBtns" mode="opt" showNum="4" />
-      </div>
-      <o-table
-        ref="tableRef"
-        :height="$tableHeight.value"
-        :columns="tableColumns"
-        :data="data"
-        :total="total"
-        :showIndex="false"
-        :page-size="baseQuery.pageSize"
-        :pageNumber="baseQuery.pageNo"
-        @selection-change="handleSelectionChange"
-        @update="handleUpdate"
-      />
-    </o-basic-layout>
+  <div class="funds-analysis-page">
+    <aside class="funds-analysis-page__aside">
+      <button
+        v-for="tab in tabs"
+        :key="tab.value"
+        type="button"
+        :class="['funds-analysis-page__tab', { 'is-active': activeTab === tab.value }]"
+        @click="activeTab = tab.value"
+      >
+        {{ tab.label }}
+      </button>
+    </aside>
+
+    <section class="funds-analysis-page__content">
+      <component :is="currentComponent" />
+    </section>
   </div>
 </template>
+
+<style scoped lang="scss">
+.funds-analysis-page {
+  display: flex;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.funds-analysis-page__aside {
+  display: flex;
+  flex: 0 0 180px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+}
+
+.funds-analysis-page__tab {
+  padding: 10px 12px;
+  color: #606266;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.funds-analysis-page__tab:hover {
+  color: var(--el-color-primary);
+  background: #f5f9ff;
+}
+
+.funds-analysis-page__tab.is-active {
+  color: var(--el-color-primary);
+  background: #ecf5ff;
+  border-color: #b3d8ff;
+}
+
+.funds-analysis-page__content {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+</style>
