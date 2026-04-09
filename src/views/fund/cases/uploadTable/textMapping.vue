@@ -59,7 +59,7 @@ const fileInfo: any = ref({})
 const orgCode = ref('')
 const pageId = ref('')
 const orgDisabled = ref(false)
-const saveDisabled = ref(false)
+const isConfigured = ref(false)
 const activePageIndex = ref(0)
 
 const initPayList = async () => {
@@ -170,11 +170,11 @@ const selectOrg = () => {
 const textMappingTableInit = (emitTableData) => {
   const pages = fileInfo.value?.filePages ?? []
   if (pages[activePageIndex.value].configureStatus === '1') {
-    saveDisabled.value = true
+    isConfigured.value = true
     return
   }
   if (isEmpty(pages) || isEmpty(emitTableData)) {
-    saveDisabled.value = true
+    isConfigured.value = true
     return
   }
   return false
@@ -278,7 +278,7 @@ defineExpose({
                   </div>
                   <div class="mapping-toolbar__hint cl-65 fs-14">
                     {{
-                      saveDisabled
+                      isConfigured
                         ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
                         : '多个数据块配置后一起保存'
                     }}
@@ -287,17 +287,17 @@ defineExpose({
               </div>
               <div class="mapping-toolbar__buttons">
                 <el-button
-                  v-if="saveDisabled && orgCode"
+                  v-if="isConfigured && orgCode"
                   type="primary"
-                  :disabled="!saveDisabled"
+                  :disabled="!isConfigured"
                   @click="save('draft')"
                 >
                   暂存草稿
                 </el-button>
-                <el-button type="primary" :disabled="!saveDisabled || !orgCode" @click="save('update')">
+                <el-button type="primary" :disabled="!isConfigured || !orgCode" @click="save('update')">
                   更新配置
                 </el-button>
-                <el-button type="primary" :disabled="saveDisabled || !orgCode" @click="save()">保存配置</el-button>
+                <el-button type="primary" :disabled="isConfigured || !orgCode" @click="save()">保存配置</el-button>
               </div>
             </div>
             <TextMappingTable
@@ -305,6 +305,7 @@ defineExpose({
               ref="textMappingTableRef"
               :orgCode="orgCode"
               :pageId="pageId"
+              :isConfigured="isConfigured"
               @textMappingTableInit="textMappingTableInit"
             />
           </o-basic-layout>

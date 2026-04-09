@@ -26,6 +26,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  isConfigured: {
+    type: Boolean,
+    required: true,
+  },
 })
 
 const data = ref({})
@@ -160,6 +164,7 @@ defineExpose({
         :data="tableData"
         height="420"
         border
+        size="small"
         stripe
         row-key="__index"
         table-layout="auto"
@@ -184,7 +189,13 @@ defineExpose({
               <span :class="{ 'header-placeholder': !getColumnLabel(column) }">
                 {{ getColumnLabel(column) || '未映射' }}
               </span>
-              <el-button link type="primary" :icon="Edit" @click="handleColumnHeader(column, columnIndex)" />
+              <el-button
+                v-if="!props.isConfigured"
+                link
+                type="primary"
+                :icon="Edit"
+                @click="handleColumnHeader(column, columnIndex)"
+              />
             </div>
           </template>
           <el-table-column
@@ -219,7 +230,6 @@ defineExpose({
 
 .mapping-summary {
   padding: 16px;
-  margin-bottom: 16px;
   background: #fff;
   border: 1px solid #ebeef5;
   border-radius: 8px;
