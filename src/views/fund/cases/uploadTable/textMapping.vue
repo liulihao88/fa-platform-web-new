@@ -222,7 +222,9 @@ defineExpose({
               value="id"
               class="mr"
             />
-            <el-button type="primary" :disabled="orgDisabled" @click="selectOrg">选择</el-button>
+            <el-button type="primary" icon="el-icon-office-building" :disabled="orgDisabled" @click="selectOrg">
+              选择
+            </el-button>
           </div>
         </template>
       </o-title>
@@ -289,15 +291,23 @@ defineExpose({
                 <el-button
                   v-if="isConfigured && orgCode"
                   type="primary"
+                  icon="el-icon-document"
                   :disabled="!isConfigured"
                   @click="save('draft')"
                 >
                   暂存草稿
                 </el-button>
-                <el-button type="primary" :disabled="!isConfigured || !orgCode" @click="save('update')">
+                <el-button
+                  type="primary"
+                  icon="el-icon-refresh-right"
+                  :disabled="!isConfigured || !orgCode"
+                  @click="save('update')"
+                >
                   更新配置
                 </el-button>
-                <el-button type="primary" :disabled="isConfigured || !orgCode" @click="save()">保存配置</el-button>
+                <el-button type="primary" icon="el-icon-check" :disabled="isConfigured || !orgCode" @click="save()">
+                  保存配置
+                </el-button>
               </div>
             </div>
             <TextMappingTable

@@ -260,7 +260,7 @@ export default defineComponent({
                     indeterminate={isIndeterminate.value}
                     onChange={(value) => handleCheckAllChange(value)}
                   />
-                  <el-button type="primary" link onClick={() => onReset()}>
+                  <el-button type="primary" link icon={RefreshIcon} onClick={() => onReset()}>
                     重置
                   </el-button>
                 </div>

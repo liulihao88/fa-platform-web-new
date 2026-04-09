@@ -88,11 +88,23 @@ onMounted(() => {
       </o-input>
 
       <div class="standard-data-view__pagination fs-12">
-        <el-button plain :disabled="searchParams.pageNo <= 1" size="small" @click="changePage('prev')">
+        <el-button
+          plain
+          icon="el-icon-arrow-left"
+          :disabled="searchParams.pageNo <= 1"
+          size="small"
+          @click="changePage('prev')"
+        >
           上一页
         </el-button>
         <div class="standard-data-view__page-text">{{ searchParams.pageNo }}/{{ totalPages }}</div>
-        <el-button plain :disabled="searchParams.pageNo >= totalPages" size="small" @click="changePage('next')">
+        <el-button
+          plain
+          icon="el-icon-arrow-right"
+          :disabled="searchParams.pageNo >= totalPages"
+          size="small"
+          @click="changePage('next')"
+        >
           下一页
         </el-button>
       </div>

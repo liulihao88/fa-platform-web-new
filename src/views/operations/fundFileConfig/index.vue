@@ -113,7 +113,7 @@ proxy.$initTableHeight(headerRef, true)
     <div ref="headerRef">
       <o-flex class="w-100% mb2" justify="space-between" align="center" gap="12">
         <g-search-bar :items="items" :itemsPerRow="4" class="f-1" @search="handleSearch" @reset="handleSearch">
-          <o-button type="primary" @click="handleAdd">新增配置</o-button>
+          <o-button type="primary" icon="el-icon-plus" @click="handleAdd">新增配置</o-button>
         </g-search-bar>
       </o-flex>
     </div>

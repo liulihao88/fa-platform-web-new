@@ -267,6 +267,7 @@ useEventListener(document, 'keydown', ({ code }) => {
                   class="w-full mt-4!"
                   size="default"
                   type="primary"
+                  icon="el-icon-user"
                   :loading="loading"
                   :disabled="disabled"
                   @click="onLogin('admin')"
@@ -279,6 +280,7 @@ useEventListener(document, 'keydown', ({ code }) => {
                   class="w-full mt-4!"
                   size="default"
                   type="primary"
+                  icon="el-icon-user-filled"
                   :loading="loading"
                   :disabled="disabled"
                   @click="onLogin('jcg')"
@@ -291,6 +293,7 @@ useEventListener(document, 'keydown', ({ code }) => {
                   class="w-full mt-4!"
                   size="default"
                   type="primary"
+                  icon="el-icon-avatar"
                   :loading="loading"
                   :disabled="disabled"
                   @click="onLogin('yy')"
@@ -298,7 +301,14 @@ useEventListener(document, 'keydown', ({ code }) => {
                   运营(andy)登录
                 </el-button>
               </div>
-              <el-button class="w-full mt-4!" size="default" :loading="loading" :disabled="disabled" @click="onLogin()">
+              <el-button
+                class="w-full mt-4!"
+                size="default"
+                icon="el-icon-right"
+                :loading="loading"
+                :disabled="disabled"
+                @click="onLogin()"
+              >
                 正常登录
               </el-button>
             </Motion>

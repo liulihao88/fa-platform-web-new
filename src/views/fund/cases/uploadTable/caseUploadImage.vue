@@ -125,7 +125,14 @@ const hasUploadComp = computed(() => {
       <template #tip>
         <o-flex class="w-100%" justify="space-between">
           <div class="el-upload__tip">支持扩展名 .xls .xlsx .xlsm .csv .pdf .zip</div>
-          <el-button v-if="hasUploadComp" type="danger" style="margin-top: 10px" size="small" @click="cancelAllUpload">
+          <el-button
+            v-if="hasUploadComp"
+            type="danger"
+            icon="el-icon-close-bold"
+            style="margin-top: 10px"
+            size="small"
+            @click="cancelAllUpload"
+          >
             全部取消上传
           </el-button>
         </o-flex>
@@ -143,7 +150,9 @@ const hasUploadComp = computed(() => {
         <o-tooltip :content="v.name" class="1" />
         <div class="w-140 tr">
           <el-tag v-if="percentTextArr[i] === '上传完成'" size="small" @click="cancelUploadByIndex(i)">上传完成</el-tag>
-          <el-button v-else size="small" @click="cancelUploadByIndex(i)">取消上传 {{ percentTextArr[i] }}</el-button>
+          <el-button v-else size="small" icon="el-icon-close" @click="cancelUploadByIndex(i)">
+            取消上传 {{ percentTextArr[i] }}
+          </el-button>
         </div>
       </div>
     </div>

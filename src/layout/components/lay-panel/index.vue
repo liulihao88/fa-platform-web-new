@@ -81,6 +81,7 @@ onBeforeUnmount(() => {
           type="danger"
           text
           bg
+          icon="el-icon-delete"
           @click="onReset"
         >
           清空缓存

@@ -100,7 +100,7 @@ proxy.$initTableHeight(headerRef, true)
     <div ref="headerRef">
       <o-flex class="w-100% mb2" justify="space-between" align="center" gap="12">
         <g-search-bar :items="items" :itemsPerRow="3" class="f-1" @search="handleSearch" @reset="handleSearch">
-          <o-button type="primary" @click="handleAdd">新增机构</o-button>
+          <o-button type="primary" icon="el-icon-plus" @click="handleAdd">新增机构</o-button>
         </g-search-bar>
       </o-flex>
     </div>
@@ -116,7 +116,7 @@ proxy.$initTableHeight(headerRef, true)
       @update="handleUpdate"
     >
       <template #orgName="{ row }">
-        <el-button type="text" @click="handleDetail(row)">{{ row.orgName || '--' }}</el-button>
+        <el-button type="text" icon="el-icon-view" @click="handleDetail(row)">{{ row.orgName || '--' }}</el-button>
       </template>
       <template #orgType="{ value }">
         <o-tag :type="getOrgTypeTag(value)">{{ getOrgTypeText(value) }}</o-tag>

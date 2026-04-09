@@ -140,8 +140,12 @@ watch(
     <div class="repeat-page__wrap">
       <o-flex align="center" class="repeat-page__toolbar">
         <div>
-          <o-button type="primary" :disabled="isEmpty(displayData)" @click="exportData">导出数据</o-button>
-          <o-button type="primary" :disabled="!selectedCount" @click="exportSelectedData">导出选择数据</o-button>
+          <o-button type="primary" icon="el-icon-download" :disabled="isEmpty(displayData)" @click="exportData">
+            导出数据
+          </o-button>
+          <o-button type="primary" icon="el-icon-download" :disabled="!selectedCount" @click="exportSelectedData">
+            导出选择数据
+          </o-button>
         </div>
         <gSelectedCount :count="selectedCount" class="ml2" @clear="clearSelected" />
       </o-flex>

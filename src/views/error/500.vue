@@ -62,6 +62,7 @@ const router = useRouter()
             delay: 160,
           },
         }"
+        icon="el-icon-house"
         @click="router.push('/')"
       >
         返回首页

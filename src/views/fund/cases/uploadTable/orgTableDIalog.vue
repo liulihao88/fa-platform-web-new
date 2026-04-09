@@ -132,7 +132,6 @@ defineExpose({
       :enableConfirm="false"
       @confirm="confirm"
     >
-      {{ orgId }}
       <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
       <o-table
         ref="tableRef"

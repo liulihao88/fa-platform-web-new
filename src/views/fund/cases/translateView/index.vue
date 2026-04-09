@@ -75,7 +75,7 @@ const handleResize = (percent: number) => {
 
           <template #right>
             <o-tooltip :content="translateResultInfo" trigger="click" raw-content>
-              <el-button type="primary">转换结果说明</el-button>
+              <el-button type="primary" icon="el-icon-info-filled">转换结果说明</el-button>
             </o-tooltip>
           </template>
         </o-title>
