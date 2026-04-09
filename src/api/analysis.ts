@@ -206,8 +206,12 @@ export const updateFaFileConfig = (data) => {
   return request('fa/casefile/updateFileConfig', 'post', { data })
 }
 // 更新配置
-export const updateFaFileConfigModify = (data) => {
+export const redoFileConfig = (data) => {
   return request('fa/casefile/redoFileConfig', 'post', { data })
+}
+// 暂存草稿
+export const draftFileConfig = (data) => {
+  return request('fa/casefile/draftFileConfig', 'post', { data })
 }
 
 /**

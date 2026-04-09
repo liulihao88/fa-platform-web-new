@@ -9,7 +9,8 @@ import {
   faOrgsConfigureList,
   faOrgsConfigureAllList,
   updateFaFileConfig,
-  updateFaFileConfigModify,
+  redoFileConfig,
+  draftFileConfig,
 } from '@/api/analysis.ts'
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
 import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
@@ -148,8 +149,11 @@ const save = async (type = '') => {
   }
 
   if (type === 'update') {
-    await updateFaFileConfigModify(sendData)
+    await redoFileConfig(sendData)
     $toast('更新成功')
+  } else if (type === 'draft') {
+    await draftFileConfig(sendData)
+    $toast('暂存草稿成功')
   } else {
     // // 调用API保存配置
     await updateFaFileConfig(sendData)
@@ -282,8 +286,18 @@ defineExpose({
                 </div>
               </div>
               <div class="mapping-toolbar__buttons">
-                <el-button type="primary" :disabled="!saveDisabled" @click="save('update')">更新配置</el-button>
-                <el-button type="primary" :disabled="saveDisabled" @click="save()">保存配置</el-button>
+                <el-button
+                  v-if="saveDisabled && orgCode"
+                  type="primary"
+                  :disabled="!saveDisabled"
+                  @click="save('draft')"
+                >
+                  暂存草稿
+                </el-button>
+                <el-button type="primary" :disabled="!saveDisabled || !orgCode" @click="save('update')">
+                  更新配置
+                </el-button>
+                <el-button type="primary" :disabled="saveDisabled || !orgCode" @click="save()">保存配置</el-button>
               </div>
             </div>
             <TextMappingTable

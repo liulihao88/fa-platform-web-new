@@ -15,6 +15,14 @@ const init = async () => {
 <template>
   <div>
     <div>test/t2.vue</div>
-    <el-button type="primary" @click="init">测试12</el-button>
+    <o-title title="1." />
+    <el-button type="primary" @click="isTest67">暂存草稿</el-button>
+    <el-button type="primary" @click="isTest67">保存配置</el-button>
+    <o-title title="2." />
+    <el-button type="primary" @click="isTest67">重新配置</el-button>
+    <el-button type="primary" disabled @click="isTest67">保存配置</el-button>
+    <o-title title="3." />
+    <el-button type="primary" @click="isTest67">暂存草稿</el-button>
+    <el-button type="primary" @click="isTest67">保存配置</el-button>
   </div>
 </template>

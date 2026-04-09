@@ -236,15 +236,15 @@ const columns = [
 ]
 
 function handleStatusPromise(record) {
+  // 定义可打开模态框的状态
+  const validStatuses = ['101', '102']
+  // 定义配置中的状态
+  const configStatuses = ['003']
+  // 定义加载中的状态
+  const loadingStatuses = ['000', '100', '001', '002', '004', '005']
+  // 定义错误状态
+  const errorStatuses = ['900', '901', '902', '904', '999']
   return new Promise((resolve, reject) => {
-    // 定义可打开模态框的状态
-    const validStatuses = ['101', '102']
-    // 定义配置中的状态
-    const configStatuses = ['003']
-    // 定义加载中的状态
-    const loadingStatuses = ['000', '100', '001', '002', '004', '005']
-    // 定义错误状态
-    const errorStatuses = ['900', '901', '902', '904', '999']
     if (validStatuses.includes(record.status)) {
       // // 状态允许打开模态框
       return resolve(record)
@@ -265,12 +265,38 @@ function handleStatusPromise(record) {
   })
 }
 
+// 新增：处理标题配置按钮点击事件
+const handleTitleConfigClick = (record) => {
+  // 定义可打开模态框的状态
+  const validStatuses = ['003', '100', '101', '904', '102']
+  // 定义加载中的状态
+  const loadingStatuses = ['000', '001', '002', '004', '005']
+  // 定义错误状态
+  const errorStatuses = ['900', '901', '902', '999']
+  return new Promise((resolve, reject) => {
+    if (validStatuses.includes(record.status)) {
+      // 状态允许打开模态框
+      return resolve(record)
+    } else if (loadingStatuses.includes(record.status)) {
+      // 文件正在加载中
+      $toast('文件正在加载中，请稍后', 'w')
+    } else if (errorStatuses.includes(record.status)) {
+      // 文件加载错误
+      $toast('文件加载错误，请修改后再配置', 'e')
+    } else {
+      // 其他状态默认提示
+      $toast('当前状态不支持标题配置', 'w')
+    }
+    return reject(record)
+  })
+}
+
 async function translateRow(record) {
   await handleStatusPromise(record)
   toDetail('TranslateView', { fileId: record.id })
 }
 async function textRow(row) {
-  await handleStatusPromise(row)
+  await handleTitleConfigClick(row)
   toDetail('TextMapping', { fileId: row.id })
 }
 
