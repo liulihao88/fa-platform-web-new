@@ -242,6 +242,7 @@ export const bankCustomerPageList = (lastUrl, data) => {
 /**
  * 涉案人 管理
  */
+// 涉案人列表
 export const caseInvolvedList = (data) => {
   return request('fa/caseInvolved/list', 'post', { data })
 }

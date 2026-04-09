@@ -44,6 +44,7 @@ const toSelectedRows = ref<Record<string, any>[]>([])
 const fromPersonData = ref<Record<string, any>[]>([])
 const toPersonData = ref<Record<string, any>[]>([])
 const pickerLoading = ref(false)
+const toPersonTotal = ref(0)
 
 const searchItems = [
   { label: '归属银行', prop: 'orgCd', type: 'input', placeholder: '请输入归属银行' },
@@ -62,6 +63,21 @@ const payeeColumns = [
   { label: '交易对方名称', prop: 'counterName', minWidth: 160 },
   { label: '交易对方账号', prop: 'counterAccountNo', minWidth: 160 },
   { label: '对方机构名称', prop: 'counterOrgName', minWidth: 180 },
+] as any[]
+
+const toPersonSearchForm = reactive({
+  pageNo: 1,
+  pageSize: 10,
+  counterName: '',
+  counterCardNum: '',
+  counterAccountNo: '',
+})
+syncPageSize(toPersonSearchForm)
+
+const toPersonSearchItems = [
+  { label: '交易对方名称', prop: 'counterName', type: 'input', placeholder: '请输入交易对方名称' },
+  { label: '对方卡号', prop: 'counterCardNum', type: 'input', placeholder: '请输入对方卡号' },
+  { label: '对方账号', prop: 'counterAccountNo', type: 'input', placeholder: '请输入对方账号' },
 ] as any[]
 
 const mainColumns = computed(() =>
@@ -209,8 +225,16 @@ async function loadFromPersons() {
 async function loadToPersons() {
   pickerLoading.value = true
   try {
-    const res = await payeeListApi({ caseId })
+    const res = await payeeListApi({
+      caseId,
+      pageNo: toPersonSearchForm.pageNo,
+      pageSize: toPersonSearchForm.pageSize,
+      counterName: toPersonSearchForm.counterName,
+      counterCardNum: toPersonSearchForm.counterCardNum,
+      counterAccountNo: toPersonSearchForm.counterAccountNo,
+    })
     toPersonData.value = res?.records || res || []
+    toPersonTotal.value = res?.total || toPersonData.value.length || 0
   } finally {
     pickerLoading.value = false
   }
@@ -222,7 +246,31 @@ async function showFromPerson() {
 }
 
 async function showToPerson() {
+  toSelectedRows.value = []
   toPickerVisible.value = true
+  await loadToPersons()
+}
+
+function handleToPersonSearch(params: Record<string, any>) {
+  Object.assign(toPersonSearchForm, params || {})
+  toPersonSearchForm.pageNo = 1
+  loadToPersons()
+}
+
+function handleToPersonReset() {
+  Object.assign(toPersonSearchForm, {
+    pageNo: 1,
+    pageSize: toPersonSearchForm.pageSize,
+    counterName: '',
+    counterCardNum: '',
+    counterAccountNo: '',
+  })
+  loadToPersons()
+}
+
+async function handleToPersonUpdate(pageNo: number, pageSize: number) {
+  toPersonSearchForm.pageNo = pageNo
+  updatePageSize(toPersonSearchForm, pageSize)
   await loadToPersons()
 }
 
@@ -329,14 +377,24 @@ fetchList()
       </div>
     </o-dialog>
 
-    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :showConfirm="false">
+    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :showConfirm="false" :enableConfirm="false">
+      <g-search-bar
+        class="mb-3"
+        :items="toPersonSearchItems"
+        :itemsPerRow="3"
+        @search="handleToPersonSearch"
+        @reset="handleToPersonReset"
+      />
       <o-table
         :columns="payeeColumns"
         :data="toPersonData"
+        :total="toPersonTotal"
         :loading="pickerLoading"
-        :showPage="false"
-        height="420"
+        :pageSize="toPersonSearchForm.pageSize"
+        :pageNumber="toPersonSearchForm.pageNo"
+        height="400"
         @selection-change="handleToSelection"
+        @update="handleToPersonUpdate"
       >
         <el-table-column type="selection" width="58" align="center" />
       </o-table>
