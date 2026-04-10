@@ -69,7 +69,7 @@ export default defineComponent({
         'text-black',
         'dark:text-white',
         'duration-100',
-        'hover:text-primary!',
+        'hover:!text-primary',
         'cursor-pointer',
         'outline-hidden',
       ]
@@ -214,7 +214,7 @@ export default defineComponent({
             'px-2',
             'pb-2',
             'bg-bg_color',
-            isFullscreen.value ? ['h-full!', 'z-2002', 'fixed', 'inset-0'] : 'mt-2',
+            isFullscreen.value ? ['!h-full', 'z-2002', 'fixed', 'inset-0'] : 'mt-2',
           ]}
         >
           <div class="flex justify-between w-full h-[60px] p-4">
@@ -254,7 +254,7 @@ export default defineComponent({
               >
                 <div class={[topClass.value]}>
                   <el-checkbox
-                    class="-mr-1!"
+                    class="!-mr-1"
                     label="列展示"
                     v-model={checkAll.value}
                     indeterminate={isIndeterminate.value}
@@ -279,7 +279,7 @@ export default defineComponent({
                               <DragIcon
                                 class={[
                                   'drag-btn w-[16px] mr-2',
-                                  isFixedColumn(item) ? 'cursor-no-drop!' : 'cursor-grab!',
+                                  isFixedColumn(item) ? '!cursor-no-drop' : '!cursor-grab',
                                 ]}
                                 onMouseenter={(event: { preventDefault: () => void }) => rowDrop(event)}
                               />

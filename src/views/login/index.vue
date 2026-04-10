@@ -264,7 +264,7 @@ useEventListener(document, 'keydown', ({ code }) => {
             <Motion :delay="250">
               <div>
                 <el-button
-                  class="w-full mt-4!"
+                  class="w-full !mt-4"
                   size="default"
                   type="primary"
                   icon="el-icon-user"
@@ -277,7 +277,7 @@ useEventListener(document, 'keydown', ({ code }) => {
               </div>
               <div>
                 <el-button
-                  class="w-full mt-4!"
+                  class="w-full !mt-4"
                   size="default"
                   type="primary"
                   icon="el-icon-user-filled"
@@ -290,7 +290,7 @@ useEventListener(document, 'keydown', ({ code }) => {
               </div>
               <div>
                 <el-button
-                  class="w-full mt-4!"
+                  class="w-full !mt-4"
                   size="default"
                   type="primary"
                   icon="el-icon-avatar"
@@ -302,7 +302,7 @@ useEventListener(document, 'keydown', ({ code }) => {
                 </el-button>
               </div>
               <el-button
-                class="w-full mt-4!"
+                class="w-full !mt-4"
                 size="default"
                 icon="el-icon-right"
                 :loading="loading"

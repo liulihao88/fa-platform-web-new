@@ -551,7 +551,7 @@ onBeforeUnmount(() => {
           @click="tagOnClick(item)"
         >
           <template v-if="showModel !== 'chrome'">
-            <span class="tag-title dark:text-text_color_primary! dark:hover:text-primary!">
+            <span class="tag-title dark:!text-text_color_primary dark:hover:!text-primary">
               {{ item.meta.title }}
             </span>
             <span

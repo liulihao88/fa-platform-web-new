@@ -99,7 +99,7 @@
     "@faker-js/faker": "^10.1.0",
     "@iconify/json": "^2.2.400",
     "@iconify/vue": "4.2.0",
-    "@tailwindcss/vite": "^4.1.16",
+    "autoprefixer": "^10.4.21",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.19.23",
     "@types/nprogress": "^0.2.3",
@@ -133,7 +133,7 @@
     "stylelint-config-standard-scss": "^14.0.0",
     "stylelint-prettier": "^5.0.3",
     "svgo": "^4.0.0",
-    "tailwindcss": "^4.1.16",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2",
     "unplugin-icons": "^22.5.0",
@@ -174,9 +174,7 @@
       "typeit",
       "vue-demi"
     ],
-    "ignoredBuiltDependencies": [
-      "@tailwindcss/oxide"
-    ],
+    "ignoredBuiltDependencies": [],
     "overrides": {
       "@oeos-components/utils": "link:../../Library/pnpm/global/5/node_modules/@oeos-components/utils"
     }

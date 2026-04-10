@@ -7,7 +7,6 @@ import svgLoader from 'vite-svg-loader'
 import Icons from 'unplugin-icons/vite'
 import type { PluginOption } from 'vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import tailwindcss from '@tailwindcss/vite'
 import { configCompressPlugin } from './compress'
 import removeNoMatch from 'vite-plugin-router-warn'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -28,7 +27,6 @@ export function getPluginsList(VITE_CDN: boolean, VITE_COMPRESSION: ViteCompress
     }),
     syncPdfjsDistAssetsPlugin(),
     syncPdfjsDistAssetsBuildPlugin(),
-    tailwindcss(),
     vue(),
     // jsx、tsx语法支持
     vueJsx(),

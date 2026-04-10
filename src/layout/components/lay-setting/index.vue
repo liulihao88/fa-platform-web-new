@@ -163,7 +163,7 @@ const getThemeColor = computed(() => {
 })
 
 const pClass = computed(() => {
-  return ['mb-[12px]!', 'font-medium', 'text-sm', 'dark:text-white']
+  return ['!mb-[12px]', 'font-medium', 'text-sm', 'dark:text-white']
 })
 
 const themeOptions = computed<Array<OptionsType>>(() => {
@@ -305,7 +305,7 @@ onUnmounted(() => removeMatchMedia)
         "
       />
 
-      <p :class="['mt-5!', pClass]">主题色</p>
+      <p :class="['!mt-5', pClass]">主题色</p>
       <ul class="theme-color">
         <li
           v-for="(item, index) in themeColors"
@@ -320,7 +320,7 @@ onUnmounted(() => removeMatchMedia)
         </li>
       </ul>
 
-      <p :class="['mt-5!', pClass]">导航模式</p>
+      <p :class="['!mt-5', pClass]">导航模式</p>
       <ul class="pure-theme">
         <li
           ref="verticalRef"
@@ -363,7 +363,7 @@ onUnmounted(() => removeMatchMedia)
       </ul>
 
       <span v-if="useAppStoreHook().getViewportWidth > 1280">
-        <p :class="['mt-5!', pClass]">页宽</p>
+        <p :class="['!mt-5', pClass]">页宽</p>
         <Segmented
           resize
           class="mb-2 select-none"
@@ -397,7 +397,7 @@ onUnmounted(() => removeMatchMedia)
         </button>
       </span>
 
-      <p :class="['mt-4!', pClass]">页签风格</p>
+      <p :class="['!mt-4', pClass]">页签风格</p>
       <Segmented
         resize
         class="select-none"
@@ -406,7 +406,7 @@ onUnmounted(() => removeMatchMedia)
         @change="onChange"
       />
 
-      <p class="mt-5! font-medium text-sm dark:text-white">界面显示</p>
+      <p class="!mt-5 font-medium text-sm dark:text-white">界面显示</p>
       <ul class="setting">
         <li>
           <span class="dark:text-white">灰色模式</span>
