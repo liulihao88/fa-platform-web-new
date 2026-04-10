@@ -102,6 +102,18 @@ const detailDescOptions = computed(() =>
   })),
 )
 
+const fromDisplayText = computed(() => {
+  const selected = fromSelectedRows.value[0]
+  if (!selected) return '请选择交易发起方'
+  return selected.customerName || '已选中'
+})
+
+const toDisplayText = computed(() => {
+  const selected = toSelectedRows.value[0]
+  if (!selected) return '请选择交易对方'
+  return selected.counterName || '已选中'
+})
+
 const toSelectedPayeeId = computed({
   get: () => toPendingRow.value?.id || '',
   set: (value: string) => {
@@ -344,7 +356,7 @@ fetchList()
     <div class="case-deal-page__selectors">
       <div class="selector-card">
         <span class="selector-label">交易发起方</span>
-        <div class="selector-value">{{ fromSelectedRows[0]?.customerName || '请选择交易发起方' }}</div>
+        <div class="selector-value">{{ fromDisplayText }}</div>
         <div class="selector-actions">
           <el-button type="primary" icon="el-icon-plus" circle @click="showFromPerson" />
           <el-button v-if="fromSelectedRows.length" icon="el-icon-close" circle @click="clearFromPerson" />
@@ -353,7 +365,7 @@ fetchList()
       <div class="selector-arrow">-></div>
       <div class="selector-card">
         <span class="selector-label">交易对方</span>
-        <div class="selector-value">{{ toSelectedRows[0]?.counterName || '请选择交易对方' }}</div>
+        <div class="selector-value">{{ toDisplayText }}</div>
         <div class="selector-actions">
           <el-button type="primary" icon="el-icon-plus" circle @click="showToPerson" />
           <el-button v-if="toSelectedRows.length" icon="el-icon-close" circle @click="clearToPerson" />
