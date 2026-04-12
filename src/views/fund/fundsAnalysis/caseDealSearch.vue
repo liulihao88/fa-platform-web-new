@@ -17,7 +17,6 @@ const fromTableSectionRef = useTemplateRef('fromTableSectionRef')
 const toDialogRef = useTemplateRef('toDialogRef')
 const toTableSectionRef = useTemplateRef('toTableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-const { height: toTableHeight } = useRelativeHeight(toTableSectionRef, toDialogRef, { minHeight: 240, offset: 62 })
 
 const caseId = String(route.query.caseId || '')
 const tableData = ref<Record<string, any>[]>([])
@@ -433,10 +432,11 @@ fetchList()
       v-model="toPickerVisible"
       title="选择交易对方"
       width="1000px"
+      fillSlot
       :confirm="confirmToPerson"
       :enableConfirm="false"
     >
-      <div ref="toDialogRef" class="case-deal-page__dialog-body">
+      <o-flex direction="column" class="h-100%">
         <g-search-bar
           class="mb-3"
           :items="toPersonSearchItems"
@@ -444,29 +444,27 @@ fetchList()
           @search="handleToPersonSearch"
           @reset="handleToPersonReset"
         />
-        <div ref="toTableSectionRef" class="case-deal-page__dialog-table">
-          <o-table
-            ref="toTableRef"
-            :columns="payeeColumns"
-            :data="toPersonData"
-            :total="toPersonTotal"
-            :loading="pickerLoading"
-            :pageSize="toPersonSearchForm.pageSize"
-            :pageNumber="toPersonSearchForm.pageNo"
-            row-key="id"
-            :height="toTableHeight"
-            highlight-current-row
-            @current-change="handleToCurrentChange"
-            @update="handleToPersonUpdate"
-          >
-            <template #radio="{ row }">
-              <div class="radio-cell">
-                <el-radio v-model="toSelectedPayeeId" :value="row.id" />
-              </div>
-            </template>
-          </o-table>
-        </div>
-      </div>
+        <o-table
+          ref="toTableRef"
+          :columns="payeeColumns"
+          :data="toPersonData"
+          :total="toPersonTotal"
+          :loading="pickerLoading"
+          :pageSize="toPersonSearchForm.pageSize"
+          :pageNumber="toPersonSearchForm.pageNo"
+          row-key="id"
+          height="100%"
+          highlight-current-row
+          @current-change="handleToCurrentChange"
+          @update="handleToPersonUpdate"
+        >
+          <template #radio="{ row }">
+            <div class="radio-cell">
+              <el-radio v-model="toSelectedPayeeId" :value="row.id" />
+            </div>
+          </template>
+        </o-table>
+      </o-flex>
     </o-dialog>
 
     <o-dialog v-model="archiveVisible" title="卷宗信息预览" width="1200px" :showConfirm="false">
@@ -504,12 +502,6 @@ fetchList()
 
 .case-deal-page__table,
 .case-deal-page__dialog-table {
-  min-height: 0;
-}
-
-.case-deal-page__dialog-body {
-  display: flex;
-  flex-direction: column;
   min-height: 0;
 }
 
