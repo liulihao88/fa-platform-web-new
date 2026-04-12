@@ -16,7 +16,7 @@ const fromDialogRef = useTemplateRef('fromDialogRef')
 const fromTableSectionRef = useTemplateRef('fromTableSectionRef')
 const toDialogRef = useTemplateRef('toDialogRef')
 const toTableSectionRef = useTemplateRef('toTableSectionRef')
-const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
 const { height: fromTableHeight } = useRelativeHeight(fromTableSectionRef, fromDialogRef, {
   minHeight: 240,
   offset: 12,

@@ -23,7 +23,7 @@ export default {
       const marginTop = parseFloat(getComputedStyle(el).marginTop)
       const marginBottom = parseFloat(getComputedStyle(el).marginBottom)
       DomHeight.value += height + marginTop + marginBottom
-      tableHeight.value = window.innerHeight - DomHeight.value - 34 - 48 - 48 - (isShowPagination ? 64 : 0)
+      tableHeight.value = window.innerHeight - DomHeight.value - 34 - 48 - 48 - (isShowPagination ? 50 : 0)
     }
     // 创建一个响应式引用，用于存储表格高度
 

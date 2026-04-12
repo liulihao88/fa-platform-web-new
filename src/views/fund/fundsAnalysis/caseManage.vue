@@ -233,7 +233,7 @@ onMounted(async () => {
 
 <template>
   <div ref="pageRef" class="case-manage-page">
-    <g-search-bar :items="searchItems" @search="handleSearch" @reset="handleReset" />
+    <g-search-bar :items="searchItems" class="m-b-12" @search="handleSearch" @reset="handleReset" />
     <div ref="tableSectionRef" class="case-manage-page__table">
       <o-table :columns="columns" :data="data" :loading="loading" :height="tableHeight">
         <template #involvedKind="{ value }">

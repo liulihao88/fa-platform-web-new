@@ -26,7 +26,7 @@ const sourceDialogRef = useTemplateRef('sourceDialogRef')
 const sourceTableSectionRef = useTemplateRef('sourceTableSectionRef')
 const { height: sourceTableHeight } = useRelativeHeight(sourceTableSectionRef, sourceDialogRef, {
   minHeight: 240,
-  offset: 62,
+  offset: 50,
 })
 const tableRef = ref()
 const detail = reactive<Record<string, any>>({})
