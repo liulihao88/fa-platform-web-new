@@ -214,7 +214,7 @@ export default defineComponent({
             'px-2',
             'pb-2',
             'bg-bg_color',
-            isFullscreen.value ? ['!h-full', 'z-2002', 'fixed', 'inset-0'] : 'mt-2',
+            isFullscreen.value ? ['!h-full', 'z-2002', 'fixed', 'top-0', 'right-0', 'bottom-0', 'left-0'] : 'mt-2',
           ]}
         >
           <div class="flex justify-between w-full h-[60px] p-4">
