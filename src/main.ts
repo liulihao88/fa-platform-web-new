@@ -9,6 +9,7 @@ import TableHeightPlugin from '@/plugins/tableHeight.ts'
 import { injectResponsiveStorage } from '@/utils/responsive'
 import Antd from 'ant-design-vue'
 import 'ant-design-vue/dist/reset.css'
+import 'core-js/stable'
 
 import * as globalData from '@/assets/constants'
 

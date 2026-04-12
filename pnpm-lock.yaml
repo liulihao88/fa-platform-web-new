@@ -41,6 +41,9 @@ importers:
       axios:
         specifier: ^1.12.2
         version: 1.12.2
+      core-js:
+        specifier: ^3.49.0
+        version: 3.49.0
       cron-parser:
         specifier: ^4.9.0
         version: 4.9.0
@@ -2482,8 +2485,8 @@ packages:
     resolution: {integrity: sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==}
     engines: {node: '>=0.10.0'}
 
-  core-js@3.48.0:
-    resolution: {integrity: sha512-zpEHTy1fjTMZCKLHUZoVeylt9XrzaIN2rbPXEt0k+q7JE5CkCZdo6bNq55bn24a69CH7ErAVLKijxJja4fw+UQ==}
+  core-js@3.49.0:
+    resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
 
   cors@2.8.5:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
@@ -7070,7 +7073,7 @@ snapshots:
 
   '@simonwep/pickr@1.8.2':
     dependencies:
-      core-js: 3.48.0
+      core-js: 3.49.0
       nanopop: 2.4.2
 
   '@sxzz/popperjs-es@2.11.8': {}
@@ -8062,7 +8065,7 @@ snapshots:
 
   copy-descriptor@0.1.1: {}
 
-  core-js@3.48.0: {}
+  core-js@3.49.0: {}
 
   cors@2.8.5:
     dependencies:
