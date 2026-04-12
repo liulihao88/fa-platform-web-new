@@ -105,7 +105,10 @@ const update = async (no, size) => {
 }
 
 const open = async (sendOrgId = '') => {
-  baseSearch.value = { ...originBaseSearch }
+  const currentPageSize = baseSearch.value.pageSize
+  Object.assign(baseSearch.value, originBaseSearch, {
+    pageSize: currentPageSize,
+  })
   orgId.value = sendOrgId
   init()
   isShow.value = true

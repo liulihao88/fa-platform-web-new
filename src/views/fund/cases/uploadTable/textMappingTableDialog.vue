@@ -22,12 +22,15 @@ const props = defineProps({
 const isShow = ref(false)
 const total = ref(0)
 const data = ref([])
-const baseSearch = ref({
+const ORIIGIN_BASE_SAERCH = {
   pageNo: 1,
   pageSize: 10,
   metaData: '',
   orgCode: props.orgCode,
   mappingTitle: props.mappingTitle,
+}
+const baseSearch = ref({
+  ...ORIIGIN_BASE_SAERCH,
 })
 syncPageSize(baseSearch.value)
 
@@ -123,6 +126,12 @@ const handleCurrentChange = async (currentRow, oldCurrentRow) => {
 }
 
 const open = async (sendOriMetaData, idx, titleColName = '') => {
+  const currentPageSize = baseSearch.value.pageSize
+  Object.assign(baseSearch.value, ORIIGIN_BASE_SAERCH, {
+    pageSize: currentPageSize,
+    orgCode: props.orgCode,
+    mappingTitle: props.mappingTitle,
+  })
   oriMetaData.value = sendOriMetaData
   originFieldName.value = titleColName
   isShow.value = true
@@ -130,8 +139,7 @@ const open = async (sendOriMetaData, idx, titleColName = '') => {
   await init()
 }
 
-const confirm = () => {
-  console.log(`oriMetaData.value`, oriMetaData.value)
+const confirm = async () => {
   emits('success', oriMetaData.value, outIdx.value)
   isShow.value = false
 }
@@ -141,7 +149,6 @@ const handleSearch = (form) => {
   init()
 }
 const update = async (no, size) => {
-  console.log(`47 no`, no)
   baseSearch.value.pageNo = no
   updatePageSize(baseSearch.value, size)
   pageNo.value = no
