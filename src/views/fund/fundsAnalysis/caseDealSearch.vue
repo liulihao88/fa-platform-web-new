@@ -12,10 +12,6 @@ const { exportXls } = useMethods()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
-const fromDialogRef = useTemplateRef('fromDialogRef')
-const fromTableSectionRef = useTemplateRef('fromTableSectionRef')
-const toDialogRef = useTemplateRef('toDialogRef')
-const toTableSectionRef = useTemplateRef('toTableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
 
 const caseId = String(route.query.caseId || '')
@@ -415,17 +411,21 @@ fetchList()
       </o-table>
     </div>
 
-    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" :confirm="confirmFromPerson">
-      <o-table
-        :columns="personColumns"
-        :data="fromPersonData"
-        :loading="pickerLoading"
-        :showPage="false"
-        :height="fromTableHeight"
-        @selection-change="handleFromSelection"
-      >
-        <el-table-column type="selection" width="58" align="center" />
-      </o-table>
+    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" fillSlot :confirm="confirmFromPerson">
+      <o-flex direction="column" class="h-100%">
+        <o-table
+          class="f-1"
+          style="min-height: 0"
+          :columns="personColumns"
+          :data="fromPersonData"
+          :loading="pickerLoading"
+          :showPage="false"
+          height="100%"
+          @selection-change="handleFromSelection"
+        >
+          <el-table-column type="selection" width="58" align="center" />
+        </o-table>
+      </o-flex>
     </o-dialog>
 
     <o-dialog
@@ -446,6 +446,8 @@ fetchList()
         />
         <o-table
           ref="toTableRef"
+          class="f-1"
+          style="min-height: 0"
           :columns="payeeColumns"
           :data="toPersonData"
           :total="toPersonTotal"
@@ -500,8 +502,7 @@ fetchList()
   min-height: 0;
 }
 
-.case-deal-page__table,
-.case-deal-page__dialog-table {
+.case-deal-page__table {
   min-height: 0;
 }
 

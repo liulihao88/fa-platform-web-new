@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, watch, useTemplateRef } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
 import { getFileConfigPageList } from '@/api/analysis'
 import { $toast, notEmpty } from '@oeos-components/utils'
-import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useGlobalTablePageSize } from '@/hooks'
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const emits = defineEmits(['success'])
@@ -48,9 +48,6 @@ const selectRow = ref({})
 const oriMetaData = ref('')
 const originFieldName = ref('')
 const outIdx = ref(-1)
-const dialogBodyRef = useTemplateRef('dialogBodyRef')
-const tableSectionRef = useTemplateRef('tableSectionRef')
-const { height: tableHeight } = useRelativeHeight(tableSectionRef, dialogBodyRef, { minHeight: 240, offset: 62 })
 
 const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
@@ -174,11 +171,12 @@ defineExpose({
     v-model="isShow"
     title="修改配置列"
     width="1000"
+    fillSlot
     :enableConfirm="false"
     :destroy-on-close="true"
     :confirm="confirm"
   >
-    <div ref="dialogBodyRef" class="mapping-table-dialog">
+    <o-flex direction="column" class="h-100%">
       <g-search-bar :items="items" class="mb2" @search="handleSearch" @reset="handleSearch">
         <o-flex align="center" class="h-100%">
           <span class="origin-field__label">原字段:</span>
@@ -186,40 +184,28 @@ defineExpose({
           <el-button type="primary" link @click="reset">清除选择</el-button>
         </o-flex>
       </g-search-bar>
-      <div ref="tableSectionRef" class="mapping-table-dialog__table">
-        <o-table
-          ref="tableRef"
-          size="small"
-          :columns="columns"
-          :data="data"
-          :total="total"
-          highlight-current-row
-          :showIndex="false"
-          :height="tableHeight"
-          :page-size="baseSearch.pageSize"
-          :pageNumber="baseSearch.pageNo"
-          @current-change="handleCurrentChange"
-          @update="update"
-        >
-          <template #radio="{ value, row }">
-            <div class="f-ct-ct w-100%">
-              <el-radio v-model="selectRow.id" :value="row.id" />
-            </div>
-          </template>
-        </o-table>
-      </div>
-    </div>
+      <o-table
+        ref="tableRef"
+        class="f-1"
+        style="min-height: 0"
+        size="small"
+        :columns="columns"
+        :data="data"
+        :total="total"
+        highlight-current-row
+        :showIndex="false"
+        height="100%"
+        :page-size="baseSearch.pageSize"
+        :pageNumber="baseSearch.pageNo"
+        @current-change="handleCurrentChange"
+        @update="update"
+      >
+        <template #radio="{ value, row }">
+          <div class="f-ct-ct w-100%">
+            <el-radio v-model="selectRow.id" :value="row.id" />
+          </div>
+        </template>
+      </o-table>
+    </o-flex>
   </o-dialog>
 </template>
-
-<style scoped lang="scss">
-.mapping-table-dialog {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.mapping-table-dialog__table {
-  min-height: 0;
-}
-</style>

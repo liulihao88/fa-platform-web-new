@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getCaseInfoById, getTransList } from '@/api/analysis'
-import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useMethods, useGlobalTablePageSize } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -22,12 +22,6 @@ const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const caseId = String(route.query.caseId || '')
 const headerRef = useTemplateRef('headerRef')
-const sourceDialogRef = useTemplateRef('sourceDialogRef')
-const sourceTableSectionRef = useTemplateRef('sourceTableSectionRef')
-const { height: sourceTableHeight } = useRelativeHeight(sourceTableSectionRef, sourceDialogRef, {
-  minHeight: 240,
-  offset: 50,
-})
 const tableRef = ref()
 const detail = reactive<Record<string, any>>({})
 const data = ref<Record<string, any>[]>([])
@@ -348,24 +342,24 @@ proxy.$initTableHeight(headerRef, true)
       </div>
     </o-dialog>
 
-    <o-dialog v-model="sourceVisible" title="查看原信息" width="1200px" :showConfirm="false">
-      <div ref="sourceDialogRef" class="smart-page__dialog-body">
+    <o-dialog v-model="sourceVisible" title="查看原信息" width="1200px" fillSlot :showConfirm="false">
+      <o-flex direction="column" class="h-100%">
         <el-tabs v-model="sourceActiveTab">
           <el-tab-pane v-for="(label, key) in sourceTabLabelMap" :key="key" :label="label" :name="key" />
         </el-tabs>
-        <div ref="sourceTableSectionRef" class="smart-page__dialog-table">
-          <o-table
-            :columns="sourceColumns"
-            :data="sourceData"
-            :loading="sourceLoading"
-            :total="sourceTotal"
-            :height="sourceTableHeight"
-            :pageSize="sourceParams.pageSize"
-            :pageNumber="sourceParams.pageNo"
-            @update="handleSourceUpdate"
-          />
-        </div>
-      </div>
+        <o-table
+          class="f-1"
+          style="min-height: 0"
+          :columns="sourceColumns"
+          :data="sourceData"
+          :loading="sourceLoading"
+          :total="sourceTotal"
+          height="100%"
+          :pageSize="sourceParams.pageSize"
+          :pageNumber="sourceParams.pageNo"
+          @update="handleSourceUpdate"
+        />
+      </o-flex>
     </o-dialog>
 
     <o-dialog v-model="recordDetailVisible" :title="recordDetailTitle" width="1200px" :showConfirm="false">
@@ -383,16 +377,6 @@ proxy.$initTableHeight(headerRef, true)
 
 .smart-page__header {
   margin-bottom: 12px;
-}
-
-.smart-page__dialog-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.smart-page__dialog-table {
-  min-height: 0;
 }
 
 .smart-page__dialog-footer {

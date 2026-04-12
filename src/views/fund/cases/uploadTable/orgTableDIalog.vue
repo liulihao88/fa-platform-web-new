@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, watch, useTemplateRef } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 const { proxy } = getCurrentInstance()
 import { $toast, notEmpty, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useGlobalTablePageSize } from '@/hooks'
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const emits = defineEmits(['success'])
@@ -13,15 +13,13 @@ const total = ref(0)
 const orgId = ref('')
 const selectRow = ref({})
 const tableRef = ref(null)
-const dialogBodyRef = useTemplateRef('dialogBodyRef')
-const tableSectionRef = useTemplateRef('tableSectionRef')
-const { height: tableHeight } = useRelativeHeight(tableSectionRef, dialogBodyRef, { minHeight: 240, offset: 62 })
 
-const baseSearch = ref({
+const originBaseSearch = {
   pageNo: 1,
   pageSize: 10,
   orgName: '',
-})
+}
+const baseSearch = ref({ ...originBaseSearch })
 syncPageSize(baseSearch.value)
 
 const indexMethod = (index) => {
@@ -107,6 +105,7 @@ const update = async (no, size) => {
 }
 
 const open = async (sendOrgId = '') => {
+  baseSearch.value = { ...originBaseSearch }
   orgId.value = sendOrgId
   init()
   isShow.value = true
@@ -132,47 +131,35 @@ defineExpose({
       v-model="isShow"
       title="银行机构选择"
       width="1000"
+      fillSlot
       :enableConfirm="false"
       :confirm="confirm"
     >
-      <div ref="dialogBodyRef" class="org-table-dialog">
+      <o-flex direction="column" class="h-100%">
         <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-        <div ref="tableSectionRef" class="org-table-dialog__table">
-          <o-table
-            ref="tableRef"
-            size="small"
-            :columns="columns"
-            :data="data"
-            :total="total"
-            :height="tableHeight"
-            highlight-current-row
-            :page-size="baseSearch.pageSize"
-            :pageNumber="baseSearch.pageNo"
-            :showIndex="false"
-            @update="update"
-            @current-change="handleCurrentChange"
-          >
-            <template #radio="{ value, row }">
-              <div class="f-ct-ct w-100%">
-                <el-radio v-model="selectRow.id" :value="row.id" />
-              </div>
-            </template>
-          </o-table>
-        </div>
-      </div>
+        <o-table
+          ref="tableRef"
+          class="f-1"
+          style="min-height: 0"
+          size="small"
+          :columns="columns"
+          :data="data"
+          :total="total"
+          height="100%"
+          highlight-current-row
+          :page-size="baseSearch.pageSize"
+          :pageNumber="baseSearch.pageNo"
+          :showIndex="false"
+          @update="update"
+          @current-change="handleCurrentChange"
+        >
+          <template #radio="{ value, row }">
+            <div class="f-ct-ct w-100%">
+              <el-radio v-model="selectRow.id" :value="row.id" />
+            </div>
+          </template>
+        </o-table>
+      </o-flex>
     </o-dialog>
   </div>
 </template>
-
-<style scoped lang="scss">
-.org-table-dialog {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-}
-
-.org-table-dialog__table {
-  min-height: 0;
-}
-</style>

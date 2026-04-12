@@ -16,13 +16,7 @@ import { useCommonHook } from '@/store'
 const route = useRoute()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
-const relationTableSectionRef = useTemplateRef('relationTableSectionRef')
-const relationDialogRef = useTemplateRef('relationDialogRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
-const { height: relationTableHeight } = useRelativeHeight(relationTableSectionRef, relationDialogRef, {
-  minHeight: 240,
-  offset: 12,
-})
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({
@@ -242,48 +236,48 @@ onMounted(async () => {
       </o-table>
     </div>
 
-    <o-dialog v-model="relationVisible" title="涉案人关系" width="920px" :showConfirm="false">
-      <div ref="relationDialogRef" class="case-manage-page__dialog-body">
+    <o-dialog v-model="relationVisible" title="涉案人关系" width="920px" fillSlot :showConfirm="false">
+      <o-flex direction="column" class="h-100%">
         <div class="case-manage-page__relation-head">
           <div>涉案人【{{ currentRecord.customerName || '--' }}】相关方关系</div>
           <el-button type="primary" icon="el-icon-plus" @click="addRelation">新增关系</el-button>
         </div>
-        <div ref="relationTableSectionRef" class="case-manage-page__dialog-table">
-          <o-table :columns="relationColumns" :data="relationData" :showPage="false" :height="relationTableHeight">
-            <template #relation="{ row }">
-              <el-select v-if="row.editing" v-model="row.tempRelation" placeholder="请选择关系">
-                <el-option
-                  v-for="item in relatedOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="Number(item.value)"
-                />
-              </el-select>
-              <span v-else>{{ getRelatedText(row.relation) }}</span>
+        <o-table
+          class="f-1"
+          style="min-height: 0"
+          :columns="relationColumns"
+          :data="relationData"
+          :showPage="false"
+          height="100%"
+        >
+          <template #relation="{ row }">
+            <el-select v-if="row.editing" v-model="row.tempRelation" placeholder="请选择关系">
+              <el-option
+                v-for="item in relatedOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="Number(item.value)"
+              />
+            </el-select>
+            <span v-else>{{ getRelatedText(row.relation) }}</span>
+          </template>
+          <template #relatedPersonCode="{ row }">
+            <el-select v-if="row.editing" v-model="row.tempRelatedPersonCode" placeholder="请选择相关方">
+              <el-option v-for="item in relatedPersonList" :key="item.id" :label="item.customerName" :value="item.id" />
+            </el-select>
+            <span v-else>{{ getRelatedPersonText(row.relatedPersonCode) }}</span>
+          </template>
+          <template #operation="{ row }">
+            <template v-if="row.editing">
+              <el-button type="primary" link icon="el-icon-check" @click="saveRelation(row)">保存</el-button>
+              <el-button link icon="el-icon-close" @click="cancelRelation(row)">取消</el-button>
             </template>
-            <template #relatedPersonCode="{ row }">
-              <el-select v-if="row.editing" v-model="row.tempRelatedPersonCode" placeholder="请选择相关方">
-                <el-option
-                  v-for="item in relatedPersonList"
-                  :key="item.id"
-                  :label="item.customerName"
-                  :value="item.id"
-                />
-              </el-select>
-              <span v-else>{{ getRelatedPersonText(row.relatedPersonCode) }}</span>
+            <template v-else>
+              <el-button type="primary" link icon="el-icon-edit" @click="editRelation(row)">修改</el-button>
             </template>
-            <template #operation="{ row }">
-              <template v-if="row.editing">
-                <el-button type="primary" link icon="el-icon-check" @click="saveRelation(row)">保存</el-button>
-                <el-button link icon="el-icon-close" @click="cancelRelation(row)">取消</el-button>
-              </template>
-              <template v-else>
-                <el-button type="primary" link icon="el-icon-edit" @click="editRelation(row)">修改</el-button>
-              </template>
-            </template>
-          </o-table>
-        </div>
-      </div>
+          </template>
+        </o-table>
+      </o-flex>
     </o-dialog>
 
     <o-dialog v-model="personDetailVisible" title="涉案人详情" width="1000px" :showConfirm="false">
@@ -301,17 +295,6 @@ onMounted(async () => {
 }
 
 .case-manage-page__table {
-  min-height: 0;
-}
-
-.case-manage-page__dialog-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-}
-
-.case-manage-page__dialog-table {
   min-height: 0;
 }
 

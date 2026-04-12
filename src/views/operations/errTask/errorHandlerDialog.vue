@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, getCurrentInstance, useTemplateRef } from 'vue'
+import { computed, ref, getCurrentInstance } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
-import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useGlobalTablePageSize } from '@/hooks'
 const { appContext, proxy } = getCurrentInstance()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
@@ -31,9 +31,6 @@ const emits = defineEmits(['success'])
 const router = useRouter()
 
 const isShow = ref(false)
-const dialogBodyRef = useTemplateRef('dialogBodyRef')
-const tableSectionRef = useTemplateRef('tableSectionRef')
-const { height: tableHeight } = useRelativeHeight(tableSectionRef, dialogBodyRef, { minHeight: 260, offset: 62 })
 const loading = ref(false)
 const submitLoading = ref(false)
 const currentParams = ref<ErrorHandlerParams>({})
@@ -201,8 +198,8 @@ defineExpose({
 </script>
 
 <template>
-  <o-dialog v-model="isShow" :title="dialogTitle" width="1100px" :showConfirm="false">
-    <div ref="dialogBodyRef" class="error-handler-dialog">
+  <o-dialog v-model="isShow" :title="dialogTitle" width="1100px" fillSlot :showConfirm="false">
+    <o-flex direction="column" class="h-100%">
       <o-flex justify="space-between" align="center" class="w-100% mb2">
         <o-descriptions class="f-1 mr2" label-width="100">
           <el-descriptions-item label="案件名称">{{ fileInfo.caseName || '--' }}</el-descriptions-item>
@@ -213,40 +210,28 @@ defineExpose({
         </el-button>
       </o-flex>
 
-      <div ref="tableSectionRef" class="error-handler-dialog__table">
-        <o-table
-          :height="tableHeight"
-          :columns="columns"
-          :data="data"
-          :loading="loading"
-          :total="total"
-          :page-size="pagination.pageSize"
-          :pageNumber="pagination.pageNo"
-          row-key="id"
-          @update="handleUpdate"
-        >
-          <template #errorType="{ value }">
-            <o-tag type="danger">{{ getErrorTypeText(value) }}</o-tag>
-          </template>
-          <template #ifProcessed="{ value }">
-            <o-tag :type="value === 1 ? 'success' : 'danger'">
-              {{ value === 1 ? '已处理' : '未处理' }}
-            </o-tag>
-          </template>
-        </o-table>
-      </div>
-    </div>
+      <o-table
+        class="f-1"
+        style="min-height: 0"
+        height="100%"
+        :columns="columns"
+        :data="data"
+        :loading="loading"
+        :total="total"
+        :page-size="pagination.pageSize"
+        :pageNumber="pagination.pageNo"
+        row-key="id"
+        @update="handleUpdate"
+      >
+        <template #errorType="{ value }">
+          <o-tag type="danger">{{ getErrorTypeText(value) }}</o-tag>
+        </template>
+        <template #ifProcessed="{ value }">
+          <o-tag :type="value === 1 ? 'success' : 'danger'">
+            {{ value === 1 ? '已处理' : '未处理' }}
+          </o-tag>
+        </template>
+      </o-table>
+    </o-flex>
   </o-dialog>
 </template>
-
-<style scoped lang="scss">
-.error-handler-dialog {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.error-handler-dialog__table {
-  min-height: 0;
-}
-</style>
