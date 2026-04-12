@@ -1,21 +1,13 @@
 <script setup lang="ts">
-import { isEqual } from '@/store/utils'
-import { useMultiTagsStoreHook } from '@/store/modules/multiTags'
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import SmartSearchDetail from './smartSearchDetail.vue'
 import CaseManage from './caseManage.vue'
 import CaseDealSearch from './caseDealSearch.vue'
 
 const route = useRoute()
-const multiTagsStore = useMultiTagsStoreHook()
 const ACTIVE_TAB_CACHE_PREFIX = 'funds-analysis:active-tab:'
-const PAGE_RELOAD_FLAG_PREFIX = 'funds-analysis:page-reload:'
-const routePath = route.path
-const routeQuery = { ...route.query }
-const routeParams = { ...route.params }
 const routeCacheKey = `${ACTIVE_TAB_CACHE_PREFIX}${route.fullPath}`
-const routeReloadFlagKey = `${PAGE_RELOAD_FLAG_PREFIX}${route.fullPath}`
 const activeTab = ref('smartSearchDetail')
 
 const tabs = [
@@ -43,19 +35,8 @@ const persistActiveTab = () => {
   window.localStorage.setItem(routeCacheKey, activeTab.value)
 }
 
-const markPageReload = () => {
-  persistActiveTab()
-  window.sessionStorage.setItem(routeReloadFlagKey, '1')
-}
-
 const clearCachedActiveTab = () => {
   window.localStorage.removeItem(routeCacheKey)
-}
-
-const isCurrentRouteTagStillOpen = () => {
-  return multiTagsStore.multiTags.some((tag: any) => {
-    return tag.path === routePath && isEqual(tag.query ?? {}, routeQuery) && isEqual(tag.params ?? {}, routeParams)
-  })
 }
 
 const currentComponent = computed(() => componentMap[activeTab.value] || SmartSearchDetail)
@@ -63,24 +44,14 @@ const currentComponent = computed(() => componentMap[activeTab.value] || SmartSe
 onMounted(() => {
   restoreActiveTab()
   persistActiveTab()
-  window.addEventListener('beforeunload', markPageReload)
 })
 
 watch(activeTab, () => {
   persistActiveTab()
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', markPageReload)
-
-  if (window.sessionStorage.getItem(routeReloadFlagKey)) {
-    window.sessionStorage.removeItem(routeReloadFlagKey)
-    return
-  }
-
-  if (!isCurrentRouteTagStillOpen()) {
-    clearCachedActiveTab()
-  }
+onBeforeRouteLeave(() => {
+  clearCachedActiveTab()
 })
 </script>
 
