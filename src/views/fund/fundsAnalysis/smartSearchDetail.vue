@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
-import { useMethods, useGlobalTablePageSize } from '@/hooks'
+import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -21,8 +21,10 @@ const { exportXls } = useMethods()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const caseId = String(route.query.caseId || '')
-const headerRef = useTemplateRef('headerRef')
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
 const tableRef = ref()
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)
@@ -264,12 +266,11 @@ watch(sourceActiveTab, async () => {
 })
 
 fetchList()
-proxy.$initTableHeight(headerRef, true)
 </script>
 
 <template>
-  <div class="smart-page">
-    <div ref="headerRef" class="smart-page__header">
+  <div ref="pageRef" class="smart-page">
+    <div class="smart-page__header">
       <SmartSearch :columns="searchConditionColumns" :caseId="caseId" @query="handleSearch" @reset="handleReset" />
       <o-flex class="mt-3" gap="8">
         <o-button type="primary" icon="el-icon-download" @click="exportCurrentPage">导出本页数据</o-button>
@@ -283,25 +284,27 @@ proxy.$initTableHeight(headerRef, true)
       </o-flex>
     </div>
 
-    <o-table
-      ref="tableRef"
-      :height="$tableHeight.value"
-      :columns="mainColumns"
-      :data="data"
-      :total="total"
-      :loading="loading"
-      :showIndex="false"
-      :pageSize="queryParams.pageSize"
-      :pageNumber="queryParams.pageNo"
-      row-key="id"
-      @selection-change="handleSelectionChange"
-      @update="handleUpdate"
-    >
-      <el-table-column type="selection" width="58" align="center" />
-      <template #transAmt="{ value }">
-        {{ value || value === 0 ? Number(value).toLocaleString() : '--' }}
-      </template>
-    </o-table>
+    <div ref="tableSectionRef" class="smart-page__table">
+      <o-table
+        ref="tableRef"
+        :height="tableHeight"
+        :columns="mainColumns"
+        :data="data"
+        :total="total"
+        :loading="loading"
+        :showIndex="false"
+        :pageSize="queryParams.pageSize"
+        :pageNumber="queryParams.pageNo"
+        row-key="id"
+        @selection-change="handleSelectionChange"
+        @update="handleUpdate"
+      >
+        <el-table-column type="selection" width="58" align="center" />
+        <template #transAmt="{ value }">
+          {{ value || value === 0 ? Number(value).toLocaleString() : '--' }}
+        </template>
+      </o-table>
+    </div>
 
     <o-dialog v-model="archiveVisible" title="卷宗信息预览" width="1200px" :showConfirm="false">
       <el-input v-model="archiveText" type="textarea" :rows="14" />
@@ -342,10 +345,16 @@ proxy.$initTableHeight(headerRef, true)
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
 }
 
 .smart-page__header {
+  flex-shrink: 0;
   margin-bottom: 12px;
+}
+
+.smart-page__table {
+  min-height: 0;
 }
 
 .smart-page__dialog-footer {

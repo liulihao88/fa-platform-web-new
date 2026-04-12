@@ -16,7 +16,7 @@ import { useCommonHook } from '@/store'
 const route = useRoute()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
-const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({
