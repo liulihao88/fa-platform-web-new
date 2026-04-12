@@ -321,7 +321,7 @@ defineExpose({
                     icon="el-icon-document"
                     @click="save('draft')"
                   >
-                    暂存草稿
+                    暂存为草稿
                   </el-button>
                   <el-button
                     v-if="isConfigured && orgCode"

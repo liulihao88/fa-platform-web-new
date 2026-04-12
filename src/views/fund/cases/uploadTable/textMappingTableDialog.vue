@@ -46,6 +46,7 @@ const editRow = (row) => {}
 const tableRef = ref(null)
 const selectRow = ref({})
 const oriMetaData = ref('')
+const originFieldName = ref('')
 const outIdx = ref(-1)
 
 const indexMethod = (index) => {
@@ -99,6 +100,7 @@ const _handleRowClick = () => {
 }
 
 const reset = () => {
+  oriMetaData.value = ''
   selectRow.value = {}
   tableRef.value.$refs.tableRef.setCurrentRow(null)
 }
@@ -120,8 +122,9 @@ const handleCurrentChange = async (currentRow, oldCurrentRow) => {
   }
 }
 
-const open = async (sendOriMetaData, idx) => {
+const open = async (sendOriMetaData, idx, titleColName = '') => {
   oriMetaData.value = sendOriMetaData
+  originFieldName.value = titleColName
   isShow.value = true
   outIdx.value = idx
   await init()
@@ -163,8 +166,22 @@ defineExpose({
 </script>
 
 <template>
-  <o-dialog ref="dialogRef" v-model="isShow" title="修改配置列" width="1000" :enableConfirm="false" @confirm="confirm">
-    <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
+  <o-dialog
+    ref="dialogRef"
+    v-model="isShow"
+    title="修改配置列"
+    width="1000"
+    :enableConfirm="false"
+    :destroy-on-close="true"
+    @confirm="confirm"
+  >
+    <g-search-bar :items="items" class="mb2" @search="handleSearch" @reset="handleSearch">
+      <o-flex align="center" class="h-100%">
+        <span class="origin-field__label">原字段:</span>
+        <span class="origin-field__value">{{ originFieldName || '-' }}</span>
+        <el-button type="primary" link @click="reset">清除选择</el-button>
+      </o-flex>
+    </g-search-bar>
     <o-table
       ref="tableRef"
       size="small"

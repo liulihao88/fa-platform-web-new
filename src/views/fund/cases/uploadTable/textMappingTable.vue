@@ -112,7 +112,7 @@ const handleColumnHeader = async (column, idx) => {
   console.log(`68 idx`, idx)
   console.log(`21 column`, column)
   console.log(`21 column.value`, column.value)
-  textMappingTableDialogRef.value.open(column.faFileParameter.newMetaData, idx)
+  textMappingTableDialogRef.value.open(column.faFileParameter.newMetaData, idx, column.faFileParameter.titleColName)
 }
 
 const headerCellStyle = ({ column }) => {
