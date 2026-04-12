@@ -230,6 +230,7 @@ const columns = [
     label: '去重行数',
     prop: 'repeatDataNum',
     width: 100,
+    useSlot: true,
   },
 
   {
@@ -357,6 +358,11 @@ async function deleteRow(row) {
         </template>
         <template #configureProgress="{ value }">
           <o-progress :percentage="value ?? 0" :text-inside="true" />
+        </template>
+        <template #repeatDataNum="{ value }">
+          <o-tag :type="Number(value) > 0 ? 'danger' : ''" width="100%">
+            {{ value ?? '--' }}
+          </o-tag>
         </template>
       </o-table>
     </div>

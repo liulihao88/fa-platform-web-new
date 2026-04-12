@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import { ref, getCurrentInstance } from 'vue'
 import addCaseDoc from './addCaseDoc.vue'
 import { deleteFaCase, getFaCaseInfoList } from '@/api/analysis'
@@ -131,6 +131,7 @@ const columns = [
     label: '去重行数',
     prop: 'repeatDataNum',
     width: 100,
+    useSlot: true,
   },
   {
     key: 'operation',
@@ -219,7 +220,14 @@ proxy.$initTableHeight(headerRef, true)
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>
+      <template #repeatDataNum="{ value }">
+        <o-tag :type="Number(value) > 0 ? 'danger' : ''" width="100%">
+          {{ value ?? '--' }}
+        </o-tag>
+      </template>
     </o-table>
     <addCaseDoc ref="addCaseDocRef" @success="init" />
   </div>
 </template>
+
+<style scoped lang="scss"></style>
