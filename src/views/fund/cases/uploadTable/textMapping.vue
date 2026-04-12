@@ -273,7 +273,7 @@ defineExpose({
 
       <el-col :span="21">
         <div class="bg-white h-100%">
-          <o-basic-layout>
+          <o-basic-layout class="h-100% mapping-content">
             <div class="mapping-toolbar">
               <div class="mapping-toolbar__scroll">
                 <div class="mapping-toolbar__scroll-inner">
@@ -341,6 +341,7 @@ defineExpose({
             <TextMappingTable
               v-if="notEmpty(fileInfo) && orgCode"
               ref="textMappingTableRef"
+              class="mapping-content__table"
               :orgCode="orgCode"
               :pageId="pageId"
               :isConfigured="isConfigured"
@@ -379,9 +380,25 @@ defineExpose({
 
 .mapping-toolbar {
   display: flex;
+  flex-shrink: 0;
   gap: 12px;
   align-items: center;
   min-width: 0;
+}
+
+.mapping-content {
+  height: 100%;
+}
+
+.mapping-content :deep(.o-basic-layout__body) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.mapping-content__table {
+  flex: 1;
+  min-height: 0;
 }
 
 .mapping-toolbar__scroll {

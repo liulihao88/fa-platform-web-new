@@ -169,7 +169,6 @@ defineExpose({
         :data="tableData"
         :height="tableHeight"
         border
-        size="small"
         stripe
         row-key="__index"
         table-layout="auto"
