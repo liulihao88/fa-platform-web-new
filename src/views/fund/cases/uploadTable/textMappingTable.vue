@@ -66,6 +66,9 @@ const init = async () => {
   } else {
     dataIsEmpty.value = false
   }
+  if (currentIndex.value >= allData.value.length) {
+    currentIndex.value = 0
+  }
   handleDataByCurrentIndex()
   tabsOptions.value = allData.value.map((v, i) => {
     return {
@@ -76,11 +79,17 @@ const init = async () => {
 }
 
 const handleDataByCurrentIndex = () => {
-  data.value = allData.value[currentIndex.value]
+  const nextIndex = Number(currentIndex.value) || 0
+  currentIndex.value = nextIndex
+  data.value = allData.value[nextIndex] || {}
   sourceColumns.value = data.value.dataBlockStucts ?? []
 }
 
-const getColumnLabel = (column) => column.faFileParameter.newMetaData?.trim() || ''
+const handleTabChange = (value) => {
+  console.log(`66 value`, value)
+  currentIndex.value = Number(value) || 0
+  handleDataByCurrentIndex()
+}
 
 const noMappingFields = computed(() => {
   return (
@@ -157,7 +166,7 @@ defineExpose({
       </div>
     </div>
 
-    <o-tabs v-model="currentIndex" :options="tabsOptions" @tabChange="handleDataByCurrentIndex()" />
+    <o-tabs v-model="currentIndex" :options="tabsOptions" @tabChange="handleTabChange" />
     <div class="mapping-table-wrapper">
       <el-table
         v-if="!dataIsEmpty"
