@@ -1,4 +1,5 @@
 export * from './useDetail'
 export * from './useGlobalLoading'
+export * from './usePolling'
 export * from './useGlobalTablePageSize'
 export * from './useMethods'

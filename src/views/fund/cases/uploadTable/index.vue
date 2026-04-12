@@ -9,7 +9,7 @@ const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
 const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 
-import { useDetail, useGlobalTablePageSize } from '@/hooks'
+import { useDetail, useGlobalTablePageSize, usePolling } from '@/hooks'
 const { toDetail } = useDetail()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
@@ -126,6 +126,16 @@ const handleSearch = (form) => {
 
 const total = ref(0)
 const data = ref([])
+const autoRefreshStatuses = ['000', '001', '002', '003', '004', '005', '100', '101']
+
+const shouldPolling = computed(() => {
+  return data.value.some((item) => autoRefreshStatuses.includes(item.status))
+})
+
+const { start: startPolling, stop: stopPolling } = usePolling(async () => {
+  await init()
+}, 15000)
+
 const init = async (isReset = false) => {
   if (isReset) {
     baseSearch.value.pageNo = 1
@@ -135,6 +145,12 @@ const init = async (isReset = false) => {
   let res = await getCasefileList(sendParams)
   data.value = res.records ?? []
   total.value = res.total
+
+  if (shouldPolling.value) {
+    startPolling()
+  } else {
+    stopPolling()
+  }
 }
 init()
 
