@@ -89,7 +89,10 @@ onMounted(() => {
 <style lang="scss" scoped>
 .frame {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 
   .frame-iframe {
     box-sizing: border-box;
