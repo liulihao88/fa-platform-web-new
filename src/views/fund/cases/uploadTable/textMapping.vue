@@ -99,6 +99,11 @@ const init = async () => {
       activePageIndex.value = 0
     }
     pageId.value = pages[activePageIndex.value]?.pageId ?? ''
+    adjForm.value = {
+      adjTransAmt: pages[activePageIndex.value]?.adjTransAmt ?? '否',
+      adjCreditAmt: pages[activePageIndex.value]?.adjCreditAmt ?? '否',
+      adjSettlementAmt: pages[activePageIndex.value]?.adjSettlementAmt ?? '否',
+    }
   }
   await queryBankInit()
   await initPayList()

@@ -139,7 +139,8 @@ watch(
     <div class="toolbar">
       <div class="file-info">
         <span class="label">文件名称:</span>
-        <span class="value">{{ pFileInfo.fileName }}</span>
+        <o-tooltip :content="pFileInfo.fileName" />
+        <!-- <span class="value">{{ pFileInfo.fileName }}</span> -->
       </div>
 
       <div class="actions">
