@@ -17,10 +17,6 @@ const fromTableSectionRef = useTemplateRef('fromTableSectionRef')
 const toDialogRef = useTemplateRef('toDialogRef')
 const toTableSectionRef = useTemplateRef('toTableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-const { height: fromTableHeight } = useRelativeHeight(fromTableSectionRef, fromDialogRef, {
-  minHeight: 240,
-  offset: 12,
-})
 const { height: toTableHeight } = useRelativeHeight(toTableSectionRef, toDialogRef, { minHeight: 240, offset: 62 })
 
 const caseId = String(route.query.caseId || '')
@@ -336,7 +332,7 @@ function confirmFromPerson() {
   fetchList()
 }
 
-function confirmToPerson() {
+async function confirmToPerson() {
   if (!toPendingRow.value) {
     $toast('请选择交易对方', 'w')
     return
@@ -368,19 +364,23 @@ fetchList()
     <div class="case-deal-page__selectors">
       <div class="selector-card">
         <span class="selector-label">交易发起方</span>
-        <div class="selector-value">{{ fromDisplayText }}</div>
-        <div class="selector-actions">
-          <el-button type="primary" icon="el-icon-plus" circle @click="showFromPerson" />
-          <el-button v-if="fromSelectedRows.length" icon="el-icon-close" circle @click="clearFromPerson" />
+        <div class="selector-input-group">
+          <div class="selector-value">{{ fromDisplayText }}</div>
+          <div class="selector-actions">
+            <el-button type="primary" icon="el-icon-plus" circle @click="showFromPerson" />
+            <el-button v-if="fromSelectedRows.length" icon="el-icon-close" circle @click="clearFromPerson" />
+          </div>
         </div>
       </div>
       <div class="selector-arrow">-></div>
       <div class="selector-card">
         <span class="selector-label">交易对方</span>
-        <div class="selector-value">{{ toDisplayText }}</div>
-        <div class="selector-actions">
-          <el-button type="primary" icon="el-icon-plus" circle @click="showToPerson" />
-          <el-button v-if="toSelectedRows.length" icon="el-icon-close" circle @click="clearToPerson" />
+        <div class="selector-input-group">
+          <div class="selector-value">{{ toDisplayText }}</div>
+          <div class="selector-actions">
+            <el-button type="primary" icon="el-icon-plus" circle @click="showToPerson" />
+            <el-button v-if="toSelectedRows.length" icon="el-icon-close" circle @click="clearToPerson" />
+          </div>
         </div>
       </div>
     </div>
@@ -416,28 +416,26 @@ fetchList()
       </o-table>
     </div>
 
-    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" :showConfirm="false">
-      <div ref="fromDialogRef" class="case-deal-page__dialog-body">
-        <div ref="fromTableSectionRef" class="case-deal-page__dialog-table">
-          <o-table
-            :columns="personColumns"
-            :data="fromPersonData"
-            :loading="pickerLoading"
-            :showPage="false"
-            :height="fromTableHeight"
-            @selection-change="handleFromSelection"
-          >
-            <el-table-column type="selection" width="58" align="center" />
-          </o-table>
-        </div>
-        <div class="case-deal-page__dialog-footer">
-          <el-button icon="el-icon-close" @click="fromPickerVisible = false">取消</el-button>
-          <el-button type="primary" icon="el-icon-check" @click="confirmFromPerson">确定</el-button>
-        </div>
-      </div>
+    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" :confirm="confirmFromPerson">
+      <o-table
+        :columns="personColumns"
+        :data="fromPersonData"
+        :loading="pickerLoading"
+        :showPage="false"
+        :height="fromTableHeight"
+        @selection-change="handleFromSelection"
+      >
+        <el-table-column type="selection" width="58" align="center" />
+      </o-table>
     </o-dialog>
 
-    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :confirm="confirmToPerson">
+    <o-dialog
+      v-model="toPickerVisible"
+      title="选择交易对方"
+      width="1000px"
+      :confirm="confirmToPerson"
+      :enableConfirm="false"
+    >
       <div ref="toDialogRef" class="case-deal-page__dialog-body">
         <g-search-bar
           class="mb-3"
@@ -488,6 +486,7 @@ fetchList()
 <style scoped lang="scss">
 .case-deal-page__selectors {
   display: flex;
+  flex-shrink: 0;
   gap: 12px;
   align-items: center;
   padding: 16px;
@@ -519,10 +518,7 @@ fetchList()
   flex: 1;
   gap: 12px;
   align-items: center;
-  padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #ebeef5;
-  border-radius: 8px;
+  min-width: 0;
 }
 
 .selector-label {
@@ -530,21 +526,43 @@ fetchList()
   font-weight: 600;
 }
 
+.selector-input-group {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  height: 46px;
+  padding: 6px 10px;
+  background: #f8fafc;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+}
+
 .selector-value {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1;
   color: #606266;
   white-space: nowrap;
 }
 
 .selector-actions {
   display: flex;
+  flex-shrink: 0;
   gap: 8px;
+  align-items: center;
+}
+
+.selector-actions :deep(.el-button) {
+  margin-left: 0;
 }
 
 .selector-arrow {
+  flex-shrink: 0;
   color: #909399;
 }
 
