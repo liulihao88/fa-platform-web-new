@@ -29,6 +29,7 @@ const fileId = ref(route.query.fileId)
 const payOptions: any = ref([])
 const orgTableDialogRef = ref()
 const headerRef = useTemplateRef('headerRef')
+const tableDataIsEmpty = ref(false)
 
 const adjForm = ref({
   adjTransAmt: '否',
@@ -144,6 +145,10 @@ const save = async (type = '') => {
     await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
       title: '确认操作',
     })
+  } else if (type === 'ignore') {
+    await proxy.confirm('确认忽略配置吗？', {
+      title: '确认操作',
+    })
   }
 
   // 准备请求参数
@@ -172,7 +177,8 @@ const selectOrg = () => {
   orgTableDialogRef.value.open(orgCode.value)
 }
 
-const textMappingTableInit = (emitTableData) => {
+const textMappingTableInit = (emitTableData, sendTableDataIsEmpty) => {
+  tableDataIsEmpty.value = sendTableDataIsEmpty
   const pages = fileInfo.value?.filePages ?? []
   if (pages[activePageIndex.value].configureStatus === '1') {
     isConfigured.value = true
@@ -204,6 +210,16 @@ const handleClose = () => {
   // })
   toDetail('Cases', { caseId: getStorage('caseId') })
 }
+
+const ignoreOrSaveText = computed(() => {
+  if (tableDataIsEmpty.value) {
+    return '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
+  }
+  if (isConfigured.value) {
+    return '当前文件已做好配置,如需修改映射关系,请点击更新配置,重新配置即可'
+  }
+  return '多个数据块配置后一起保存'
+})
 
 proxy.$initTableHeight(headerRef)
 
@@ -285,35 +301,41 @@ defineExpose({
                     />
                   </div>
                   <div class="mapping-toolbar__hint cl-65 fs-14">
-                    {{
-                      isConfigured
-                        ? '当前文件已做好配置,如需修改映射关系,请将此文件删除,重新配置即可'
-                        : '多个数据块配置后一起保存'
-                    }}
+                    {{ ignoreOrSaveText }}
                   </div>
                 </div>
               </div>
               <div class="mapping-toolbar__buttons">
                 <el-button
-                  v-if="!isConfigured && orgCode"
+                  v-if="tableDataIsEmpty"
                   type="primary"
-                  icon="el-icon-document"
-                  @click="save('draft')"
-                >
-                  暂存草稿
-                </el-button>
-                <el-button
-                  v-if="isConfigured && orgCode"
-                  type="primary"
-                  icon="el-icon-refresh-right"
                   :disabled="!isConfigured || !orgCode"
-                  @click="save('update')"
+                  @click="save('ignore')"
                 >
-                  更新配置
+                  忽略配置
                 </el-button>
-                <el-button type="primary" icon="el-icon-check" :disabled="isConfigured || !orgCode" @click="save()">
-                  保存配置
-                </el-button>
+                <template v-else>
+                  <el-button
+                    v-if="!isConfigured && orgCode"
+                    type="primary"
+                    icon="el-icon-document"
+                    @click="save('draft')"
+                  >
+                    暂存草稿
+                  </el-button>
+                  <el-button
+                    v-if="isConfigured && orgCode"
+                    type="primary"
+                    icon="el-icon-refresh-right"
+                    :disabled="!isConfigured || !orgCode"
+                    @click="save('update')"
+                  >
+                    更新配置
+                  </el-button>
+                  <el-button type="primary" icon="el-icon-check" :disabled="isConfigured || !orgCode" @click="save()">
+                    保存配置
+                  </el-button>
+                </template>
               </div>
             </div>
             <TextMappingTable

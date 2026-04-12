@@ -58,14 +58,15 @@ const init = async () => {
     orgCode: props.orgCode,
   }
   let res = await casefileFileConfigData(sendParams)
-  emits('textMappingTableInit', res)
   allData.value = res
   if (isEmpty(res)) {
     dataIsEmpty.value = true
+    emits('textMappingTableInit', res, dataIsEmpty.value)
     return
   } else {
     dataIsEmpty.value = false
   }
+  emits('textMappingTableInit', res, dataIsEmpty.value)
   handleDataByCurrentIndex()
   tabsOptions.value = allData.value.map((v, i) => {
     return {
