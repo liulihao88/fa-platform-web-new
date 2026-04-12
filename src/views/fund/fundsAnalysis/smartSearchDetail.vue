@@ -3,7 +3,7 @@ import { computed, getCurrentInstance, reactive, ref, useTemplateRef, watch } fr
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
-import { bankCustomerPageList, fileContextInfo, getCaseInfoById, getTransList } from '@/api/analysis'
+import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
 import { useMethods, useGlobalTablePageSize } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
@@ -23,7 +23,6 @@ const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const caseId = String(route.query.caseId || '')
 const headerRef = useTemplateRef('headerRef')
 const tableRef = ref()
-const detail = reactive<Record<string, any>>({})
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)
@@ -52,22 +51,6 @@ const queryParams = reactive({
 })
 syncPageSize(queryParams)
 syncPageSize(sourceParams)
-
-const caseDescOptions = computed(() => [
-  {
-    label: '案件名称',
-    value: detail.caseName || '--',
-  },
-  {
-    label: '部门受案号',
-    value: detail.departmentCaseNumber || '--',
-  },
-  {
-    label: '受理日期',
-    value: detail.acceptTime || '--',
-  },
-  { label: '案由', value: detail.caseReason || '--' },
-])
 
 const mainColumns = computed(() => {
   return (intelligentTableColumns as any[]).concat([
@@ -104,12 +87,6 @@ const recordDescOptions = computed(() =>
 
 function handleSelectionChange(rows: Record<string, any>[]) {
   selectedRows.value = rows
-}
-
-async function fetchCaseInfo() {
-  if (!caseId) return
-  const res = await getCaseInfoById({ caseId })
-  Object.assign(detail, res || {})
 }
 
 async function fetchList() {
@@ -286,7 +263,6 @@ watch(sourceActiveTab, async () => {
   await loadSourceData()
 })
 
-fetchCaseInfo()
 fetchList()
 proxy.$initTableHeight(headerRef, true)
 </script>
@@ -294,14 +270,7 @@ proxy.$initTableHeight(headerRef, true)
 <template>
   <div class="smart-page">
     <div ref="headerRef" class="smart-page__header">
-      <o-descriptions :options="caseDescOptions" label-width="auto" :column="4" />
-      <SmartSearch
-        class="mt-3"
-        :columns="searchConditionColumns"
-        :caseId="caseId"
-        @query="handleSearch"
-        @reset="handleReset"
-      />
+      <SmartSearch :columns="searchConditionColumns" :caseId="caseId" @query="handleSearch" @reset="handleReset" />
       <o-flex class="mt-3" gap="8">
         <o-button type="primary" icon="el-icon-download" @click="exportCurrentPage">导出本页数据</o-button>
         <o-button type="primary" icon="el-icon-select" :disabled="!selectedRows.length" @click="exportSelectedRows">
