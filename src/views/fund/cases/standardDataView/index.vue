@@ -88,21 +88,14 @@ onMounted(() => {
       </o-input>
 
       <div class="standard-data-view__pagination fs-12">
-        <el-button
-          plain
-          icon="el-icon-arrow-left"
-          :disabled="searchParams.pageNo <= 1"
-          size="small"
-          @click="changePage('prev')"
-        >
+        <el-button :disabled="searchParams.pageNo <= 1" size="small" type="primary" @click="changePage('prev')">
           上一页
         </el-button>
         <div class="standard-data-view__page-text">{{ searchParams.pageNo }}/{{ totalPages }}</div>
         <el-button
-          plain
-          icon="el-icon-arrow-right"
           :disabled="searchParams.pageNo >= totalPages"
           size="small"
+          type="primary"
           @click="changePage('next')"
         >
           下一页
@@ -169,19 +162,6 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     margin: 8px 0;
-
-    :deep(.el-button) {
-      font-size: 14px;
-      color: #b5bbc6;
-      background: #fff;
-      border-color: #dcdfe6;
-      border-radius: 4px;
-      box-shadow: none;
-    }
-
-    :deep(.el-button:not(.is-disabled)) {
-      color: #6c7380;
-    }
   }
 
   &__page-text {

@@ -4,13 +4,13 @@ const STANDARD_VIEW = 'STANDARD_VIEW'
 const REPEATE_VIEW = 'REPEATE_VIEW'
 </script>
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from 'vue'
+import { ref, getCurrentInstance, computed, onMounted, watch } from 'vue'
 import { getCaseInfoById, getCommonDictionary } from '@/api/analysis.ts'
 import UploadTable from '@/views/fund/cases/uploadTable/index.vue'
 import StandardDataView from '@/views/fund/cases/standardDataView/index.vue'
 import RepeatDataView from '@/views/fund/cases/repeatDataView/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
-import { useRouter, useRoute } from 'vue-router'
+import { onBeforeRouteLeave, useRouter, useRoute } from 'vue-router'
 import { useCommonHook } from '@/store'
 
 const { getDictItems } = useCommonHook()
@@ -19,6 +19,8 @@ const { proxy } = getCurrentInstance()
 const router = useRouter()
 const route = useRoute()
 const caseId = route.query.caseId
+const ACTIVE_TAB_CACHE_PREFIX = 'cases:active-tab:'
+const routeCacheKey = `${ACTIVE_TAB_CACHE_PREFIX}${route.fullPath}`
 const caseDetails: any = ref({})
 const caseStatusOptions: any = ref(getDictItems('fa_case_process_status') ?? [])
 
@@ -88,6 +90,21 @@ const activeStatus = computed(() => {
       return v.value === caseDetails.value.fileProcessStatus
     }) + 1
   )
+})
+
+onMounted(() => {
+  const cachedTab = window.localStorage.getItem(routeCacheKey)
+  if (tabsOptions.some((item) => item.value === cachedTab)) {
+    currentTab.value = cachedTab
+  }
+})
+
+watch(currentTab, () => {
+  window.localStorage.setItem(routeCacheKey, currentTab.value)
+})
+
+onBeforeRouteLeave(() => {
+  window.localStorage.removeItem(routeCacheKey)
 })
 </script>
 
