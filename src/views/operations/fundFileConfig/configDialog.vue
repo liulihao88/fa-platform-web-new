@@ -99,7 +99,7 @@ defineExpose({
 </script>
 
 <template>
-  <o-dialog v-model="isShow" :title="title" width="820px" @confirm="save">
+  <o-dialog v-model="isShow" :title="title" width="820px" :confirm="save">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="auto">
       <o-row v-if="!isEdit" :gutter="16" :col="12">
         <el-form-item label="标准数据" prop="metaData">

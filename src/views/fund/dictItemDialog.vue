@@ -81,7 +81,7 @@ defineExpose({
 
 <template>
   <div>
-    <o-dialog ref="dialogRef" v-model="isShow" :title="title" @confirm="save">
+    <o-dialog ref="dialogRef" v-model="isShow" :title="title" :confirm="save">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="名称" prop="itemText">
           <o-input v-model="form.itemText" />

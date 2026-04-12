@@ -173,7 +173,7 @@ defineExpose({
     width="1000"
     :enableConfirm="false"
     :destroy-on-close="true"
-    @confirm="confirm"
+    :confirm="confirm"
   >
     <g-search-bar :items="items" class="mb2" @search="handleSearch" @reset="handleSearch">
       <o-flex align="center" class="h-100%">

@@ -68,7 +68,7 @@ defineExpose({
 </script>
 
 <template>
-  <o-dialog v-model="isShow" :title="title" width="720px" :showConfirm="!readOnly" @confirm="save">
+  <o-dialog v-model="isShow" :title="title" width="720px" :showConfirm="!readOnly" :confirm="save">
     <el-form ref="formRef" :model="form" :rules="rules" label-width="auto">
       <el-form-item label="机构官方名称" prop="orgName">
         <o-input v-model="form.orgName" :disabled="readOnly" />

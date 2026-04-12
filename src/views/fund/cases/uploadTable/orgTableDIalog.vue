@@ -130,7 +130,7 @@ defineExpose({
       title="银行机构选择"
       width="1000"
       :enableConfirm="false"
-      @confirm="confirm"
+      :confirm="confirm"
     >
       <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
       <o-table

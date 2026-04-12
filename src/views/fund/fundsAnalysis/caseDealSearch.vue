@@ -419,7 +419,7 @@ fetchList()
       </div>
     </o-dialog>
 
-    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" @confirm="confirmToPerson">
+    <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :confirm="confirmToPerson">
       <g-search-bar
         class="mb-3"
         :items="toPersonSearchItems"
