@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, nextTick, watch } from 'vue'
+import { computed, ref, nextTick, watch, useTemplateRef } from 'vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
 
-import { useMethods, useGlobalTablePageSize } from '@/hooks'
+import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 
 const { exportXls } = useMethods()
 const { syncPageSize, globalPageSize, updatePageSize } = useGlobalTablePageSize()
 const { query } = useRoute()
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 300, offset: 62 })
 interface RepeatRecord {
   id: string
   file1Name: string
@@ -136,7 +139,7 @@ watch(
 </script>
 
 <template>
-  <div class="repeat-page">
+  <div ref="pageRef" class="repeat-page">
     <div class="repeat-page__wrap">
       <o-flex align="center" class="repeat-page__toolbar">
         <div>
@@ -150,66 +153,70 @@ watch(
         <gSelectedCount :count="selectedCount" class="ml2" @clear="clearSelected" />
       </o-flex>
 
-      <o-table
-        ref="tableRef"
-        :columns="columns"
-        :data="displayData"
-        :total="response.total"
-        :pageSize="pageSize"
-        :pageNumber="currentPage"
-        row-key="id"
-        :index="indexMethod"
-        height="450"
-        class="repeat-page__table"
-        @selection-change="handleSelectionChange"
-        @update="handleUpdate"
-      >
-        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
-        <!-- <el-table-column prop="index" label="序号1" width="70" align="center" /> -->
-        <el-table-column label="文件一" align="center">
-          <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
-          <el-table-column label="行号" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ formatLine(row.file1LineNumber) }}
-            </template>
+      <div ref="tableSectionRef" class="repeat-page__table">
+        <o-table
+          ref="tableRef"
+          :columns="columns"
+          :data="displayData"
+          :total="response.total"
+          :pageSize="pageSize"
+          :pageNumber="currentPage"
+          row-key="id"
+          :index="indexMethod"
+          :height="tableHeight"
+          @selection-change="handleSelectionChange"
+          @update="handleUpdate"
+        >
+          <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
+          <!-- <el-table-column prop="index" label="序号1" width="70" align="center" /> -->
+          <el-table-column label="文件一" align="center">
+            <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+            <el-table-column label="行号" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ formatLine(row.file1LineNumber) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="发生金额" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ formatAmount(row.file1Amount) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="其他信息" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ row.file1OtherInfo || '--' }}
+              </template>
+            </el-table-column>
           </el-table-column>
-          <el-table-column label="发生金额" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ formatAmount(row.file1Amount) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="其他信息" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ row.file1OtherInfo || '--' }}
-            </template>
-          </el-table-column>
-        </el-table-column>
 
-        <el-table-column label="文件二" align="center">
-          <el-table-column prop="file2Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
-          <el-table-column label="行号" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ formatLine(row.file2LineNumber) }}
-            </template>
+          <el-table-column label="文件二" align="center">
+            <el-table-column prop="file2Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
+            <el-table-column label="行号" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ formatLine(row.file2LineNumber) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="发生金额" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ formatAmount(row.file2Amount) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="其他信息" min-width="140" align="center">
+              <template #default="{ row }">
+                {{ row.file2OtherInfo || '--' }}
+              </template>
+            </el-table-column>
           </el-table-column>
-          <el-table-column label="发生金额" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ formatAmount(row.file2Amount) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="其他信息" min-width="140" align="center">
-            <template #default="{ row }">
-              {{ row.file2OtherInfo || '--' }}
-            </template>
-          </el-table-column>
-        </el-table-column>
-      </o-table>
+        </o-table>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .repeat-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
   background: #fff;
 
@@ -222,6 +229,10 @@ watch(
   }
 
   &__wrap {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
     overflow: hidden;
     background: #fff;
     border: 1px solid #ebeef5;
@@ -229,8 +240,13 @@ watch(
 
   &__toolbar {
     display: flex;
+    flex-shrink: 0;
     padding: 0 16px;
     margin: 8px 0;
+  }
+
+  &__table {
+    min-height: 0;
   }
 
   &__group-header {

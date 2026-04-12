@@ -1,10 +1,10 @@
 <script setup lang="tsx">
-import { ref, watch, computed, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, watch, computed, useTemplateRef } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
 import { getCaseFileTransInfo, bankCustomerPageList, getStandardDataPageList } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
@@ -20,15 +20,15 @@ const props = defineProps({
 
 const data = ref([])
 const total = ref(0)
-const tableCardRef = ref<HTMLElement | null>(null)
-const tableHeight = ref(400)
+const contentPanelRef = useTemplateRef('contentPanelRef')
+const tableCardRef = useTemplateRef('tableCardRef')
+const { height: tableHeight } = useRelativeHeight(tableCardRef, contentPanelRef, { minHeight: 240, offset: 62 })
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')
 const activeSheetId = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
-const TABLE_PAGINATION_HEIGHT = 50
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const sendTableParams = ref({
   filePageId: filePageId.value,
@@ -174,18 +174,6 @@ const init = async (sendFileId = '') => {
 }
 if (props.type === 'translate') {
   init()
-}
-
-const updateTableHeight = async () => {
-  await nextTick()
-  if (!tableCardRef.value) return
-  const style = window.getComputedStyle(tableCardRef.value)
-  const paddingTop = parseFloat(style.paddingTop) || 0
-  const paddingBottom = parseFloat(style.paddingBottom) || 0
-  tableHeight.value = Math.max(
-    tableCardRef.value.clientHeight - paddingTop - paddingBottom - TABLE_PAGINATION_HEIGHT,
-    240,
-  )
 }
 
 const initTable = async () => {
@@ -447,35 +435,16 @@ const activeTabColumns = computed(() => {
   return columnsMap[activeTab.value] || []
 })
 
-let resizeObserver: ResizeObserver | null = null
-
 const update = (number, size) => {
   sendTableParams.value.pageNo = number
   updatePageSize(sendTableParams.value, size)
   initTable()
 }
 
-onMounted(async () => {
-  await updateTableHeight()
-  resizeObserver = new ResizeObserver(() => {
-    updateTableHeight()
-  })
-  if (tableCardRef.value) {
-    resizeObserver.observe(tableCardRef.value)
-  }
-  window.addEventListener('resize', updateTableHeight)
-})
-
-onUnmounted(() => {
-  resizeObserver?.disconnect()
-  window.removeEventListener('resize', updateTableHeight)
-})
-
 watch(
   activeTab,
   async () => {
     initTable()
-    await updateTableHeight()
   },
   {},
 )
@@ -502,7 +471,7 @@ defineExpose({
         </div>
       </div>
 
-      <div class="content-panel">
+      <div ref="contentPanelRef" class="content-panel">
         <el-tabs v-model="activeTab" class="result-tabs">
           <el-tab-pane label="银行客户信息" name="bankCustomerPageList" />
           <el-tab-pane label="银行交易流水" name="bankTransPageList" />
@@ -534,6 +503,7 @@ defineExpose({
 .result-translate {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
   background: #fff;
   border: 1px solid #e5e6eb;
@@ -551,7 +521,7 @@ defineExpose({
   display: flex;
   flex: 1;
   gap: 16px;
-  min-height: 520px;
+  min-height: 0;
   padding: 12px;
 }
 

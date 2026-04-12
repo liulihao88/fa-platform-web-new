@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed } from 'vue'
+import { ref, getCurrentInstance, computed, useTemplateRef } from 'vue'
 import TextMappingTableDialog from '@/views/fund/cases/uploadTable/textMappingTableDialog.vue'
 import { Edit } from '@element-plus/icons-vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 
 import { casefileFileConfigData } from '@/api/analysis'
+import { useRelativeHeight } from '@/hooks'
 
 const emits = defineEmits(['textMappingTableInit'])
 
@@ -13,6 +14,9 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const textMappingTableDialogRef = ref()
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 260, offset: 12 })
 const dataIsEmpty = ref(false)
 const currentIndex = ref(0)
 const tabsOptions = ref([])
@@ -146,7 +150,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="mapping-table-page">
+  <div ref="pageRef" class="mapping-table-page">
     <div class="mapping-summary">
       <div class="mapping-summary__line">
         <span class="mapping-summary__label">未映射的字段:</span>
@@ -159,11 +163,11 @@ defineExpose({
     </div>
 
     <o-tabs v-model="currentIndex" :options="tabsOptions" @tabChange="handleDataByCurrentIndex()" />
-    <div class="mapping-table-wrapper">
+    <div ref="tableSectionRef" class="mapping-table-wrapper">
       <el-table
         v-if="!dataIsEmpty"
         :data="tableData"
-        height="420"
+        :height="tableHeight"
         border
         size="small"
         stripe
@@ -225,6 +229,10 @@ defineExpose({
 
 <style scoped lang="scss">
 .mapping-table-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
   padding: 16px 0;
   background: #fff;
 }
@@ -301,3 +309,4 @@ defineExpose({
   color: #f04438;
 }
 </style>
+.mapping-table-wrapper { flex: 1; margin-top: 16px; min-height: 0; }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, watch } from 'vue'
+import { ref, getCurrentInstance, watch, useTemplateRef } from 'vue'
 const { proxy } = getCurrentInstance()
 import { $toast, notEmpty, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const emits = defineEmits(['success'])
@@ -13,6 +13,9 @@ const total = ref(0)
 const orgId = ref('')
 const selectRow = ref({})
 const tableRef = ref(null)
+const dialogBodyRef = useTemplateRef('dialogBodyRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, dialogBodyRef, { minHeight: 240, offset: 62 })
 
 const baseSearch = ref({
   pageNo: 1,
@@ -132,27 +135,44 @@ defineExpose({
       :enableConfirm="false"
       :confirm="confirm"
     >
-      <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
-      <o-table
-        ref="tableRef"
-        size="small"
-        :columns="columns"
-        :data="data"
-        :total="total"
-        height="400"
-        highlight-current-row
-        :page-size="baseSearch.pageSize"
-        :pageNumber="baseSearch.pageNo"
-        :showIndex="false"
-        @update="update"
-        @current-change="handleCurrentChange"
-      >
-        <template #radio="{ value, row }">
-          <div class="f-ct-ct w-100%">
-            <el-radio v-model="selectRow.id" :value="row.id" />
-          </div>
-        </template>
-      </o-table>
+      <div ref="dialogBodyRef" class="org-table-dialog">
+        <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
+        <div ref="tableSectionRef" class="org-table-dialog__table">
+          <o-table
+            ref="tableRef"
+            size="small"
+            :columns="columns"
+            :data="data"
+            :total="total"
+            :height="tableHeight"
+            highlight-current-row
+            :page-size="baseSearch.pageSize"
+            :pageNumber="baseSearch.pageNo"
+            :showIndex="false"
+            @update="update"
+            @current-change="handleCurrentChange"
+          >
+            <template #radio="{ value, row }">
+              <div class="f-ct-ct w-100%">
+                <el-radio v-model="selectRow.id" :value="row.id" />
+              </div>
+            </template>
+          </o-table>
+        </div>
+      </div>
     </o-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.org-table-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.org-table-dialog__table {
+  min-height: 0;
+}
+</style>

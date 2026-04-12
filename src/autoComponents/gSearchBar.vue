@@ -134,7 +134,7 @@ const handleReset = () => {
 .search-scroll-inner {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
   align-items: stretch;
 }
 

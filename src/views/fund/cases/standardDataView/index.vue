@@ -141,7 +141,8 @@ onMounted(() => {
 .standard-data-layout {
   display: flex;
   gap: 20px;
-  min-height: 640px;
+  height: 100%;
+  min-height: 0;
 
   &__result {
     flex: 1;

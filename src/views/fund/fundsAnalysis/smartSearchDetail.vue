@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getCaseInfoById, getTransList } from '@/api/analysis'
-import { useMethods, useGlobalTablePageSize } from '@/hooks'
+import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -22,6 +22,12 @@ const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const caseId = String(route.query.caseId || '')
 const headerRef = useTemplateRef('headerRef')
+const sourceDialogRef = useTemplateRef('sourceDialogRef')
+const sourceTableSectionRef = useTemplateRef('sourceTableSectionRef')
+const { height: sourceTableHeight } = useRelativeHeight(sourceTableSectionRef, sourceDialogRef, {
+  minHeight: 240,
+  offset: 62,
+})
 const tableRef = ref()
 const detail = reactive<Record<string, any>>({})
 const data = ref<Record<string, any>[]>([])
@@ -77,7 +83,7 @@ const mainColumns = computed(() => {
       fixed: 'right',
       btns: [
         { content: '查看原信息', handler: openSourceDialog },
-        { content: '查看详情', handler: openMainDetail },
+        { content: '详情', handler: openMainDetail },
       ],
     },
   ])
@@ -90,7 +96,7 @@ const sourceColumns = computed(() => {
       label: '操作',
       fixed: 'right',
       width: 100,
-      btns: [{ content: '查看详情', handler: openSourceDetail }],
+      btns: [{ content: '详情', handler: openSourceDetail }],
     },
   ])
 })
@@ -343,19 +349,23 @@ proxy.$initTableHeight(headerRef, true)
     </o-dialog>
 
     <o-dialog v-model="sourceVisible" title="查看原信息" width="1200px" :showConfirm="false">
-      <el-tabs v-model="sourceActiveTab">
-        <el-tab-pane v-for="(label, key) in sourceTabLabelMap" :key="key" :label="label" :name="key" />
-      </el-tabs>
-      <o-table
-        :columns="sourceColumns"
-        :data="sourceData"
-        :loading="sourceLoading"
-        :total="sourceTotal"
-        :height="420"
-        :pageSize="sourceParams.pageSize"
-        :pageNumber="sourceParams.pageNo"
-        @update="handleSourceUpdate"
-      />
+      <div ref="sourceDialogRef" class="smart-page__dialog-body">
+        <el-tabs v-model="sourceActiveTab">
+          <el-tab-pane v-for="(label, key) in sourceTabLabelMap" :key="key" :label="label" :name="key" />
+        </el-tabs>
+        <div ref="sourceTableSectionRef" class="smart-page__dialog-table">
+          <o-table
+            :columns="sourceColumns"
+            :data="sourceData"
+            :loading="sourceLoading"
+            :total="sourceTotal"
+            :height="sourceTableHeight"
+            :pageSize="sourceParams.pageSize"
+            :pageNumber="sourceParams.pageNo"
+            @update="handleSourceUpdate"
+          />
+        </div>
+      </div>
     </o-dialog>
 
     <o-dialog v-model="recordDetailVisible" :title="recordDetailTitle" width="1200px" :showConfirm="false">
@@ -373,6 +383,16 @@ proxy.$initTableHeight(headerRef, true)
 
 .smart-page__header {
   margin-bottom: 12px;
+}
+
+.smart-page__dialog-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.smart-page__dialog-table {
+  min-height: 0;
 }
 
 .smart-page__dialog-footer {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { $toast } from '@oeos-components/utils'
 import {
@@ -10,9 +10,19 @@ import {
   getInvolvedRelationApi,
   updateInvolvedPersonApi,
 } from '@/api/analysis'
+import { useRelativeHeight } from '@/hooks'
 import { useCommonHook } from '@/store'
 
 const route = useRoute()
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const relationTableSectionRef = useTemplateRef('relationTableSectionRef')
+const relationDialogRef = useTemplateRef('relationDialogRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
+const { height: relationTableHeight } = useRelativeHeight(relationTableSectionRef, relationDialogRef, {
+  minHeight: 240,
+  offset: 12,
+})
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({
@@ -222,47 +232,58 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="case-manage-page">
+  <div ref="pageRef" class="case-manage-page">
     <g-search-bar :items="searchItems" @search="handleSearch" @reset="handleReset" />
-    <o-table :columns="columns" :data="data" :loading="loading" height="560">
-      <template #involvedKind="{ value }">
-        <o-tag>{{ getKindText(value) }}</o-tag>
-      </template>
-    </o-table>
-
-    <o-dialog v-model="relationVisible" title="涉案人关系" width="920px" :showConfirm="false">
-      <div class="case-manage-page__relation-head">
-        <div>涉案人【{{ currentRecord.customerName || '--' }}】相关方关系</div>
-        <el-button type="primary" icon="el-icon-plus" @click="addRelation">新增关系</el-button>
-      </div>
-      <o-table :columns="relationColumns" :data="relationData" :showPage="false" height="420">
-        <template #relation="{ row }">
-          <el-select v-if="row.editing" v-model="row.tempRelation" placeholder="请选择关系">
-            <el-option
-              v-for="item in relatedOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="Number(item.value)"
-            />
-          </el-select>
-          <span v-else>{{ getRelatedText(row.relation) }}</span>
-        </template>
-        <template #relatedPersonCode="{ row }">
-          <el-select v-if="row.editing" v-model="row.tempRelatedPersonCode" placeholder="请选择相关方">
-            <el-option v-for="item in relatedPersonList" :key="item.id" :label="item.customerName" :value="item.id" />
-          </el-select>
-          <span v-else>{{ getRelatedPersonText(row.relatedPersonCode) }}</span>
-        </template>
-        <template #operation="{ row }">
-          <template v-if="row.editing">
-            <el-button type="primary" link icon="el-icon-check" @click="saveRelation(row)">保存</el-button>
-            <el-button link icon="el-icon-close" @click="cancelRelation(row)">取消</el-button>
-          </template>
-          <template v-else>
-            <el-button type="primary" link icon="el-icon-edit" @click="editRelation(row)">修改</el-button>
-          </template>
+    <div ref="tableSectionRef" class="case-manage-page__table">
+      <o-table :columns="columns" :data="data" :loading="loading" :height="tableHeight">
+        <template #involvedKind="{ value }">
+          <o-tag>{{ getKindText(value) }}</o-tag>
         </template>
       </o-table>
+    </div>
+
+    <o-dialog v-model="relationVisible" title="涉案人关系" width="920px" :showConfirm="false">
+      <div ref="relationDialogRef" class="case-manage-page__dialog-body">
+        <div class="case-manage-page__relation-head">
+          <div>涉案人【{{ currentRecord.customerName || '--' }}】相关方关系</div>
+          <el-button type="primary" icon="el-icon-plus" @click="addRelation">新增关系</el-button>
+        </div>
+        <div ref="relationTableSectionRef" class="case-manage-page__dialog-table">
+          <o-table :columns="relationColumns" :data="relationData" :showPage="false" :height="relationTableHeight">
+            <template #relation="{ row }">
+              <el-select v-if="row.editing" v-model="row.tempRelation" placeholder="请选择关系">
+                <el-option
+                  v-for="item in relatedOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="Number(item.value)"
+                />
+              </el-select>
+              <span v-else>{{ getRelatedText(row.relation) }}</span>
+            </template>
+            <template #relatedPersonCode="{ row }">
+              <el-select v-if="row.editing" v-model="row.tempRelatedPersonCode" placeholder="请选择相关方">
+                <el-option
+                  v-for="item in relatedPersonList"
+                  :key="item.id"
+                  :label="item.customerName"
+                  :value="item.id"
+                />
+              </el-select>
+              <span v-else>{{ getRelatedPersonText(row.relatedPersonCode) }}</span>
+            </template>
+            <template #operation="{ row }">
+              <template v-if="row.editing">
+                <el-button type="primary" link icon="el-icon-check" @click="saveRelation(row)">保存</el-button>
+                <el-button link icon="el-icon-close" @click="cancelRelation(row)">取消</el-button>
+              </template>
+              <template v-else>
+                <el-button type="primary" link icon="el-icon-edit" @click="editRelation(row)">修改</el-button>
+              </template>
+            </template>
+          </o-table>
+        </div>
+      </div>
     </o-dialog>
 
     <o-dialog v-model="personDetailVisible" title="涉案人详情" width="1000px" :showConfirm="false">
@@ -272,6 +293,28 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
+.case-manage-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.case-manage-page__table {
+  min-height: 0;
+}
+
+.case-manage-page__dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.case-manage-page__dialog-table {
+  min-height: 0;
+}
+
 .case-manage-page__relation-head {
   display: flex;
   align-items: center;

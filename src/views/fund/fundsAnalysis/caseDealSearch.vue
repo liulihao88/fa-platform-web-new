@@ -1,15 +1,27 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { caseInvolvedList, entityTransListApi, fileContextInfo, payeeListApi } from '@/api/analysis'
-import { useMethods, useGlobalTablePageSize } from '@/hooks'
+import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
 const route = useRoute()
 const { exportXls } = useMethods()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const fromDialogRef = useTemplateRef('fromDialogRef')
+const fromTableSectionRef = useTemplateRef('fromTableSectionRef')
+const toDialogRef = useTemplateRef('toDialogRef')
+const toTableSectionRef = useTemplateRef('toTableSectionRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
+const { height: fromTableHeight } = useRelativeHeight(fromTableSectionRef, fromDialogRef, {
+  minHeight: 240,
+  offset: 12,
+})
+const { height: toTableHeight } = useRelativeHeight(toTableSectionRef, toDialogRef, { minHeight: 240, offset: 62 })
 
 const caseId = String(route.query.caseId || '')
 const tableData = ref<Record<string, any>[]>([])
@@ -90,7 +102,7 @@ const mainColumns = computed(() =>
       label: '操作',
       fixed: 'right',
       width: 100,
-      btns: [{ content: '查看详情', handler: handleDetail }],
+      btns: [{ content: '详情', handler: handleDetail }],
     },
   ]),
 )
@@ -352,7 +364,7 @@ fetchList()
 </script>
 
 <template>
-  <div class="case-deal-page">
+  <div ref="pageRef" class="case-deal-page">
     <div class="case-deal-page__selectors">
       <div class="selector-card">
         <span class="selector-label">交易发起方</span>
@@ -373,7 +385,7 @@ fetchList()
       </div>
     </div>
 
-    <g-search-bar class="mt-3" :items="searchItems" :itemsPerRow="5" @search="handleSearch" @reset="handleReset">
+    <g-search-bar class="m-tb-16" :items="searchItems" :itemsPerRow="5" @search="handleSearch" @reset="handleReset">
       <o-item-wrapper :columns="2">
         <o-button type="primary" icon="el-icon-download" @click="exportCurrentPage">导出本页数据</o-button>
         <o-button type="primary" icon="el-icon-select" :disabled="!selectedRows.length" @click="exportSelectedRows">
@@ -386,67 +398,77 @@ fetchList()
       </o-item-wrapper>
     </g-search-bar>
 
-    <o-table
-      :columns="mainColumns"
-      :data="tableData"
-      :total="total"
-      :loading="loading"
-      :showIndex="false"
-      :pageSize="queryParams.pageSize"
-      :pageNumber="queryParams.pageNo"
-      row-key="id"
-      height="520"
-      @selection-change="handleSelectionChange"
-      @update="handleUpdate"
-    >
-      <el-table-column type="selection" width="58" align="center" />
-    </o-table>
-
-    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" :showConfirm="false">
+    <div ref="tableSectionRef" class="case-deal-page__table">
       <o-table
-        :columns="personColumns"
-        :data="fromPersonData"
-        :loading="pickerLoading"
-        :showPage="false"
-        height="420"
-        @selection-change="handleFromSelection"
+        :columns="mainColumns"
+        :data="tableData"
+        :total="total"
+        :loading="loading"
+        :showIndex="false"
+        :pageSize="queryParams.pageSize"
+        :pageNumber="queryParams.pageNo"
+        row-key="id"
+        :height="tableHeight"
+        @selection-change="handleSelectionChange"
+        @update="handleUpdate"
       >
         <el-table-column type="selection" width="58" align="center" />
       </o-table>
-      <div class="case-deal-page__dialog-footer">
-        <el-button icon="el-icon-close" @click="fromPickerVisible = false">取消</el-button>
-        <el-button type="primary" icon="el-icon-check" @click="confirmFromPerson">确定</el-button>
+    </div>
+
+    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" :showConfirm="false">
+      <div ref="fromDialogRef" class="case-deal-page__dialog-body">
+        <div ref="fromTableSectionRef" class="case-deal-page__dialog-table">
+          <o-table
+            :columns="personColumns"
+            :data="fromPersonData"
+            :loading="pickerLoading"
+            :showPage="false"
+            :height="fromTableHeight"
+            @selection-change="handleFromSelection"
+          >
+            <el-table-column type="selection" width="58" align="center" />
+          </o-table>
+        </div>
+        <div class="case-deal-page__dialog-footer">
+          <el-button icon="el-icon-close" @click="fromPickerVisible = false">取消</el-button>
+          <el-button type="primary" icon="el-icon-check" @click="confirmFromPerson">确定</el-button>
+        </div>
       </div>
     </o-dialog>
 
     <o-dialog v-model="toPickerVisible" title="选择交易对方" width="1000px" :confirm="confirmToPerson">
-      <g-search-bar
-        class="mb-3"
-        :items="toPersonSearchItems"
-        :itemsPerRow="3"
-        @search="handleToPersonSearch"
-        @reset="handleToPersonReset"
-      />
-      <o-table
-        ref="toTableRef"
-        :columns="payeeColumns"
-        :data="toPersonData"
-        :total="toPersonTotal"
-        :loading="pickerLoading"
-        :pageSize="toPersonSearchForm.pageSize"
-        :pageNumber="toPersonSearchForm.pageNo"
-        row-key="id"
-        height="400"
-        highlight-current-row
-        @current-change="handleToCurrentChange"
-        @update="handleToPersonUpdate"
-      >
-        <template #radio="{ row }">
-          <div class="radio-cell">
-            <el-radio v-model="toSelectedPayeeId" :value="row.id" />
-          </div>
-        </template>
-      </o-table>
+      <div ref="toDialogRef" class="case-deal-page__dialog-body">
+        <g-search-bar
+          class="mb-3"
+          :items="toPersonSearchItems"
+          :itemsPerRow="3"
+          @search="handleToPersonSearch"
+          @reset="handleToPersonReset"
+        />
+        <div ref="toTableSectionRef" class="case-deal-page__dialog-table">
+          <o-table
+            ref="toTableRef"
+            :columns="payeeColumns"
+            :data="toPersonData"
+            :total="toPersonTotal"
+            :loading="pickerLoading"
+            :pageSize="toPersonSearchForm.pageSize"
+            :pageNumber="toPersonSearchForm.pageNo"
+            row-key="id"
+            :height="toTableHeight"
+            highlight-current-row
+            @current-change="handleToCurrentChange"
+            @update="handleToPersonUpdate"
+          >
+            <template #radio="{ row }">
+              <div class="radio-cell">
+                <el-radio v-model="toSelectedPayeeId" :value="row.id" />
+              </div>
+            </template>
+          </o-table>
+        </div>
+      </div>
     </o-dialog>
 
     <o-dialog v-model="archiveVisible" title="卷宗信息预览" width="1200px" :showConfirm="false">
@@ -472,6 +494,24 @@ fetchList()
   background: #fff;
   border: 1px solid #ebeef5;
   border-radius: 8px;
+}
+
+.case-deal-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.case-deal-page__table,
+.case-deal-page__dialog-table {
+  min-height: 0;
+}
+
+.case-deal-page__dialog-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .selector-card {

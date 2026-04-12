@@ -8,10 +8,13 @@ import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
 const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
+const pageRef = useTemplateRef('pageRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
 
-import { useDetail, useGlobalTablePageSize, usePolling } from '@/hooks'
+import { useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
@@ -134,7 +137,7 @@ const shouldPolling = computed(() => {
 
 const { start: startPolling, stop: stopPolling } = usePolling(async () => {
   await init()
-}, 15000)
+}, 5000)
 
 const init = async (isReset = false) => {
   if (isReset) {
@@ -323,35 +326,53 @@ async function deleteRow(row) {
 </script>
 
 <template>
-  <CaseUploadFile ref="caseUploadFileRef" class="mb" @close="init" />
-  <g-search-bar :items="items" class="f-1 mb2" @search="handleSearch" @reset="handleSearch">
-    <o-button type="primary" icon="el-icon-upload" width="100" class="ml2" @click="caseUploadFileRef?.open()">
-      上传文件
-    </o-button>
-  </g-search-bar>
-  <o-table
-    ref="tableRef"
-    :columns="columns"
-    :data="data"
-    :total="total"
-    height="460"
-    :pageSize="baseSearch.pageSize"
-    :pageNumber="baseSearch.pageNo"
-    @update="update"
-  >
-    <template #status="{ row, value }">
-      <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
-        {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
-      </el-tag>
-      <el-tag v-else type="primary">
-        {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
-      </el-tag>
-    </template>
-    <template #progress="{ row }">
-      <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
-    </template>
-    <template #configureProgress="{ value }">
-      <o-progress :percentage="value ?? 0" :text-inside="true" />
-    </template>
-  </o-table>
+  <div ref="pageRef" class="upload-table-page">
+    <CaseUploadFile ref="caseUploadFileRef" class="mb" @close="init" />
+    <g-search-bar :items="items" class="mb2" @search="handleSearch" @reset="handleSearch">
+      <o-button type="primary" icon="el-icon-upload" width="100" class="ml2" @click="caseUploadFileRef?.open()">
+        上传文件
+      </o-button>
+    </g-search-bar>
+    <div ref="tableSectionRef" class="upload-table-page__table">
+      <o-table
+        ref="tableRef"
+        :columns="columns"
+        :data="data"
+        :total="total"
+        :height="tableHeight"
+        :pageSize="baseSearch.pageSize"
+        :pageNumber="baseSearch.pageNo"
+        @update="update"
+      >
+        <template #status="{ row, value }">
+          <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
+            {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
+          </el-tag>
+          <el-tag v-else type="primary">
+            {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
+          </el-tag>
+        </template>
+        <template #progress="{ row }">
+          <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
+        </template>
+        <template #configureProgress="{ value }">
+          <o-progress :percentage="value ?? 0" :text-inside="true" />
+        </template>
+      </o-table>
+    </div>
+  </div>
 </template>
+
+<style scoped lang="scss">
+.upload-table-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.upload-table-page__table {
+  min-height: 0;
+}
+</style>

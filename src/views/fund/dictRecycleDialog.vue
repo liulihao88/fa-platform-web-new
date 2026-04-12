@@ -6,10 +6,14 @@ import {
   deleteBatchDictPermanently,
   backBatchDict,
 } from '@/api/analysis'
-import { ref, getCurrentInstance } from 'vue'
+import { ref, getCurrentInstance, useTemplateRef } from 'vue'
+import { useRelativeHeight } from '@/hooks'
 const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const isShow = ref(false)
+const dialogBodyRef = useTemplateRef('dialogBodyRef')
+const tableSectionRef = useTemplateRef('tableSectionRef')
+const { height: tableHeight } = useRelativeHeight(tableSectionRef, dialogBodyRef, { minHeight: 220, offset: 12 })
 const columns = [
   {
     type: 'selection',
@@ -105,17 +109,31 @@ defineExpose({
 
 <template>
   <o-dialog ref="dialogRef" v-model="isShow" title="字典回收站" width="800px" :showConfirm="false">
-    <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" />
-    <o-table
-      ref="tableRef"
-      height="300px"
-      :columns="columns"
-      :data="data"
-      :showPage="false"
-      :showIndex="false"
-      @selection-change="handleSelectionChange"
-    />
+    <div ref="dialogBodyRef" class="dict-recycle-dialog">
+      <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" />
+      <div ref="tableSectionRef" class="dict-recycle-dialog__table">
+        <o-table
+          ref="tableRef"
+          :height="tableHeight"
+          :columns="columns"
+          :data="data"
+          :showPage="false"
+          :showIndex="false"
+          @selection-change="handleSelectionChange"
+        />
+      </div>
+    </div>
   </o-dialog>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.dict-recycle-dialog {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.dict-recycle-dialog__table {
+  min-height: 0;
+}
+</style>

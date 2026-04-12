@@ -92,7 +92,7 @@ const activeStatus = computed(() => {
 </script>
 
 <template>
-  <div class="h-100%">
+  <div class="case-page h-100%">
     <o-basic-layout class="h-100%">
       <div class="case-page__header">
         <o-descriptions :options="descOptions" :column="4" />
@@ -144,12 +144,24 @@ const activeStatus = computed(() => {
 </template>
 
 <style scoped lang="scss">
+.case-page {
+  height: 100%;
+}
+
+:deep(.o-basic-layout__body) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .case-page__header {
+  flex-shrink: 0;
   margin-bottom: 12px;
 }
 
 .case-page__nav {
   display: flex;
+  flex-shrink: 0;
   gap: 8px;
   align-items: center;
   min-width: 0;
@@ -217,7 +229,10 @@ const activeStatus = computed(() => {
 }
 
 .case-page__content {
+  display: flex;
+  flex: 1;
   min-width: 0;
+  min-height: 0;
 }
 
 @media (width <= 1440px) {
