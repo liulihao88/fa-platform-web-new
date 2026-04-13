@@ -43,7 +43,7 @@ export default {
         calcItemHeight(referenceElement.value, isShowPagination)
       } else if (referenceElement === '') {
         const windowHeight = window.innerHeight
-        const tableHeightValue = windowHeight - 34 - 48 - 48 - (isShowPagination ? 64 : 0)
+        const tableHeightValue = windowHeight - 34 - 48 - 48 - (isShowPagination ? 50 : 0)
         tableHeight.value = tableHeightValue
       }
 

@@ -11,10 +11,11 @@ const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 
-import { useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
+import { useAsyncTask, useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
+const { loading, run } = useAsyncTask()
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
@@ -143,11 +144,13 @@ const init = async (isReset = false) => {
   if (isReset) {
     baseSearch.value.pageNo = 1
   }
-  const sendParams = clone(baseSearch.value)
-  sendParams.fileStatus = baseSearch.value.fileStatus ? statusMap[baseSearch.value.fileStatus] : []
-  let res = await getCasefileList(sendParams)
-  data.value = res.records ?? []
-  total.value = res.total
+  await run(async () => {
+    const sendParams = clone(baseSearch.value)
+    sendParams.fileStatus = baseSearch.value.fileStatus ? statusMap[baseSearch.value.fileStatus] : []
+    const res = await getCasefileList(sendParams)
+    data.value = res.records ?? []
+    total.value = res.total ?? 0
+  })
 
   if (shouldPolling.value) {
     startPolling()
@@ -340,6 +343,7 @@ async function deleteRow(row) {
         :columns="columns"
         :data="data"
         :total="total"
+        :isLoading="true"
         :height="tableHeight"
         :pageSize="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"

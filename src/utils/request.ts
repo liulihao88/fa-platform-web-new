@@ -193,7 +193,7 @@ instance.interceptors.response.use(
       }
     } else {
       if (response.status === 401) {
-        return handleMultiple401Requests(response.config, response)
+        // return handleMultiple401Requests(response.config, response)
       }
       if (('' + response.status).startsWith('5')) {
         // devLogin(true)
@@ -207,7 +207,7 @@ instance.interceptors.response.use(
     loadingFalse()
     const obj = JSON.parse(JSON.stringify(error))
     if (obj.message?.indexOf('401') !== -1) {
-      return handleMultiple401Requests(error.config, error)
+      // return handleMultiple401Requests(error.config, error)
     }
   },
 )

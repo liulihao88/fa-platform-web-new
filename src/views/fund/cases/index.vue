@@ -48,7 +48,7 @@ const descOptions = computed(() => {
     },
     {
       label: '部门受案号',
-      value: caseDetails.value.invoiceCount,
+      value: caseDetails.value.departmentCaseNumber,
       attrs: {
         width: '150px',
       },
@@ -85,11 +85,9 @@ const tabsOptions = [
 ]
 
 const activeStatus = computed(() => {
-  return (
-    caseStatusOptions.value.findIndex((v, i) => {
-      return v.value === caseDetails.value.fileProcessStatus
-    }) + 1
-  )
+  return caseStatusOptions.value.findIndex((v, i) => {
+    return v.value === caseDetails.value.fileProcessStatus
+  })
 })
 
 onMounted(() => {
@@ -111,7 +109,7 @@ onBeforeRouteLeave(() => {
 <template>
   <div class="case-page h-100%">
     <o-basic-layout class="h-100%">
-      <div class="case-page__header">
+      <div class="case-page__header w-100%">
         <o-descriptions :options="descOptions" :column="4" />
       </div>
 
@@ -174,6 +172,7 @@ onBeforeRouteLeave(() => {
 .case-page__header {
   flex-shrink: 0;
   margin-bottom: 12px;
+  overflow: auto;
 }
 
 .case-page__nav {

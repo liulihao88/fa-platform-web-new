@@ -9,9 +9,10 @@ const { proxy } = getCurrentInstance()
 const route = useRoute()
 import { useCommonHook } from '@/store'
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
-import { useDetail, useGlobalTablePageSize } from '@/hooks'
+import { useAsyncTask, useDetail, useGlobalTablePageSize } from '@/hooks'
 const { toDetail } = useDetail()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+const { loading, run } = useAsyncTask()
 
 const baseSearch = {
   order: 'desc',
@@ -192,9 +193,11 @@ const handleSearch = (form) => {
   init()
 }
 const init = async () => {
-  let res = await getFaCaseInfoList(baseSearch)
-  data.value = res.records
-  total.value = res.total
+  await run(async () => {
+    const res = await getFaCaseInfoList(baseSearch)
+    data.value = res.records ?? []
+    total.value = res.total ?? 0
+  })
 }
 init()
 proxy.$initTableHeight(headerRef, true)
@@ -212,6 +215,7 @@ proxy.$initTableHeight(headerRef, true)
       :columns="columns"
       :data="data"
       :total="total"
+      :loading="loading"
       :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       :height="$tableHeight.value"
