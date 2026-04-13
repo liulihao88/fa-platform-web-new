@@ -226,7 +226,7 @@ proxy.$initTableHeight(headerRef, true)
       </template>
       <template #repeatDataNum="{ value }">
         <o-tag :type="Number(value) > 0 ? 'danger' : ''" width="100%">
-          {{ value ?? '--' }}
+          {{ value ?? '-' }}
         </o-tag>
       </template>
     </o-table>

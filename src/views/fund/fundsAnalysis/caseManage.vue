@@ -81,42 +81,42 @@ const relationColumns = [
 ] as any[]
 
 const personDetailOptions = computed(() => [
-  { label: '客户名称', value: personDetail.value.customerName || '--' },
-  { label: '客户类型', value: personDetail.value.customerType || '--' },
-  { label: '营业执照', value: personDetail.value.licenseNum || '--' },
-  { label: '法人姓名', value: personDetail.value.legalPersonName || '--' },
-  { label: '证件种类', value: personDetail.value.idType || '--' },
-  { label: '证件号码', value: personDetail.value.idNum || '--' },
-  { label: '联系电话', value: personDetail.value.teleNum || '--' },
-  { label: '法人证件类型', value: personDetail.value.legalIdType || '--' },
-  { label: '法人证件号码', value: personDetail.value.legalIdNum || '--' },
-  { label: '机构编码', value: personDetail.value.orgCd || '--' },
-  { label: '机构名称', value: personDetail.value.orgName || '--' },
-  { label: '客户状态', value: personDetail.value.customerStatus || '--' },
-  { label: '工作单位', value: personDetail.value.workUnit || '--' },
-  { label: '地税号', value: personDetail.value.localTaxNum || '--' },
-  { label: '国税号', value: personDetail.value.countryTaxNum || '--' },
-  { label: '家庭电话', value: personDetail.value.homeTel || '--' },
-  { label: '单位电话', value: personDetail.value.unitTel || '--' },
-  { label: '通讯地址', value: personDetail.value.communicationAddr || '--' },
-  { label: '家庭住址', value: personDetail.value.homeAddr || '--' },
-  { label: '单位地址', value: personDetail.value.unitAddr || '--' },
-  { label: '邮寄地址', value: personDetail.value.mailAddr || '--' },
-  { label: '邮政编码', value: personDetail.value.postCode || '--' },
-  { label: '备注', value: personDetail.value.comment || '--' },
-  { label: '开户账号', value: personDetail.value.accountNum || '--' },
+  { label: '客户名称', value: personDetail.value.customerName || '-' },
+  { label: '客户类型', value: personDetail.value.customerType || '-' },
+  { label: '营业执照', value: personDetail.value.licenseNum || '-' },
+  { label: '法人姓名', value: personDetail.value.legalPersonName || '-' },
+  { label: '证件种类', value: personDetail.value.idType || '-' },
+  { label: '证件号码', value: personDetail.value.idNum || '-' },
+  { label: '联系电话', value: personDetail.value.teleNum || '-' },
+  { label: '法人证件类型', value: personDetail.value.legalIdType || '-' },
+  { label: '法人证件号码', value: personDetail.value.legalIdNum || '-' },
+  { label: '机构编码', value: personDetail.value.orgCd || '-' },
+  { label: '机构名称', value: personDetail.value.orgName || '-' },
+  { label: '客户状态', value: personDetail.value.customerStatus || '-' },
+  { label: '工作单位', value: personDetail.value.workUnit || '-' },
+  { label: '地税号', value: personDetail.value.localTaxNum || '-' },
+  { label: '国税号', value: personDetail.value.countryTaxNum || '-' },
+  { label: '家庭电话', value: personDetail.value.homeTel || '-' },
+  { label: '单位电话', value: personDetail.value.unitTel || '-' },
+  { label: '通讯地址', value: personDetail.value.communicationAddr || '-' },
+  { label: '家庭住址', value: personDetail.value.homeAddr || '-' },
+  { label: '单位地址', value: personDetail.value.unitAddr || '-' },
+  { label: '邮寄地址', value: personDetail.value.mailAddr || '-' },
+  { label: '邮政编码', value: personDetail.value.postCode || '-' },
+  { label: '备注', value: personDetail.value.comment || '-' },
+  { label: '开户账号', value: personDetail.value.accountNum || '-' },
 ])
 
 function getKindText(kind: string | number) {
-  return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '--'
+  return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '-'
 }
 
 function getRelatedText(value: string | number) {
-  return relatedOptions.value.find((item) => Number(item.value) === Number(value))?.label || '--'
+  return relatedOptions.value.find((item) => Number(item.value) === Number(value))?.label || '-'
 }
 
 function getRelatedPersonText(id: string) {
-  return relatedPersonList.value.find((item) => item.id === id)?.customerName || '--'
+  return relatedPersonList.value.find((item) => item.id === id)?.customerName || '-'
 }
 
 async function fetchList() {
@@ -239,7 +239,7 @@ onMounted(async () => {
     <o-dialog v-model="relationVisible" title="涉案人关系" width="920px" fillSlot :showConfirm="false">
       <o-flex direction="column" class="h-100%">
         <div class="case-manage-page__relation-head">
-          <div>涉案人【{{ currentRecord.customerName || '--' }}】相关方关系</div>
+          <div>涉案人【{{ currentRecord.customerName || '-' }}】相关方关系</div>
           <el-button type="primary" icon="el-icon-plus" @click="addRelation">新增关系</el-button>
         </div>
         <o-table

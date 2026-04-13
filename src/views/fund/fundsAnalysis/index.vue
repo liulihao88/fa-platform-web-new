@@ -47,19 +47,19 @@ const currentComponent = computed(() => componentMap[activeTab.value] || SmartSe
 const caseDescOptions = computed(() => [
   {
     label: '案件名称',
-    value: caseDetail.value.caseName || '--',
+    value: caseDetail.value.caseName || '-',
   },
   {
     label: '部门受案号',
-    value: caseDetail.value.departmentCaseNumber || '--',
+    value: caseDetail.value.departmentCaseNumber || '-',
   },
   {
     label: '受理日期',
-    value: caseDetail.value.acceptTime ? formatTime(caseDetail.value.acceptTime, '{y}/{m}/{d}') : '--',
+    value: caseDetail.value.acceptTime ? formatTime(caseDetail.value.acceptTime, '{y}/{m}/{d}') : '-',
   },
   {
     label: '案由',
-    value: caseDetail.value.caseReason || '--',
+    value: caseDetail.value.caseReason || '-',
   },
 ])
 

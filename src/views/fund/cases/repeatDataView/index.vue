@@ -183,7 +183,7 @@ watch(
             </el-table-column>
             <el-table-column label="其他信息" min-width="140" align="center">
               <template #default="{ row }">
-                {{ row.file1OtherInfo || '--' }}
+                {{ row.file1OtherInfo || '-' }}
               </template>
             </el-table-column>
           </el-table-column>
@@ -202,7 +202,7 @@ watch(
             </el-table-column>
             <el-table-column label="其他信息" min-width="140" align="center">
               <template #default="{ row }">
-                {{ row.file2OtherInfo || '--' }}
+                {{ row.file2OtherInfo || '-' }}
               </template>
             </el-table-column>
           </el-table-column>

@@ -101,7 +101,7 @@ const mainColumns = computed(() =>
 const detailDescOptions = computed(() =>
   intelligentDetailFields.map((item) => ({
     label: item.label,
-    value: detailData.value?.[item.prop] ?? '--',
+    value: detailData.value?.[item.prop] ?? '-',
   })),
 )
 

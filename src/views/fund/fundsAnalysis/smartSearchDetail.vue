@@ -83,7 +83,7 @@ const sourceColumns = computed(() => {
 const recordDescOptions = computed(() =>
   recordDetailFields.value.map((item) => ({
     label: item.label,
-    value: recordDetailData.value?.[item.prop] ?? '--',
+    value: recordDetailData.value?.[item.prop] ?? '-',
   })),
 )
 
@@ -301,7 +301,7 @@ fetchList()
       >
         <el-table-column type="selection" width="58" align="center" />
         <template #transAmt="{ value }">
-          {{ value || value === 0 ? Number(value).toLocaleString() : '--' }}
+          {{ value || value === 0 ? Number(value).toLocaleString() : '-' }}
         </template>
       </o-table>
     </div>

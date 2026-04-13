@@ -99,7 +99,7 @@ function getErrorTypeText(errorType?: string) {
     '02': '格式错误',
     '03': '系统错误',
   }
-  return textMap[errorType || ''] || errorType || '--'
+  return textMap[errorType || ''] || errorType || '-'
 }
 
 function handleUpdate(pageNo: number, pageSize: number) {
@@ -202,8 +202,8 @@ defineExpose({
     <o-flex direction="column" class="h-100%">
       <o-flex justify="space-between" align="center" class="w-100% mb2">
         <o-descriptions class="f-1 mr2" label-width="100">
-          <el-descriptions-item label="案件名称">{{ fileInfo.caseName || '--' }}</el-descriptions-item>
-          <el-descriptions-item label="文件名称">{{ fileInfo.fileName || '--' }}</el-descriptions-item>
+          <el-descriptions-item label="案件名称">{{ fileInfo.caseName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="文件名称">{{ fileInfo.fileName || '-' }}</el-descriptions-item>
         </o-descriptions>
         <el-button type="primary" :loading="submitLoading" icon="el-icon-select" @click="handleBatchProcess">
           处理完成

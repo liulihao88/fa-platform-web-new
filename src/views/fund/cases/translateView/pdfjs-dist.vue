@@ -18,7 +18,7 @@
         @change="goToPage"
       />
       <span>/</span>
-      <span>{{ pdfDoc ? pdfDoc.numPages : '--' }} 页</span>
+      <span>{{ pdfDoc ? pdfDoc.numPages : '-' }} 页</span>
     </div>
     <div ref="containerRef" class="pdf-container" @scroll="handleScroll">
       <div class="pages-wrapper" :style="{ height: totalHeight + 'px' }">
@@ -566,10 +566,7 @@ onUnmounted(() => {
 
 .pdf-text-layer {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   overflow: hidden;
   line-height: 1;
   opacity: 0.2;

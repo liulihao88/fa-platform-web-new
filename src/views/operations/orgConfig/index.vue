@@ -52,7 +52,7 @@ const columns = [
 function getOrgTypeText(value?: number | string) {
   if (value === 1 || value === '1') return '银行'
   if (value === 2 || value === '2') return '非银行'
-  return value || '--'
+  return value || '-'
 }
 
 function getOrgTypeTag(value?: number | string) {
@@ -116,7 +116,7 @@ proxy.$initTableHeight(headerRef, true)
       @update="handleUpdate"
     >
       <template #orgName="{ row }">
-        <el-button type="text" icon="el-icon-view" @click="handleDetail(row)">{{ row.orgName || '--' }}</el-button>
+        <el-button type="text" icon="el-icon-view" @click="handleDetail(row)">{{ row.orgName || '-' }}</el-button>
       </template>
       <template #orgType="{ value }">
         <o-tag :type="getOrgTypeTag(value)">{{ getOrgTypeText(value) }}</o-tag>

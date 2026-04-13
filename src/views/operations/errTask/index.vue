@@ -166,7 +166,7 @@ const columns = [
 
 function getStatusText(status: string) {
   const target = getDictItems('fa_file_process_status')?.find((item) => item.value === status)
-  return target?.text || target?.label || status || '--'
+  return target?.text || target?.label || status || '-'
 }
 
 async function syncSelection() {
