@@ -10,7 +10,6 @@ import { FontIcon, IconifyIconOnline, IconifyIconOffline } from '../index'
  * @returns Component
  */
 export function useRenderIcon(icon: any, attrs?: iconType): Component {
-  console.log(`53 icon`, icon)
   // iconfont
   const ifReg = /^IF-/
   // typeof icon === "function" 属于SVG

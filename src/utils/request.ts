@@ -9,6 +9,8 @@ import qs from 'qs'
 import { addPendingRequest } from '@/utils/cancelTokenRequests'
 import { useGlobalLoading } from '@/hooks/useGlobalLoading'
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios'
+import router from '@/router'
+import { removeToken } from '@/utils/auth'
 
 // 上传文件参数类型
 export interface UploadFileParams {
@@ -85,8 +87,7 @@ const instance = axios.create({
   withCredentials: true,
 })
 const timer = null
-let isRefresh = false
-let requests = []
+let isRedirectingToLogin = false
 // 请求拦截，使用sessionId方式控制权限，
 const CancelToken = axios.CancelToken
 
@@ -193,7 +194,8 @@ instance.interceptors.response.use(
       }
     } else {
       if (response.status === 401) {
-        // return handleMultiple401Requests(response.config, response)
+        handleUnauthorized(response.data?.message)
+        return Promise.reject(response.data)
       }
       if (('' + response.status).startsWith('5')) {
         // devLogin(true)
@@ -207,36 +209,29 @@ instance.interceptors.response.use(
     loadingFalse()
     const obj = JSON.parse(JSON.stringify(error))
     if (obj.message?.indexOf('401') !== -1) {
-      // return handleMultiple401Requests(error.config, error)
+      handleUnauthorized(error.response?.data?.message)
+      return Promise.reject(error)
     }
+    return Promise.reject(error)
   },
 )
 
-/**
- * 如果页面发生401错误, 再次获取token并重新请求401接口, 防止回到登录页
- */
-async function handleMultiple401Requests(config, response) {
-  const msg = response?.data?.message
-  if (!window.VueApp.config.globalProperties.$test) {
-    // return menuLogout();
+function handleUnauthorized(message?: string) {
+  if (isRedirectingToLogin || router.currentRoute.value.path === '/login') {
+    return
   }
-  if (!isRefresh) {
-    isRefresh = true
-    try {
-      // await devLogin();
-      requests.forEach((v) => v())
-      requests = []
-      return request(config.url, config.method, config)
-    } catch (e) {
-    } finally {
-      isRefresh = false
-    }
-  }
-  return new Promise((resolve) => {
-    requests.push(() => {
-      resolve(request(config.url, config.method, config))
+
+  isRedirectingToLogin = true
+  $toast(message || '登录状态已失效，请重新登录', 'e', { closeAll: true })
+  removeToken()
+  router
+    .replace({
+      path: '/login',
+      query: router.currentRoute.value.path ? { redirect: router.currentRoute.value.fullPath } : undefined,
     })
-  })
+    .finally(() => {
+      isRedirectingToLogin = false
+    })
 }
 
 // 接口报错信息提示
