@@ -92,11 +92,11 @@ const columns = [
   },
   {
     label: '部门受案号',
-    prop: 'sysOrgCode',
+    prop: 'deptCaseCode',
   },
   {
     label: '受理时间',
-    prop: 'createTime',
+    prop: 'processDate',
     ...proxy.TIME_WIDTH_ATTRS,
   },
   {
@@ -126,6 +126,8 @@ const columns = [
     label: '失败数量',
     prop: 'errorFileNum',
     width: 100,
+    align: 'center',
+    render: proxy.renderWarnNumber,
   },
   {
     label: '导入行数',
@@ -136,7 +138,8 @@ const columns = [
     label: '去重行数',
     prop: 'repeatDataNum',
     width: 100,
-    useSlot: true,
+    align: 'center',
+    render: proxy.renderWarnNumber,
   },
   {
     key: 'operation',
@@ -230,11 +233,6 @@ proxy.$initTableHeight(headerRef, true)
       </template>
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
-      </template>
-      <template #repeatDataNum="{ value }">
-        <o-tag :type="Number(value) > 0 ? 'danger' : ''" width="100%">
-          {{ value ?? '-' }}
-        </o-tag>
       </template>
     </o-table>
     <addCaseDoc ref="addCaseDocRef" @success="init" />

@@ -12,6 +12,7 @@ import 'ant-design-vue/dist/reset.css'
 import 'core-js/stable'
 
 import * as globalData from '@/assets/constants'
+import * as gFunc from '@/utils/gFunc'
 
 import Table from '@pureadmin/table'
 // import PureDescriptions from "@pureadmin/descriptions";
@@ -108,6 +109,9 @@ app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
 app.config.globalProperties.$show = true
 Object.keys(globalData).forEach((v) => {
   app.config.globalProperties[v] = globalData[v]
+})
+Object.keys(gFunc).forEach((v) => {
+  app.config.globalProperties[v] = gFunc[v]
 })
 
 getPlatformConfig(app).then(async (config) => {
