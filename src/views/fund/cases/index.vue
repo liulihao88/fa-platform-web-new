@@ -42,23 +42,14 @@ const descOptions = computed(() => {
     {
       label: '案件名称',
       value: caseDetails.value.caseName,
-      attrs: {
-        width: '150px',
-      },
     },
     {
       label: '部门受案号',
       value: caseDetails.value.departmentCaseNumber,
-      attrs: {
-        width: '150px',
-      },
     },
     {
       label: '受理日期',
       value: caseDetails.value.acceptTime,
-      attrs: {
-        width: '100px',
-      },
       filter: (val) => formatTime(val, '{y}/{m}/{d}'),
     },
     {
