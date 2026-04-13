@@ -24,6 +24,7 @@
                 </div>
                 <div class="condition-cell">
                   <el-select
+                    v-if="index === 0"
                     v-model="rootGroups.operate"
                     :options="relationOptions"
                     placeholder="选择关系"
@@ -55,7 +56,9 @@
                   <el-input v-model="item.value" placeholder="输入值" size="small" clearable style="width: 100%" />
                 </div>
                 <div class="condition-cell actions-cell">
-                  <el-button type="primary" size="small" @click="addSameLevelCondition(null, 1)">添加同级</el-button>
+                  <el-button type="primary" size="small" @click="addSameLevelCondition(rootGroups.id)">
+                    添加同级
+                  </el-button>
                   <el-button type="success" size="small" :disabled="1 >= 5" @click="addSubGroup(item.id, 1)">
                     {{ 1 >= 5 ? '最多5级' : '添加子级' }}
                   </el-button>
@@ -72,7 +75,7 @@
 
               <!-- 第二级子条件 -->
               <template v-if="item.groups && item.groups.length > 0">
-                <div v-for="(subGroup, subIndex) in item.groups" :key="subIndex" class="sub-group-wrapper">
+                <div v-for="subGroup in item.groups" :key="subGroup.id" class="sub-group-wrapper">
                   <div
                     v-for="(subItem, subItemIndex) in subGroup.items"
                     :key="subItem.id"
@@ -84,6 +87,7 @@
                       </div>
                       <div class="condition-cell">
                         <el-select
+                          v-if="subItemIndex === 0"
                           v-model="subGroup.operate"
                           :options="relationOptions"
                           placeholder="选择关系"
@@ -121,7 +125,7 @@
                         />
                       </div>
                       <div class="condition-cell actions-cell">
-                        <el-button type="primary" size="small" @click="addSameLevelCondition(item.id, 2)">
+                        <el-button type="primary" size="small" @click="addSameLevelCondition(subGroup.id)">
                           添加同级
                         </el-button>
                         <el-button type="success" size="small" :disabled="2 >= 5" @click="addSubGroup(subItem.id, 2)">
@@ -133,7 +137,7 @@
 
                     <!-- 第三级子条件 -->
                     <template v-if="subItem.groups && subItem.groups.length > 0">
-                      <div v-for="(subGroup3, subIndex3) in subItem.groups" :key="subIndex3" class="sub-group-wrapper">
+                      <div v-for="subGroup3 in subItem.groups" :key="subGroup3.id" class="sub-group-wrapper">
                         <div
                           v-for="(subItem3, subItemIndex3) in subGroup3.items"
                           :key="subItem3.id"
@@ -145,6 +149,7 @@
                             </div>
                             <div class="condition-cell">
                               <el-select
+                                v-if="subItemIndex3 === 0"
                                 v-model="subGroup3.operate"
                                 :options="relationOptions"
                                 placeholder="选择关系"
@@ -182,7 +187,7 @@
                               />
                             </div>
                             <div class="condition-cell actions-cell">
-                              <el-button type="primary" size="small" @click="addSameLevelCondition(subItem.id, 3)">
+                              <el-button type="primary" size="small" @click="addSameLevelCondition(subGroup3.id)">
                                 添加同级
                               </el-button>
                               <el-button
@@ -201,11 +206,7 @@
 
                           <!-- 第四级子条件 -->
                           <template v-if="subItem3.groups && subItem3.groups.length > 0">
-                            <div
-                              v-for="(subGroup4, subIndex4) in subItem3.groups"
-                              :key="subIndex4"
-                              class="sub-group-wrapper"
-                            >
+                            <div v-for="subGroup4 in subItem3.groups" :key="subGroup4.id" class="sub-group-wrapper">
                               <div
                                 v-for="(subItem4, subItemIndex4) in subGroup4.items"
                                 :key="subItem4.id"
@@ -217,6 +218,7 @@
                                   </div>
                                   <div class="condition-cell">
                                     <el-select
+                                      v-if="subItemIndex4 === 0"
                                       v-model="subGroup4.operate"
                                       :options="relationOptions"
                                       placeholder="选择关系"
@@ -254,11 +256,7 @@
                                     />
                                   </div>
                                   <div class="condition-cell actions-cell">
-                                    <el-button
-                                      type="primary"
-                                      size="small"
-                                      @click="addSameLevelCondition(subItem3.id, 4)"
-                                    >
+                                    <el-button type="primary" size="small" @click="addSameLevelCondition(subGroup4.id)">
                                       添加同级
                                     </el-button>
                                     <el-button
@@ -278,8 +276,8 @@
                                 <!-- 第五级子条件 -->
                                 <template v-if="subItem4.groups && subItem4.groups.length > 0">
                                   <div
-                                    v-for="(subGroup5, subIndex5) in subItem4.groups"
-                                    :key="subIndex5"
+                                    v-for="subGroup5 in subItem4.groups"
+                                    :key="subGroup5.id"
                                     class="sub-group-wrapper"
                                   >
                                     <div
@@ -293,6 +291,7 @@
                                         </div>
                                         <div class="condition-cell">
                                           <el-select
+                                            v-if="subItemIndex5 === 0"
                                             v-model="subGroup5.operate"
                                             :options="relationOptions"
                                             placeholder="选择关系"
@@ -335,7 +334,7 @@
                                           <el-button
                                             type="primary"
                                             size="small"
-                                            @click="addSameLevelCondition(subItem4.id, 5)"
+                                            @click="addSameLevelCondition(subGroup5.id)"
                                           >
                                             添加同级
                                           </el-button>
@@ -426,6 +425,7 @@ interface ConditionItem {
 }
 
 interface ConditionGroup {
+  id: string
   operate: string
   items: ConditionItem[]
 }
@@ -445,6 +445,41 @@ const relationOptions = [
   { label: '且', value: 'and' },
   { label: '或', value: 'or' },
 ]
+
+function createConditionItem(): ConditionItem {
+  return {
+    id: generateId(),
+    field: '',
+    condition: '',
+    value: '',
+    groups: [],
+  }
+}
+
+function createConditionGroup(): ConditionGroup {
+  return {
+    id: generateId(),
+    operate: 'and',
+    items: [createConditionItem()],
+  }
+}
+
+function normalizeGroup(group?: Partial<ConditionGroup> | null): ConditionGroup {
+  return {
+    id: group?.id || generateId(),
+    operate: group?.operate || 'and',
+    items:
+      Array.isArray(group?.items) && group.items.length > 0
+        ? group.items.map((item) => ({
+            id: item?.id || generateId(),
+            field: item?.field || '',
+            condition: item?.condition || '',
+            value: item?.value ?? '',
+            groups: Array.isArray(item?.groups) ? item.groups.map((subGroup) => normalizeGroup(subGroup)) : [],
+          }))
+        : [createConditionItem()],
+  }
+}
 
 const props = withDefaults(defineProps<SmartScreeningProps>(), {
   columns: () => [
@@ -494,34 +529,11 @@ const props = withDefaults(defineProps<SmartScreeningProps>(), {
       placeholder: '输入值',
     },
   ],
-  modelValue: () => ({
-    operate: 'and',
-    items: [
-      {
-        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-        field: '',
-        condition: '',
-        value: '',
-        groups: [],
-      },
-    ],
-  }),
   caseId: null,
 })
 
 // 根条件组
-const rootGroups = ref<ConditionGroup>({
-  operate: 'and',
-  items: [
-    {
-      id: generateId(),
-      field: '',
-      condition: '',
-      value: '',
-      groups: [],
-    },
-  ],
-})
+const rootGroups = ref<ConditionGroup>(createConditionGroup())
 
 const savedCondition = ref('')
 const showSaveInput = ref(false)
@@ -592,9 +604,9 @@ function handleSavedConditionChange(value: string) {
       const parsedData = JSON.parse(selected.queryJson)
       // 检查数据结构是否包含 grouproot 字段
       if (parsedData.grouproot) {
-        rootGroups.value = parsedData.grouproot
+        rootGroups.value = normalizeGroup(parsedData.grouproot)
       } else {
-        rootGroups.value = parsedData
+        rootGroups.value = normalizeGroup(parsedData)
       }
       console.log(rootGroups.value, 'rootGroups')
       emit('update:modelValue', rootGroups.value)
@@ -629,7 +641,7 @@ watch(
   () => props.modelValue,
   (newValue) => {
     if (newValue) {
-      rootGroups.value = JSON.parse(JSON.stringify(newValue))
+      rootGroups.value = normalizeGroup(JSON.parse(JSON.stringify(newValue)))
     }
   },
   { immediate: true, deep: true },
@@ -642,40 +654,31 @@ const emit = defineEmits<{
 }>()
 
 // 添加同级条件
-function addSameLevelCondition(parentId: string | null, level: number) {
-  const newItem: ConditionItem = {
-    id: generateId(),
-    field: '',
-    condition: '',
-    value: '',
-    groups: [],
-  }
+function addSameLevelCondition(groupId: string | null) {
+  const newItem = createConditionItem()
 
-  if (!parentId) {
+  if (!groupId || rootGroups.value.id === groupId) {
     // 添加到顶层
     rootGroups.value.items.push(newItem)
   } else {
-    // 查找父级并添加到对应组
-    function findParentAndAdd(items: ConditionItem[]) {
-      for (const item of items) {
-        if (item.id === parentId) {
-          // 找到父级，添加到父级所在的组
-          if (item.groups && item.groups.length > 0) {
-            item.groups[item.groups.length - 1].items.push(newItem)
-          }
-          return true
-        }
-        if (item.groups) {
-          for (const group of item.groups) {
-            if (findParentAndAdd(group.items)) {
-              return true
-            }
+    function findGroupAndAdd(group: ConditionGroup): boolean {
+      if (group.id === groupId) {
+        group.items.push(newItem)
+        return true
+      }
+
+      for (const item of group.items) {
+        for (const subGroup of item.groups || []) {
+          if (findGroupAndAdd(subGroup)) {
+            return true
           }
         }
       }
+
       return false
     }
-    findParentAndAdd(rootGroups.value.items)
+
+    findGroupAndAdd(rootGroups.value)
   }
 
   // 通知父组件
@@ -684,18 +687,7 @@ function addSameLevelCondition(parentId: string | null, level: number) {
 
 // 添加子级条件组
 function addSubGroup(itemId: string, level: number) {
-  const newGroup: ConditionGroup = {
-    operate: 'and',
-    items: [
-      {
-        id: generateId(),
-        field: '',
-        condition: '',
-        value: '',
-        groups: [],
-      },
-    ],
-  }
+  const newGroup = createConditionGroup()
 
   // 查找目标项并添加子组
   function findItemAndAdd(items: ConditionItem[]) {
@@ -748,13 +740,7 @@ function removeCondition(itemId: string) {
   if (rootGroups.value.items.length === 1 && findAndDelete(rootGroups.value.items)) {
     // 如果删除后没有规则，添加一个默认规则
     if ((rootGroups.value.items.length as number) === 0) {
-      rootGroups.value.items.push({
-        id: generateId(),
-        field: '',
-        condition: '',
-        value: '',
-        groups: [],
-      })
+      rootGroups.value.items.push(createConditionItem())
     }
   } else {
     findAndDelete(rootGroups.value.items)
@@ -770,18 +756,7 @@ function handleQuery() {
 }
 
 function handleReset() {
-  rootGroups.value = {
-    operate: 'and',
-    items: [
-      {
-        id: generateId(),
-        field: '',
-        condition: '',
-        value: '',
-        groups: [],
-      },
-    ],
-  }
+  rootGroups.value = createConditionGroup()
   savedCondition.value = ''
   emit('reset')
   emit('update:modelValue', rootGroups.value)
@@ -789,8 +764,6 @@ function handleReset() {
 </script>
 
 <style scoped>
-
-
 /* 响应式调整 */
 @media (width <= 1200px) {
   .header-cell.action {
