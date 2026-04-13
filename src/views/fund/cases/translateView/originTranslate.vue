@@ -145,12 +145,14 @@ watch(
 
       <div class="actions">
         <o-button type="primary" icon="el-icon-view" @click="previewFile('normal')">预览文件</o-button>
-        <o-button v-if="!isExcelFile" class="cp" type="primary" icon="el-icon-zoom-in" @click="previewFile('fast')">
-          快速预览文件
-        </o-button>
-        <o-tooltip content="快速预览文件使用懒加载技术, 无法全局搜索" placement="top" class="ml">
-          <o-icon name="warning" />
-        </o-tooltip>
+        <template v-if="!isExcelFile">
+          <o-button class="cp" type="primary" icon="el-icon-zoom-in" @click="previewFile('fast')">
+            快速预览文件
+          </o-button>
+          <o-tooltip content="快速预览文件使用懒加载技术, 无法全局搜索" placement="top" class="ml">
+            <o-icon name="warning" />
+          </o-tooltip>
+        </template>
       </div>
     </div>
 
