@@ -141,7 +141,7 @@ const handlePageClick = async (index) => {
 
 const save = async (type = '') => {
   await validSelectBankCompay()
-  if (isEmpty(type)) {
+  if (isEmpty(type) || type === 'update') {
     await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
       title: '确认操作',
     })
