@@ -252,7 +252,7 @@ const columns = [
       },
       {
         handler: deleteRow,
-        ...proxy.getDeleteAttrs(),
+        ...proxy.setDeleteAttrs(),
       },
     ],
   },

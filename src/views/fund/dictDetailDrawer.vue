@@ -79,10 +79,10 @@ const columns = [
         handler: async (value, row) => {
           edit(value)
         },
-        ...proxy.EDIT_ATTRS,
+        ...proxy.setEditAttrs(),
       },
       {
-        ...proxy.getDeleteAttrs(),
+        ...proxy.setDeleteAttrs(),
         handler: async (value, row) => {
           await deleteDictItem(value.id)
           handleSearch({})

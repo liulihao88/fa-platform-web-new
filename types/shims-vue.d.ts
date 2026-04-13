@@ -67,7 +67,9 @@ declare module 'vue' {
     QUOTA_UNIT: OptionType[]
     TIME_WIDTH_ATTRS: OptionType[]
     VERSION_WIDTH: OptionType[]
+    setEditAttrs: any
     setDetailAttrs: any
+    setDeleteAttrs: any
 
     ROLE_OPTIONS: OptionType[]
     PERMISSION_OPTIONS: OptionType[]

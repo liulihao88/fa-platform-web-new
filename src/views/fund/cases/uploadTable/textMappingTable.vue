@@ -49,7 +49,7 @@ const columns = [
     label: '操作',
     btns: [
       {
-        ...proxy.EDIT_ATTRS,
+        ...proxy.setEditAttrs(),
       },
     ],
   },

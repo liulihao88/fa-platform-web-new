@@ -149,10 +149,10 @@ const columns = [
       },
       {
         handler: editRow,
-        ...proxy.EDIT_ATTRS,
+        ...proxy.setEditAttrs(),
       },
       {
-        ...proxy.getDeleteAttrs(),
+        ...proxy.setDeleteAttrs(),
         handler: deleteRow,
       },
     ],

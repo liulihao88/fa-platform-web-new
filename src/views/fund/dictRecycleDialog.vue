@@ -46,7 +46,7 @@ const columns = [
         content: '彻底删除',
         type: 'danger',
         title: '确认彻底删除吗？',
-        ...proxy.getDeleteAttrs(),
+        ...proxy.setDeleteAttrs(),
         handler: async (value, row) => {
           await deleteDictPermanently(value.id)
           handleSearch()
@@ -75,7 +75,7 @@ const btns = [
   {
     content: '批量删除',
     reConfirm: !proxy.$dev,
-    ...proxy.getDeleteAttrs(),
+    ...proxy.setDeleteAttrs(),
     handler: async () => {
       const ids = selectIds.value.join(',')
       await deleteBatchDictPermanently(ids)

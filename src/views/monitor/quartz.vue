@@ -126,7 +126,7 @@ const columns = [
       },
       {
         handler: editRow,
-        ...proxy.EDIT_ATTRS,
+        ...proxy.setEditAttrs(),
       },
       {
         handler: (value, row) => {
@@ -134,7 +134,7 @@ const columns = [
             init()
           })
         },
-        ...proxy.getDeleteAttrs(),
+        ...proxy.setDeleteAttrs(),
       },
     ],
   },

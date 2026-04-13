@@ -13,7 +13,6 @@ import {
   draftFileConfig,
 } from '@/api/analysis.ts'
 import { $toast, getStorage, isEmpty, notEmpty } from '@oeos-components/utils'
-import { BOOLEAN_OPTIONS } from '@/assets/constants.ts'
 import { useDetail } from '@/hooks'
 const { initToDetail, toDetail } = useDetail()
 // initToDetail()
@@ -25,6 +24,7 @@ const route = useRoute()
 const textMappingTableRef = ref()
 
 const fileId = ref(route.query.fileId)
+const specialBooleanOptions = ['是', '否']
 
 const payOptions: any = ref([])
 const orgTableDialogRef = ref()
@@ -282,21 +282,24 @@ defineExpose({
                       v-model="adjForm.adjTransAmt"
                       class="mapping-toolbar__select"
                       title="交易金额调整项"
-                      :options="BOOLEAN_OPTIONS"
+                      :options="specialBooleanOptions"
+                      type="simple"
                       width="200"
                     />
                     <o-select
                       v-model="adjForm.adjCreditAmt"
                       class="mapping-toolbar__select"
                       title="贷款金额调整项"
-                      :options="BOOLEAN_OPTIONS"
+                      :options="specialBooleanOptions"
+                      type="simple"
                       width="200"
                     />
                     <o-select
                       v-model="adjForm.adjSettlementAmt"
                       class="mapping-toolbar__select"
                       title="结算金额调整项"
-                      :options="BOOLEAN_OPTIONS"
+                      :options="specialBooleanOptions"
+                      type="simple"
                       width="200"
                     />
                   </div>

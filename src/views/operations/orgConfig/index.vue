@@ -43,7 +43,7 @@ const columns = [
     btns: [
       {
         handler: handleEdit,
-        ...proxy.EDIT_ATTRS,
+        ...proxy.setEditAttrs(),
       },
     ],
   },
