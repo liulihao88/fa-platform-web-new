@@ -62,7 +62,7 @@ const mainColumns = computed(() => {
       fixed: 'right',
       btns: [
         { content: '查看原信息', handler: openSourceDialog },
-        { content: '详情', handler: openMainDetail },
+        { handler: openMainDetail, ...proxy.setDetailAttrs() },
       ],
     },
   ])
@@ -75,7 +75,7 @@ const sourceColumns = computed(() => {
       label: '操作',
       fixed: 'right',
       width: 100,
-      btns: [{ content: '详情', handler: openSourceDetail }],
+      btns: [{ handler: openSourceDetail, ...proxy.setDetailAttrs() }],
     },
   ])
 })

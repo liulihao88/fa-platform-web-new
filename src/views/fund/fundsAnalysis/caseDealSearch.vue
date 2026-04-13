@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, useTemplateRef } from 'vue'
+import { computed, getCurrentInstance, nextTick, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
@@ -8,6 +8,7 @@ import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
 const route = useRoute()
+const { proxy } = getCurrentInstance()
 const { exportXls } = useMethods()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const pageRef = useTemplateRef('pageRef')
@@ -92,8 +93,7 @@ const mainColumns = computed(() =>
       key: 'operation',
       label: '操作',
       fixed: 'right',
-      width: 100,
-      btns: [{ content: '详情', handler: handleDetail }],
+      btns: [{ handler: handleDetail, ...proxy.setDetailAttrs() }],
     },
   ]),
 )

@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref, watch, computed, useTemplateRef } from 'vue'
+import { ref, watch, computed, useTemplateRef, getCurrentInstance } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
 import { getCaseFileTransInfo, bankCustomerPageList, getStandardDataPageList } from '@/api/analysis.ts'
@@ -8,6 +8,7 @@ import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
+const { proxy } = getCurrentInstance()
 
 const emits = defineEmits(['initFileInfo'])
 
@@ -425,8 +426,8 @@ const activeTabColumns = computed(() => {
         label: '操作',
         btns: [
           {
-            content: '详情',
             handler: detailRow,
+            ...proxy.setDetailAttrs(),
           },
         ],
       },

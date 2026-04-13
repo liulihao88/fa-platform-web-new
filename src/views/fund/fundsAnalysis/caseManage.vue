@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, useTemplateRef } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { $toast } from '@oeos-components/utils'
 import {
@@ -14,6 +14,7 @@ import { useRelativeHeight } from '@/hooks'
 import { useCommonHook } from '@/store'
 
 const route = useRoute()
+const { proxy } = getCurrentInstance()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
@@ -67,7 +68,7 @@ const columns = [
     fixed: 'right',
     btns: [
       { content: '关系', handler: viewRelations },
-      { content: '涉案人详情', handler: showPersonDetail },
+      { handler: showPersonDetail, ...proxy.setDetailAttrs({ content: '涉案人详情' }) },
     ],
   },
 ] as any[]

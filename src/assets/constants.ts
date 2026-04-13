@@ -34,3 +34,13 @@ export const getDeleteAttrs = () => ({
   // reConfirm: !getStorage('fa-$dev'),
   reConfirm: true,
 })
+
+export const setDetailAttrs = (attrs = {}) => ({
+  comp: 'o-icon',
+  attrs: {
+    type: 'svg',
+    name: 'detail',
+    content: '详情',
+    ...attrs,
+  },
+})
