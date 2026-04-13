@@ -134,19 +134,28 @@ onMounted(() => {
 .standard-data-layout {
   display: flex;
   gap: 20px;
+  width: 100%;
+  min-width: 0;
   height: 100%;
   min-height: 0;
+  overflow: hidden;
 
   &__result {
     flex: 1;
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 }
 
 .standard-data-view {
+  display: flex;
   flex: 0 0 240px;
+  flex-direction: column;
   min-width: 240px;
+  min-height: 0;
   padding: 0;
+  overflow: hidden;
   background: #fff;
 
   &__panel {
@@ -174,7 +183,8 @@ onMounted(() => {
   }
 
   &__list {
-    max-height: calc(100% - 118px);
+    flex: 1;
+    min-height: 0;
     padding-top: 0;
     overflow: hidden;
     overflow-y: auto;

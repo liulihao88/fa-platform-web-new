@@ -21,9 +21,10 @@ const props = defineProps({
 
 const data = ref([])
 const total = ref(0)
+const resultBodyRef = useTemplateRef('resultBodyRef')
 const contentPanelRef = useTemplateRef('contentPanelRef')
 const tableCardRef = useTemplateRef('tableCardRef')
-const { height: tableHeight } = useRelativeHeight(tableCardRef, contentPanelRef, { minHeight: 240, offset: 62 })
+const { height: tableHeight } = useRelativeHeight(tableCardRef, contentPanelRef, { minHeight: 240, offset: 80 })
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')
@@ -457,7 +458,7 @@ defineExpose({
 
 <template>
   <div class="result-translate">
-    <div class="result-body">
+    <div ref="resultBodyRef" class="result-body">
       <div class="sheet-panel">
         <div class="sheet-label">文件页码</div>
         <div class="sheet-list">
@@ -505,7 +506,10 @@ defineExpose({
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-width: 0;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
   background: #fff;
   border: 1px solid #e5e6eb;
 }
@@ -522,14 +526,18 @@ defineExpose({
   display: flex;
   flex: 1;
   gap: 16px;
+  min-width: 0;
   min-height: 0;
   padding: 12px;
+  overflow: hidden;
 }
 
 .sheet-panel {
   flex-shrink: 0;
   width: 150px;
+  min-height: 0;
   padding: 12px;
+  overflow: hidden;
   border: 1px solid #ebeef5;
   border-radius: 4px;
 }
@@ -545,6 +553,8 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .sheet-item {
@@ -568,20 +578,32 @@ defineExpose({
   flex: 1;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .result-tabs {
+  flex-shrink: 0;
+  min-width: 0;
   padding: 0 4px;
+  overflow: hidden;
 }
 
 .table-card {
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
   padding: 12px;
+  overflow: hidden;
   border: 1px solid #ebeef5;
   border-radius: 4px;
+}
+
+.table-card :deep(.o-table) {
+  width: 100%;
+  min-width: 0;
 }
 
 .table-toolbar {
