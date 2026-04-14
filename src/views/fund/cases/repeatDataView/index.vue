@@ -98,7 +98,6 @@ const clearSelected = () => {
 }
 
 const exportData = () => {
-  $toast(`导出全部数据，共 ${response.value.total} 条`, 's')
   const params = {
     caseId: query.caseId,
     ids: [],
@@ -143,9 +142,7 @@ watch(
     <div class="repeat-page__wrap">
       <o-flex align="center" class="repeat-page__toolbar">
         <div>
-          <o-button type="primary" icon="el-icon-download" :disabled="isEmpty(displayData)" @click="exportData">
-            导出数据
-          </o-button>
+          <o-button type="primary" icon="el-icon-download" @click="exportData">导出数据</o-button>
           <o-button type="primary" icon="el-icon-download" :disabled="!selectedCount" @click="exportSelectedData">
             导出选择数据
           </o-button>
@@ -219,6 +216,14 @@ watch(
   width: 100%;
   height: 100%;
   background: #fff;
+
+  @supports (width: max-content) {
+    :deep(.el-table__header table),
+    :deep(.el-table__body table),
+    :deep(.el-table__footer table) {
+      width: max-content;
+    }
+  }
 
   &__top-line {
     height: 6px;
@@ -299,6 +304,12 @@ watch(
 
   :deep(.el-table__body .el-table__row:hover > td.el-table__cell) {
     background: #f8fbff;
+  }
+
+  :deep(.el-table__header table),
+  :deep(.el-table__body table),
+  :deep(.el-table__footer table) {
+    min-width: 100%;
   }
 }
 </style>
