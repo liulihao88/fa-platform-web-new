@@ -43,6 +43,15 @@ const progressMap = {
   '102': 100,
 }
 
+const validStatuses = ['101', '102']
+const configStatuses = ['003']
+const loadingStatuses = ['000', '100', '001', '002', '004', '005']
+const errorStatuses = ['900', '901', '902', '904', '999']
+
+const textMappingValidStatuses = ['003', '100', '101', '904', '102']
+const textMappingLoadingStatuses = ['000', '001', '002', '004', '005']
+const textMappingErrorStatuses = ['900', '901', '902', '999']
+
 /**
    * 下拉菜单	查询状态
 转换失败	900 解压失败
@@ -260,7 +269,7 @@ const columns = [
     label: '状态',
     prop: 'status',
     useSlot: true,
-    width: 120,
+    width: 100,
     align: 'center',
   },
   {
@@ -362,24 +371,14 @@ const columns = [
 ]
 
 function getTranslateStatusType(record) {
-  const validStatuses = ['101', '102']
   return validStatuses.includes(record.status) ? 'primary' : 'danger'
 }
 
 function getTextMappingStatusType(record) {
-  const validStatuses = ['003', '100', '101', '904', '102']
-  return validStatuses.includes(record.status) ? 'primary' : 'danger'
+  return textMappingValidStatuses.includes(record.status) ? 'primary' : 'danger'
 }
 
 function handleStatusPromise(record) {
-  // 定义可打开模态框的状态
-  const validStatuses = ['101', '102']
-  // 定义配置中的状态
-  const configStatuses = ['003']
-  // 定义加载中的状态
-  const loadingStatuses = ['000', '100', '001', '002', '004', '005']
-  // 定义错误状态
-  const errorStatuses = ['900', '901', '902', '904', '999']
   return new Promise((resolve, reject) => {
     if (validStatuses.includes(record.status)) {
       // // 状态允许打开模态框
@@ -403,20 +402,14 @@ function handleStatusPromise(record) {
 
 // 新增：处理标题配置按钮点击事件
 const handleTitleConfigClick = (record) => {
-  // 定义可打开模态框的状态
-  const validStatuses = ['003', '100', '101', '904', '102']
-  // 定义加载中的状态
-  const loadingStatuses = ['000', '001', '002', '004', '005']
-  // 定义错误状态
-  const errorStatuses = ['900', '901', '902', '999']
   return new Promise((resolve, reject) => {
-    if (validStatuses.includes(record.status)) {
+    if (textMappingValidStatuses.includes(record.status)) {
       // 状态允许打开模态框
       return resolve(record)
-    } else if (loadingStatuses.includes(record.status)) {
+    } else if (textMappingLoadingStatuses.includes(record.status)) {
       // 文件正在加载中
       $toast('文件正在加载中，请稍后', 'w')
-    } else if (errorStatuses.includes(record.status)) {
+    } else if (textMappingErrorStatuses.includes(record.status)) {
       // 文件加载错误
       $toast('文件加载错误，请修改后再配置', 'e')
     } else {
@@ -464,13 +457,10 @@ async function deleteRow(row) {
         @update="update"
       >
         <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
-        <template #status="{ row, value }">
-          <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
+        <template #status="{ value }">
+          <o-tag :type="new Set([...errorStatuses, ...textMappingErrorStatuses]).has(value) ? 'danger' : 'primary'">
             {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
-          </el-tag>
-          <el-tag v-else type="primary">
-            {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
-          </el-tag>
+          </o-tag>
         </template>
         <template #progress="{ row }">
           <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
