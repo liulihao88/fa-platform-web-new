@@ -112,10 +112,17 @@ const columns = [
     useSlot: 'processStatusTag',
   },
   {
-    label: '处理进度',
-    prop: 'processStatus',
-    width: 120,
-    useSlot: 'processStatusProgress',
+    ...proxy.renderProgressColumn({
+      prop: 'processStatus',
+      progressMap: {
+        '000': 0,
+        '001': 20,
+        '010': 40,
+        '002': 60,
+        '003': 80,
+        '004': 100,
+      },
+    }),
   },
   {
     label: '文件数量',
@@ -170,20 +177,6 @@ const columns = [
     ],
   },
 ]
-
-const parseProcess = (text) => {
-  const progressMap = {
-    '000': 0,
-    '001': 20,
-    '010': 40,
-    '002': 60,
-    '003': 80,
-    '004': 100,
-  }
-
-  const percent = progressMap[text] || 0
-  return percent
-}
 
 const getProcessStatusText = (value) => {
   const target = getDictItems('fa_case_process_status').find((v) => v.value === value)
@@ -251,9 +244,6 @@ proxy.$initTableHeight(headerRef, true)
         <el-tag :type="getProcessStatusType(value)" :effect="processSuccessStatuses.includes(value) ? 'dark' : 'light'">
           {{ getProcessStatusText(value) }}
         </el-tag>
-      </template>
-      <template #processStatusProgress="{ value }">
-        <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>
     </o-table>
     <addCaseDoc ref="addCaseDocRef" @success="init" />
