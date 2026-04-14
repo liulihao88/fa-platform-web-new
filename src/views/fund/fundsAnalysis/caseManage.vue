@@ -10,7 +10,7 @@ import {
   getInvolvedRelationApi,
   updateInvolvedPersonApi,
 } from '@/api/analysis'
-import { useRelativeHeight } from '@/hooks'
+import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import { useCommonHook } from '@/store'
 
 const route = useRoute()
@@ -18,14 +18,18 @@ const { proxy } = getCurrentInstance()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
+const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({
+  pageNo: 1,
+  pageSize: 10,
   customerName: '',
   idNum: '',
   cardNum: '',
   accountNum: '',
 })
+syncPageSize(searchForm)
 
 const searchItems = [
   { label: '涉案人名称', prop: 'customerName', type: 'input', placeholder: '请输入涉案人名称' },
@@ -35,6 +39,7 @@ const searchItems = [
 ] as any[]
 
 const data = ref<Record<string, any>[]>([])
+const total = ref(0)
 const loading = ref(false)
 const relationVisible = ref(false)
 const personDetailVisible = ref(false)
@@ -45,6 +50,7 @@ const relatedPersonList = ref<Record<string, any>[]>([])
 
 const relatedOptions = computed(() => getDictItems('fa_involved_person_relation') || [])
 const kindOptions = computed(() => getDictItems('fa_involved_person_type') || [])
+const idTypeOptions = computed(() => getDictItems('fa_id_type') || [])
 
 async function ensureDictLoaded(code: string) {
   if ((getDictItems(code) || []).length > 0) return
@@ -85,7 +91,7 @@ const personDetailOptions = computed(() => [
   { label: '客户类型', value: personDetail.value.customerType || '-' },
   { label: '营业执照', value: personDetail.value.licenseNum || '-' },
   { label: '法人姓名', value: personDetail.value.legalPersonName || '-' },
-  { label: '证件种类', value: personDetail.value.idType || '-' },
+  { label: '证件种类', value: getIdTypeText(personDetail.value.idType) },
   { label: '证件号码', value: personDetail.value.idNum || '-' },
   { label: '联系电话', value: personDetail.value.teleNum || '-' },
   { label: '法人证件类型', value: personDetail.value.legalIdType || '-' },
@@ -104,11 +110,23 @@ const personDetailOptions = computed(() => [
   { label: '邮寄地址', value: personDetail.value.mailAddr || '-' },
   { label: '邮政编码', value: personDetail.value.postCode || '-' },
   { label: '备注', value: personDetail.value.comment || '-' },
-  { label: '开户账号', value: personDetail.value.accountNum || '-' },
 ])
 
 function getKindText(kind: string | number) {
-  return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '-'
+  return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '嫌疑人'
+}
+
+function getKindType(kind: string | number) {
+  const typeMap = {
+    1: 'success',
+    2: 'danger',
+    3: 'warning',
+  }
+  return typeMap[Number(kind)] || 'info'
+}
+
+function getIdTypeText(value: string | number) {
+  return idTypeOptions.value.find((item) => String(item.value) === String(value))?.label || value || '-'
 }
 
 function getRelatedText(value: string | number) {
@@ -127,23 +145,33 @@ async function fetchList() {
       ...searchForm,
     })
     data.value = Array.isArray(res) ? res : res?.records || []
+    total.value = Array.isArray(res) ? res.length : res?.total || 0
   } finally {
     loading.value = false
   }
 }
 
 function handleSearch(params: Record<string, any>) {
+  searchForm.pageNo = 1
   Object.assign(searchForm, params || {})
   fetchList()
 }
 
 function handleReset() {
   Object.assign(searchForm, {
+    pageNo: 1,
+    pageSize: searchForm.pageSize,
     customerName: '',
     idNum: '',
     cardNum: '',
     accountNum: '',
   })
+  fetchList()
+}
+
+function handleUpdate(pageNo: number, pageSize: number) {
+  searchForm.pageNo = pageNo
+  updatePageSize(searchForm, pageSize)
   fetchList()
 }
 
@@ -220,7 +248,11 @@ async function saveRelation(row: Record<string, any>) {
 fetchList()
 
 onMounted(async () => {
-  await Promise.all([ensureDictLoaded('fa_involved_person_relation'), ensureDictLoaded('fa_involved_person_type')])
+  await Promise.all([
+    ensureDictLoaded('fa_involved_person_relation'),
+    ensureDictLoaded('fa_involved_person_type'),
+    ensureDictLoaded('fa_id_type'),
+  ])
 })
 </script>
 
@@ -228,9 +260,20 @@ onMounted(async () => {
   <div ref="pageRef" class="case-manage-page">
     <g-search-bar :items="searchItems" class="m-b-12" @search="handleSearch" @reset="handleReset" />
     <div ref="tableSectionRef" class="case-manage-page__table">
-      <o-table :columns="columns" :data="data" :loading="loading" :height="tableHeight">
+      <o-table
+        :columns="columns"
+        :data="data"
+        :total="total"
+        :loading="loading"
+        :pageSize="searchForm.pageSize"
+        :pageNumber="searchForm.pageNo"
+        :height="tableHeight"
+        @update="handleUpdate"
+      >
         <template #involvedKind="{ value }">
-          <o-tag>{{ getKindText(value) }}</o-tag>
+          <o-tag :type="getKindType(value)">
+            {{ getKindText(value) }}
+          </o-tag>
         </template>
       </o-table>
     </div>
@@ -280,7 +323,15 @@ onMounted(async () => {
     </o-dialog>
 
     <o-dialog v-model="personDetailVisible" title="涉案人详情" width="1000px" :showConfirm="false">
-      <o-descriptions :options="personDetailOptions" :column="2" label-width="auto" :showAll="true" />
+      <div class="case-manage-page__detail">
+        <el-card header="基本信息">
+          <o-descriptions :options="personDetailOptions" :column="2" label-width="auto" :showAll="true" />
+        </el-card>
+        <el-card header="开户信息" class="mt2">
+          <div class="case-manage-page__account-org">{{ personDetail.orgName || '-' }}</div>
+          <div class="case-manage-page__account-line">银行账号 {{ personDetail.accountNum || '-' }}</div>
+        </el-card>
+      </div>
     </o-dialog>
   </div>
 </template>
@@ -302,5 +353,20 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+
+.case-manage-page__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.case-manage-page__account-org {
+  font-weight: 600;
+}
+
+.case-manage-page__account-line {
+  margin-top: 8px;
+  margin-left: 20px;
 }
 </style>
