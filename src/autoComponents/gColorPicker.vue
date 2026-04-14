@@ -1,28 +1,27 @@
 <template>
   <div>
     <template v-if="mode === 'edit'">
-      <div class="flex flex-wrap gap-2">
+      <div class="item-tool">
         <div
           v-for="(item, index) in Colors"
           :key="index"
           :style="{ color: item[0] }"
           :class="modelValue === item[0] ? 'item-active' : ''"
-          class="w-4.5 flex justify-center items-center cursor-pointer relative"
+          class="item-color"
           @click="handleColorClick(item)"
         >
-          <div class="hidden item-color-border" :style="{ color: item[0] }"></div>
-          <div class="w-4.5 h-4.5 rounded-full" :style="{ background: item[0] }"></div>
+          <div class="item-color-border" />
+          <div class="item-back" :style="{ background: item[0] }" />
         </div>
       </div>
     </template>
     <template v-else>
-      <div v-if="modelValue" class="w-4.5 h-4.5 rounded-full" :style="{ background: modelValue }"></div>
+      <div v-if="modelValue" class="item-view" :style="{ background: modelValue }" />
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 const whiteColor = '#ffffff'
 const blackColor = '#666666'
 const Colors = [
@@ -65,17 +64,48 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 function handleColorClick(item) {
-  emit('update:modelValue', item[0])
+  emit('update:modelValue', props.modelValue === item[0] ? '' : item[0])
 }
 </script>
 
 <style scoped>
+.item-tool {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.item-color {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.item-back {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.item-color-border {
+  visibility: hidden;
+}
+
 .item-active .item-color-border {
-  display: block;
   position: absolute;
-  border: 1px solid;
+  visibility: visible;
   width: 24px;
   height: 24px;
+  border: 1px solid;
+  border-radius: 50%;
+}
+
+.item-view {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
 }
 </style>

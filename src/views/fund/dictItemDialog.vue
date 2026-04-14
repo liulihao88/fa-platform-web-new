@@ -81,7 +81,7 @@ defineExpose({
 
 <template>
   <div>
-    <o-dialog ref="dialogRef" v-model="isShow" :title="title" :confirm="save">
+    <o-dialog ref="dialogRef" v-model="isShow" :title="title" :confirm="save" width="800">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="名称" prop="itemText">
           <o-input v-model="form.itemText" />
@@ -93,7 +93,7 @@ defineExpose({
           <g-color-picker v-model="form.itemColor" />
         </el-form-item>
         <el-form-item label="排序" prop="sortOrder">
-          <el-input-number v-model="form.sortOrder" size="small" controls-position="right" />
+          <el-input-number v-model="form.sortOrder" controls-position="right" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <o-input v-model="form.description" />
