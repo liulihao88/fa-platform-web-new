@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, reactive, ref, useTemplateRef, watch } from 'vue'
+import { computed, getCurrentInstance, nextTick, reactive, ref, useTemplateRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
@@ -28,7 +28,10 @@ const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { mi
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)
-const selectedRows = ref<Record<string, any>[]>([])
+const syncingSelection = ref(false)
+const selectedMap = ref(new Map<string, Record<string, any>>())
+const selectedRows = computed(() => Array.from(selectedMap.value.values()))
+const selectedCount = computed(() => selectedMap.value.size)
 const conditionJson = ref('')
 const archiveVisible = ref(false)
 const archiveText = ref('')
@@ -88,7 +91,39 @@ const recordDescOptions = computed(() =>
 )
 
 function handleSelectionChange(rows: Record<string, any>[]) {
-  selectedRows.value = rows
+  if (syncingSelection.value) return
+
+  const currentPageIds = new Set(data.value.map((item) => item.id))
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
+  })
+
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
+}
+
+async function syncSelection() {
+  await nextTick()
+  if (!tableRef.value?.$refs?.tableRef) return
+
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    data.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
+}
+
+function clearSelected() {
+  selectedMap.value.clear()
+  tableRef.value?.$refs?.tableRef?.clearSelection()
 }
 
 async function fetchList() {
@@ -104,6 +139,7 @@ async function fetchList() {
     })
     data.value = res?.records || []
     total.value = res?.total || 0
+    await syncSelection()
   } finally {
     loading.value = false
   }
@@ -273,6 +309,7 @@ fetchList()
     <div class="smart-page__header">
       <SmartSearch :columns="searchConditionColumns" :caseId="caseId" @query="handleSearch" @reset="handleReset" />
       <o-flex class="mt-3" gap="8">
+        <gSelectedCount :count="selectedCount" @clear="clearSelected" />
         <o-button type="primary" icon="el-icon-download" @click="exportCurrentPage">导出本页数据</o-button>
         <o-button type="primary" icon="el-icon-select" :disabled="!selectedRows.length" @click="exportSelectedRows">
           导出选择数据
@@ -299,7 +336,7 @@ fetchList()
         @selection-change="handleSelectionChange"
         @update="handleUpdate"
       >
-        <el-table-column type="selection" width="58" align="center" />
+        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
         <template #transAmt="{ value }">
           {{ value || value === 0 ? Number(value).toLocaleString() : '-' }}
         </template>
