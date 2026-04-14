@@ -55,7 +55,7 @@ const caseDescOptions = computed(() => [
   },
   {
     label: '受理日期',
-    value: caseDetail.value.acceptTime ? formatTime(caseDetail.value.acceptTime, '{y}/{m}/{d}') : '-',
+    value: formatTime(caseDetail.value.acceptTime, '{y}/{m}/{d}') ?? '-',
   },
   {
     label: '案由',

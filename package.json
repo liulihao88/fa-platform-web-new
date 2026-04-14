@@ -51,7 +51,7 @@
     "url": "https://github.com/xiaoxian521"
   },
   "dependencies": {
-    "@oeos-components/utils": "^0.0.25",
+    "@oeos-components/utils": "^0.0.26",
     "@pureadmin/descriptions": "^1.2.1",
     "@pureadmin/table": "^3.3.0",
     "@pureadmin/utils": "^2.6.2",

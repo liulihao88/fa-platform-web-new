@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@oeos-components/utils':
-        specifier: ^0.0.25
-        version: 0.0.25(typescript@5.9.3)
+        specifier: ^0.0.26
+        version: 0.0.26(typescript@5.9.3)
       '@pureadmin/descriptions':
         specifier: ^1.2.1
         version: 1.2.1(echarts@6.0.0)(element-plus@2.13.0(vue@3.5.22(typescript@5.9.3)))(typescript@5.9.3)
@@ -1349,8 +1349,8 @@ packages:
     resolution: {integrity: sha512-ze46EW5xW+UxDvinvPkYt2MzR355Az1lA3bpX8KDialgnCwr+IbkBij/udbUEC6ZFbidPkfK1eKl4ESN7gMY+w==}
     engines: {node: '>=18.12.0'}
 
-  '@oeos-components/utils@0.0.25':
-    resolution: {integrity: sha512-r5pAuznFasqylJA/PO6Wq2R7vu+r55QMSmqoizRqg9SYndNEUCMq7AIlwRZtYSXL06v0r/JLubIHKu+cgDRnng==}
+  '@oeos-components/utils@0.0.26':
+    resolution: {integrity: sha512-R3R6vQq4xyj9iinRAbkUDL1O2lALBPuuUzVF2V5U+8qPL7Tp0LKO4AFwqOvePQOeFYrWVOTBJnUo5vst1he1AQ==}
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -6905,7 +6905,7 @@ snapshots:
       - magicast
     optional: true
 
-  '@oeos-components/utils@0.0.25(typescript@5.9.3)':
+  '@oeos-components/utils@0.0.26(typescript@5.9.3)':
     dependencies:
       '@vue/reactivity': 3.5.22
       '@vue/shared': 3.5.22
