@@ -1,7 +1,6 @@
 <script setup lang="tsx">
 import { ref, getCurrentInstance, useTemplateRef, computed, nextTick } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
-import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
 import { getCasefileList, deleteCasefile, deleteBatchCasefile } from '@/api/analysis.ts'
 import { getStorage, $toast, clone } from '@oeos-components/utils'
 import { useCommonHook } from '@/store'
@@ -306,16 +305,53 @@ const columns = [
   {
     key: 'operation',
     label: '操作',
+    width: 180,
     btns: [
       {
         content: '字段映射',
-        handler: textRow,
-        disabled: (row) => !checkFilesNames(row),
+        render: ({ row }) => {
+          const disabled = !checkFilesNames(row)
+          const type = getTextMappingStatusType(row)
+
+          return (
+            <span
+              style={{
+                color: type === 'primary' ? 'var(--blue)' : 'red',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.5 : 1,
+              }}
+              onClick={() => {
+                if (disabled) return
+                textRow(row)
+              }}
+            >
+              字段映射
+            </span>
+          )
+        },
       },
       {
         content: '转换查看',
-        handler: translateRow,
-        disabled: (row) => !checkFilesNames(row),
+        render: ({ row }) => {
+          const disabled = !checkFilesNames(row)
+          const type = getTranslateStatusType(row)
+
+          return (
+            <span
+              style={{
+                color: type === 'primary' ? 'var(--blue)' : 'red',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.5 : 1,
+              }}
+              onClick={() => {
+                if (disabled) return
+                translateRow(row)
+              }}
+            >
+              转换查看
+            </span>
+          )
+        },
       },
       {
         handler: deleteRow,
@@ -324,6 +360,16 @@ const columns = [
     ],
   },
 ]
+
+function getTranslateStatusType(record) {
+  const validStatuses = ['101', '102']
+  return validStatuses.includes(record.status) ? 'primary' : 'danger'
+}
+
+function getTextMappingStatusType(record) {
+  const validStatuses = ['003', '100', '101', '904', '102']
+  return validStatuses.includes(record.status) ? 'primary' : 'danger'
+}
 
 function handleStatusPromise(record) {
   // 定义可打开模态框的状态
