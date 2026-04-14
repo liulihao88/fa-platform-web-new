@@ -67,7 +67,7 @@ const columns = [
     label: '操作',
     fixed: 'right',
     btns: [
-      { content: '关系', handler: viewRelations },
+      // { content: '关系', handler: viewRelations },
       { handler: showPersonDetail, ...proxy.setDetailAttrs({ content: '涉案人详情' }) },
     ],
   },
