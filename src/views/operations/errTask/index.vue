@@ -128,9 +128,10 @@ const columns = [
   },
   {
     label: '处理进度',
-    prop: 'progress',
-    useSlot: true,
-    minWidth: 100,
+    ...proxy.renderProgressColumn({
+      prop: 'status',
+      progressMap,
+    }),
   },
   {
     label: '所属机构',
@@ -265,9 +266,6 @@ proxy.$initTableHeight(headerRef, true)
         <o-tag :type="errorStatusList.includes(value) ? 'danger' : 'primary'">
           {{ getStatusText(value) }}
         </o-tag>
-      </template>
-      <template #progress="{ row }">
-        <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
       </template>
     </o-table>
     <error-handler-dialog ref="errorHandlerDialogRef" @success="init" />

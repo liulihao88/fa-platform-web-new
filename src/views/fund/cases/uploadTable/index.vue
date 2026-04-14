@@ -33,16 +33,6 @@ const baseSearch = ref({
 })
 syncPageSize(baseSearch.value)
 
-// 进度条显示规则
-const progressMap = {
-  '000': 0,
-  '002': 0,
-  '003': 25,
-  '100': 50,
-  '101': 75,
-  '102': 100,
-}
-
 const validStatuses = ['101', '102']
 const configStatuses = ['003']
 const loadingStatuses = ['000', '100', '001', '002', '004', '005']
@@ -273,16 +263,24 @@ const columns = [
     align: 'center',
   },
   {
-    label: '处理进度',
-    prop: 'progress',
-    width: 100,
-    useSlot: true,
+    ...proxy.renderProgressColumn({
+      prop: 'status',
+      progressMap: {
+        '000': 0,
+        '002': 0,
+        '003': 25,
+        '100': 50,
+        '101': 75,
+        '102': 100,
+      },
+    }),
   },
   {
-    label: '配置进度',
-    prop: 'configureProgress',
-    width: 100,
-    useSlot: true,
+    ...proxy.renderProgressColumn({
+      label: '配置进度',
+      prop: 'configureProgress',
+      progressMap: null,
+    }),
   },
   {
     label: '返回信息',
@@ -461,12 +459,6 @@ async function deleteRow(row) {
           <o-tag :type="new Set([...errorStatuses, ...textMappingErrorStatuses]).has(value) ? 'danger' : 'primary'">
             {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
           </o-tag>
-        </template>
-        <template #progress="{ row }">
-          <o-progress :percentage="progressMap[row.status] ?? 0" :text-inside="true" />
-        </template>
-        <template #configureProgress="{ value }">
-          <o-progress :percentage="value ?? 0" :text-inside="true" />
         </template>
       </o-table>
     </div>

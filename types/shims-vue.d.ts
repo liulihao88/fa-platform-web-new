@@ -71,6 +71,7 @@ declare module 'vue' {
     setDetailAttrs: any
     setDeleteAttrs: any
     renderWarnNumber: any
+    renderProgressColumn: any
 
     ROLE_OPTIONS: OptionType[]
     PERMISSION_OPTIONS: OptionType[]

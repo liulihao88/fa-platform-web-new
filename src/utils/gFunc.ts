@@ -1,5 +1,15 @@
 import { h } from 'vue'
 import components from 'oeos-components'
+
+const defaultProgressMap = {
+  '000': 0,
+  '001': 20,
+  '010': 40,
+  '002': 60,
+  '003': 80,
+  '004': 100,
+}
+
 export const renderWarnNumber = ({ value }) => {
   const displayValue = value ?? '-'
   if (Number(value) > 0) {
@@ -18,7 +28,7 @@ export const renderWarnNumber = ({ value }) => {
 }
 
 export const renderProgress = ({ value, row, getPercentage, progressMap }) => {
-  const percentage = getPercentage?.(value, row) ?? progressMap?.[value] ?? 0
+  const percentage = getPercentage?.(value, row) ?? progressMap?.[value] ?? Number(value ?? 0)
   return h(components.OProgress, {
     percentage,
     textInside: true,
@@ -27,17 +37,10 @@ export const renderProgress = ({ value, row, getPercentage, progressMap }) => {
 
 export const renderProgressColumn = ({
   label = '处理进度',
-  prop = 'progress',
-  width = 120,
+  prop = 'status',
+  width = 100,
   getPercentage,
-  progressMap = {
-    '000': 0,
-    '001': 20,
-    '010': 40,
-    '002': 60,
-    '003': 80,
-    '004': 100,
-  },
+  progressMap = defaultProgressMap,
   ...rest
 }) => {
   return {
