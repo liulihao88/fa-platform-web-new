@@ -80,6 +80,12 @@ const moreBtns = [
     handler: addRow,
   },
 ]
+
+const processInfoStatuses = ['000']
+const processPrimaryStatuses = ['001', '002', '003']
+const processWarningStatuses = ['010']
+const processSuccessStatuses = ['004']
+
 const columns = [
   {
     label: '案件名称',
@@ -103,15 +109,13 @@ const columns = [
   {
     label: '文件处理状态',
     prop: 'processStatus',
-    filter: (value) => {
-      return getDictItems('fa_case_process_status').find((v) => v.value === value).label
-    },
+    useSlot: 'processStatusTag',
   },
   {
     label: '处理进度',
     prop: 'processStatus',
-    width: 150,
-    useSlot: true,
+    width: 120,
+    useSlot: 'processStatusProgress',
   },
   {
     label: '文件数量',
@@ -180,6 +184,20 @@ const parseProcess = (text) => {
   const percent = progressMap[text] || 0
   return percent
 }
+
+const getProcessStatusText = (value) => {
+  const target = getDictItems('fa_case_process_status').find((v) => v.value === value)
+  return target?.label || target?.text || value || '-'
+}
+
+const getProcessStatusType = (value) => {
+  if (processSuccessStatuses.includes(value)) return 'primary'
+  if (processWarningStatuses.includes(value)) return 'primary'
+  if (processPrimaryStatuses.includes(value)) return 'primary'
+  if (processInfoStatuses.includes(value)) return 'info'
+  return 'info'
+}
+
 async function handleRow(row) {
   toDetail('Cases', { caseId: row.id })
   setStorage('caseId', row.id)
@@ -229,7 +247,12 @@ proxy.$initTableHeight(headerRef, true)
       :height="$tableHeight.value"
       @update="handleUpdate"
     >
-      <template #processStatus="{ value }">
+      <template #processStatusTag="{ value }">
+        <el-tag :type="getProcessStatusType(value)" :effect="processSuccessStatuses.includes(value) ? 'dark' : 'light'">
+          {{ getProcessStatusText(value) }}
+        </el-tag>
+      </template>
+      <template #processStatusProgress="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>
     </o-table>
