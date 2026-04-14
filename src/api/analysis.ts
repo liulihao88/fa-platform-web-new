@@ -308,6 +308,18 @@ export const getStandardDataPageList = (data) => {
   return request(`fa/caseStandardData/pageList`, 'post', { data })
 }
 
+export const getParseStandardEntityApi = (data) => {
+  return request('fa/caseStandardData/getParseStandardEntityList', 'post', { data })
+}
+
+export const getParseStandardTransApi = (data) => {
+  return request('fa/caseStandardData/getParseStandardTransList', 'post', { data })
+}
+
+export const getParseStandardOrderApi = (data) => {
+  return request('fa/caseStandardData/getParseStandardOrderList', 'post', { data })
+}
+
 /**
  * 重复数据查看 /fa/caseDuplicateData/list
  */

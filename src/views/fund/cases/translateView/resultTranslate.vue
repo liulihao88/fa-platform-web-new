@@ -2,7 +2,14 @@
 import { ref, watch, computed, useTemplateRef, getCurrentInstance } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 import { $toast, notEmpty } from '@oeos-components/utils'
-import { getCaseFileTransInfo, bankCustomerPageList, getStandardDataPageList } from '@/api/analysis.ts'
+import {
+  getCaseFileTransInfo,
+  bankCustomerPageList,
+  getStandardDataPageList,
+  getParseStandardEntityApi,
+  getParseStandardTransApi,
+  getParseStandardOrderApi,
+} from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
 import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 
@@ -31,6 +38,16 @@ const filePageId = ref('')
 const activeSheetId = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
+const analyzeModalVisible = ref(false)
+const parseActiveTab = ref('parseEntity')
+const parseEntityData = ref([])
+const parseTransData = ref([])
+const parseOrderData = ref([])
+const parseDataParams = ref({
+  caseId: String(route.query.caseId || ''),
+  dataType: '',
+  dataId: '',
+})
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const sendTableParams = ref({
   filePageId: filePageId.value,
@@ -38,6 +55,24 @@ const sendTableParams = ref({
   pageSize: 10,
 })
 syncPageSize(sendTableParams.value)
+const parseEntityPagination = ref({
+  pageNo: 1,
+  pageSize: 10,
+  total: 0,
+})
+const parseTransPagination = ref({
+  pageNo: 1,
+  pageSize: 10,
+  total: 0,
+})
+const parseOrderPagination = ref({
+  pageNo: 1,
+  pageSize: 10,
+  total: 0,
+})
+syncPageSize(parseEntityPagination.value)
+syncPageSize(parseTransPagination.value)
+syncPageSize(parseOrderPagination.value)
 
 const sheetList = ref([])
 
@@ -150,6 +185,30 @@ const columns = [
     prop: 'index',
     width: 70,
   },
+]
+const parseEntityColumns = [
+  { label: '企业客户信息', prop: 'customerName', minWidth: 140 },
+  { label: '客户号', prop: 'customerId', minWidth: 100 },
+  { label: '客户种类', prop: 'customerType', minWidth: 100 },
+  { label: '证件号码', prop: 'idNum', minWidth: 140 },
+  { label: '手机号', prop: 'teleNum', minWidth: 120 },
+  { label: '营业执照', prop: 'licenseNum', minWidth: 140 },
+]
+const parseTransColumns = [
+  { label: '交易流水号', prop: 'transNo', minWidth: 140 },
+  { label: '交易金额', prop: 'transAmt', minWidth: 100 },
+  { label: '交易方向', prop: 'transWay', minWidth: 100 },
+  { label: '交易时间', prop: 'transTime', minWidth: 140 },
+  { label: '对方账号', prop: 'counterAccountNo', minWidth: 140 },
+  { label: '备注', prop: 'comment', minWidth: 140 },
+]
+const parseOrderColumns = [
+  { label: '订单号', prop: 'orderNo', minWidth: 140 },
+  { label: '商品名称', prop: 'productName', minWidth: 140 },
+  { label: '交易金额', prop: 'transAmt', minWidth: 100 },
+  { label: '商户名称', prop: 'merchantName', minWidth: 140 },
+  { label: '手机号', prop: 'teleNum', minWidth: 120 },
+  { label: '备注', prop: 'comment', minWidth: 140 },
 ]
 
 const apiMap = {
@@ -421,21 +480,114 @@ const detailDescOptions = computed(() => {
 })
 const activeTabColumns = computed(() => {
   if (notEmpty(columnsMap[activeTab.value])) {
+    const operationBtns = []
+
+    if (props.type === 'standard') {
+      operationBtns.push({
+        content: '查看标准数据',
+        handler: openAnalyzeResult,
+      })
+    }
+
+    operationBtns.push({
+      handler: detailRow,
+      ...proxy.setDetailAttrs(),
+    })
+
     return columnsMap[activeTab.value].concat([
       {
         key: 'operation',
         label: '操作',
-        btns: [
-          {
-            handler: detailRow,
-            ...proxy.setDetailAttrs(),
-          },
-        ],
+        btns: operationBtns,
       },
     ])
   }
   return columnsMap[activeTab.value] || []
 })
+
+const parseTableMap = {
+  parseEntity: {
+    api: getParseStandardEntityApi,
+    data: parseEntityData,
+    pagination: parseEntityPagination,
+  },
+  parseTrans: {
+    api: getParseStandardTransApi,
+    data: parseTransData,
+    pagination: parseTransPagination,
+  },
+  parseOrder: {
+    api: getParseStandardOrderApi,
+    data: parseOrderData,
+    pagination: parseOrderPagination,
+  },
+}
+
+const parseTabOptions = [
+  { label: '企业客户信息', value: 'parseEntity' },
+  { label: '交易流水', value: 'parseTrans' },
+  { label: '订单信息', value: 'parseOrder' },
+]
+
+const activeParseColumns = computed(() => {
+  if (parseActiveTab.value === 'parseEntity') return parseEntityColumns
+  if (parseActiveTab.value === 'parseTrans') return parseTransColumns
+  return parseOrderColumns
+})
+
+const activeParseData = computed(() => parseTableMap[parseActiveTab.value].data.value)
+const activeParseTotal = computed(() => parseTableMap[parseActiveTab.value].pagination.value.total || 0)
+const activeParsePageSize = computed(() => parseTableMap[parseActiveTab.value].pagination.value.pageSize)
+const activeParsePageNo = computed(() => parseTableMap[parseActiveTab.value].pagination.value.pageNo)
+
+async function loadParseTabData(tabKey = parseActiveTab.value) {
+  const { caseId, dataType, dataId } = parseDataParams.value
+  if (!caseId || !dataType || !dataId) return
+
+  const current = parseTableMap[tabKey]
+  const params = {
+    caseId,
+    dataType,
+    dataId,
+    pageNo: current.pagination.value.pageNo,
+    pageSize: current.pagination.value.pageSize,
+  }
+  const res = await current.api(params)
+  current.data.value = res?.records || []
+  current.pagination.value.total = res?.total || 0
+}
+
+async function openAnalyzeResult(row) {
+  parseDataParams.value.caseId = String(route.query.caseId || '')
+  parseDataParams.value.dataType = getAnalyzeDataType(activeTab.value)
+  parseDataParams.value.dataId = row.id
+  parseActiveTab.value = 'parseEntity'
+  parseEntityPagination.value.pageNo = 1
+  parseTransPagination.value.pageNo = 1
+  parseOrderPagination.value.pageNo = 1
+  parseEntityData.value = []
+  parseTransData.value = []
+  parseOrderData.value = []
+  analyzeModalVisible.value = true
+  await loadParseTabData('parseEntity')
+}
+
+function getAnalyzeDataType(tabKey) {
+  const map = {
+    bankCustomerPageList: '01',
+    bankTransPageList: '02',
+    nonBankCustomerPageList: '03',
+    nonBankTransPageList: '04',
+  }
+  return map[tabKey] || '01'
+}
+
+function handleParseUpdate(pageNo, pageSize) {
+  const current = parseTableMap[parseActiveTab.value]
+  current.pagination.value.pageNo = pageNo
+  updatePageSize(current.pagination.value, pageSize)
+  loadParseTabData()
+}
 
 const update = (number, size) => {
   sendTableParams.value.pageNo = number
@@ -450,6 +602,11 @@ watch(
   },
   {},
 )
+
+watch(parseActiveTab, async () => {
+  if (!analyzeModalVisible.value) return
+  await loadParseTabData()
+})
 
 defineExpose({
   init,
@@ -497,6 +654,22 @@ defineExpose({
 
     <o-dialog v-model="detailVisible" :title="detailTitle" width="1200px" :showConfirm="false">
       <o-descriptions :options="detailDescOptions" :column="3" label-width="auto" :showAll="true" />
+    </o-dialog>
+    <o-dialog v-model="analyzeModalVisible" title="标准数据" width="1400px" :showConfirm="false">
+      <div class="analyze-modal">
+        <el-tabs v-model="parseActiveTab" class="result-tabs">
+          <el-tab-pane v-for="tab in parseTabOptions" :key="tab.value" :label="tab.label" :name="tab.value" />
+        </el-tabs>
+        <o-table
+          :columns="activeParseColumns"
+          :data="activeParseData"
+          :total="activeParseTotal"
+          :pageSize="activeParsePageSize"
+          :pageNumber="activeParsePageNo"
+          height="500"
+          @update="handleParseUpdate"
+        />
+      </div>
     </o-dialog>
   </div>
 </template>
@@ -629,5 +802,9 @@ defineExpose({
 .page-total {
   font-size: 14px;
   color: #606266;
+}
+
+.analyze-modal {
+  min-height: 0;
 }
 </style>
