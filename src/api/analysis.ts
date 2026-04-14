@@ -156,6 +156,14 @@ export const deleteCasefile = (data) => {
     data: data,
   })
 }
+/**
+ * 批量删除文件
+ */
+export const deleteBatchCasefile = (data) => {
+  return request(`fa/casefile/batchDeleteFile`, 'post', {
+    data,
+  })
+}
 
 // 字段映射 -> 文件信息
 export const getCaseFileTransInfo = (data) => {

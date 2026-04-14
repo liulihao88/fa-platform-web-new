@@ -1,8 +1,8 @@
 <script setup lang="tsx">
-import { ref, getCurrentInstance, useTemplateRef, computed } from 'vue'
+import { ref, getCurrentInstance, useTemplateRef, computed, nextTick } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import TextMapping from '@/views/fund/cases/uploadTable/textMapping.vue'
-import { getCasefileList, deleteCasefile } from '@/api/analysis.ts'
+import { getCasefileList, deleteCasefile, deleteBatchCasefile } from '@/api/analysis.ts'
 import { getStorage, $toast, clone } from '@oeos-components/utils'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
@@ -10,6 +10,9 @@ const { proxy } = getCurrentInstance()
 const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
+const tableRef = ref()
+const syncingSelection = ref(false)
+const selectedMap = ref(new Map<string, any>())
 
 import { useAsyncTask, useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
@@ -130,6 +133,7 @@ const handleSearch = (form) => {
 
 const total = ref(0)
 const data = ref([])
+const selectedCount = computed(() => selectedMap.value.size)
 const autoRefreshStatuses = ['000', '001', '002', '003', '004', '005', '100', '101']
 
 const shouldPolling = computed(() => {
@@ -157,6 +161,7 @@ const init = async (isReset = false) => {
   } else {
     stopPolling()
   }
+  await syncSelection()
 }
 init()
 
@@ -165,6 +170,68 @@ const update = (pageNo: number, pageSize: number) => {
   updatePageSize(baseSearch.value, pageSize)
   init()
 }
+const handleSelectionChange = (rows) => {
+  if (syncingSelection.value) return
+
+  const currentPageIds = new Set(data.value.map((item) => item.id))
+  currentPageIds.forEach((id) => {
+    selectedMap.value.delete(id)
+  })
+
+  rows.forEach((row) => {
+    selectedMap.value.set(row.id, row)
+  })
+}
+const syncSelection = async () => {
+  await nextTick()
+  if (!tableRef.value?.$refs?.tableRef) return
+
+  syncingSelection.value = true
+  try {
+    tableRef.value.$refs.tableRef.clearSelection()
+    data.value.forEach((row) => {
+      if (selectedMap.value.has(row.id)) {
+        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
+      }
+    })
+  } finally {
+    await nextTick()
+    syncingSelection.value = false
+  }
+}
+const clearSelected = () => {
+  selectedMap.value.clear()
+  tableRef.value?.$refs?.tableRef?.clearSelection()
+}
+const deleteBatchRows = async () => {
+  const ids = Array.from(selectedMap.value.keys())
+  await deleteBatchCasefile({
+    caseId: baseSearch.value.caseId,
+    ids,
+  })
+  clearSelected()
+  init(true)
+}
+const openUploadDialog = () => {
+  caseUploadFileRef?.value?.open()
+}
+const moreBtns = [
+  {
+    content: '上传文件',
+    type: 'primary',
+    icon: 'el-icon-upload',
+    handler: openUploadDialog,
+  },
+  {
+    content: '批量删除',
+    type: 'primary',
+    reConfirm: !proxy.$dev,
+    icon: 'el-icon-delete',
+    handler: deleteBatchRows,
+    disabled: () => selectedCount.value === 0,
+    isShow: () => selectedCount.value !== 0,
+  },
+]
 
 const checkFilesNames = (record) => {
   const { sourceFile, fileName } = record
@@ -333,9 +400,8 @@ async function deleteRow(row) {
   <div ref="pageRef" class="upload-table-page">
     <CaseUploadFile ref="caseUploadFileRef" class="mb" @close="init" />
     <g-search-bar :items="items" class="mb2" @search="handleSearch" @reset="handleSearch">
-      <o-button type="primary" icon="el-icon-upload" width="100" class="ml2" @click="caseUploadFileRef?.open()">
-        上传文件
-      </o-button>
+      <gSelectedCount :count="selectedCount" class="mr" @clear="clearSelected" />
+      <g-more-button :btns="moreBtns" mode="opt" trigger="hover" />
     </g-search-bar>
     <div ref="tableSectionRef" class="upload-table-page__table">
       <o-table
@@ -347,8 +413,11 @@ async function deleteRow(row) {
         :height="tableHeight"
         :pageSize="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
+        row-key="id"
+        @selection-change="handleSelectionChange"
         @update="update"
       >
+        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
         <template #status="{ row, value }">
           <el-tag v-if="['900', '901', '902', '904', '999'].includes(value)" type="danger">
             {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}

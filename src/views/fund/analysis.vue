@@ -190,9 +190,10 @@ async function filterRow(row) {
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
   updatePageSize(baseSearch, pageSize)
-  handleSearch({})
+  init()
 }
 const handleSearch = (form) => {
+  baseSearch.pageNo = 1
   baseSearch.caseCode = form?.caseCode
   baseSearch.caseReason = form?.caseReason
   baseSearch.sysOrgCode = form?.sysOrgCode
@@ -219,7 +220,6 @@ proxy.$initTableHeight(headerRef, true)
       </g-search-bar>
     </div>
     <o-table
-      ref="tableRef"
       :columns="columns"
       :data="data"
       :total="total"
