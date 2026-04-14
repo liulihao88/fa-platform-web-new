@@ -55,6 +55,25 @@ const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedMap.value.size)
 
+async function toggleJobStatus(row) {
+  if (row?.status == '-1') {
+    await resumeQuartzJob({ id: row.id })
+  } else {
+    await pauseQuartzJob({ id: row.id })
+  }
+  init()
+}
+
+async function runJob(row) {
+  await runQuartzJob({ id: row.id })
+  init()
+}
+
+async function deleteRow(row) {
+  await deleteQuartzJob({ id: row.id })
+  init()
+}
+
 const columns = [
   {
     label: '任务类名',
@@ -101,39 +120,21 @@ const columns = [
             return '确认停止吗？'
           }
         },
-        handler: (value, row) => {
-          if (value?.status == '-1') {
-            resumeQuartzJob({ id: value.id }).then((res) => {
-              init()
-            })
-          } else {
-            pauseQuartzJob({ id: value.id }).then((res) => {
-              init()
-            })
-          }
-        },
+        handler: toggleJobStatus,
       },
       {
         content: '立即执行',
         type: 'primary',
         reConfirm: !proxy.$dev,
         title: '确认立即执行吗？',
-        handler: (value, row) => {
-          runQuartzJob({ id: value.id }).then((res) => {
-            init()
-          })
-        },
+        handler: runJob,
       },
       {
         handler: editRow,
         ...proxy.setEditAttrs(),
       },
       {
-        handler: (value, row) => {
-          deleteQuartzJob({ id: value.id }).then((res) => {
-            init()
-          })
-        },
+        handler: deleteRow,
         ...proxy.setDeleteAttrs(),
       },
     ],
@@ -149,6 +150,10 @@ function editRow(row) {
     row.paramterType = 'string'
   }
   taskDialogRef.value.open(row, row.id ? '编辑任务' : '新增任务')
+}
+
+function addRow() {
+  editRow({})
 }
 /**
  * 导入
@@ -216,6 +221,13 @@ function clearSelected() {
   tableRef.value?.$refs?.tableRef?.clearSelection()
 }
 
+async function deleteBatchRows() {
+  const ids = Array.from(selectedMap.value.keys()).join(',')
+  await deleteBatchQuartzJob(ids)
+  clearSelected()
+  init()
+}
+
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
   updatePageSize(baseSearch, pageSize)
@@ -226,7 +238,7 @@ const moreBtns = [
     content: '新增',
     type: 'primary',
     icon: 'el-icon-plus',
-    handler: () => editRow({}),
+    handler: addRow,
   },
   {
     content: '导入',
@@ -247,12 +259,7 @@ const moreBtns = [
     icon: 'el-icon-delete',
     disabled: () => selectedCount.value === 0,
     isShow: () => selectedCount.value !== 0,
-    handler: async () => {
-      const ids = Array.from(selectedMap.value.keys()).join(',')
-      await deleteBatchQuartzJob(ids)
-      clearSelected()
-      init()
-    },
+    handler: deleteBatchRows,
   },
 ]
 const init = async () => {

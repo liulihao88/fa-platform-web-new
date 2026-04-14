@@ -51,6 +51,15 @@ syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 
+function openDictConfig(row) {
+  dictDetailDrawerRef.value.open(row)
+}
+
+async function deleteRow(row) {
+  await deleteDict({ id: row.id })
+  init()
+}
+
 const columns = [
   {
     type: 'selection',
@@ -75,20 +84,14 @@ const columns = [
     btns: [
       {
         content: '字典配置',
-        handler: (value, row) => {
-          dictDetailDrawerRef.value.open(value)
-        },
+        handler: openDictConfig,
       },
       {
         handler: editRow,
         ...proxy.setEditAttrs(),
       },
       {
-        handler: (value, row) => {
-          deleteDict({ id: value.id }).then((res) => {
-            init()
-          })
-        },
+        handler: deleteRow,
         ...proxy.setDeleteAttrs(),
       },
     ],
@@ -99,6 +102,10 @@ const columns = [
  */
 function editRow(row) {
   dictDialogRef.value.open(row, row.id ? '编辑字典' : '新增字典')
+}
+
+function addRow() {
+  editRow({})
 }
 /**
  * 导入
@@ -153,6 +160,12 @@ const recycleBin = async () => {
   dictRecycleDialogRef.value.open()
 }
 
+async function deleteBatchRows() {
+  const ids = selectIds.value.join(',')
+  await deleteBatchDict(ids)
+  handleSearch({})
+}
+
 const handleUpdate = (pageNo, pageSize) => {
   baseSearch.pageNo = pageNo
   updatePageSize(baseSearch, pageSize)
@@ -163,7 +176,7 @@ const moreBtns = [
     content: '新增',
     type: 'primary',
     icon: 'el-icon-plus',
-    handler: () => editRow({}),
+    handler: addRow,
   },
   {
     content: '导入',
@@ -194,11 +207,7 @@ const moreBtns = [
     type: 'primary',
     reConfirm: !proxy.$dev,
     icon: 'el-icon-delete',
-    handler: async () => {
-      const ids = selectIds.value.join(',')
-      await deleteBatchDict(ids)
-      handleSearch({})
-    },
+    handler: deleteBatchRows,
     isShow: () => selectIds.value.length > 0,
   },
 ]

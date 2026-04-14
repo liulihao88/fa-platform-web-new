@@ -8,7 +8,6 @@
         :size="btn.size"
         :icon="btn.icon"
         :disabled="isDisabled(btn)"
-        class="mr-2"
         @click="handleButtonClick(btn)"
       >
         {{ btn.content }}

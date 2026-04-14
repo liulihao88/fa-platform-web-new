@@ -33,6 +33,9 @@ const addCaseDocRef = ref()
 const editRow = (row) => {
   addCaseDocRef.value.open(row, row.id ? '编辑' : '新增')
 }
+const addRow = () => {
+  editRow({})
+}
 const detailRow = (row) => {
   addCaseDocRef.value.open(row, '案件详情')
 }
@@ -74,9 +77,7 @@ const moreBtns = [
     content: '新增',
     type: 'primary',
     icon: 'el-icon-plus',
-    handler: () => {
-      editRow({})
-    },
+    handler: addRow,
   },
 ]
 const columns = [
@@ -84,7 +85,7 @@ const columns = [
     label: '案件名称',
     prop: 'caseCode',
     width: 150,
-    useSlot: true,
+    handler: detailRow,
   },
   {
     label: '案由',
@@ -228,9 +229,6 @@ proxy.$initTableHeight(headerRef, true)
       :height="$tableHeight.value"
       @update="handleUpdate"
     >
-      <template #caseCode="{ row }">
-        <el-button type="text" @click="detailRow(row)">{{ row.caseCode || '-' }}</el-button>
-      </template>
       <template #processStatus="{ value }">
         <o-progress :percentage="parseProcess(value)" text-inside="true" />
       </template>

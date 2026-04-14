@@ -10,6 +10,31 @@ import { ref, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const isShow = ref(false)
+
+async function backRow(row) {
+  await backDict(row.id)
+  handleSearch()
+  emits('refresh')
+}
+
+async function deleteRow(row) {
+  await deleteDictPermanently(row.id)
+  handleSearch()
+  emits('refresh')
+}
+
+async function backSelected() {
+  const ids = selectIds.value.join(',')
+  await backBatchDict(ids)
+  handleSearch()
+  emits('refresh')
+}
+
+async function deleteSelected() {
+  const ids = selectIds.value.join(',')
+  await deleteBatchDictPermanently(ids)
+  handleSearch()
+}
 const columns = [
   {
     type: 'selection',
@@ -36,22 +61,14 @@ const columns = [
         type: 'primary',
         title: '确认取回吗？',
         reConfirm: !proxy.$dev,
-        handler: async (value, row) => {
-          await backDict(value.id)
-          handleSearch()
-          emits('refresh')
-        },
+        handler: backRow,
       },
       {
         content: '彻底删除',
         type: 'danger',
         title: '确认彻底删除吗？',
         ...proxy.setDeleteAttrs(),
-        handler: async (value, row) => {
-          await deleteDictPermanently(value.id)
-          handleSearch()
-          emits('refresh')
-        },
+        handler: deleteRow,
       },
     ],
   },
@@ -64,23 +81,13 @@ const btns = [
     content: '批量取回',
     type: 'primary',
     reConfirm: !proxy.$dev,
-    handler: async () => {
-      const ids = selectIds.value.join(',')
-      await backBatchDict(ids)
-      handleSearch()
-      emits('refresh')
-    },
+    handler: backSelected,
     isShow: () => selectIds.value.length > 0,
   },
   {
     content: '批量删除',
-    reConfirm: !proxy.$dev,
     ...proxy.setDeleteAttrs(),
-    handler: async () => {
-      const ids = selectIds.value.join(',')
-      await deleteBatchDictPermanently(ids)
-      handleSearch()
-    },
+    handler: deleteSelected,
     isShow: () => selectIds.value.length > 0,
   },
 ]

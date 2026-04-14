@@ -12,6 +12,20 @@ const emits = defineEmits(['refresh'])
 const total = ref(0)
 const isShow = ref(false)
 const dictId = ref('')
+
+function addItem() {
+  edit({ dictId: dictId.value })
+}
+
+function editRow(row) {
+  edit(row)
+}
+
+async function deleteRow(row) {
+  await deleteDictItem(row.id)
+  handleSearch({})
+  emits('refresh')
+}
 const baseSearch = {
   pageNo: 1,
   pageSize: 30,
@@ -40,9 +54,7 @@ const btns = [
     content: '新增',
     icon: 'el-icon-plus',
     type: 'primary',
-    handler: async () => {
-      edit({ dictId: dictId.value })
-    },
+    handler: addItem,
   },
 ]
 const columns = [
@@ -73,21 +85,14 @@ const columns = [
   {
     label: '操作',
     prop: 'action',
-    fixed: 'right',
     btns: [
       {
-        handler: async (value, row) => {
-          edit(value)
-        },
+        handler: editRow,
         ...proxy.setEditAttrs(),
       },
       {
         ...proxy.setDeleteAttrs(),
-        handler: async (value, row) => {
-          await deleteDictItem(value.id)
-          handleSearch({})
-          emits('refresh')
-        },
+        handler: deleteRow,
       },
     ],
   },
