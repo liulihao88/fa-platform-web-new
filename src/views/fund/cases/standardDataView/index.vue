@@ -81,7 +81,12 @@ onMounted(() => {
 <template>
   <div class="standard-data-layout">
     <div v-loading="loading" class="standard-data-view">
-      <o-input v-model="searchParams.fileName" placeholder="请输入文件名称">
+      <o-input
+        v-model="searchParams.fileName"
+        placeholder="请输入文件名称"
+        @keyup.enter="handleSearch"
+        @clear="handleSearch"
+      >
         <template #append>
           <el-button :icon="Search" @click="handleSearch" />
         </template>
