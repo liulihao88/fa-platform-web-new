@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
+import { buildDescriptionOptions } from '@/utils/gFunc'
 import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
@@ -83,12 +84,7 @@ const sourceColumns = computed(() => {
   ])
 })
 
-const recordDescOptions = computed(() =>
-  recordDetailFields.value.map((item) => ({
-    label: item.label,
-    value: recordDetailData.value?.[item.prop] ?? '-',
-  })),
-)
+const recordDescOptions = computed(() => buildDescriptionOptions(recordDetailFields.value, recordDetailData.value))
 
 function handleSelectionChange(rows: Record<string, any>[]) {
   if (syncingSelection.value) return
@@ -372,7 +368,7 @@ fetchList()
     </o-dialog>
 
     <o-dialog v-model="recordDetailVisible" :title="recordDetailTitle" width="1200px" :showConfirm="false">
-      <o-descriptions :options="recordDescOptions" :column="2" label-width="auto" :showAll="true" />
+      <o-descriptions :options="recordDescOptions" :column="3" label-width="auto" :showAll="true" />
     </o-dialog>
   </div>
 </template>

@@ -51,3 +51,26 @@ export const renderProgressColumn = ({
     ...rest,
   }
 }
+
+const hasDescriptionValue = (value) => {
+  return value !== undefined && value !== null && String(value).trim() !== ''
+}
+
+export const buildDescriptionOptions = (fields = [], detailData = {}) => {
+  return fields.map((item) => {
+    const rawValue = detailData?.[item.prop]
+    const hasValue = hasDescriptionValue(rawValue)
+    const value = hasValue ? (item.filter ? item.filter(rawValue) : rawValue) : '-'
+
+    return {
+      ...item,
+      labelRender: () => {
+        if (hasValue) {
+          return h('div', { class: 'cl-blue' }, item.label)
+        }
+        return item.label
+      },
+      value,
+    }
+  })
+}

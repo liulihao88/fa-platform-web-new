@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { caseInvolvedList, entityTransListApi, fileContextInfo, payeeListApi } from '@/api/analysis'
+import { buildDescriptionOptions } from '@/utils/gFunc'
 import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
@@ -98,12 +99,7 @@ const mainColumns = computed(() =>
   ]),
 )
 
-const detailDescOptions = computed(() =>
-  intelligentDetailFields.map((item) => ({
-    label: item.label,
-    value: detailData.value?.[item.prop] ?? '-',
-  })),
-)
+const detailDescOptions = computed(() => buildDescriptionOptions(intelligentDetailFields, detailData.value))
 
 const fromDisplayText = computed(() => {
   const selected = fromSelectedRows.value[0]
@@ -478,7 +474,7 @@ fetchList()
     </o-dialog>
 
     <o-dialog v-model="detailVisible" title="详情信息" width="1200px" :showConfirm="false">
-      <o-descriptions :options="detailDescOptions" :column="2" label-width="auto" :showAll="true" />
+      <o-descriptions :options="detailDescOptions" :column="3" label-width="auto" :showAll="true" />
     </o-dialog>
   </div>
 </template>

@@ -10,6 +10,7 @@ import {
   getInvolvedRelationApi,
   updateInvolvedPersonApi,
 } from '@/api/analysis'
+import { buildDescriptionOptions } from '@/utils/gFunc'
 import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
 import { useCommonHook } from '@/store'
 
@@ -86,31 +87,36 @@ const relationColumns = [
   { label: '操作', prop: 'operation', width: 160, useSlot: true, align: 'center' },
 ] as any[]
 
-const personDetailOptions = computed(() => [
-  { label: '客户名称', value: personDetail.value.customerName || '-' },
-  { label: '客户类型', value: personDetail.value.customerType || '-' },
-  { label: '营业执照', value: personDetail.value.licenseNum || '-' },
-  { label: '法人姓名', value: personDetail.value.legalPersonName || '-' },
-  { label: '证件种类', value: getIdTypeText(personDetail.value.idType) },
-  { label: '证件号码', value: personDetail.value.idNum || '-' },
-  { label: '联系电话', value: personDetail.value.teleNum || '-' },
-  { label: '法人证件类型', value: personDetail.value.legalIdType || '-' },
-  { label: '法人证件号码', value: personDetail.value.legalIdNum || '-' },
-  { label: '机构编码', value: personDetail.value.orgCd || '-' },
-  { label: '机构名称', value: personDetail.value.orgName || '-' },
-  { label: '客户状态', value: personDetail.value.customerStatus || '-' },
-  { label: '工作单位', value: personDetail.value.workUnit || '-' },
-  { label: '地税号', value: personDetail.value.localTaxNum || '-' },
-  { label: '国税号', value: personDetail.value.countryTaxNum || '-' },
-  { label: '家庭电话', value: personDetail.value.homeTel || '-' },
-  { label: '单位电话', value: personDetail.value.unitTel || '-' },
-  { label: '通讯地址', value: personDetail.value.communicationAddr || '-' },
-  { label: '家庭住址', value: personDetail.value.homeAddr || '-' },
-  { label: '单位地址', value: personDetail.value.unitAddr || '-' },
-  { label: '邮寄地址', value: personDetail.value.mailAddr || '-' },
-  { label: '邮政编码', value: personDetail.value.postCode || '-' },
-  { label: '备注', value: personDetail.value.comment || '-' },
-])
+const personDetailOptions = computed(() =>
+  buildDescriptionOptions(
+    [
+      { label: '客户名称', prop: 'customerName' },
+      { label: '客户类型', prop: 'customerType' },
+      { label: '营业执照', prop: 'licenseNum' },
+      { label: '法人姓名', prop: 'legalPersonName' },
+      { label: '证件种类', prop: 'idType', filter: (value) => getIdTypeText(value) },
+      { label: '证件号码', prop: 'idNum' },
+      { label: '联系电话', prop: 'teleNum' },
+      { label: '法人证件类型', prop: 'legalIdType' },
+      { label: '法人证件号码', prop: 'legalIdNum' },
+      { label: '机构编码', prop: 'orgCd' },
+      { label: '机构名称', prop: 'orgName' },
+      { label: '客户状态', prop: 'customerStatus' },
+      { label: '工作单位', prop: 'workUnit' },
+      { label: '地税号', prop: 'localTaxNum' },
+      { label: '国税号', prop: 'countryTaxNum' },
+      { label: '家庭电话', prop: 'homeTel' },
+      { label: '单位电话', prop: 'unitTel' },
+      { label: '通讯地址', prop: 'communicationAddr' },
+      { label: '家庭住址', prop: 'homeAddr' },
+      { label: '单位地址', prop: 'unitAddr' },
+      { label: '邮寄地址', prop: 'mailAddr' },
+      { label: '邮政编码', prop: 'postCode' },
+      { label: '备注', prop: 'comment' },
+    ],
+    personDetail.value,
+  ),
+)
 
 function getKindText(kind: string | number) {
   return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '嫌疑人'
@@ -325,7 +331,7 @@ onMounted(async () => {
     <o-dialog v-model="personDetailVisible" title="涉案人详情" width="1000px" :showConfirm="false">
       <div class="case-manage-page__detail">
         <el-card header="基本信息">
-          <o-descriptions :options="personDetailOptions" :column="2" label-width="auto" :showAll="true" />
+          <o-descriptions :options="personDetailOptions" :column="3" label-width="auto" :showAll="true" />
         </el-card>
         <el-card header="开户信息" class="mt2">
           <div class="case-manage-page__account-org">{{ personDetail.orgName || '-' }}</div>

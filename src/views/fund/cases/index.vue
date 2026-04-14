@@ -12,6 +12,7 @@ import RepeatDataView from '@/views/fund/cases/repeatDataView/index.vue'
 import { $toast, formatTime } from '@oeos-components/utils'
 import { onBeforeRouteLeave, useRouter, useRoute } from 'vue-router'
 import { useCommonHook } from '@/store'
+import { buildDescriptionOptions } from '@/utils/gFunc'
 
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
@@ -37,27 +38,30 @@ const init = async () => {
 }
 init()
 
-const descOptions = computed(() => {
-  return [
-    {
-      label: '案件名称',
-      value: caseDetails.value.caseName,
-    },
-    {
-      label: '部门受案号',
-      value: caseDetails.value.departmentCaseNumber,
-    },
-    {
-      label: '受理日期',
-      value: caseDetails.value.acceptTime,
-      filter: (val) => formatTime(val, '{y}/{m}/{d}'),
-    },
-    {
-      label: '案由',
-      value: caseDetails.value.caseReason,
-    },
-  ]
-})
+const descOptions = computed(() =>
+  buildDescriptionOptions(
+    [
+      {
+        label: '案件名称',
+        prop: 'caseName',
+      },
+      {
+        label: '部门受案号',
+        prop: 'departmentCaseNumber',
+      },
+      {
+        label: '受理日期',
+        prop: 'acceptTime',
+        filter: (val) => formatTime(val, '{y}/{m}/{d}'),
+      },
+      {
+        label: '案由',
+        prop: 'caseReason',
+      },
+    ],
+    caseDetails.value,
+  ),
+)
 
 const currentTab = ref(UPLOAD)
 const tabsOptions = [
@@ -101,7 +105,7 @@ onBeforeRouteLeave(() => {
   <div class="case-page h-100%">
     <o-basic-layout class="h-100%">
       <div class="case-page__header w-100%">
-        <o-descriptions :options="descOptions" :column="4" />
+        <o-descriptions :options="descOptions" :column="3" />
       </div>
 
       <div class="case-page__nav">
