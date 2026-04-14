@@ -187,27 +187,27 @@ const columns = [
   },
 ]
 const parseEntityColumns = [
-  { label: '企业客户信息', prop: 'customerName', minWidth: 140 },
+  { label: '企业客户信息', prop: 'customerName', minWidth: 100 },
   { label: '客户号', prop: 'customerId', minWidth: 100 },
   { label: '客户种类', prop: 'customerType', minWidth: 100 },
   { label: '证件号码', prop: 'idNum', minWidth: 140 },
-  { label: '手机号', prop: 'teleNum', minWidth: 120 },
+  { label: '手机号', prop: 'teleNum' },
   { label: '营业执照', prop: 'licenseNum', minWidth: 140 },
 ]
 const parseTransColumns = [
-  { label: '交易流水号', prop: 'transNo', minWidth: 140 },
+  { label: '交易流水号', prop: 'transNo', minWidth: 100 },
   { label: '交易金额', prop: 'transAmt', minWidth: 100 },
   { label: '交易方向', prop: 'transWay', minWidth: 100 },
   { label: '交易时间', prop: 'transTime', minWidth: 140 },
-  { label: '对方账号', prop: 'counterAccountNo', minWidth: 140 },
+  { label: '对方账号', prop: 'counterAccountNo', minWidth: 100 },
   { label: '备注', prop: 'comment', minWidth: 140 },
 ]
 const parseOrderColumns = [
-  { label: '订单号', prop: 'orderNo', minWidth: 140 },
+  { label: '订单号', prop: 'orderNo', minWidth: 100 },
   { label: '商品名称', prop: 'productName', minWidth: 140 },
   { label: '交易金额', prop: 'transAmt', minWidth: 100 },
   { label: '商户名称', prop: 'merchantName', minWidth: 140 },
-  { label: '手机号', prop: 'teleNum', minWidth: 120 },
+  { label: '手机号', prop: 'teleNum', minWidth: 100 },
   { label: '备注', prop: 'comment', minWidth: 140 },
 ]
 
@@ -655,7 +655,7 @@ defineExpose({
     <o-dialog v-model="detailVisible" :title="detailTitle" width="1200px" :showConfirm="false">
       <o-descriptions :options="detailDescOptions" :column="3" label-width="auto" :showAll="true" />
     </o-dialog>
-    <o-dialog v-model="analyzeModalVisible" title="标准数据" width="1400px" :showConfirm="false">
+    <o-dialog v-model="analyzeModalVisible" title="标准数据" width="1000px" :showConfirm="false" fillSlot>
       <div class="analyze-modal">
         <el-tabs v-model="parseActiveTab" class="result-tabs">
           <el-tab-pane v-for="tab in parseTabOptions" :key="tab.value" :label="tab.label" :name="tab.value" />

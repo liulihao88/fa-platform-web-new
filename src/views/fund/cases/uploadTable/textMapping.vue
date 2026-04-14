@@ -139,17 +139,17 @@ const handlePageClick = async (index) => {
   }
 }
 
-const save = async (type = '') => {
+const save = async (type) => {
   await validSelectBankCompay()
-  if (isEmpty(type) || type === 'update') {
-    await proxy.confirm('多个数据块的配置会一起提交保存 <br>确认配置已完成，点击确认提交', {
-      title: '确认操作',
-    })
-  } else if (type === 'ignore') {
-    await proxy.confirm('确认忽略配置吗？', {
-      title: '确认操作',
-    })
+  const mapText = {
+    update: '您确认更新配置吗?',
+    draft: '您确认暂存为草稿吗?',
+    ignore: '您确认忽略配置吗?',
+    save: '多个数据块的配置会一起提交保存，确认配置已完成，点击确认提交',
   }
+  await proxy.confirm(mapText[type], {
+    title: '确认操作',
+  })
 
   // 准备请求参数
   const sendData = {
@@ -282,6 +282,7 @@ defineExpose({
                       v-model="adjForm.adjTransAmt"
                       class="mapping-toolbar__select"
                       title="交易金额调整项"
+                      :disabled="isConfigured || !orgCode"
                       :options="specialBooleanOptions"
                       type="simple"
                       width="200"
@@ -290,6 +291,7 @@ defineExpose({
                       v-model="adjForm.adjCreditAmt"
                       class="mapping-toolbar__select"
                       title="贷款金额调整项"
+                      :disabled="isConfigured || !orgCode"
                       :options="specialBooleanOptions"
                       type="simple"
                       width="200"
@@ -298,6 +300,7 @@ defineExpose({
                       v-model="adjForm.adjSettlementAmt"
                       class="mapping-toolbar__select"
                       title="结算金额调整项"
+                      :disabled="isConfigured || !orgCode"
                       :options="specialBooleanOptions"
                       type="simple"
                       width="200"
@@ -335,7 +338,12 @@ defineExpose({
                   >
                     更新配置
                   </el-button>
-                  <el-button type="primary" icon="el-icon-check" :disabled="isConfigured || !orgCode" @click="save()">
+                  <el-button
+                    type="primary"
+                    icon="el-icon-check"
+                    :disabled="isConfigured || !orgCode"
+                    @click="save('save')"
+                  >
                     保存配置
                   </el-button>
                 </template>

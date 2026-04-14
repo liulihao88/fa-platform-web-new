@@ -114,7 +114,7 @@ const open = async (sendOrgId = '') => {
   isShow.value = true
 }
 
-const confirm = () => {
+const confirm = async () => {
   if (isEmpty(orgId.value)) {
     return $toast('必须选择一个所属银行/支付公司', 'e')
   }
