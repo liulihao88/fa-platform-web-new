@@ -74,11 +74,10 @@ const columns = [
 ] as any[]
 
 const relationColumns = [
-  { label: '序号', prop: 'index', width: 70, align: 'center' },
   { label: '相关方', prop: 'customerName', minWidth: 140 },
-  { label: '关系', prop: 'relation', minWidth: 140, useSlot: true },
+  { label: '关系', prop: 'relation', minWidth: 100, useSlot: true },
   { label: '相关方', prop: 'relatedPersonCode', minWidth: 180, useSlot: true },
-  { label: '操作', prop: 'operation', width: 160, useSlot: true },
+  { label: '操作', prop: 'operation', width: 160, useSlot: true, align: 'center' },
 ] as any[]
 
 const personDetailOptions = computed(() => [
@@ -215,7 +214,6 @@ async function saveRelation(row: Record<string, any>) {
     relationCode: row.tempRelation,
     relatedPersonId: row.tempRelatedPersonCode,
   })
-  $toast('保存成功')
   await viewRelations(currentRecord.value)
 }
 
