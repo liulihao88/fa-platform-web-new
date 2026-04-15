@@ -41,11 +41,13 @@ const toTableRef = ref<any>(null)
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  orgCd: '',
-  cardNum: '',
-  accountNum: '',
+  orgName: '',
+  transAccountNo: '',
+  relAccountNo: '',
+  accountName: '',
   customerName: '',
-  openDate: '',
+  beginDate: '',
+  endDate: '',
 })
 syncPageSize(queryParams)
 
@@ -74,10 +76,12 @@ const fromPersonTotal = ref(0)
 const toPersonTotal = ref(0)
 
 const searchItems = [
-  { label: '归属银行', prop: 'orgCd', type: 'input', placeholder: '请输入归属银行' },
-  { label: '卡号', prop: 'cardNum', type: 'input', placeholder: '请输入卡号' },
-  { label: '相关账号', prop: 'accountNum', type: 'input', placeholder: '请输入相关账号' },
-  { label: '客户名', prop: 'customerName', type: 'input', placeholder: '请输入客户名' },
+  { label: '归属银行', prop: 'orgName', type: 'input', placeholder: '请输入归属银行' },
+  { label: '交易账号', prop: 'transAccountNo', type: 'input', placeholder: '请输入交易账号' },
+  { label: '相关账号', prop: 'relAccountNo', type: 'input', placeholder: '请输入相关账号' },
+  { label: '户名', prop: 'accountName', type: 'input', placeholder: '请输入户名' },
+  { label: '客户名称', prop: 'customerName', type: 'input', placeholder: '请输入客户名称' },
+  { label: '业务日期范围', prop: 'openDate', type: 'date', dateType: 'daterange', placeholder: '请选择业务日期范围' },
 ] as any[]
 
 const fromPersonSearchItems = [
@@ -225,8 +229,23 @@ async function fetchList() {
 }
 
 function handleSearch(params: Record<string, any>) {
-  Object.assign(queryParams, params || {})
   queryParams.pageNo = 1
+  Object.assign(queryParams, {
+    orgName: '',
+    transAccountNo: '',
+    relAccountNo: '',
+    accountName: '',
+    customerName: '',
+    beginDate: '',
+    endDate: '',
+    ...(params || {}),
+  })
+  const openDate = params?.openDate
+  if (Array.isArray(openDate) && openDate.length === 2) {
+    queryParams.beginDate = openDate[0] || ''
+    queryParams.endDate = openDate[1] || ''
+  }
+  delete (queryParams as any).openDate
   fetchList()
 }
 
@@ -234,11 +253,13 @@ function handleReset() {
   Object.assign(queryParams, {
     pageNo: 1,
     pageSize: queryParams.pageSize,
-    orgCd: '',
-    cardNum: '',
-    accountNum: '',
+    orgName: '',
+    transAccountNo: '',
+    relAccountNo: '',
+    accountName: '',
     customerName: '',
-    openDate: '',
+    beginDate: '',
+    endDate: '',
   })
   fetchList()
 }
