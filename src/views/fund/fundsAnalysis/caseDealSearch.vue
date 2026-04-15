@@ -420,6 +420,11 @@ function clearToPerson() {
   fetchList()
 }
 
+const archiveConfirm = () => {
+  // archiveVisible.value = true
+  copyArchive()
+}
+
 fetchList()
 </script>
 
@@ -556,12 +561,21 @@ fetchList()
       </o-flex>
     </o-dialog>
 
-    <o-dialog v-model="archiveVisible" title="卷宗信息预览" width="1200px" :showConfirm="false">
-      <el-input v-model="archiveText" type="textarea" :rows="14" />
-      <div class="case-deal-page__dialog-footer">
-        <el-button icon="el-icon-close" @click="archiveVisible = false">关闭</el-button>
-        <el-button type="primary" icon="el-icon-document-copy" @click="copyArchive">复制</el-button>
-      </div>
+    <o-dialog
+      v-model="archiveVisible"
+      title="卷宗信息预览"
+      fillSlot
+      cancelText="关闭"
+      confirmText="复制卷宗信息"
+      @confirm="archiveConfirm"
+    >
+      <o-flex direction="column" class="h-100% textarea-box">
+        <el-input v-model="archiveText" type="textarea" class="h-100%" />
+        <!-- <div class="case-deal-page__dialog-footer">
+          <el-button icon="el-icon-close" @click="archiveVisible = false">关闭</el-button>
+          <el-button type="primary" icon="el-icon-document-copy" @click="copyArchive">复制</el-button>
+        </div> -->
+      </o-flex>
     </o-dialog>
 
     <o-dialog v-model="detailVisible" title="详情信息" width="1200px" :showConfirm="false">
@@ -656,5 +670,9 @@ fetchList()
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.textarea-box :deep(.el-textarea__inner) {
+  height: 100%;
 }
 </style>
