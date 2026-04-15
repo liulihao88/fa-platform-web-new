@@ -88,6 +88,7 @@ const instance = axios.create({
 })
 const timer = null
 let isRedirectingToLogin = false
+let isRedirectingToError = false
 // 请求拦截，使用sessionId方式控制权限，
 const CancelToken = axios.CancelToken
 
@@ -177,7 +178,11 @@ instance.interceptors.response.use(
     }
     if (response.status >= 200 && response.status < 300) {
       if (response.data.code !== 0 && response.data.code !== 200) {
-        if (response.config.showError) {
+        const isServerError = isServerErrorCode(response.data.code)
+        if (isServerError) {
+          handleServerError(response.data?.message)
+        }
+        if (response.config.showError && !isServerError) {
           $toast(response.data.message || '请求错误', 'e', { closeAll: true })
         }
         return Promise.reject(response.data)
@@ -198,8 +203,7 @@ instance.interceptors.response.use(
         return Promise.reject(response.data)
       }
       if (('' + response.status).startsWith('5')) {
-        // devLogin(true)
-        $toast('系统繁忙, 请稍后再试', 'e', { closeAll: true })
+        handleServerError(response.data?.message)
         return Promise.reject(response.data)
       }
       return Promise.reject(response.data)
@@ -212,9 +216,24 @@ instance.interceptors.response.use(
       handleUnauthorized(error.response?.data?.message)
       return Promise.reject(error)
     }
+    if (error.response?.status && ('' + error.response.status).startsWith('5')) {
+      handleServerError(error.response?.data?.message)
+      return Promise.reject(error)
+    }
     return Promise.reject(error)
   },
 )
+
+function isServerErrorCode(code?: string | number) {
+  if (code === undefined || code === null || code === '') {
+    return false
+  }
+  return String(code).startsWith('5')
+}
+
+function isErrorRoute(path: string) {
+  return path.startsWith('/error/') || path === '/server-error' || path === '/access-denied'
+}
 
 function handleUnauthorized(message?: string) {
   if (isRedirectingToLogin || router.currentRoute.value.path === '/login') {
@@ -231,6 +250,29 @@ function handleUnauthorized(message?: string) {
     })
     .finally(() => {
       isRedirectingToLogin = false
+    })
+}
+
+function handleServerError(message?: string) {
+  const currentPath = router.currentRoute.value.path
+  if (isRedirectingToError || currentPath === '/login' || isErrorRoute(currentPath)) {
+    if (message) {
+      $toast(message, 'e', { closeAll: true })
+    } else {
+      $toast('服务器错误,请联系管理员!', 'e', { closeAll: true })
+    }
+    return
+  }
+
+  isRedirectingToError = true
+  $toast(message || '服务器错误,请联系管理员!', 'e', { closeAll: true })
+  router
+    .replace({
+      path: '/error/404',
+      query: currentPath ? { from: router.currentRoute.value.fullPath } : undefined,
+    })
+    .finally(() => {
+      isRedirectingToError = false
     })
 }
 
