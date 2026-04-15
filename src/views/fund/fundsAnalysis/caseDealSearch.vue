@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, reactive, ref, useTemplateRef } from 'vue'
+import { computed, getCurrentInstance, nextTick, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
-import { caseInvolvedList, entityTransListApi, fileContextInfo, payeeListApi } from '@/api/analysis'
+import {
+  caseInvolvedList,
+  entityTransListApi,
+  fileContextInfo,
+  getCommonDictionary,
+  payeeListApi,
+} from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
 import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useCommonHook } from '@/store'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
 const { exportXls } = useMethods()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
@@ -50,6 +58,9 @@ const fromPersonSearchForm = reactive({
   pageNo: 1,
   pageSize: 10,
   customerName: '',
+  idNum: '',
+  cardNum: '',
+  accountNum: '',
 })
 syncPageSize(fromPersonSearchForm)
 const fromSelectedRows = ref<Record<string, any>[]>([])
@@ -71,6 +82,9 @@ const searchItems = [
 
 const fromPersonSearchItems = [
   { label: '发起方名称', prop: 'customerName', type: 'input', placeholder: '请输入发起方名称' },
+  { label: '证件号码', prop: 'idNum', type: 'input', placeholder: '请输入证件号码' },
+  { label: '发起方卡号', prop: 'cardNum', type: 'input', placeholder: '请输入发起方卡号' },
+  { label: '发起方账号', prop: 'accountNum', type: 'input', placeholder: '请输入发起方账号', span: 4 },
 ] as any[]
 
 const fromPersonIndexMethod = (index: number) =>
@@ -80,7 +94,10 @@ const personColumns = [
   { prop: 'radio', width: 58, align: 'center', useSlot: true },
   { type: 'index', width: 70, label: '序号', index: fromPersonIndexMethod },
   { label: '发起方名称', prop: 'customerName', minWidth: 160 },
-  { label: '发起方种类', prop: 'involvedKind', minWidth: 120 },
+  { label: '发起方种类', prop: 'involvedKind', minWidth: 120, useSlot: true },
+  { label: '证件号码', prop: 'idNum', minWidth: 180 },
+  { label: '发起方卡号', prop: 'cardNum', minWidth: 160 },
+  { label: '发起方账号', prop: 'accountNum', minWidth: 160 },
 ] as any[]
 
 const payeeColumns = [
@@ -118,6 +135,30 @@ const mainColumns = computed(() =>
 )
 
 const detailDescOptions = computed(() => buildDescriptionOptions(intelligentDetailFields, detailData.value))
+const kindOptions = computed(() => getDictItems('fa_involved_person_type') || [])
+
+async function ensureDictLoaded(code: string) {
+  if ((getDictItems(code) || []).length > 0) return
+  const res = await getCommonDictionary(code)
+  const items = Array.isArray(res) ? res : res?.result || []
+  setCommonItems('sysAllDictItems', {
+    ...(sysAllDictItems || {}),
+    [code]: items,
+  })
+}
+
+function getKindText(kind: string | number) {
+  return kindOptions.value.find((item) => Number(item.value) === Number(kind))?.label || '嫌疑人'
+}
+
+function getKindType(kind: string | number) {
+  const typeMap = {
+    1: 'success',
+    2: 'danger',
+    3: 'warning',
+  }
+  return typeMap[Number(kind)] || 'info'
+}
 
 const fromDisplayText = computed(() => {
   const selected = fromSelectedRows.value[0]
@@ -274,6 +315,9 @@ async function loadFromPersons() {
       pageNo: fromPersonSearchForm.pageNo,
       pageSize: fromPersonSearchForm.pageSize,
       customerName: fromPersonSearchForm.customerName,
+      idNum: fromPersonSearchForm.idNum,
+      cardNum: fromPersonSearchForm.cardNum,
+      accountNum: fromPersonSearchForm.accountNum,
     })
     fromPersonData.value = Array.isArray(res) ? res : res?.records || []
     fromPersonTotal.value = Array.isArray(res) ? res.length : res?.total || 0
@@ -345,6 +389,9 @@ function handleFromPersonReset() {
     pageNo: 1,
     pageSize: fromPersonSearchForm.pageSize,
     customerName: '',
+    idNum: '',
+    cardNum: '',
+    accountNum: '',
   })
   loadFromPersons()
 }
@@ -384,7 +431,7 @@ async function handleToPersonUpdate(pageNo: number, pageSize: number) {
   await loadToPersons()
 }
 
-function confirmFromPerson() {
+async function confirmFromPerson() {
   if (!fromPendingRow.value) {
     $toast('请选择交易发起方', 'w')
     return
@@ -426,6 +473,10 @@ const archiveConfirm = () => {
 }
 
 fetchList()
+
+onMounted(async () => {
+  await ensureDictLoaded('fa_involved_person_type')
+})
 </script>
 
 <template>
@@ -485,12 +536,19 @@ fetchList()
       </o-table>
     </div>
 
-    <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" fillSlot :confirm="confirmFromPerson">
+    <o-dialog
+      v-model="fromPickerVisible"
+      title="选择交易发起方"
+      width="1000px"
+      fillSlot
+      :confirm="confirmFromPerson"
+      :enableConfirm="false"
+    >
       <o-flex direction="column" class="h-100%">
         <g-search-bar
           class="mb-3"
           :items="fromPersonSearchItems"
-          :itemsPerRow="1"
+          :itemsPerRow="5"
           @search="handleFromPersonSearch"
           @reset="handleFromPersonReset"
         />
@@ -515,6 +573,11 @@ fetchList()
             <div class="f-ct-ct w-100%">
               <el-radio v-model="fromSelectedPersonId" :value="row.id" />
             </div>
+          </template>
+          <template #involvedKind="{ value }">
+            <o-tag :type="getKindType(value)">
+              {{ getKindText(value) }}
+            </o-tag>
           </template>
         </o-table>
       </o-flex>
