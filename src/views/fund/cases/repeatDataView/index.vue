@@ -165,7 +165,6 @@ watch(
           @update="handleUpdate"
         >
           <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
-          <!-- <el-table-column prop="index" label="序号1" width="70" align="center" /> -->
           <el-table-column label="文件一" align="center">
             <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
             <el-table-column label="行号" min-width="140" align="center">

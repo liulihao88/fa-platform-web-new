@@ -179,13 +179,6 @@ const nonBankTransPageListColumns = ref([
   { label: '备注', prop: 'comment', width: 100, resizable: true },
 ])
 
-const columns = [
-  {
-    label: '序号',
-    prop: 'index',
-    width: 70,
-  },
-]
 const parseEntityColumns = [
   { label: '企业客户信息', prop: 'customerName', minWidth: 100 },
   { label: '客户号', prop: 'customerId', minWidth: 100 },

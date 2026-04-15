@@ -1,8 +1,5 @@
 <template>
   <div class="smart-screening">
-    <div class="screening-header">
-      <div class="screening-title">智能筛查</div>
-    </div>
     <div class="screening-content">
       <div class="screening-table">
         <div class="table-header">

@@ -27,6 +27,7 @@ const archiveVisible = ref(false)
 const archiveText = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
+const fromTableRef = ref<any>(null)
 const toTableRef = ref<any>(null)
 
 const queryParams = reactive({
@@ -45,12 +46,20 @@ const extraParams = reactive({
   payeeld: '',
 })
 
+const fromPersonSearchForm = reactive({
+  pageNo: 1,
+  pageSize: 10,
+  customerName: '',
+})
+syncPageSize(fromPersonSearchForm)
 const fromSelectedRows = ref<Record<string, any>[]>([])
+const fromPendingRow = ref<Record<string, any> | null>(null)
 const toSelectedRows = ref<Record<string, any>[]>([])
 const toPendingRow = ref<Record<string, any> | null>(null)
 const fromPersonData = ref<Record<string, any>[]>([])
 const toPersonData = ref<Record<string, any>[]>([])
 const pickerLoading = ref(false)
+const fromPersonTotal = ref(0)
 const toPersonTotal = ref(0)
 
 const searchItems = [
@@ -60,7 +69,16 @@ const searchItems = [
   { label: '客户名', prop: 'customerName', type: 'input', placeholder: '请输入客户名' },
 ] as any[]
 
+const fromPersonSearchItems = [
+  { label: '发起方名称', prop: 'customerName', type: 'input', placeholder: '请输入发起方名称' },
+] as any[]
+
+const fromPersonIndexMethod = (index: number) =>
+  (fromPersonSearchForm.pageNo - 1) * fromPersonSearchForm.pageSize + index + 1
+
 const personColumns = [
+  { prop: 'radio', width: 58, align: 'center', useSlot: true },
+  { type: 'index', width: 70, label: '序号', index: fromPersonIndexMethod },
   { label: '发起方名称', prop: 'customerName', minWidth: 160 },
   { label: '发起方种类', prop: 'involvedKind', minWidth: 120 },
 ] as any[]
@@ -107,6 +125,17 @@ const fromDisplayText = computed(() => {
   return selected.customerName || '已选中'
 })
 
+const fromSelectedPersonId = computed({
+  get: () => fromPendingRow.value?.id || '',
+  set: (value: string) => {
+    const matchedRow = fromPersonData.value.find((item) => item.id === value) || null
+    fromPendingRow.value = matchedRow
+    nextTick(() => {
+      fromTableRef.value?.$refs?.tableRef?.setCurrentRow(matchedRow || null)
+    })
+  },
+})
+
 const toDisplayText = computed(() => {
   const selected = toSelectedRows.value[0]
   if (!selected) return '请选择交易对方'
@@ -124,8 +153,8 @@ const toSelectedPayeeId = computed({
   },
 })
 
-function handleFromSelection(rows: Record<string, any>[]) {
-  fromSelectedRows.value = rows.slice(0, 1)
+function handleFromCurrentChange(row?: Record<string, any>) {
+  fromPendingRow.value = row || null
 }
 
 function handleToCurrentChange(row?: Record<string, any>) {
@@ -240,11 +269,31 @@ function copyArchive() {
 async function loadFromPersons() {
   pickerLoading.value = true
   try {
-    const res = await caseInvolvedList({ caseId })
+    const res = await caseInvolvedList({
+      caseId,
+      pageNo: fromPersonSearchForm.pageNo,
+      pageSize: fromPersonSearchForm.pageSize,
+      customerName: fromPersonSearchForm.customerName,
+    })
     fromPersonData.value = Array.isArray(res) ? res : res?.records || []
+    fromPersonTotal.value = Array.isArray(res) ? res.length : res?.total || 0
+    await nextTick()
+    syncFromCurrentRow()
   } finally {
     pickerLoading.value = false
   }
+}
+
+function syncFromCurrentRow() {
+  const current = fromPendingRow.value
+  const tableRef = fromTableRef.value?.$refs?.tableRef
+  if (!tableRef) return
+  if (!current) {
+    tableRef.setCurrentRow(null)
+    return
+  }
+  const matchedRow = fromPersonData.value.find((item) => item.id === current.id)
+  tableRef.setCurrentRow(matchedRow || null)
 }
 
 async function loadToPersons() {
@@ -280,7 +329,29 @@ function syncToCurrentRow() {
 }
 
 async function showFromPerson() {
+  fromPendingRow.value = fromSelectedRows.value[0] || null
   fromPickerVisible.value = true
+  await loadFromPersons()
+}
+
+function handleFromPersonSearch(params: Record<string, any>) {
+  Object.assign(fromPersonSearchForm, params || {})
+  fromPersonSearchForm.pageNo = 1
+  loadFromPersons()
+}
+
+function handleFromPersonReset() {
+  Object.assign(fromPersonSearchForm, {
+    pageNo: 1,
+    pageSize: fromPersonSearchForm.pageSize,
+    customerName: '',
+  })
+  loadFromPersons()
+}
+
+async function handleFromPersonUpdate(pageNo: number, pageSize: number) {
+  fromPersonSearchForm.pageNo = pageNo
+  updatePageSize(fromPersonSearchForm, pageSize)
   await loadFromPersons()
 }
 
@@ -314,11 +385,12 @@ async function handleToPersonUpdate(pageNo: number, pageSize: number) {
 }
 
 function confirmFromPerson() {
-  if (!fromSelectedRows.value.length) {
+  if (!fromPendingRow.value) {
     $toast('请选择交易发起方', 'w')
     return
   }
-  extraParams.customerCd = fromSelectedRows.value[0].id
+  fromSelectedRows.value = [fromPendingRow.value]
+  extraParams.customerCd = fromPendingRow.value.id
   fromPickerVisible.value = false
   fetchList()
 }
@@ -335,6 +407,7 @@ async function confirmToPerson() {
 }
 
 function clearFromPerson() {
+  fromPendingRow.value = null
   fromSelectedRows.value = []
   extraParams.customerCd = ''
   fetchList()
@@ -409,17 +482,35 @@ fetchList()
 
     <o-dialog v-model="fromPickerVisible" title="选择交易发起方" width="900px" fillSlot :confirm="confirmFromPerson">
       <o-flex direction="column" class="h-100%">
+        <g-search-bar
+          class="mb-3"
+          :items="fromPersonSearchItems"
+          :itemsPerRow="1"
+          @search="handleFromPersonSearch"
+          @reset="handleFromPersonReset"
+        />
         <o-table
+          ref="fromTableRef"
           class="f-1"
           style="min-height: 0"
           :columns="personColumns"
           :data="fromPersonData"
+          :total="fromPersonTotal"
           :loading="pickerLoading"
-          :showPage="false"
+          :pageSize="fromPersonSearchForm.pageSize"
+          :pageNumber="fromPersonSearchForm.pageNo"
+          row-key="id"
           height="100%"
-          @selection-change="handleFromSelection"
+          :showIndex="false"
+          highlight-current-row
+          @current-change="handleFromCurrentChange"
+          @update="handleFromPersonUpdate"
         >
-          <el-table-column type="selection" width="58" align="center" />
+          <template #radio="{ row }">
+            <div class="f-ct-ct w-100%">
+              <el-radio v-model="fromSelectedPersonId" :value="row.id" />
+            </div>
+          </template>
         </o-table>
       </o-flex>
     </o-dialog>
