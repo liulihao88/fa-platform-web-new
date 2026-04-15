@@ -81,8 +81,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       oeos-components:
-        specifier: ^0.3.98
-        version: 0.3.98(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@1.21.7))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@1.21.7)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1))
+        specifier: ^0.3.99
+        version: 0.3.99(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@1.21.7))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@1.21.7)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1))
       path-browserify:
         specifier: ^1.0.1
         version: 1.0.1
@@ -4222,8 +4222,8 @@ packages:
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
 
-  oeos-components@0.3.98:
-    resolution: {integrity: sha512-IF0XpfDmX3iZVZT9HomQtOdaRZwHyyGfqp40dke1N7B5wnKhKfWIPTrrk4FOWHk4g+G0bp2XkXBJLG4P6GuGag==}
+  oeos-components@0.3.99:
+    resolution: {integrity: sha512-stKuNnmAnZOTHEYkjhAyMDnhK6w/kqDZw8Ewe83ddQXFoK/2l6Bu+3wOeBg0A1lhowBmYk60W5ITMIaUVhaeNw==}
 
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
@@ -10109,7 +10109,7 @@ snapshots:
 
   obug@2.1.1: {}
 
-  oeos-components@0.3.98(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@1.21.7))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@1.21.7)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1)):
+  oeos-components@0.3.99(@algolia/client-search@5.46.2)(@types/node@20.19.23)(@vue/compiler-sfc@3.5.22)(@vue/runtime-core@3.5.22)(async-validator@4.2.5)(axios@1.12.2)(eslint@9.38.0(jiti@1.21.7))(idb-keyval@6.2.2)(less@4.5.1)(lightningcss@1.30.2)(nprogress@0.2.0)(postcss@8.5.6)(search-insights@2.17.3)(sortablejs@1.15.6)(terser@5.44.1)(vite@7.1.12(@types/node@20.19.23)(jiti@1.21.7)(less@4.5.1)(lightningcss@1.30.2)(sass@1.93.2)(terser@5.44.1)(yaml@2.8.1)):
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.22(typescript@5.9.3))
       '@fortawesome/fontawesome-svg-core': 6.7.2

@@ -38,7 +38,7 @@ export const renderProgress = ({ value, row, getPercentage, progressMap }) => {
 export const renderProgressColumn = ({
   label = '处理进度',
   prop = 'status',
-  width = 100,
+  width = 90,
   getPercentage,
   progressMap = defaultProgressMap,
   ...rest

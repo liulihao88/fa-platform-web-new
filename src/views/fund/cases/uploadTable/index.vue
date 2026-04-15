@@ -355,7 +355,7 @@ const columns = [
   {
     label: '源文件',
     prop: 'sourceFile',
-    width: 200,
+    minWidth: 150,
   },
   {
     label: '文件夹',
@@ -399,7 +399,7 @@ const columns = [
   {
     label: '返回信息',
     prop: 'returnInfo',
-    width: 150,
+    minWidth: 120,
   },
   {
     label: '上传时间',
@@ -414,7 +414,6 @@ const columns = [
   {
     label: '导入行数',
     prop: 'importDataNum',
-    width: 100,
   },
   {
     label: '去重行数',

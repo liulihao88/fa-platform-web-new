@@ -90,11 +90,12 @@ const columns = [
   {
     label: '案件名称',
     prop: 'caseCode',
-    width: 150,
+    minWidth: 140,
     handler: detailRow,
   },
   {
     label: '案由',
+    minWidth: 100,
     prop: 'caseReason',
   },
   {
@@ -105,6 +106,7 @@ const columns = [
     label: '受理时间',
     prop: 'processDate',
     ...proxy.TIME_WIDTH_ATTRS,
+    width: 100,
   },
   {
     label: '文件处理状态',
