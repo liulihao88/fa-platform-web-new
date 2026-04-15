@@ -147,7 +147,7 @@ watch(
           <o-button class="cp" type="primary" icon="el-icon-zoom-in" @click="previewFile('fast')">
             快速预览文件
           </o-button>
-          <o-tooltip content="快速预览文件使用懒加载技术, 无法全局搜索" placement="top" class="ml">
+          <o-tooltip content="快速预览文件使用滚动懒加载技术, 无法全局搜索" placement="top" class="ml">
             <o-icon name="warning" />
           </o-tooltip>
         </template>
