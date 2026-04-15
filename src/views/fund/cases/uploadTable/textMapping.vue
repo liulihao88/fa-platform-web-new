@@ -85,7 +85,7 @@ const queryBankInit = async () => {
   }
 }
 
-const init = async () => {
+const init = async (saveType = '') => {
   let sendParams = {
     fileId: fileId.value,
   }
@@ -104,6 +104,15 @@ const init = async () => {
       adjTransAmt: pages[activePageIndex.value]?.adjTransAmt ?? '否',
       adjCreditAmt: pages[activePageIndex.value]?.adjCreditAmt ?? '否',
       adjSettlementAmt: pages[activePageIndex.value]?.adjSettlementAmt ?? '否',
+    }
+  }
+  if (saveType === 'save') {
+    let configAllComplete = fileInfo.value.filePages.every((v) => {
+      return v.configureStatus == '1'
+    })
+    console.log(`04 configAllComplete`, configAllComplete)
+    if (configAllComplete) {
+      $toast('该文件已经配置完成，系统开始自动解析')
     }
   }
   await queryBankInit()
@@ -170,7 +179,9 @@ const save = async (type) => {
     await updateFaFileConfig(sendData)
   }
 
-  init()
+  if (type !== 'draft') {
+    init(type === 'save' && 'save')
+  }
 }
 
 const selectOrg = () => {
