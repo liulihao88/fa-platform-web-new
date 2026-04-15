@@ -43,24 +43,135 @@ const textMappingLoadingStatuses = ['000', '001', '002', '004', '005']
 const textMappingErrorStatuses = ['900', '901', '902', '999']
 
 /**
-   * 下拉菜单	查询状态
-转换失败	900 解压失败
-	901 格式不支持
-	902 入库异常
-	904 转换异常
-	9字开头
-自动运行中	001	待验证
-	002	待入库
-	100	配置完成
-	101	解析完成
-待配置	003	入库完成
-已完成	102	合并完成
+   fa_file_process_status
+   [
+  {
+    value: '102',
+    text: '合并完成',
+    color: null,
+    jsonObject: null,
+    title: '合并完成',
+    label: '合并完成',
+  },
+  {
+    value: '100',
+    text: '配置完成',
+    color: null,
+    jsonObject: null,
+    title: '配置完成',
+    label: '配置完成',
+  },
+  {
+    value: '904',
+    text: '转换异常',
+    color: null,
+    jsonObject: null,
+    title: '转换异常',
+    label: '转换异常',
+  },
+  {
+    value: '201',
+    text: '处理完成',
+    color: null,
+    jsonObject: null,
+    title: '处理完成',
+    label: '处理完成',
+  },
+  {
+    value: '101',
+    text: '解析完成',
+    color: null,
+    jsonObject: null,
+    title: '解析完成',
+    label: '解析完成',
+  },
+  {
+    value: '900',
+    text: '解压失败',
+    color: null,
+    jsonObject: null,
+    title: '解压失败',
+    label: '解压失败',
+  },
+  {
+    value: '005',
+    text: '待覆盖',
+    color: null,
+    jsonObject: null,
+    title: '待覆盖',
+    label: '待覆盖',
+  },
+  {
+    value: '004',
+    text: '待删除',
+    color: null,
+    jsonObject: null,
+    title: '待删除',
+    label: '待删除',
+  },
+  {
+    value: '003',
+    text: '入库完成',
+    color: null,
+    jsonObject: null,
+    title: '入库完成',
+    label: '入库完成',
+  },
+  {
+    value: '002',
+    text: '待入库',
+    color: null,
+    jsonObject: null,
+    title: '待入库',
+    label: '待入库',
+  },
+  {
+    value: '001',
+    text: '待验证',
+    color: null,
+    jsonObject: null,
+    title: '待验证',
+    label: '待验证',
+  },
+  {
+    value: '000',
+    text: '待解压',
+    color: null,
+    jsonObject: null,
+    title: '待解压',
+    label: '待解压',
+  },
+  {
+    value: '999',
+    text: '忽略处理',
+    color: null,
+    jsonObject: null,
+    title: '忽略处理',
+    label: '忽略处理',
+  },
+  {
+    value: '902',
+    text: '入库异常',
+    color: null,
+    jsonObject: null,
+    title: '入库异常',
+    label: '入库异常',
+  },
+  {
+    value: '901',
+    text: '格式不支持',
+    color: null,
+    jsonObject: null,
+    title: '格式不支持',
+    label: '格式不支持',
+  },
+]
    */
 const statusMap: any = {
-  '900': ['900', '901', '902', '904', '999', '201'],
-  '001': ['000', '001', '002', '004', '005', '100'],
-  '003': ['003'],
-  '102': ['101', '102'],
+  '900': ['900', '901', '902', '904', '999'], // 转换失败
+  '001': ['000', '001', '002', '004', '005', '100', '101'], // 自动进行中
+  '003': ['003'], // 待配置
+  '102': ['102', '201'], // 已完成
 }
 
 const filterStatusOptions = computed(() => {
@@ -103,11 +214,6 @@ const filterStatusOptions = computed(() => {
 })
 
 const items = [
-  // {
-  //   label: '文件名称',
-  //   prop: 'fileName',
-  //   type: 'input',
-  // },
   {
     label: '文件名称/文件夹',
     prop: 'folder',
