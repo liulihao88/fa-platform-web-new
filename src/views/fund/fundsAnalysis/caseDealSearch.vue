@@ -571,10 +571,6 @@ fetchList()
     >
       <o-flex direction="column" class="h-100% textarea-box">
         <el-input v-model="archiveText" type="textarea" class="h-100%" />
-        <!-- <div class="case-deal-page__dialog-footer">
-          <el-button icon="el-icon-close" @click="archiveVisible = false">关闭</el-button>
-          <el-button type="primary" icon="el-icon-document-copy" @click="copyArchive">复制</el-button>
-        </div> -->
       </o-flex>
     </o-dialog>
 
