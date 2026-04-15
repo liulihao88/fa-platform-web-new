@@ -171,7 +171,6 @@ const handleScroll = () => {
   currentPage.value =
     // console.log(`95 pagesInfo.value`, pagesInfo.value);
     pagesInfo.value.find((pageInfo) => {
-      console.log(`51 pageInfo.offsetTop`, pageInfo.offsetTop)
       return pageInfo.offsetTop + pageInfo.height >= scrollTop.value
     }).pageNum ?? 1
   console.log(`17 currentPage.value`, currentPage.value)
