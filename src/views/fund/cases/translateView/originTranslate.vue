@@ -35,9 +35,7 @@ const onExcelError = (error) => {
 }
 
 const loadFileContent = (type) => {
-  // const previewUrl = 'http://192.168.56.228:8080/jeecg-boot' + '/' + fileInfo.value.fileViewUrl
-  // const previewUrl = '/image/1.pdf'
-  const previewUrl = window.location.origin + '/jeecgboot/' + fileInfo.value.fileViewUrl
+  const previewUrl = fileInfo.value.fileViewUrl
   if (['xls', 'xlsx', 'xlsm'].includes(currentFileType.value)) {
     iframeUrl.value = previewUrl
     return

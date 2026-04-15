@@ -134,8 +134,8 @@ defineExpose({
       v-model="isShow"
       title="银行机构选择"
       width="1000"
-      fillSlot
       :enableConfirm="false"
+      fillSlot
       :confirm="confirm"
     >
       <o-flex direction="column" class="h-100%">

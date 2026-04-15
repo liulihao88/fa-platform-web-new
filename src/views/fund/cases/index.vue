@@ -105,7 +105,7 @@ onBeforeRouteLeave(() => {
   <div class="case-page h-100%">
     <o-basic-layout class="h-100%">
       <div class="case-page__header w-100%">
-        <o-descriptions :options="descOptions" :column="3" />
+        <o-descriptions :options="descOptions" :column="4" />
       </div>
 
       <div class="case-page__nav">
