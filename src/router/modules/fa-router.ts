@@ -133,13 +133,39 @@ export default [
     },
     children: [
       {
-        id: '/monitor/quartz',
-        path: '/monitor/quartz',
-        name: 'Quartz',
-        component: 'monitor/quartz',
+        id: '/system/menu',
+        path: '/system/menu',
+        name: 'SystemMenu',
+        component: 'system/menu/index',
         meta: {
-          title: '定时任务',
-          // showParent: true
+          title: '菜单管理',
+        },
+      },
+      {
+        id: '/system/user',
+        path: '/system/user',
+        name: 'SystemUser',
+        component: 'system/user/index',
+        meta: {
+          title: '用户管理',
+        },
+      },
+      {
+        id: '/system/role',
+        path: '/system/role',
+        name: 'SystemRole',
+        component: 'system/role/index',
+        meta: {
+          title: '角色管理',
+        },
+      },
+      {
+        id: '/system/depart',
+        path: '/system/depart',
+        name: 'SystemDepart',
+        component: 'system/depart/index',
+        meta: {
+          title: '部门管理',
         },
       },
       {
@@ -149,6 +175,16 @@ export default [
         component: 'system/index',
         meta: {
           title: '数据字典',
+          // showParent: true
+        },
+      },
+      {
+        id: '/monitor/quartz',
+        path: '/monitor/quartz',
+        name: 'Quartz',
+        component: 'monitor/quartz',
+        meta: {
+          title: '定时任务',
           // showParent: true
         },
       },
