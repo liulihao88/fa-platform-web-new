@@ -57,7 +57,7 @@ const progressMap = {
   '102': 100,
 }
 
-const errorStatusList = ['900', '901', '902', '904', '999', '201']
+const errorStatusList = ['900', '901', '902', '904', '999']
 const selectedCount = computed(() => selectedMap.value.size)
 const tableStats = computed(() => {
   const records = data.value || []
@@ -67,7 +67,7 @@ const tableStats = computed(() => {
     error: records.filter((item) => errorStatusList.includes(item.status || '')).length,
     running: records.filter((item) => ['000', '002', '100'].includes(item.status || '')).length,
     waiting: records.filter((item) => ['003'].includes(item.status || '')).length,
-    done: records.filter((item) => ['101', '102'].includes(item.status || '')).length,
+    done: records.filter((item) => ['101', '102', '201'].includes(item.status || '')).length,
   }
 })
 const statCards = computed(() => [
