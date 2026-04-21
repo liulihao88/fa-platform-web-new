@@ -6,6 +6,7 @@ import { getMenuList, deleteBatchMenu, deleteMenu } from '@/api/system'
 import { useCommonHook } from '@/store'
 import { getDictLabel } from '@/views/system/utils'
 import MenuDialog from './MenuDialog.vue'
+import MenuIconPreview from './MenuIconPreview.vue'
 import DataRuleDrawer from './DataRuleDrawer.vue'
 
 defineOptions({
@@ -172,7 +173,11 @@ proxy.$initTableHeight(headerRef, true)
             {{ getDictLabel(menuTypeOptions, row.menuType) }}
           </template>
         </el-table-column>
-        <el-table-column prop="icon" label="图标" width="140" show-overflow-tooltip />
+        <el-table-column prop="icon" label="图标" width="90" align="center">
+          <template #default="{ row }">
+            <MenuIconPreview :icon="row.icon" />
+          </template>
+        </el-table-column>
         <el-table-column prop="component" label="前端组件" min-width="180" show-overflow-tooltip />
         <el-table-column prop="url" label="访问路径" min-width="180" show-overflow-tooltip />
         <el-table-column prop="sortNo" label="排序" width="90" align="center" />

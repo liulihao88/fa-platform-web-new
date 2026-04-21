@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { clone, validForm } from '@oeos-components/utils'
 import { addMenu, checkMenuPath, editMenu } from '@/api/system'
 import { MENU_TYPE_OPTIONS, PERMS_TYPE_OPTIONS, VALID_STATUS_OPTIONS, normalizeTreeOptions } from '@/views/system/utils'
+import MenuIconPicker from './MenuIconPicker.vue'
 
 defineOptions({
   name: 'SystemMenuDialog',
@@ -258,7 +259,7 @@ defineExpose({
         </el-col>
         <el-col v-if="!isButton" :span="12">
           <el-form-item label="菜单图标" prop="icon">
-            <o-input v-model="form.icon" :disabled="readOnly" placeholder="请输入图标编码" />
+            <MenuIconPicker v-model="form.icon" :disabled="readOnly" />
           </el-form-item>
         </el-col>
         <el-col v-if="!isButton" :span="12">
