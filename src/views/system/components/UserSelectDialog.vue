@@ -36,8 +36,13 @@ const baseSearch = {
 }
 syncPageSize(baseSearch)
 
-const { tableRef, selectedCount, selectedKeys, selectedRows, handleSelectionChange, syncSelection, clearSelected } =
-  useSelectionMap(data)
+const { selectedRows, selectedCount, clearSelected } = useSelectionMap()
+const tableSelection = computed({
+  get: () => (multiple.value ? selectedRows.value : selectedRows.value[0] || null),
+  set: (value) => {
+    selectedRows.value = Array.isArray(value) ? value : value ? [value] : []
+  },
+})
 
 const items = [
   { label: '账号', prop: 'username', type: 'input', placeholder: '请输入用户账号' },
@@ -45,7 +50,6 @@ const items = [
 ]
 
 const columns = [
-  { type: 'selection', width: 55 },
   { label: '用户账号', prop: 'username', minWidth: 140 },
   { label: '用户姓名', prop: 'realname', minWidth: 140 },
   { label: '手机号', prop: 'phone', minWidth: 140 },
@@ -84,7 +88,6 @@ async function init() {
   const res = await getUserList(baseSearch)
   data.value = normalizeRows(res?.records || [])
   total.value = res?.total || 0
-  await syncSelection()
 }
 
 function handleConfirm() {
@@ -130,7 +133,8 @@ defineExpose({
       </g-search-bar>
 
       <o-table
-        ref="tableRef"
+        v-model="tableSelection"
+        :selection-type="multiple ? 'multiple' : 'single'"
         class="f-1"
         style="min-height: 0"
         height="100%"
@@ -140,7 +144,6 @@ defineExpose({
         :total="total"
         :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
-        @selectionChange="handleSelectionChange"
         @update="handleUpdate"
       >
         <template #status="{ value }">

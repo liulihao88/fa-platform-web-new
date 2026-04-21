@@ -28,13 +28,9 @@ function getRowId(row: Record<string, any> = {}) {
   return row.id ?? row.userId ?? row.userid ?? row.user_id ?? ''
 }
 
-const { tableRef, selectedCount, selectedKeys, handleSelectionChange, syncSelection, clearSelected } = useSelectionMap(
-  data,
-  getRowId,
-)
+const { selectedRows, selectedCount, selectedKeys, clearSelected } = useSelectionMap(undefined, getRowId)
 
 const columns = [
-  { type: 'selection', width: 55 },
   { label: '用户账号', prop: 'username', minWidth: 140 },
   { label: '用户姓名', prop: 'realname', minWidth: 140 },
   { label: '性别', prop: 'sex', minWidth: 100, useSlot: true, align: 'center' },
@@ -101,7 +97,6 @@ async function init() {
   const rows = resolveRecycleRows(res)
   data.value = rows
   total.value = resolveRecycleTotal(res, rows)
-  await syncSelection()
 }
 
 function handleUpdate(pageNo, pageSize) {
@@ -160,7 +155,8 @@ defineExpose({
       </div>
 
       <o-table
-        ref="tableRef"
+        v-model="selectedRows"
+        selection-type="multiple"
         class="f-1"
         style="min-height: 0"
         height="100%"
@@ -170,7 +166,6 @@ defineExpose({
         :total="total"
         :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
-        @selectionChange="handleSelectionChange"
         @update="handleUpdate"
       >
         <template #sex="{ value }">

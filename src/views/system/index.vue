@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, computed, nextTick } from 'vue'
+import { ref, getCurrentInstance, computed } from 'vue'
 import addDictDialog from '../fund/addDictDialog.vue'
 import dictRecycleDialog from '../fund/dictRecycleDialog.vue'
 import dictDetailDrawer from '../fund/dictDetailDrawer.vue'
@@ -31,9 +31,7 @@ const items = [
 const dictDetailDrawerRef = ref()
 const { proxy } = getCurrentInstance()
 const headerRef = ref()
-const tableRef = ref()
-const syncingSelection = ref(false)
-const selectedMap = ref(new Map<string, any>())
+const selectedRows = ref<any[]>([])
 const handleSearch = (form) => {
   baseSearch.pageNo = 1
   baseSearch.dictName = form?.dictName || ''
@@ -53,7 +51,7 @@ const baseSearch = {
 syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
-const selectedCount = computed(() => selectedMap.value.size)
+const selectedCount = computed(() => selectedRows.value.length)
 
 function openDictConfig(row) {
   dictDetailDrawerRef.value.open(row)
@@ -109,40 +107,8 @@ function addRow() {
   editRow({})
 }
 
-function handleSelectionChange(rows) {
-  if (syncingSelection.value) return
-
-  const currentPageIds = new Set(data.value.map((item) => item.id))
-  currentPageIds.forEach((id) => {
-    selectedMap.value.delete(id)
-  })
-
-  rows.forEach((row) => {
-    selectedMap.value.set(row.id, row)
-  })
-}
-
-async function syncSelection() {
-  await nextTick()
-  if (!tableRef.value?.$refs?.tableRef) return
-
-  syncingSelection.value = true
-  try {
-    tableRef.value.$refs.tableRef.clearSelection()
-    data.value.forEach((row) => {
-      if (selectedMap.value.has(row.id)) {
-        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
-      }
-    })
-  } finally {
-    await nextTick()
-    syncingSelection.value = false
-  }
-}
-
 function clearSelected() {
-  selectedMap.value.clear()
-  tableRef.value?.$refs?.tableRef?.clearSelection()
+  selectedRows.value = []
 }
 /**
  * 导入
@@ -165,7 +131,7 @@ const onImportXls = async () => {
  */
 const onExportXls = async () => {
   const params = {
-    selections: selectedCount.value > 0 ? Array.from(selectedMap.value.keys()).join(',') : '',
+    selections: selectedCount.value > 0 ? selectedRows.value.map((item) => item.id).join(',') : '',
     column: 'createTime',
     order: 'desc',
   }
@@ -191,7 +157,7 @@ const recycleBin = async () => {
 }
 
 async function deleteBatchRows() {
-  const ids = Array.from(selectedMap.value.keys()).join(',')
+  const ids = selectedRows.value.map((item) => item.id).join(',')
   await deleteBatchDict(ids)
   clearSelected()
   handleSearch({})
@@ -247,7 +213,6 @@ const init = async () => {
   let res = await getDictLits(baseSearch)
   data.value = res?.records
   total.value = res?.total
-  await syncSelection()
 }
 init()
 proxy.$initTableHeight(headerRef, true)
@@ -262,7 +227,8 @@ proxy.$initTableHeight(headerRef, true)
       </g-search-bar>
     </div>
     <o-table
-      ref="tableRef"
+      v-model="selectedRows"
+      selection-type="multiple"
       :height="$tableHeight.value"
       :columns="columns"
       :data="data"
@@ -271,10 +237,8 @@ proxy.$initTableHeight(headerRef, true)
       :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
-      @selection-change="handleSelectionChange"
       @update="handleUpdate"
     >
-      <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
       <template #status="{ row }">
         <el-tag :type="row.status == '0' ? 'success' : 'danger'">{{ row.status == '0' ? '正常' : '停止' }}</el-tag>
       </template>

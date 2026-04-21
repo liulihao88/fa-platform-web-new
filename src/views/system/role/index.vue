@@ -30,8 +30,7 @@ const baseSearch = {
 }
 syncPageSize(baseSearch)
 
-const { tableRef, selectedCount, selectedKeys, handleSelectionChange, syncSelection, clearSelected } =
-  useSelectionMap(data)
+const { selectedRows, selectedCount, selectedKeys, clearSelected } = useSelectionMap()
 
 const items = [
   { label: '角色名称', prop: 'roleName', type: 'input', placeholder: '请输入角色名称' },
@@ -39,7 +38,6 @@ const items = [
 ]
 
 const columns = [
-  { type: 'selection', width: 55 },
   { label: '角色名称', prop: 'roleName', minWidth: 180 },
   { label: '角色编码', prop: 'roleCode', minWidth: 180 },
   { label: '备注', prop: 'description', minWidth: 220, showOverflowTooltip: true },
@@ -81,7 +79,6 @@ async function init() {
   const res = await getRoleList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
-  await syncSelection()
 }
 
 function handleCreate() {
@@ -160,7 +157,8 @@ proxy.$initTableHeight(headerRef, true)
     </div>
 
     <o-table
-      ref="tableRef"
+      v-model="selectedRows"
+      selection-type="multiple"
       :height="$tableHeight.value"
       row-key="id"
       :columns="columns"
@@ -168,7 +166,6 @@ proxy.$initTableHeight(headerRef, true)
       :total="total"
       :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
-      @selectionChange="handleSelectionChange"
       @update="handleUpdate"
     />
 

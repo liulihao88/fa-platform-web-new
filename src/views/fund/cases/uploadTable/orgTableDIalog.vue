@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, getCurrentInstance, watch } from 'vue'
-const { proxy } = getCurrentInstance()
-import { $toast, notEmpty, isEmpty } from '@oeos-components/utils'
+import { ref } from 'vue'
+import { $toast, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
 import { useGlobalTablePageSize } from '@/hooks'
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
@@ -10,9 +9,8 @@ const emits = defineEmits(['success'])
 
 const isShow = ref(false)
 const total = ref(0)
-const orgId = ref('')
-const selectRow = ref({})
-const tableRef = ref(null)
+const selectedOrgCode = ref('')
+const selectedRow = ref<Record<string, any> | null>(null)
 
 const originBaseSearch = {
   pageNo: 1,
@@ -37,12 +35,6 @@ const items = [
 
 const columns = [
   {
-    prop: 'radio', // 添加radio类型列
-    width: 50,
-    align: 'center',
-    useSlot: true,
-  },
-  {
     type: 'index',
     width: 70,
     label: '序号',
@@ -64,34 +56,9 @@ const init = async () => {
   const res = await faOrgsConfigureAllList(baseSearch.value)
   data.value = res.records
   total.value = res.total
-  _handleRowClick()
+  selectedRow.value =
+    data.value.find((item) => item.orgCd === selectedOrgCode.value || item.id === selectedOrgCode.value) || null
 }
-
-const handleCurrentChange = async (currentRow, oldCurrentRow) => {
-  if (notEmpty(currentRow)) {
-    selectRow.value = currentRow
-    orgId.value = currentRow.id
-  }
-}
-
-const _handleRowClick = () => {
-  if (data.value.length === 0 || isEmpty(orgId.value)) {
-    reset()
-    return
-  }
-  if (orgId.value) {
-    let taskNameIdx = data.value.findIndex((item) => {
-      return item.orgCd === orgId.value
-    })
-    tableRef.value.$refs.tableRef.setCurrentRow(data.value[taskNameIdx])
-  }
-}
-
-const reset = () => {
-  selectRow.value = {}
-  tableRef.value.$refs.tableRef.setCurrentRow(null)
-}
-
 const handleSearch = (form) => {
   baseSearch.value.orgName = form?.orgName
   init()
@@ -109,17 +76,19 @@ const open = async (sendOrgId = '') => {
   Object.assign(baseSearch.value, originBaseSearch, {
     pageSize: currentPageSize,
   })
-  orgId.value = sendOrgId
+  selectedOrgCode.value = sendOrgId
+  selectedRow.value = null
   init()
   isShow.value = true
 }
 
 const confirm = async () => {
-  if (isEmpty(orgId.value)) {
+  const orgId = selectedRow.value?.id || selectedOrgCode.value
+  if (isEmpty(orgId)) {
     return $toast('必须选择一个所属银行/支付公司', 'e')
   }
   isShow.value = false
-  emits('success', orgId.value)
+  emits('success', orgId)
 }
 
 defineExpose({
@@ -141,7 +110,8 @@ defineExpose({
       <o-flex direction="column" class="h-100%">
         <g-search-bar :items="items" @search="handleSearch" @reset="handleSearch" />
         <o-table
-          ref="tableRef"
+          v-model="selectedRow"
+          selection-type="single"
           class="f-1"
           style="min-height: 0"
           size="small"
@@ -149,19 +119,12 @@ defineExpose({
           :data="data"
           :total="total"
           height="100%"
-          highlight-current-row
+          row-key="id"
           :page-size="baseSearch.pageSize"
           :pageNumber="baseSearch.pageNo"
           :showIndex="false"
           @update="update"
-          @current-change="handleCurrentChange"
-        >
-          <template #radio="{ value, row }">
-            <div class="f-ct-ct w-100%">
-              <el-radio v-model="selectRow.id" :value="row.id" />
-            </div>
-          </template>
-        </o-table>
+        />
       </o-flex>
     </o-dialog>
   </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, getCurrentInstance } from 'vue'
+import { computed, ref, getCurrentInstance } from 'vue'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
 import ErrorHandlerDialog from './errorHandlerDialog.vue'
@@ -23,12 +23,10 @@ const { getDictItems } = useCommonHook()
 const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
-const tableRef = ref()
 const errorHandlerDialogRef = ref()
 const data = ref<ErrTaskRecord[]>([])
 const total = ref(0)
-const syncingSelection = ref(false)
-const selectedMap = ref(new Map<string, ErrTaskRecord>())
+const selectedRows = ref<ErrTaskRecord[]>([])
 
 const baseSearch = {
   order: 'desc',
@@ -58,7 +56,7 @@ const progressMap = {
 }
 
 const errorStatusList = ['900', '901', '902', '904', '999']
-const selectedCount = computed(() => selectedMap.value.size)
+const selectedCount = computed(() => selectedRows.value.length)
 const tableStats = computed(() => {
   const records = data.value || []
   return {
@@ -168,40 +166,8 @@ function getStatusText(status: string) {
   return target?.text || target?.label || status || '-'
 }
 
-async function syncSelection() {
-  await nextTick()
-  if (!tableRef.value?.$refs?.tableRef) return
-
-  syncingSelection.value = true
-  try {
-    tableRef.value.$refs.tableRef.clearSelection()
-    data.value.forEach((row) => {
-      if (selectedMap.value.has(row.id)) {
-        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
-      }
-    })
-  } finally {
-    await nextTick()
-    syncingSelection.value = false
-  }
-}
-
-function handleSelectionChange(rows: ErrTaskRecord[]) {
-  if (syncingSelection.value) return
-
-  const currentPageIds = new Set(data.value.map((item) => item.id))
-  currentPageIds.forEach((id) => {
-    selectedMap.value.delete(id)
-  })
-
-  rows.forEach((row) => {
-    selectedMap.value.set(row.id, row)
-  })
-}
-
 function clearSelected() {
-  selectedMap.value.clear()
-  tableRef.value?.$refs?.tableRef?.clearSelection()
+  selectedRows.value = []
 }
 
 function handleRefresh() {
@@ -231,7 +197,6 @@ async function init() {
   const res = await getCaseNameFilePageList(baseSearch)
   data.value = res?.records ?? []
   total.value = res?.total ?? 0
-  await syncSelection()
 }
 
 init()
@@ -248,7 +213,8 @@ proxy.$initTableHeight(headerRef, true)
       </o-flex>
     </div>
     <o-table
-      ref="tableRef"
+      v-model="selectedRows"
+      selection-type="multiple"
       :height="$tableHeight.value"
       :columns="columns"
       :data="data"
@@ -256,10 +222,8 @@ proxy.$initTableHeight(headerRef, true)
       :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
-      @selection-change="handleSelectionChange"
       @update="handleUpdate"
     >
-      <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
       <template #status="{ value }">
         <o-tag :type="errorStatusList.includes(value) ? 'danger' : 'primary'">
           {{ getStatusText(value) }}

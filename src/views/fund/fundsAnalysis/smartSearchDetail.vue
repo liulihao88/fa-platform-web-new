@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, reactive, ref, useTemplateRef, watch } from 'vue'
+import { computed, getCurrentInstance, reactive, ref, useTemplateRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
@@ -24,15 +24,12 @@ const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const caseId = String(route.query.caseId || '')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
-const tableRef = ref()
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)
-const syncingSelection = ref(false)
-const selectedMap = ref(new Map<string, Record<string, any>>())
-const selectedRows = computed(() => Array.from(selectedMap.value.values()))
-const selectedCount = computed(() => selectedMap.value.size)
+const selectedRows = ref<Record<string, any>[]>([])
+const selectedCount = computed(() => selectedRows.value.length)
 const conditionJson = ref('')
 const archiveVisible = ref(false)
 const archiveText = ref('')
@@ -86,40 +83,8 @@ const sourceColumns = computed(() => {
 
 const recordDescOptions = computed(() => buildDescriptionOptions(recordDetailFields.value, recordDetailData.value))
 
-function handleSelectionChange(rows: Record<string, any>[]) {
-  if (syncingSelection.value) return
-
-  const currentPageIds = new Set(data.value.map((item) => item.id))
-  currentPageIds.forEach((id) => {
-    selectedMap.value.delete(id)
-  })
-
-  rows.forEach((row) => {
-    selectedMap.value.set(row.id, row)
-  })
-}
-
-async function syncSelection() {
-  await nextTick()
-  if (!tableRef.value?.$refs?.tableRef) return
-
-  syncingSelection.value = true
-  try {
-    tableRef.value.$refs.tableRef.clearSelection()
-    data.value.forEach((row) => {
-      if (selectedMap.value.has(row.id)) {
-        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
-      }
-    })
-  } finally {
-    await nextTick()
-    syncingSelection.value = false
-  }
-}
-
 function clearSelected() {
-  selectedMap.value.clear()
-  tableRef.value?.$refs?.tableRef?.clearSelection()
+  selectedRows.value = []
 }
 
 async function fetchList() {
@@ -135,7 +100,6 @@ async function fetchList() {
     })
     data.value = res?.records || []
     total.value = res?.total || 0
-    await syncSelection()
   } finally {
     loading.value = false
   }
@@ -319,7 +283,8 @@ fetchList()
 
     <div ref="tableSectionRef" class="smart-page__table">
       <o-table
-        ref="tableRef"
+        v-model="selectedRows"
+        selection-type="multiple"
         :height="tableHeight"
         :columns="mainColumns"
         :data="data"
@@ -329,10 +294,8 @@ fetchList()
         :pageSize="queryParams.pageSize"
         :pageNumber="queryParams.pageNo"
         row-key="id"
-        @selection-change="handleSelectionChange"
         @update="handleUpdate"
       >
-        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
         <template #transAmt="{ value }">
           {{ value || value === 0 ? Number(value).toLocaleString() : '-' }}
         </template>

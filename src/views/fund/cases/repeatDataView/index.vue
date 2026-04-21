@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, nextTick, watch, useTemplateRef } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
@@ -25,33 +25,13 @@ interface RepeatRecord {
 }
 
 const displayData = ref()
-const tableRef = ref()
-const syncingSelection = ref(false)
 
-const syncSelection = async () => {
-  await nextTick()
-  if (!tableRef.value) return
-
-  syncingSelection.value = true
-  try {
-    tableRef.value.$refs.tableRef.clearSelection()
-    displayData.value.forEach((row) => {
-      if (selectedMap.value.has(row.id)) {
-        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
-      }
-    })
-  } finally {
-    await nextTick()
-    syncingSelection.value = false
-  }
-}
-
-const response = ref({})
+const response = ref<{ total?: number }>({})
 
 const currentPage = ref(1)
 const pageSize = ref(globalPageSize.value)
 syncPageSize(pageSize, 'value')
-const selectedMap = ref(new Map<string, any>())
+const selectedRows = ref<RepeatRecord[]>([])
 
 const init = async () => {
   let sendParams = {
@@ -62,7 +42,6 @@ const init = async () => {
   let res = await getCaseDuplicateData(sendParams)
   response.value = res
   displayData.value = res.records
-  await syncSelection()
 }
 init()
 
@@ -70,21 +49,7 @@ const columns = [] as any[]
 
 const formatLine = (lineNumber: number) => `第${lineNumber}行`
 const formatAmount = (amount: number) => `¥${amount}`
-const selectedCount = computed(() => selectedMap.value.size)
-
-const handleSelectionChange = (rows: RepeatRecord[]) => {
-  if (syncingSelection.value) return
-
-  const currentPageIds = new Set(displayData.value.map((item) => item.id))
-
-  currentPageIds.forEach((id) => {
-    selectedMap.value.delete(id)
-  })
-
-  rows.forEach((row) => {
-    selectedMap.value.set(row.id, row)
-  })
-}
+const selectedCount = computed(() => selectedRows.value.length)
 
 const handleUpdate = (pageNo: number, size: number) => {
   currentPage.value = pageNo
@@ -93,8 +58,7 @@ const handleUpdate = (pageNo: number, size: number) => {
 }
 
 const clearSelected = () => {
-  selectedMap.value.clear()
-  tableRef.value?.$refs.tableRef.clearSelection()
+  selectedRows.value = []
 }
 
 const exportData = () => {
@@ -113,7 +77,7 @@ const exportSelectedData = () => {
 
   const params = {
     caseId: query.caseId,
-    ids: Array.from(selectedMap.value.keys()),
+    ids: selectedRows.value.map((item) => item.id),
   }
   console.log(`94 params`, params)
   exportXls('重复数据列表', 'fa/caseDuplicateData/exportXls', params, false, 'post')
@@ -124,17 +88,6 @@ const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
   return (currentPage.value - 1) * pageSize.value + index + 1
 }
-
-watch(
-  selectedMap,
-  (val) => {
-    console.log(`14 103行 test/t2.vue val`, val)
-  },
-  {
-    deep: true,
-    immediate: true,
-  },
-)
 </script>
 
 <template>
@@ -152,7 +105,8 @@ watch(
 
       <div ref="tableSectionRef" class="repeat-page__table">
         <o-table
-          ref="tableRef"
+          v-model="selectedRows"
+          selection-type="multiple"
           :columns="columns"
           :data="displayData"
           :total="response.total"
@@ -161,10 +115,8 @@ watch(
           row-key="id"
           :index="indexMethod"
           :height="tableHeight"
-          @selection-change="handleSelectionChange"
           @update="handleUpdate"
         >
-          <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
           <el-table-column label="文件一" align="center">
             <el-table-column prop="file1Name" label="文件名称" min-width="220" align="center" show-overflow-tooltip />
             <el-table-column label="行号" min-width="140" align="center">

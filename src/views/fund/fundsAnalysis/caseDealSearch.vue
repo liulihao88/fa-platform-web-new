@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, nextTick, onMounted, reactive, ref, useTemplateRef } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, ref, useTemplateRef } from 'vue'
 import { useRoute } from 'vue-router'
 import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
@@ -35,8 +35,6 @@ const archiveVisible = ref(false)
 const archiveText = ref('')
 const detailVisible = ref(false)
 const detailData = ref<Record<string, any>>({})
-const fromTableRef = ref<any>(null)
-const toTableRef = ref<any>(null)
 
 const queryParams = reactive({
   pageNo: 1,
@@ -95,7 +93,6 @@ const fromPersonIndexMethod = (index: number) =>
   (fromPersonSearchForm.pageNo - 1) * fromPersonSearchForm.pageSize + index + 1
 
 const personColumns = [
-  { prop: 'radio', width: 58, align: 'center', useSlot: true },
   { type: 'index', width: 70, label: '序号', index: fromPersonIndexMethod },
   { label: '发起方名称', prop: 'customerName', minWidth: 160 },
   { label: '发起方种类', prop: 'involvedKind', minWidth: 120, useSlot: true },
@@ -105,7 +102,6 @@ const personColumns = [
 ] as any[]
 
 const payeeColumns = [
-  { prop: 'radio', width: 58, align: 'center', useSlot: true },
   { label: '交易对方卡号', prop: 'counterCardNum', minWidth: 160 },
   { label: '交易对方名称', prop: 'counterName', minWidth: 160 },
   { label: '交易对方账号', prop: 'counterAccountNo', minWidth: 160 },
@@ -170,41 +166,11 @@ const fromDisplayText = computed(() => {
   return selected.customerName || '已选中'
 })
 
-const fromSelectedPersonId = computed({
-  get: () => fromPendingRow.value?.id || '',
-  set: (value: string) => {
-    const matchedRow = fromPersonData.value.find((item) => item.id === value) || null
-    fromPendingRow.value = matchedRow
-    nextTick(() => {
-      fromTableRef.value?.$refs?.tableRef?.setCurrentRow(matchedRow || null)
-    })
-  },
-})
-
 const toDisplayText = computed(() => {
   const selected = toSelectedRows.value[0]
   if (!selected) return '请选择交易对方'
   return selected.counterName || '已选中'
 })
-
-const toSelectedPayeeId = computed({
-  get: () => toPendingRow.value?.id || '',
-  set: (value: string) => {
-    const matchedRow = toPersonData.value.find((item) => item.id === value) || null
-    toPendingRow.value = matchedRow
-    nextTick(() => {
-      toTableRef.value?.$refs?.tableRef?.setCurrentRow(matchedRow || null)
-    })
-  },
-})
-
-function handleFromCurrentChange(row?: Record<string, any>) {
-  fromPendingRow.value = row || null
-}
-
-function handleToCurrentChange(row?: Record<string, any>) {
-  toPendingRow.value = row || null
-}
 
 function handleDetail(record: Record<string, any>) {
   detailData.value = record || {}
@@ -268,10 +234,6 @@ async function handleUpdate(pageNo: number, pageSize: number) {
   queryParams.pageNo = pageNo
   updatePageSize(queryParams, pageSize)
   await fetchList()
-}
-
-function handleSelectionChange(rows: Record<string, any>[]) {
-  selectedRows.value = rows
 }
 
 function exportCurrentPage() {
@@ -342,23 +304,9 @@ async function loadFromPersons() {
     })
     fromPersonData.value = Array.isArray(res) ? res : res?.records || []
     fromPersonTotal.value = Array.isArray(res) ? res.length : res?.total || 0
-    await nextTick()
-    syncFromCurrentRow()
   } finally {
     pickerLoading.value = false
   }
-}
-
-function syncFromCurrentRow() {
-  const current = fromPendingRow.value
-  const tableRef = fromTableRef.value?.$refs?.tableRef
-  if (!tableRef) return
-  if (!current) {
-    tableRef.setCurrentRow(null)
-    return
-  }
-  const matchedRow = fromPersonData.value.find((item) => item.id === current.id)
-  tableRef.setCurrentRow(matchedRow || null)
 }
 
 async function loadToPersons() {
@@ -374,23 +322,9 @@ async function loadToPersons() {
     })
     toPersonData.value = res?.records || res || []
     toPersonTotal.value = res?.total || toPersonData.value.length || 0
-    await nextTick()
-    syncToCurrentRow()
   } finally {
     pickerLoading.value = false
   }
-}
-
-function syncToCurrentRow() {
-  const current = toPendingRow.value
-  const tableRef = toTableRef.value?.$refs?.tableRef
-  if (!tableRef) return
-  if (!current) {
-    tableRef.setCurrentRow(null)
-    return
-  }
-  const matchedRow = toPersonData.value.find((item) => item.id === current.id)
-  tableRef.setCurrentRow(matchedRow || null)
 }
 
 async function showFromPerson() {
@@ -541,6 +475,8 @@ onMounted(async () => {
 
     <div ref="tableSectionRef" class="case-deal-page__table">
       <o-table
+        v-model="selectedRows"
+        selection-type="multiple"
         :columns="mainColumns"
         :data="tableData"
         :total="total"
@@ -550,11 +486,8 @@ onMounted(async () => {
         :pageNumber="queryParams.pageNo"
         row-key="id"
         :height="tableHeight"
-        @selection-change="handleSelectionChange"
         @update="handleUpdate"
-      >
-        <el-table-column type="selection" width="58" align="center" />
-      </o-table>
+      />
     </div>
 
     <o-dialog
@@ -574,7 +507,8 @@ onMounted(async () => {
           @reset="handleFromPersonReset"
         />
         <o-table
-          ref="fromTableRef"
+          v-model="fromPendingRow"
+          selection-type="single"
           class="f-1"
           style="min-height: 0"
           :columns="personColumns"
@@ -586,15 +520,8 @@ onMounted(async () => {
           row-key="id"
           height="100%"
           :showIndex="false"
-          highlight-current-row
-          @current-change="handleFromCurrentChange"
           @update="handleFromPersonUpdate"
         >
-          <template #radio="{ row }">
-            <div class="f-ct-ct w-100%">
-              <el-radio v-model="fromSelectedPersonId" :value="row.id" />
-            </div>
-          </template>
           <template #involvedKind="{ value }">
             <o-tag :type="getKindType(value)">
               {{ getKindText(value) }}
@@ -621,7 +548,8 @@ onMounted(async () => {
           @reset="handleToPersonReset"
         />
         <o-table
-          ref="toTableRef"
+          v-model="toPendingRow"
+          selection-type="single"
           class="f-1"
           style="min-height: 0"
           :columns="payeeColumns"
@@ -632,16 +560,8 @@ onMounted(async () => {
           :pageNumber="toPersonSearchForm.pageNo"
           row-key="id"
           height="100%"
-          highlight-current-row
-          @current-change="handleToCurrentChange"
           @update="handleToPersonUpdate"
-        >
-          <template #radio="{ row }">
-            <div class="radio-cell">
-              <el-radio v-model="toSelectedPayeeId" :value="row.id" />
-            </div>
-          </template>
-        </o-table>
+        />
       </o-flex>
     </o-dialog>
 

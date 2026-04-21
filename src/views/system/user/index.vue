@@ -41,8 +41,7 @@ const baseSearch = {
 }
 syncPageSize(baseSearch)
 
-const { tableRef, selectedCount, selectedKeys, selectedRows, handleSelectionChange, syncSelection, clearSelected } =
-  useSelectionMap(data)
+const { selectedCount, selectedKeys, selectedRows, clearSelected } = useSelectionMap()
 
 const items = [
   { label: '账号', prop: 'username', type: 'input', placeholder: '请输入账号' },
@@ -53,7 +52,6 @@ const items = [
 ]
 
 const columns = [
-  { type: 'selection', width: 55 },
   { label: '用户账号', prop: 'username' },
   { label: '用户姓名', prop: 'realname' },
   { label: '头像', prop: 'avatar', width: 80, useSlot: true },
@@ -113,7 +111,6 @@ async function init() {
   const res = await getUserList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
-  await syncSelection()
 }
 
 function handleCreate() {
@@ -251,7 +248,8 @@ proxy.$initTableHeight(headerRef, true)
     </div>
 
     <o-table
-      ref="tableRef"
+      v-model="selectedRows"
+      selection-type="multiple"
       :height="$tableHeight.value"
       row-key="id"
       :columns="columns"
@@ -259,7 +257,6 @@ proxy.$initTableHeight(headerRef, true)
       :total="total"
       :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
-      @selectionChange="handleSelectionChange"
       @update="handleUpdate"
     >
       <template #avatar="{ row }">

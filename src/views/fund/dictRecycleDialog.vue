@@ -6,7 +6,7 @@ import {
   deleteBatchDictPermanently,
   backBatchDict,
 } from '@/api/analysis'
-import { ref, getCurrentInstance } from 'vue'
+import { computed, ref, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const isShow = ref(false)
@@ -26,6 +26,7 @@ async function deleteRow(row) {
 async function backSelected() {
   const ids = selectIds.value.join(',')
   await backBatchDict(ids)
+  clearSelected()
   handleSearch()
   emits('refresh')
 }
@@ -33,12 +34,10 @@ async function backSelected() {
 async function deleteSelected() {
   const ids = selectIds.value.join(',')
   await deleteBatchDictPermanently(ids)
+  clearSelected()
   handleSearch()
 }
 const columns = [
-  {
-    type: 'selection',
-  },
   {
     label: '字典名称',
     prop: 'dictName',
@@ -75,7 +74,8 @@ const columns = [
 ]
 
 const data = ref([])
-const selectIds = ref([])
+const selectedRows = ref<any[]>([])
+const selectIds = computed(() => selectedRows.value.map((item) => item.id))
 const btns = [
   {
     content: '批量取回',
@@ -91,8 +91,8 @@ const btns = [
     isShow: () => selectIds.value.length > 0,
   },
 ]
-const handleSelectionChange = (val) => {
-  selectIds.value = val.map((item) => item.id)
+const clearSelected = () => {
+  selectedRows.value = []
 }
 const handleSearch = async () => {
   const res = await getAllRecycleList()
@@ -103,6 +103,7 @@ const handleSearch = async () => {
 
 const open = async () => {
   isShow.value = true
+  clearSelected()
   handleSearch()
 }
 defineExpose({
@@ -115,7 +116,8 @@ defineExpose({
     <o-flex direction="column" class="h-100%">
       <g-more-button :btns="btns" mode="opt" trigger="hover" class="mb-2" />
       <o-table
-        ref="tableRef"
+        v-model="selectedRows"
+        selection-type="multiple"
         class="f-1"
         style="min-height: 0"
         height="100%"
@@ -123,7 +125,7 @@ defineExpose({
         :data="data"
         :showPage="false"
         :showIndex="false"
-        @selection-change="handleSelectionChange"
+        row-key="id"
       />
     </o-flex>
   </o-dialog>

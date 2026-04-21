@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ref, getCurrentInstance, useTemplateRef, computed, nextTick } from 'vue'
+import { ref, getCurrentInstance, useTemplateRef, computed } from 'vue'
 import CaseUploadFile from '@/views/fund/cases/uploadTable/caseUploadFile.vue'
 import { getCasefileList, deleteCasefile, deleteBatchCasefile } from '@/api/analysis.ts'
 import { getStorage, $toast, clone } from '@oeos-components/utils'
@@ -9,9 +9,7 @@ const { proxy } = getCurrentInstance()
 const caseUploadFileRef = useTemplateRef('caseUploadFileRef')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
-const tableRef = ref()
-const syncingSelection = ref(false)
-const selectedMap = ref(new Map<string, any>())
+const selectedRows = ref<any[]>([])
 
 import { useAsyncTask, useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
@@ -237,7 +235,7 @@ const handleSearch = (form) => {
 
 const total = ref(0)
 const data = ref([])
-const selectedCount = computed(() => selectedMap.value.size)
+const selectedCount = computed(() => selectedRows.value.length)
 const autoRefreshStatuses = ['000', '001', '002', '003', '004', '005', '100', '101']
 
 const shouldPolling = computed(() => {
@@ -265,7 +263,6 @@ const init = async (isReset = false) => {
   } else {
     stopPolling()
   }
-  await syncSelection()
 }
 init()
 
@@ -274,41 +271,11 @@ const update = (pageNo: number, pageSize: number) => {
   updatePageSize(baseSearch.value, pageSize)
   init()
 }
-const handleSelectionChange = (rows) => {
-  if (syncingSelection.value) return
-
-  const currentPageIds = new Set(data.value.map((item) => item.id))
-  currentPageIds.forEach((id) => {
-    selectedMap.value.delete(id)
-  })
-
-  rows.forEach((row) => {
-    selectedMap.value.set(row.id, row)
-  })
-}
-const syncSelection = async () => {
-  await nextTick()
-  if (!tableRef.value?.$refs?.tableRef) return
-
-  syncingSelection.value = true
-  try {
-    tableRef.value.$refs.tableRef.clearSelection()
-    data.value.forEach((row) => {
-      if (selectedMap.value.has(row.id)) {
-        tableRef.value.$refs.tableRef.toggleRowSelection(row, true)
-      }
-    })
-  } finally {
-    await nextTick()
-    syncingSelection.value = false
-  }
-}
 const clearSelected = () => {
-  selectedMap.value.clear()
-  tableRef.value?.$refs?.tableRef?.clearSelection()
+  selectedRows.value = []
 }
 const deleteBatchRows = async () => {
-  const ids = Array.from(selectedMap.value.keys())
+  const ids = selectedRows.value.map((item) => item.id)
   await deleteBatchCasefile({
     caseId: baseSearch.value.caseId,
     ids,
@@ -555,7 +522,8 @@ async function deleteRow(row) {
     </g-search-bar>
     <div ref="tableSectionRef" class="upload-table-page__table">
       <o-table
-        ref="tableRef"
+        v-model="selectedRows"
+        selection-type="multiple"
         :columns="columns"
         :data="data"
         :total="total"
@@ -564,10 +532,8 @@ async function deleteRow(row) {
         :pageSize="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
         row-key="id"
-        @selection-change="handleSelectionChange"
         @update="update"
       >
-        <el-table-column type="selection" width="58" align="center" :reserve-selection="true" />
         <template #status="{ value }">
           <o-tag :type="new Set([...errorStatuses, ...textMappingErrorStatuses]).has(value) ? 'danger' : 'primary'">
             {{ getDictItems('fa_file_process_status').find((v) => v.value === value).text }}
