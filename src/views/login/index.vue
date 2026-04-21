@@ -54,6 +54,26 @@ const randCodeData = reactive<any>({
   checkKey: null,
 })
 
+function getLoginRedirectPath() {
+  const redirect = router.currentRoute.value.query?.redirect
+  if (typeof redirect !== 'string' || !redirect || redirect === '/login') {
+    return ''
+  }
+  return decodeURIComponent(redirect)
+}
+
+async function redirectAfterLogin() {
+  const defaultPath = getTopMenu()?.path || '/'
+  const targetPath = getLoginRedirectPath() || defaultPath
+
+  await router.replace(targetPath)
+
+  const currentRoute = router.currentRoute.value
+  if (!currentRoute.name || currentRoute.name === '404' || currentRoute.name === 'pathMatch') {
+    await router.replace(defaultPath)
+  }
+}
+
 // const onLogin = async (formEl: FormInstance | undefined) => {
 //   if (!formEl) return;
 //   await formEl.validate(valid => {
@@ -133,15 +153,15 @@ const onLogin = async (type = '') => {
     roles: backendUserInfo.roles || [],
     permissions: backendUserInfo.permissions || [],
   })
-  initRouter().then(() => {
-    disabled.value = true
-    router
-      .push(getTopMenu(true).path)
-      .then(() => {
-        $toast('登录成功')
-      })
-      .finally(() => (disabled.value = false))
-  })
+  disabled.value = true
+  try {
+    await initRouter()
+    getTopMenu(true)
+    await redirectAfterLogin()
+    $toast('登录成功')
+  } finally {
+    disabled.value = false
+  }
 }
 
 /**

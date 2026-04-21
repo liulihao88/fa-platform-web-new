@@ -25,6 +25,7 @@ import FaRouter from '@/router/modules/fa-router.ts'
 
 // 动态路由
 import { getAsyncRoutes } from '@/api/routes'
+let initRouterPromise: Promise<Router> | null = null
 
 function handRank(routeInfo: any) {
   const { name, path, parentId, meta } = routeInfo
@@ -162,22 +163,40 @@ function handleAsyncRoutes(routeList) {
 
 /** 初始化路由（`new Promise` 写法防止在异步请求中造成无限循环）*/
 function initRouter() {
-  return new Promise((resolve, reject) => {
-    getAsyncRoutes().then((remoteData) => {
-      if (!remoteData) {
-        return reject()
-      }
-      if (remoteData?.menu?.length === 0) {
-        $toast('登录失败，该用户无系统权限，请联系管理员！', 'e')
-        reject()
-        return
-      } else {
+  if (usePermissionStoreHook().wholeMenus.length > 0) {
+    return Promise.resolve(router)
+  }
+
+  if (initRouterPromise) {
+    return initRouterPromise
+  }
+
+  initRouterPromise = new Promise((resolve, reject) => {
+    getAsyncRoutes()
+      .then((remoteData) => {
+        if (!remoteData) {
+          reject(new Error('未获取到路由数据'))
+          return
+        }
+        if (remoteData?.menu?.length === 0) {
+          $toast('登录失败，该用户无系统权限，请联系管理员！', 'e')
+          reject(new Error('当前用户无系统权限'))
+          return
+        }
+
         const data = mergeMenus(FaRouter, remoteData.menu)
         handleAsyncRoutes(cloneDeep(data))
         resolve(router)
-      }
-    })
+      })
+      .catch((error) => {
+        reject(error)
+      })
+      .finally(() => {
+        initRouterPromise = null
+      })
   })
+
+  return initRouterPromise
 }
 
 function mergeMenus(baseMenus, remoteMenus) {
