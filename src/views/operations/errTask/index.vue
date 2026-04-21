@@ -112,12 +112,10 @@ const columns = [
   {
     label: '源文件',
     prop: 'sourceFile',
-    width: 220,
   },
   {
     label: '文件夹',
     prop: 'folder',
-    width: 180,
   },
   {
     label: '状态',
