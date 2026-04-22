@@ -112,7 +112,7 @@ function handleClose() {
   isShow.value = false
 }
 
-function handleProcess(row: ErrorRecord) {
+function handleProcess({ row }: { row: ErrorRecord }) {
   router.push({
     path: '/operation/configfile',
     // query: {

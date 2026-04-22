@@ -71,10 +71,10 @@ const columns = [
       { content: '密码', type: 'primary', handler: handlePassword },
       { content: '代理人', type: 'primary', handler: handleAgent },
       {
-        content: (row) => (String(row.status) === '1' ? '冻结' : '解冻'),
+        content: ({ row }) => (String(row.status) === '1' ? '冻结' : '解冻'),
         type: 'warning',
         reConfirm: true,
-        title: (row) => (String(row.status) === '1' ? '确认冻结当前账号吗？' : '确认解冻当前账号吗？'),
+        title: ({ row }) => (String(row.status) === '1' ? '确认冻结当前账号吗？' : '确认解冻当前账号吗？'),
         handler: handleToggleFrozen,
       },
       {
@@ -117,15 +117,15 @@ function handleCreate() {
   userDialogRef.value?.open({}, { title: '新增用户' })
 }
 
-function handleEdit(row) {
+function handleEdit({ row }) {
   userDialogRef.value?.open(row, { title: '编辑用户' })
 }
 
-function handlePassword(row) {
+function handlePassword({ row }) {
   passwordDialogRef.value?.open(row.username)
 }
 
-function handleAgent(row) {
+function handleAgent({ row }) {
   agentDialogRef.value?.open(row.username)
 }
 
@@ -133,7 +133,7 @@ function hasAdminUser(rows: any[]) {
   return (rows || []).some((item) => item.username === 'admin')
 }
 
-async function handleDelete(row) {
+async function handleDelete({ row }) {
   if (row.username === 'admin') {
     $toast.warning('管理员账号不允许删除')
     return
@@ -152,7 +152,7 @@ async function handleBatchDelete() {
   init()
 }
 
-async function handleToggleFrozen(row) {
+async function handleToggleFrozen({ row }) {
   if (row.username === 'admin') {
     $toast.warning('管理员账号不允许冻结或解冻')
     return

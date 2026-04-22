@@ -17,11 +17,11 @@ function addItem() {
   edit({ dictId: dictId.value })
 }
 
-function editRow(row) {
+function editRow({ row }) {
   edit(row)
 }
 
-async function deleteRow(row) {
+async function deleteRow({ row }) {
   await deleteDictItem(row.id)
   handleSearch({})
   emits('refresh')

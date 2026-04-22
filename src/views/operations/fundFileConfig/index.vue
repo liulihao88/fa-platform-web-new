@@ -80,7 +80,7 @@ function handleAdd() {
   dialogRef.value?.open({}, '新增配置')
 }
 
-function handleEdit(row: FileConfigRecord) {
+function handleEdit({ row }: { row: FileConfigRecord }) {
   dialogRef.value?.open(row, '编辑别名')
 }
 

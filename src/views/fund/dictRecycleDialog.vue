@@ -11,13 +11,13 @@ const { proxy } = getCurrentInstance()
 const emits = defineEmits(['refresh'])
 const isShow = ref(false)
 
-async function backRow(row) {
+async function backRow({ row }) {
   await backDict(row.id)
   handleSearch()
   emits('refresh')
 }
 
-async function deleteRow(row) {
+async function deleteRow({ row }) {
   await deleteDictPermanently(row.id)
   handleSearch()
   emits('refresh')

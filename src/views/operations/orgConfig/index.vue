@@ -65,7 +65,7 @@ function handleAdd() {
   dialogRef.value?.open({}, '新增机构')
 }
 
-function handleEdit(row: OrgRecord) {
+function handleEdit({ row }: { row: OrgRecord }) {
   dialogRef.value?.open(row, '编辑机构')
 }
 

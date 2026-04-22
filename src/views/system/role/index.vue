@@ -85,11 +85,11 @@ function handleCreate() {
   roleDialogRef.value?.open({}, '新增角色')
 }
 
-function handleEdit(row) {
+function handleEdit({ row }) {
   roleDialogRef.value?.open(row, '编辑角色')
 }
 
-async function handleDelete(row) {
+async function handleDelete({ row }) {
   await deleteRole(row.id)
   init()
 }
@@ -100,11 +100,11 @@ async function handleBatchDelete() {
   init()
 }
 
-function handleUsers(row) {
+function handleUsers({ row }) {
   roleUsersDialogRef.value?.open(row)
 }
 
-function handlePermission(row) {
+function handlePermission({ row }) {
   permissionDialogRef.value?.open({
     roleId: row.id,
   })

@@ -507,7 +507,7 @@ async function textRow(row) {
   toDetail('TextMapping', { fileId: row.id })
 }
 
-async function deleteRow(row) {
+async function deleteRow({ row }) {
   await deleteCasefile({ fileId: row.id })
   init(true)
 }

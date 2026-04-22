@@ -53,7 +53,7 @@ const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedRows.value.length)
 
-async function toggleJobStatus(row) {
+async function toggleJobStatus({ row }) {
   if (row?.status == '-1') {
     await resumeQuartzJob({ id: row.id })
   } else {
@@ -62,12 +62,12 @@ async function toggleJobStatus(row) {
   init()
 }
 
-async function runJob(row) {
+async function runJob({ row }) {
   await runQuartzJob({ id: row.id })
   init()
 }
 
-async function deleteRow(row) {
+async function deleteRow({ row }) {
   await deleteQuartzJob({ id: row.id })
   init()
 }
@@ -102,8 +102,8 @@ const columns = [
     maxBtns: 5,
     btns: [
       {
-        content: (value, row) => {
-          if (value?.status == '-1') {
+        content: ({ row }) => {
+          if (row?.status == '-1') {
             return '启动'
           } else {
             return '停止'
@@ -111,8 +111,8 @@ const columns = [
         },
         type: 'primary',
         reConfirm: !proxy.$dev,
-        title: (value, row) => {
-          if (value?.status == '-1') {
+        title: ({ row }) => {
+          if (row?.status == '-1') {
             return '确认启动吗？'
           } else {
             return '确认停止吗？'
@@ -141,13 +141,14 @@ const columns = [
 /**
  * 编辑
  */
-function editRow(row) {
-  if (getType(row.parameter) === 'object') {
-    row.paramterType = 'json'
+function editRow({ row } = {}) {
+  const currentRow = row || {}
+  if (getType(currentRow.parameter) === 'object') {
+    currentRow.paramterType = 'json'
   } else {
-    row.paramterType = 'string'
+    currentRow.paramterType = 'string'
   }
-  taskDialogRef.value.open(row, row.id ? '编辑任务' : '新增任务')
+  taskDialogRef.value.open(currentRow, currentRow.id ? '编辑任务' : '新增任务')
 }
 
 function addRow() {

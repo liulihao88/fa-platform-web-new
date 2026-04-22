@@ -197,7 +197,7 @@ function copyArchive() {
   $toast(success ? '复制成功' : '复制失败', success ? 's' : 'e')
 }
 
-function openMainDetail(row: Record<string, any>) {
+function openMainDetail({ row }: { row: Record<string, any> }) {
   recordDetailTitle.value = '详情信息'
   recordDetailFields.value = intelligentDetailFields
   recordDetailData.value = row || {}
@@ -234,7 +234,7 @@ async function loadSourceData() {
   }
 }
 
-async function openSourceDialog(row: Record<string, any>) {
+async function openSourceDialog({ row }: { row: Record<string, any> }) {
   currentRecord.value = row
   sourceActiveTab.value = 'bankCustomerPageList'
   sourceParams.pageNo = 1
@@ -248,7 +248,7 @@ async function handleSourceUpdate(pageNo: number, pageSize: number) {
   await loadSourceData()
 }
 
-function openSourceDetail(row: Record<string, any>) {
+function openSourceDetail({ row }: { row: Record<string, any> }) {
   recordDetailTitle.value = `${sourceTabLabelMap[sourceActiveTab.value]}详情`
   recordDetailFields.value = sourceDetailFieldMap[sourceActiveTab.value] || []
   recordDetailData.value = row || {}

@@ -93,11 +93,11 @@ function handleCreate() {
   )
 }
 
-function handleEdit(row) {
+function handleEdit({ row }) {
   userDialogRef.value?.open(row, { title: '编辑用户' })
 }
 
-async function handleDelete(row) {
+async function handleDelete({ row }) {
   await deleteRoleUser({
     userId: row.id,
     roleId: roleRow.value.id,

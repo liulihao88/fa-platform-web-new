@@ -72,11 +72,11 @@ function handleCreate() {
   dialogRef.value?.open({}, '新增规则')
 }
 
-function handleEdit(row) {
+function handleEdit({ row }) {
   dialogRef.value?.open(row, '编辑规则')
 }
 
-async function handleDelete(row) {
+async function handleDelete({ row }) {
   await deleteMenuRule(row.id)
   init()
 }

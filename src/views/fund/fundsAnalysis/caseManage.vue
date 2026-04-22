@@ -181,8 +181,8 @@ function handleUpdate(pageNo: number, pageSize: number) {
   fetchList()
 }
 
-async function showPersonDetail(record: Record<string, any>) {
-  personDetail.value = await getCompanyOrPersonDetailApi({ involvedId: record.id })
+async function showPersonDetail({ row }: { row: Record<string, any> }) {
+  personDetail.value = await getCompanyOrPersonDetailApi({ involvedId: row.id })
   personDetailVisible.value = true
 }
 

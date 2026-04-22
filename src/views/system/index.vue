@@ -53,11 +53,11 @@ const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedRows.value.length)
 
-function openDictConfig(row) {
+function openDictConfig({ row }) {
   dictDetailDrawerRef.value.open(row)
 }
 
-async function deleteRow(row) {
+async function deleteRow({ row }) {
   await deleteDict({ id: row.id })
   init()
 }
@@ -99,8 +99,9 @@ const columns = [
 /**
  * 编辑
  */
-function editRow(row) {
-  dictDialogRef.value.open(row, row.id ? '编辑字典' : '新增字典')
+function editRow({ row } = {}) {
+  const currentRow = row || {}
+  dictDialogRef.value.open(currentRow, currentRow.id ? '编辑字典' : '新增字典')
 }
 
 function addRow() {

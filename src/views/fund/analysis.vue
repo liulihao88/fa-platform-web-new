@@ -30,16 +30,16 @@ const data = ref([])
 const total = ref(0)
 const headerRef = ref()
 const addCaseDocRef = ref()
-const editRow = (row) => {
+const editRow = ({ row }) => {
   addCaseDocRef.value.open(row, row.id ? '编辑' : '新增')
 }
 const addRow = () => {
   editRow({})
 }
-const detailRow = (row) => {
+const detailRow = ({ row }) => {
   addCaseDocRef.value.open(row, '案件详情')
 }
-const deleteRow = async (row) => {
+const deleteRow = async ({ row }) => {
   await deleteFaCase(row.id)
   init()
 }
@@ -193,11 +193,11 @@ const getProcessStatusType = (value) => {
   return 'info'
 }
 
-async function handleRow(row) {
+async function handleRow({ row }) {
   toDetail('Cases', { caseId: row.id })
   setStorage('caseId', row.id)
 }
-async function filterRow(row) {
+async function filterRow({ row }) {
   toDetail('FundsAnalysis', { caseId: row.id })
 }
 const handleUpdate = (pageNo, pageSize) => {

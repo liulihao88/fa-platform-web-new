@@ -186,7 +186,7 @@ function handleUpdate(pageNo, pageSize) {
   init()
 }
 
-function handleErrorProcess(row: ErrTaskRecord) {
+function handleErrorProcess({ row }: { row: ErrTaskRecord }) {
   errorHandlerDialogRef.value?.open({
     caseId: row.caseId,
     caseFileId: row.id,

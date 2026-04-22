@@ -453,7 +453,7 @@ const detailFieldMap = {
     { label: '交易发生地', prop: 'transLocation' },
   ],
 }
-const detailRow = (row: Record<string, any>) => {
+const detailRow = ({ row }: { row: Record<string, any> }) => {
   detailData.value = row || {}
   detailVisible.value = true
 }
@@ -550,7 +550,7 @@ async function loadParseTabData(tabKey = parseActiveTab.value) {
   current.pagination.value.total = res?.total || 0
 }
 
-async function openAnalyzeResult(row) {
+async function openAnalyzeResult({ row }) {
   parseDataParams.value.caseId = String(route.query.caseId || '')
   parseDataParams.value.dataType = getAnalyzeDataType(activeTab.value)
   parseDataParams.value.dataId = row.id

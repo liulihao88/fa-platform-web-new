@@ -105,7 +105,7 @@ function handleUpdate(pageNo, pageSize) {
   init()
 }
 
-async function handleRevert(row) {
+async function handleRevert({ row }) {
   await revertRecycleUser({
     userIds: String(getRowId(row)),
   })
@@ -113,7 +113,7 @@ async function handleRevert(row) {
   init()
 }
 
-async function handleDelete(row) {
+async function handleDelete({ row }) {
   await deleteRecycleUser(String(getRowId(row)))
   init()
 }

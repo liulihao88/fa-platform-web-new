@@ -172,8 +172,8 @@ const toDisplayText = computed(() => {
   return selected.counterName || '已选中'
 })
 
-function handleDetail(record: Record<string, any>) {
-  detailData.value = record || {}
+function handleDetail({ row }: { row: Record<string, any> }) {
+  detailData.value = row || {}
   detailVisible.value = true
 }
 
