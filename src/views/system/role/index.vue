@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance, ref } from 'vue'
 import { uploadFile } from '@/utils/request'
 import { deleteBatchRole, deleteRole, exportRole, getRoleList } from '@/api/system'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import RoleDialog from './RoleDialog.vue'
 import RolePermissionDialog from './RolePermissionDialog.vue'
@@ -13,7 +13,6 @@ defineOptions({
 })
 
 const { proxy } = getCurrentInstance()
-useProvideOTablePageSize()
 const headerRef = ref()
 const roleDialogRef = ref()
 const permissionDialogRef = ref()

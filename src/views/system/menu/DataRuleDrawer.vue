@@ -2,12 +2,11 @@
 import { ref } from 'vue'
 import { getMenuRuleList, deleteMenuRule } from '@/api/system'
 import DataRuleDialog from './DataRuleDialog.vue'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemMenuDataRuleDrawer',
 })
-useProvideOTablePageSize()
 
 const isShow = ref(false)
 const permissionId = ref('')

@@ -11,7 +11,7 @@ import {
   updateInvolvedPersonApi,
 } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useRelativeHeight, useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 
 const route = useRoute()
@@ -19,7 +19,6 @@ const { proxy } = getCurrentInstance()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-useProvideOTablePageSize()
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({

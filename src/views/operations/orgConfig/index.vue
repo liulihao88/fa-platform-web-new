@@ -2,7 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaOrgsConfigureList } from '@/api/analysis'
 import OrgDialog from './orgDialog.vue'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 type OrgRecord = {
   id: string
@@ -14,7 +14,6 @@ type OrgRecord = {
 }
 
 const { proxy } = getCurrentInstance()
-useProvideOTablePageSize()
 
 const headerRef = ref()
 const dialogRef = ref()

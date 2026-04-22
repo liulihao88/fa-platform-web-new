@@ -4,9 +4,8 @@ import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 const { appContext, proxy } = getCurrentInstance()
-useProvideOTablePageSize()
 
 type ErrorHandlerParams = {
   caseId?: string

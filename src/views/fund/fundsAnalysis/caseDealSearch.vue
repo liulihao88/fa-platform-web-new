@@ -11,7 +11,7 @@ import {
   payeeListApi,
 } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
@@ -22,7 +22,6 @@ const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-useProvideOTablePageSize()
 
 const caseId = String(route.query.caseId || '')
 const tableData = ref<Record<string, any>[]>([])

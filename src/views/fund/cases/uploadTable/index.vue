@@ -11,18 +11,10 @@ const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const selectedRows = ref<any[]>([])
 
-import {
-  useAsyncTask,
-  useDetail,
-  useProvideOTablePageSize,
-  useTablePagination,
-  usePolling,
-  useRelativeHeight,
-} from '@/hooks'
+import { useAsyncTask, useDetail, useTablePagination, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
 const { loading, run } = useAsyncTask()
-useProvideOTablePageSize()
 
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()

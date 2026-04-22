@@ -11,7 +11,7 @@ import {
   getParseStandardOrderApi,
 } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
-import { useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useRelativeHeight, useTablePagination } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
@@ -32,7 +32,6 @@ const resultBodyRef = useTemplateRef('resultBodyRef')
 const contentPanelRef = useTemplateRef('contentPanelRef')
 const tableCardRef = useTemplateRef('tableCardRef')
 const { height: tableHeight } = useRelativeHeight(tableCardRef, contentPanelRef, { minHeight: 240, offset: 80 })
-useProvideOTablePageSize()
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')

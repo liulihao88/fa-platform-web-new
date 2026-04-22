@@ -9,10 +9,9 @@ const { proxy } = getCurrentInstance()
 const route = useRoute()
 import { useCommonHook } from '@/store'
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
-import { useAsyncTask, useDetail, useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useAsyncTask, useDetail, useTablePagination } from '@/hooks'
 const { toDetail } = useDetail()
 const { loading, run } = useAsyncTask()
-useProvideOTablePageSize()
 
 const baseSearch = {
   order: 'desc',

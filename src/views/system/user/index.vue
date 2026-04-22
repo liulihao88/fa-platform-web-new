@@ -3,7 +3,7 @@ import { computed, getCurrentInstance, ref } from 'vue'
 import { $toast } from '@oeos-components/utils'
 import { uploadFile } from '@/utils/request'
 import { useCommonHook } from '@/store'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { batchFrozenUser, deleteBatchUser, deleteUser, exportUser, getUserList } from '@/api/system'
 import { getDictLabel } from '@/views/system/utils'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
@@ -18,7 +18,6 @@ defineOptions({
 
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
-useProvideOTablePageSize()
 
 const headerRef = ref()
 const userDialogRef = ref()

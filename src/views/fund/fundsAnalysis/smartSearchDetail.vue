@@ -5,7 +5,7 @@ import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -24,7 +24,6 @@ const caseId = String(route.query.caseId || '')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-useProvideOTablePageSize()
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)

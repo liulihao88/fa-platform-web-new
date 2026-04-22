@@ -5,7 +5,7 @@ import { deleteBatchRoleUser, deleteRoleUser, addRoleUsers, getRoleUserList } fr
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import { useCommonHook } from '@/store'
 import { getDictLabel } from '@/views/system/utils'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import UserDialog from '@/views/system/user/UserDialog.vue'
 import UserSelectDialog from '@/views/system/components/UserSelectDialog.vue'
 
@@ -22,7 +22,6 @@ const total = ref(0)
 
 const { getDictItems } = useCommonHook()
 const { selectedRows, selectedCount, selectedKeys, clearSelected } = useSelectionMap()
-useProvideOTablePageSize()
 
 const baseSearch = {
   pageNo: 1,

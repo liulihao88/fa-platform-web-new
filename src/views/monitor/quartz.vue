@@ -12,8 +12,7 @@ import {
 import { getType, $toast } from '@oeos-components/utils'
 import { exportQuartzJob } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
-useProvideOTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const items = [
   {

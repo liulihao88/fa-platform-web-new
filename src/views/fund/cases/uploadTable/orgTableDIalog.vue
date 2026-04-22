@@ -2,8 +2,7 @@
 import { ref } from 'vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
-useProvideOTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const emits = defineEmits(['success'])
 

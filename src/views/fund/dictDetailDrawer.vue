@@ -2,11 +2,10 @@
 import dictItemDialog from './dictItemDialog.vue'
 import { getDictItemList, deleteDictItem } from '@/api/analysis'
 import { ref, getCurrentInstance, watch } from 'vue'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
-useProvideOTablePageSize()
 
 const emits = defineEmits(['refresh'])
 const total = ref(0)

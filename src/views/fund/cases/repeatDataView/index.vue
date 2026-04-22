@@ -4,14 +4,13 @@ import { $toast } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
 import { useRoute } from 'vue-router'
 
-import { useMethods, useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 
 const { exportXls } = useMethods()
 const { query } = useRoute()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 300, offset: 62 })
-useProvideOTablePageSize()
 interface RepeatRecord {
   id: string
   file1Name: string

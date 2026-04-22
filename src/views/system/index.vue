@@ -11,9 +11,8 @@ import { uploadFile } from '@/utils/request'
 import { useUserStore } from '@/store/modules/user'
 // const userStore = useUserStore()
 import { useCommonHook } from '@/store'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 const { setCommonItems } = useCommonHook()
-useProvideOTablePageSize()
 const items = [
   {
     label: '字典名称',

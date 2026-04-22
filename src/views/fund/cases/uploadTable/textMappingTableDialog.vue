@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { getFileConfigPageList } from '@/api/analysis'
-import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
-useProvideOTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const emits = defineEmits(['success'])
 
