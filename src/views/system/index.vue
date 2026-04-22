@@ -11,8 +11,9 @@ import { uploadFile } from '@/utils/request'
 import { useUserStore } from '@/store/modules/user'
 // const userStore = useUserStore()
 import { useCommonHook } from '@/store'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 const { setCommonItems } = useCommonHook()
+useProvideOTablePageSize()
 const items = [
   {
     label: '字典名称',
@@ -235,7 +236,6 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :showIndex="false"
-      :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"

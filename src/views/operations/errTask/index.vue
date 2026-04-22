@@ -3,7 +3,7 @@ import { computed, ref, getCurrentInstance } from 'vue'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
 import ErrorHandlerDialog from './errorHandlerDialog.vue'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 type ErrTaskRecord = {
   id: string
@@ -20,6 +20,7 @@ type ErrTaskRecord = {
 
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
+useProvideOTablePageSize()
 
 const headerRef = ref()
 const errorHandlerDialogRef = ref()
@@ -216,7 +217,6 @@ proxy.$initTableHeight(headerRef, true)
       :columns="columns"
       :data="data"
       :total="total"
-      :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"

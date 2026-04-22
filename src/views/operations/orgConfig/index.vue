@@ -2,7 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaOrgsConfigureList } from '@/api/analysis'
 import OrgDialog from './orgDialog.vue'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 type OrgRecord = {
   id: string
@@ -14,6 +14,7 @@ type OrgRecord = {
 }
 
 const { proxy } = getCurrentInstance()
+useProvideOTablePageSize()
 
 const headerRef = ref()
 const dialogRef = ref()
@@ -107,7 +108,6 @@ proxy.$initTableHeight(headerRef, true)
       :columns="columns"
       :data="data"
       :total="total"
-      :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"

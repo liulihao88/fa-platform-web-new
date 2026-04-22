@@ -4,7 +4,7 @@ import { deleteRecycleUser, getUserRecycleList, revertRecycleUser } from '@/api/
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import { useCommonHook } from '@/store'
 import { getDictLabel } from '@/views/system/utils'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemUserRecycleDialog',
@@ -12,6 +12,7 @@ defineOptions({
 
 const emits = defineEmits(['success'])
 const { getDictItems } = useCommonHook()
+useProvideOTablePageSize()
 
 const isShow = ref(false)
 const data = ref<any[]>([])
@@ -161,7 +162,6 @@ defineExpose({
         :columns="columns"
         :data="data"
         :total="total"
-        :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
         @update="handleUpdate"
       >

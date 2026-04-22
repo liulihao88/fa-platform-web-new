@@ -2,7 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaFilesConfigureList } from '@/api/analysis'
 import ConfigDialog from './configDialog.vue'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 type FileConfigRecord = {
   id: string
@@ -20,6 +20,7 @@ type FileConfigRecord = {
 }
 
 const { proxy } = getCurrentInstance()
+useProvideOTablePageSize()
 
 const headerRef = ref()
 const tableRef = ref()
@@ -121,7 +122,6 @@ proxy.$initTableHeight(headerRef, true)
       :columns="columns"
       :data="data"
       :total="total"
-      :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"

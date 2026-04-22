@@ -2,11 +2,12 @@
 import { ref } from 'vue'
 import { getMenuRuleList, deleteMenuRule } from '@/api/system'
 import DataRuleDialog from './DataRuleDialog.vue'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemMenuDataRuleDrawer',
 })
+useProvideOTablePageSize()
 
 const isShow = ref(false)
 const permissionId = ref('')
@@ -110,7 +111,6 @@ defineExpose({
         :columns="columns"
         :data="data"
         :total="total"
-        :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
         @update="handleUpdate"
       />

@@ -5,7 +5,7 @@ import { useCommonHook } from '@/store'
 import { getUserList } from '@/api/system'
 import { getDictLabel, ensureArray } from '@/views/system/utils'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemUserSelectDialog',
@@ -16,6 +16,7 @@ const emits = defineEmits<{
 }>()
 
 const { getDictItems } = useCommonHook()
+useProvideOTablePageSize()
 const isShow = ref(false)
 const title = ref('选择用户')
 const multiple = ref(true)
@@ -138,7 +139,6 @@ defineExpose({
         :columns="columns"
         :data="data"
         :total="total"
-        :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
         @update="handleUpdate"
       >

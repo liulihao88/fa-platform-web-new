@@ -12,7 +12,8 @@ import {
 import { getType, $toast } from '@oeos-components/utils'
 import { exportQuartzJob } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+useProvideOTablePageSize()
 
 const items = [
   {
@@ -252,7 +253,6 @@ proxy.$initTableHeight(headerRef, true)
       :data="data"
       :total="total"
       :showIndex="false"
-      :page-size="baseSearch.pageSize"
       :pageNumber="baseSearch.pageNo"
       row-key="id"
       @update="handleUpdate"

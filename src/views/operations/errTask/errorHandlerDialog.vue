@@ -4,8 +4,9 @@ import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
 const { appContext, proxy } = getCurrentInstance()
+useProvideOTablePageSize()
 
 type ErrorHandlerParams = {
   caseId?: string
@@ -215,7 +216,6 @@ defineExpose({
         :data="data"
         :loading="loading"
         :total="total"
-        :page-size="pagination.pageSize"
         :pageNumber="pagination.pageNo"
         row-key="id"
         @update="handleUpdate"

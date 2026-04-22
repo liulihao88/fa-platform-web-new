@@ -5,7 +5,7 @@ import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useMethods, useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -24,6 +24,7 @@ const caseId = String(route.query.caseId || '')
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
+useProvideOTablePageSize()
 const data = ref<Record<string, any>[]>([])
 const total = ref(0)
 const loading = ref(false)
@@ -285,7 +286,6 @@ fetchList()
         :total="total"
         :loading="loading"
         :showIndex="false"
-        :pageSize="queryParams.pageSize"
         :pageNumber="queryParams.pageNo"
         row-key="id"
         @update="handleUpdate"
@@ -317,7 +317,6 @@ fetchList()
           :loading="sourceLoading"
           :total="sourceTotal"
           height="100%"
-          :pageSize="sourceParams.pageSize"
           :pageNumber="sourceParams.pageNo"
           @update="handleSourceUpdate"
         />

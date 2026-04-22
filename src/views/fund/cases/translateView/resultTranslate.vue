@@ -11,7 +11,7 @@ import {
   getParseStandardOrderApi,
 } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
-import { useRelativeHeight, useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
@@ -32,6 +32,7 @@ const resultBodyRef = useTemplateRef('resultBodyRef')
 const contentPanelRef = useTemplateRef('contentPanelRef')
 const tableCardRef = useTemplateRef('tableCardRef')
 const { height: tableHeight } = useRelativeHeight(tableCardRef, contentPanelRef, { minHeight: 240, offset: 80 })
+useProvideOTablePageSize()
 
 const activeTab = ref('bankCustomerPageList')
 const filePageId = ref('')
@@ -542,7 +543,6 @@ const activeParseColumns = computed(() => {
 
 const activeParseData = computed(() => parseTableMap[parseActiveTab.value].data.value)
 const activeParseTotal = computed(() => parseTableMap[parseActiveTab.value].pagination.value.total || 0)
-const activeParsePageSize = computed(() => parseTableMap[parseActiveTab.value].pagination.value.pageSize)
 const activeParsePageNo = computed(() => parseTableMap[parseActiveTab.value].pagination.value.pageNo)
 
 async function loadParseTabData(tabKey = parseActiveTab.value) {
@@ -642,7 +642,6 @@ defineExpose({
             :data="data"
             :total="total"
             :height="tableHeight"
-            :pageSize="sendTableParams.pageSize"
             :pageNumber="sendTableParams.pageNo"
             @update="update"
           />
@@ -662,7 +661,6 @@ defineExpose({
           :columns="activeParseColumns"
           :data="activeParseData"
           :total="activeParseTotal"
-          :pageSize="activeParsePageSize"
           :pageNumber="activeParsePageNo"
           height="500"
           @update="handleParseUpdate"

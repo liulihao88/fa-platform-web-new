@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { getFileConfigPageList } from '@/api/analysis'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+useProvideOTablePageSize()
 
 const emits = defineEmits(['success'])
 
@@ -156,7 +157,6 @@ defineExpose({
         row-key="metaData"
         :showIndex="false"
         height="100%"
-        :page-size="baseSearch.pageSize"
         :pageNumber="baseSearch.pageNo"
         @update="update"
       />

@@ -11,7 +11,7 @@ import {
   payeeListApi,
 } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
+import { useMethods, useProvideOTablePageSize, useRelativeHeight, useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
@@ -22,6 +22,7 @@ const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
+useProvideOTablePageSize()
 
 const caseId = String(route.query.caseId || '')
 const tableData = ref<Record<string, any>[]>([])
@@ -473,7 +474,6 @@ onMounted(async () => {
         :total="total"
         :loading="loading"
         :showIndex="false"
-        :pageSize="queryParams.pageSize"
         :pageNumber="queryParams.pageNo"
         row-key="id"
         :height="tableHeight"
@@ -506,7 +506,6 @@ onMounted(async () => {
           :data="fromPersonData"
           :total="fromPersonTotal"
           :loading="pickerLoading"
-          :pageSize="fromPersonSearchForm.pageSize"
           :pageNumber="fromPersonSearchForm.pageNo"
           row-key="id"
           height="100%"
@@ -547,7 +546,6 @@ onMounted(async () => {
           :data="toPersonData"
           :total="toPersonTotal"
           :loading="pickerLoading"
-          :pageSize="toPersonSearchForm.pageSize"
           :pageNumber="toPersonSearchForm.pageNo"
           row-key="id"
           height="100%"

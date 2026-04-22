@@ -2,7 +2,8 @@
 import { ref } from 'vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-import { useTablePagination } from '@/hooks'
+import { useProvideOTablePageSize, useTablePagination } from '@/hooks'
+useProvideOTablePageSize()
 
 const emits = defineEmits(['success'])
 
@@ -118,7 +119,6 @@ defineExpose({
           :total="total"
           height="100%"
           row-key="id"
-          :page-size="baseSearch.pageSize"
           :pageNumber="baseSearch.pageNo"
           :showIndex="false"
           @update="update"
