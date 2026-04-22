@@ -98,12 +98,6 @@ window.VueApp = app
 
 app.use(useElementPlus)
 
-import * as utils from '@oeos-components/utils'
-
-Object.keys(utils).forEach((v) => {
-  app.config.globalProperties[v] = utils[v]
-})
-
 const $dev = import.meta.env.MODE === 'development'
 app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
 app.config.globalProperties.$show = true
