@@ -9,9 +9,8 @@ const { proxy } = getCurrentInstance()
 const route = useRoute()
 import { useCommonHook } from '@/store'
 const { setCommonItems, sysAllDictItems, getDictItems } = useCommonHook()
-import { useAsyncTask, useDetail, useGlobalTablePageSize } from '@/hooks'
+import { useAsyncTask, useDetail, useTablePagination } from '@/hooks'
 const { toDetail } = useDetail()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { loading, run } = useAsyncTask()
 
 const baseSearch = {
@@ -25,13 +24,13 @@ const baseSearch = {
   processStatus: '',
   processDate: '',
 }
-syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 const headerRef = ref()
 const addCaseDocRef = ref()
-const editRow = ({ row }) => {
-  addCaseDocRef.value.open(row, row.id ? '编辑' : '新增')
+const editRow = ({ row }: { row?: Record<string, any> } = {}) => {
+  const currentRow = row || {}
+  addCaseDocRef.value.open(currentRow, currentRow.id ? '编辑' : '新增')
 }
 const addRow = () => {
   editRow({})
@@ -200,11 +199,7 @@ async function handleRow({ row }) {
 async function filterRow({ row }) {
   toDetail('FundsAnalysis', { caseId: row.id })
 }
-const handleUpdate = (pageNo, pageSize) => {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
+
 const handleSearch = (form) => {
   baseSearch.pageNo = 1
   baseSearch.caseCode = form?.caseCode
@@ -214,13 +209,20 @@ const handleSearch = (form) => {
   baseSearch.processDate = form?.processDate
   init()
 }
-const init = async () => {
+
+async function init() {
   await run(async () => {
     const res = await getFaCaseInfoList(baseSearch)
     data.value = res.records ?? []
     total.value = res.total ?? 0
   })
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
+
 init()
 proxy.$initTableHeight(headerRef, true)
 </script>

@@ -11,7 +11,7 @@ import {
   getParseStandardOrderApi,
 } from '@/api/analysis.ts'
 import { useRouter, useRoute } from 'vue-router'
-import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useRelativeHeight, useTablePagination } from '@/hooks'
 
 const router = useRouter()
 const route = useRoute()
@@ -48,13 +48,11 @@ const parseDataParams = ref({
   dataType: '',
   dataId: '',
 })
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const sendTableParams = ref({
   filePageId: filePageId.value,
   pageNo: 1,
   pageSize: 10,
 })
-syncPageSize(sendTableParams.value)
 const parseEntityPagination = ref({
   pageNo: 1,
   pageSize: 10,
@@ -70,9 +68,6 @@ const parseOrderPagination = ref({
   pageSize: 10,
   total: 0,
 })
-syncPageSize(parseEntityPagination.value)
-syncPageSize(parseTransPagination.value)
-syncPageSize(parseOrderPagination.value)
 
 const sheetList = ref([])
 
@@ -209,7 +204,7 @@ const apiMap = {
   standard: getStandardDataPageList,
 }
 
-const init = async (sendFileId = '') => {
+async function init(sendFileId = '') {
   let res = await apiMap[props.type]({ fileId: sendFileId || route.query.fileId })
   if (props.type === 'standard') {
     sheetList.value = res
@@ -230,11 +225,28 @@ if (props.type === 'translate') {
   init()
 }
 
-const initTable = async () => {
+async function initTable() {
   let res = await await bankCustomerPageList(activeTab.value, sendTableParams.value)
   data.value = res.records
   total.value = res.total
 }
+
+const { handlePageUpdate: update } = useTablePagination(sendTableParams, (pageNo) => {
+  sendTableParams.value.pageNo = pageNo
+  return initTable()
+})
+const { handlePageUpdate: handleParseEntityUpdate } = useTablePagination(parseEntityPagination, (pageNo) => {
+  parseEntityPagination.value.pageNo = pageNo
+  return loadParseTabData('parseEntity')
+})
+const { handlePageUpdate: handleParseTransUpdate } = useTablePagination(parseTransPagination, (pageNo) => {
+  parseTransPagination.value.pageNo = pageNo
+  return loadParseTabData('parseTrans')
+})
+const { handlePageUpdate: handleParseOrderUpdate } = useTablePagination(parseOrderPagination, (pageNo) => {
+  parseOrderPagination.value.pageNo = pageNo
+  return loadParseTabData('parseOrder')
+})
 
 const handleSheetClick = async (sheet: any) => {
   activeSheetId.value = sheet.pageId
@@ -576,16 +588,9 @@ function getAnalyzeDataType(tabKey) {
 }
 
 function handleParseUpdate(pageNo, pageSize) {
-  const current = parseTableMap[parseActiveTab.value]
-  current.pagination.value.pageNo = pageNo
-  updatePageSize(current.pagination.value, pageSize)
-  loadParseTabData()
-}
-
-const update = (number, size) => {
-  sendTableParams.value.pageNo = number
-  updatePageSize(sendTableParams.value, size)
-  initTable()
+  if (parseActiveTab.value === 'parseEntity') return handleParseEntityUpdate(pageNo, pageSize)
+  if (parseActiveTab.value === 'parseTrans') return handleParseTransUpdate(pageNo, pageSize)
+  return handleParseOrderUpdate(pageNo, pageSize)
 }
 
 watch(

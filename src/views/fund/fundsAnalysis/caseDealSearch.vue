@@ -11,14 +11,13 @@ import {
   payeeListApi,
 } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 import { intelligentDetailFields, intelligentTableColumns } from './schema'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
 const { exportXls } = useMethods()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
@@ -47,7 +46,6 @@ const queryParams = reactive({
   beginDate: '',
   endDate: '',
 })
-syncPageSize(queryParams)
 
 const extraParams = reactive({
   customerCd: '',
@@ -62,7 +60,6 @@ const fromPersonSearchForm = reactive({
   cardNum: '',
   accountNum: '',
 })
-syncPageSize(fromPersonSearchForm)
 const fromSelectedRows = ref<Record<string, any>[]>([])
 const fromPendingRow = ref<Record<string, any> | null>(null)
 const toSelectedRows = ref<Record<string, any>[]>([])
@@ -115,7 +112,6 @@ const toPersonSearchForm = reactive({
   counterCardNum: '',
   counterAccountNo: '',
 })
-syncPageSize(toPersonSearchForm)
 
 const toPersonSearchItems = [
   { label: '交易对方名称', prop: 'counterName', type: 'input', placeholder: '请输入交易对方名称' },
@@ -228,12 +224,6 @@ function handleReset() {
     endDate: '',
   })
   fetchList()
-}
-
-async function handleUpdate(pageNo: number, pageSize: number) {
-  queryParams.pageNo = pageNo
-  updatePageSize(queryParams, pageSize)
-  await fetchList()
 }
 
 function exportCurrentPage() {
@@ -351,12 +341,6 @@ function handleFromPersonReset() {
   loadFromPersons()
 }
 
-async function handleFromPersonUpdate(pageNo: number, pageSize: number) {
-  fromPersonSearchForm.pageNo = pageNo
-  updatePageSize(fromPersonSearchForm, pageSize)
-  await loadFromPersons()
-}
-
 async function showToPerson() {
   toPendingRow.value = toSelectedRows.value[0] || null
   toPickerVisible.value = true
@@ -378,12 +362,6 @@ function handleToPersonReset() {
     counterAccountNo: '',
   })
   loadToPersons()
-}
-
-async function handleToPersonUpdate(pageNo: number, pageSize: number) {
-  toPersonSearchForm.pageNo = pageNo
-  updatePageSize(toPersonSearchForm, pageSize)
-  await loadToPersons()
 }
 
 async function confirmFromPerson() {
@@ -426,6 +404,19 @@ const archiveConfirm = () => {
   // archiveVisible.value = true
   copyArchive()
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(queryParams, (pageNo) => {
+  queryParams.pageNo = pageNo
+  return fetchList()
+})
+const { handlePageUpdate: handleFromPersonUpdate } = useTablePagination(fromPersonSearchForm, (pageNo) => {
+  fromPersonSearchForm.pageNo = pageNo
+  return loadFromPersons()
+})
+const { handlePageUpdate: handleToPersonUpdate } = useTablePagination(toPersonSearchForm, (pageNo) => {
+  toPersonSearchForm.pageNo = pageNo
+  return loadToPersons()
+})
 
 fetchList()
 

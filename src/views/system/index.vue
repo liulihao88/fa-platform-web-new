@@ -11,9 +11,8 @@ import { uploadFile } from '@/utils/request'
 import { useUserStore } from '@/store/modules/user'
 // const userStore = useUserStore()
 import { useCommonHook } from '@/store'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 const { setCommonItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const items = [
   {
     label: '字典名称',
@@ -48,7 +47,6 @@ const baseSearch = {
   dictName: '',
   dictCode: '',
 }
-syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedRows.value.length)
@@ -99,7 +97,7 @@ const columns = [
 /**
  * 编辑
  */
-function editRow({ row } = {}) {
+function editRow({ row }: { row?: Record<string, any> } = {}) {
   const currentRow = row || {}
   dictDialogRef.value.open(currentRow, currentRow.id ? '编辑字典' : '新增字典')
 }
@@ -164,11 +162,6 @@ async function deleteBatchRows() {
   handleSearch({})
 }
 
-const handleUpdate = (pageNo, pageSize) => {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
 const moreBtns = [
   {
     content: '新增',
@@ -210,11 +203,18 @@ const moreBtns = [
     isShow: () => selectedCount.value !== 0,
   },
 ]
-const init = async () => {
+
+async function init() {
   let res = await getDictLits(baseSearch)
   data.value = res?.records
   total.value = res?.total
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
+
 init()
 proxy.$initTableHeight(headerRef, true)
 </script>

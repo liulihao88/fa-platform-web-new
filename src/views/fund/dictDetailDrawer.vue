@@ -2,12 +2,11 @@
 import dictItemDialog from './dictItemDialog.vue'
 import { getDictItemList, deleteDictItem } from '@/api/analysis'
 import { ref, getCurrentInstance, watch } from 'vue'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 const { getDictItems } = useCommonHook()
 const { proxy } = getCurrentInstance()
 
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const emits = defineEmits(['refresh'])
 const total = ref(0)
 const isShow = ref(false)
@@ -33,7 +32,6 @@ const baseSearch = {
   itemText: '',
   status: '',
 }
-syncPageSize(baseSearch)
 const items = [
   {
     label: '名称',
@@ -103,21 +101,23 @@ const edit = (row) => {
   dictItemDialogRef.value.open(row, row.id ? '编辑' : '新增')
 }
 const handleSearch = (form) => {
+  baseSearch.pageNo = 1
   baseSearch.itemText = form?.itemText
   baseSearch.status = form?.status
   baseSearch.dictId = dictId.value
   init()
 }
-const handleUpdate = (pageNo, pageSize) => {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  handleSearch({})
-}
-const init = async () => {
+
+async function init() {
   const res = await getDictItemList(baseSearch)
   data.value = res?.records
   total.value = res?.total
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 const open = async (value) => {
   isShow.value = true

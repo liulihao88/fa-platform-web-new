@@ -4,7 +4,7 @@ import { deleteRecycleUser, getUserRecycleList, revertRecycleUser } from '@/api/
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import { useCommonHook } from '@/store'
 import { getDictLabel } from '@/views/system/utils'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemUserRecycleDialog',
@@ -12,7 +12,6 @@ defineOptions({
 
 const emits = defineEmits(['success'])
 const { getDictItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const isShow = ref(false)
 const data = ref<any[]>([])
@@ -22,7 +21,6 @@ const baseSearch = {
   pageNo: 1,
   pageSize: 10,
 }
-syncPageSize(baseSearch)
 
 function getRowId(row: Record<string, any> = {}) {
   return row.id ?? row.userId ?? row.userid ?? row.user_id ?? ''
@@ -99,11 +97,10 @@ async function init() {
   total.value = resolveRecycleTotal(res, rows)
 }
 
-function handleUpdate(pageNo, pageSize) {
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
   baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
+  return init()
+})
 
 async function handleRevert({ row }) {
   await revertRecycleUser({

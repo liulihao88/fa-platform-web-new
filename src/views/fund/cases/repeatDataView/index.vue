@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef } from 'vue'
-import { $toast, isEmpty } from '@oeos-components/utils'
+import { $toast } from '@oeos-components/utils'
 import { getCaseDuplicateData } from '@/api/analysis.ts'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
-import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 
 const { exportXls } = useMethods()
-const { syncPageSize, globalPageSize, updatePageSize } = useGlobalTablePageSize()
 const { query } = useRoute()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
@@ -28,21 +27,28 @@ const displayData = ref()
 
 const response = ref<{ total?: number }>({})
 
-const currentPage = ref(1)
-const pageSize = ref(globalPageSize.value)
-syncPageSize(pageSize, 'value')
+const pagination = ref({
+  pageNo: 1,
+  pageSize: 10,
+})
 const selectedRows = ref<RepeatRecord[]>([])
 
-const init = async () => {
+async function init() {
   let sendParams = {
     caseId: query.caseId,
-    pageNo: currentPage.value,
-    pageSize: pageSize.value,
+    pageNo: pagination.value.pageNo,
+    pageSize: pagination.value.pageSize,
   }
   let res = await getCaseDuplicateData(sendParams)
   response.value = res
   displayData.value = res.records
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(pagination, (pageNo) => {
+  pagination.value.pageNo = pageNo
+  return init()
+})
+
 init()
 
 const columns = [] as any[]
@@ -50,12 +56,6 @@ const columns = [] as any[]
 const formatLine = (lineNumber: number) => `第${lineNumber}行`
 const formatAmount = (amount: number) => `¥${amount}`
 const selectedCount = computed(() => selectedRows.value.length)
-
-const handleUpdate = (pageNo: number, size: number) => {
-  currentPage.value = pageNo
-  updatePageSize(pageSize, size, 'value')
-  init()
-}
 
 const clearSelected = () => {
   selectedRows.value = []
@@ -86,7 +86,7 @@ const exportSelectedData = () => {
 const indexMethod = (index) => {
   console.log(`37 index`, index)
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
-  return (currentPage.value - 1) * pageSize.value + index + 1
+  return (pagination.value.pageNo - 1) * pagination.value.pageSize + index + 1
 }
 </script>
 
@@ -110,8 +110,8 @@ const indexMethod = (index) => {
           :columns="columns"
           :data="displayData"
           :total="response.total"
-          :pageSize="pageSize"
-          :pageNumber="currentPage"
+          :pageSize="pagination.pageSize"
+          :pageNumber="pagination.pageNo"
           row-key="id"
           :index="indexMethod"
           :height="tableHeight"

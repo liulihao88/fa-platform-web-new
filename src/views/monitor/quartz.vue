@@ -12,8 +12,7 @@ import {
 import { getType, $toast } from '@oeos-components/utils'
 import { exportQuartzJob } from '@/api/analysis'
 import { uploadFile } from '@/utils/request'
-import { useGlobalTablePageSize } from '@/hooks'
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const items = [
   {
@@ -48,7 +47,6 @@ const baseSearch = {
   jobClassName: '',
   status: '',
 }
-syncPageSize(baseSearch)
 const data = ref([])
 const total = ref(0)
 const selectedCount = computed(() => selectedRows.value.length)
@@ -141,7 +139,7 @@ const columns = [
 /**
  * 编辑
  */
-function editRow({ row } = {}) {
+function editRow({ row }: { row?: Record<string, any> } = {}) {
   const currentRow = row || {}
   if (getType(currentRow.parameter) === 'object') {
     currentRow.paramterType = 'json'
@@ -193,11 +191,6 @@ async function deleteBatchRows() {
   init()
 }
 
-const handleUpdate = (pageNo, pageSize) => {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
 const moreBtns = [
   {
     content: '新增',
@@ -227,11 +220,18 @@ const moreBtns = [
     handler: deleteBatchRows,
   },
 ]
-const init = async () => {
+
+async function init() {
   let res = await getQuartzJobList(baseSearch)
   data.value = res?.records
   total.value = res?.total
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
+
 init()
 proxy.$initTableHeight(headerRef, true)
 </script>

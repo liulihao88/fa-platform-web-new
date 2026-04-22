@@ -2,7 +2,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { getFaFilesConfigureList } from '@/api/analysis'
 import ConfigDialog from './configDialog.vue'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 type FileConfigRecord = {
   id: string
@@ -20,7 +20,6 @@ type FileConfigRecord = {
 }
 
 const { proxy } = getCurrentInstance()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const tableRef = ref()
@@ -35,7 +34,6 @@ const baseSearch = {
   alias: '',
   owner: '',
 }
-syncPageSize(baseSearch)
 
 const items = [
   { label: '标准数据', prop: 'metaData', type: 'input', placeholder: '请输入标准数据' },
@@ -92,17 +90,16 @@ function handleSearch(form) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 async function init() {
   const res = await getFaFilesConfigureList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 init()
 proxy.$initTableHeight(headerRef, true)

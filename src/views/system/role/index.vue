@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance, ref } from 'vue'
 import { uploadFile } from '@/utils/request'
 import { deleteBatchRole, deleteRole, exportRole, getRoleList } from '@/api/system'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import RoleDialog from './RoleDialog.vue'
 import RolePermissionDialog from './RolePermissionDialog.vue'
@@ -13,8 +13,6 @@ defineOptions({
 })
 
 const { proxy } = getCurrentInstance()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
-
 const headerRef = ref()
 const roleDialogRef = ref()
 const permissionDialogRef = ref()
@@ -28,7 +26,6 @@ const baseSearch = {
   roleName: '',
   roleCode: '',
 }
-syncPageSize(baseSearch)
 
 const { selectedRows, selectedCount, selectedKeys, clearSelected } = useSelectionMap()
 
@@ -69,17 +66,16 @@ function handleSearch(form?) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 async function init() {
   const res = await getRoleList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 function handleCreate() {
   roleDialogRef.value?.open({}, '新增角色')

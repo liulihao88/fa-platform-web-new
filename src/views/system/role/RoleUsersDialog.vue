@@ -5,7 +5,7 @@ import { deleteBatchRoleUser, deleteRoleUser, addRoleUsers, getRoleUserList } fr
 import { useSelectionMap } from '@/views/system/useSelectionMap'
 import { useCommonHook } from '@/store'
 import { getDictLabel } from '@/views/system/utils'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import UserDialog from '@/views/system/user/UserDialog.vue'
 import UserSelectDialog from '@/views/system/components/UserSelectDialog.vue'
 
@@ -21,7 +21,6 @@ const data = ref<any[]>([])
 const total = ref(0)
 
 const { getDictItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { selectedRows, selectedCount, selectedKeys, clearSelected } = useSelectionMap()
 
 const baseSearch = {
@@ -30,7 +29,6 @@ const baseSearch = {
   roleId: '',
   username: '',
 }
-syncPageSize(baseSearch)
 
 const items = [{ label: '用户账号', prop: 'username', type: 'input', placeholder: '请输入用户账号' }]
 
@@ -64,17 +62,16 @@ function handleSearch(form?) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 async function init() {
   const res = await getRoleUserList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 function handleCreate() {
   userDialogRef.value?.open(

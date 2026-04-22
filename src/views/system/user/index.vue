@@ -3,7 +3,7 @@ import { computed, getCurrentInstance, ref } from 'vue'
 import { $toast } from '@oeos-components/utils'
 import { uploadFile } from '@/utils/request'
 import { useCommonHook } from '@/store'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 import { batchFrozenUser, deleteBatchUser, deleteUser, exportUser, getUserList } from '@/api/system'
 import { getDictLabel } from '@/views/system/utils'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
@@ -18,7 +18,6 @@ defineOptions({
 
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const userDialogRef = ref()
@@ -39,7 +38,6 @@ const baseSearch = {
   phone: '',
   status: '',
 }
-syncPageSize(baseSearch)
 
 const { selectedCount, selectedKeys, selectedRows, clearSelected } = useSelectionMap()
 
@@ -101,17 +99,16 @@ function handleSearch(form?) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 async function init() {
   const res = await getUserList(baseSearch)
   data.value = res?.records || []
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 function handleCreate() {
   userDialogRef.value?.open({}, { title: '新增用户' })

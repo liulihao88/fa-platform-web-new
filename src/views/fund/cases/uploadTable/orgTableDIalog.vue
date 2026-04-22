@@ -2,8 +2,7 @@
 import { ref } from 'vue'
 import { $toast, isEmpty } from '@oeos-components/utils'
 import { faOrgsConfigureAllList } from '@/api/analysis.ts'
-import { useGlobalTablePageSize } from '@/hooks'
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const emits = defineEmits(['success'])
 
@@ -18,7 +17,6 @@ const originBaseSearch = {
   orgName: '',
 }
 const baseSearch = ref({ ...originBaseSearch })
-syncPageSize(baseSearch.value)
 
 const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
@@ -52,22 +50,22 @@ const columns = [
 
 const data = ref([])
 
-const init = async () => {
+async function init() {
   const res = await faOrgsConfigureAllList(baseSearch.value)
   data.value = res.records
   total.value = res.total
   selectedRow.value =
     data.value.find((item) => item.orgCd === selectedOrgCode.value || item.id === selectedOrgCode.value) || null
 }
-const handleSearch = (form) => {
-  baseSearch.value.orgName = form?.orgName
-  init()
-}
 
-const update = async (no, size) => {
-  console.log(`47 no`, no)
-  baseSearch.value.pageNo = no
-  updatePageSize(baseSearch.value, size)
+const { handlePageUpdate: update } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.value.pageNo = pageNo
+  return init()
+})
+
+const handleSearch = (form) => {
+  baseSearch.value.pageNo = 1
+  baseSearch.value.orgName = form?.orgName
   init()
 }
 

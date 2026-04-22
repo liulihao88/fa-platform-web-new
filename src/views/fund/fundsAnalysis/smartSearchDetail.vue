@@ -5,7 +5,7 @@ import { copyTextToClipboard } from '@pureadmin/utils'
 import { $toast } from '@oeos-components/utils'
 import { bankCustomerPageList, fileContextInfo, getTransList } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useMethods, useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useMethods, useRelativeHeight, useTablePagination } from '@/hooks'
 import SmartSearch from './smartSearch.vue'
 import {
   intelligentDetailFields,
@@ -19,7 +19,6 @@ import {
 const route = useRoute()
 const { proxy } = getCurrentInstance()
 const { exportXls } = useMethods()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const caseId = String(route.query.caseId || '')
 const pageRef = useTemplateRef('pageRef')
@@ -52,8 +51,6 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
 })
-syncPageSize(queryParams)
-syncPageSize(sourceParams)
 
 const mainColumns = computed(() => {
   return (intelligentTableColumns as any[]).concat([
@@ -114,12 +111,6 @@ async function handleSearch(params: any) {
 async function handleReset() {
   queryParams.pageNo = 1
   conditionJson.value = ''
-  await fetchList()
-}
-
-async function handleUpdate(pageNo: number, pageSize: number) {
-  queryParams.pageNo = pageNo
-  updatePageSize(queryParams, pageSize)
   await fetchList()
 }
 
@@ -242,18 +233,21 @@ async function openSourceDialog({ row }: { row: Record<string, any> }) {
   await loadSourceData()
 }
 
-async function handleSourceUpdate(pageNo: number, pageSize: number) {
-  sourceParams.pageNo = pageNo
-  updatePageSize(sourceParams, pageSize)
-  await loadSourceData()
-}
-
 function openSourceDetail({ row }: { row: Record<string, any> }) {
   recordDetailTitle.value = `${sourceTabLabelMap[sourceActiveTab.value]}详情`
   recordDetailFields.value = sourceDetailFieldMap[sourceActiveTab.value] || []
   recordDetailData.value = row || {}
   recordDetailVisible.value = true
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(queryParams, (pageNo) => {
+  queryParams.pageNo = pageNo
+  return fetchList()
+})
+const { handlePageUpdate: handleSourceUpdate } = useTablePagination(sourceParams, (pageNo) => {
+  sourceParams.pageNo = pageNo
+  return loadSourceData()
+})
 
 watch(sourceActiveTab, async () => {
   if (!sourceVisible.value) return

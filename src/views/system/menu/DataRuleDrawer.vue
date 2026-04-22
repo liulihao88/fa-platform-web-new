@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { getMenuRuleList, deleteMenuRule } from '@/api/system'
 import DataRuleDialog from './DataRuleDialog.vue'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemMenuDataRuleDrawer',
@@ -14,8 +14,6 @@ const dialogRef = ref()
 const total = ref(0)
 const data = ref<any[]>([])
 
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
-
 const baseSearch = {
   pageNo: 1,
   pageSize: 10,
@@ -23,7 +21,6 @@ const baseSearch = {
   ruleName: '',
   ruleValue: '',
 }
-syncPageSize(baseSearch)
 
 const items = [
   { label: '规则名称', prop: 'ruleName', type: 'input', placeholder: '请输入规则名称' },
@@ -62,12 +59,6 @@ function handleSearch(form?) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 function handleCreate() {
   dialogRef.value?.open({}, '新增规则')
 }
@@ -86,6 +77,11 @@ async function init() {
   data.value = res?.records || []
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 function open(id: string | number) {
   permissionId.value = String(id)

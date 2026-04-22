@@ -11,9 +11,8 @@ const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const selectedRows = ref<any[]>([])
 
-import { useAsyncTask, useDetail, useGlobalTablePageSize, usePolling, useRelativeHeight } from '@/hooks'
+import { useAsyncTask, useDetail, useTablePagination, usePolling, useRelativeHeight } from '@/hooks'
 const { toDetail } = useDetail()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 62 })
 const { loading, run } = useAsyncTask()
 
@@ -29,7 +28,6 @@ const baseSearch = ref({
   fileName: '',
   folder: '',
 })
-syncPageSize(baseSearch.value)
 
 const validStatuses = ['101', '102']
 const configStatuses = ['003']
@@ -246,7 +244,7 @@ const { start: startPolling, stop: stopPolling } = usePolling(async () => {
   await init()
 }, 5000)
 
-const init = async (isReset = false) => {
+async function init(isReset = false) {
   if (isReset) {
     baseSearch.value.pageNo = 1
   }
@@ -264,13 +262,13 @@ const init = async (isReset = false) => {
     stopPolling()
   }
 }
-init()
 
-const update = (pageNo: number, pageSize: number) => {
+const { handlePageUpdate: update } = useTablePagination(baseSearch, (pageNo) => {
   baseSearch.value.pageNo = pageNo
-  updatePageSize(baseSearch.value, pageSize)
-  init()
-}
+  return init()
+})
+
+init()
 const clearSelected = () => {
   selectedRows.value = []
 }

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { getFileConfigPageList } from '@/api/analysis'
-import { useGlobalTablePageSize } from '@/hooks'
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
+import { useTablePagination } from '@/hooks'
 
 const emits = defineEmits(['success'])
 
@@ -30,10 +29,6 @@ const ORIIGIN_BASE_SAERCH = {
 const baseSearch = ref({
   ...ORIIGIN_BASE_SAERCH,
 })
-syncPageSize(baseSearch.value)
-
-const pageNo = ref(1)
-const pageSize = ref(baseSearch.value.pageSize)
 
 const items = [
   {
@@ -51,7 +46,7 @@ const outIdx = ref(-1)
 
 const indexMethod = (index) => {
   // 如果当前页是最后一页（数据量不足 pageSize），则基于实际数据量计算
-  return (pageNo.value - 1) * pageSize.value + index + 1
+  return (baseSearch.value.pageNo - 1) * baseSearch.value.pageSize + index + 1
 }
 const columns = [
   {
@@ -76,14 +71,17 @@ const reset = () => {
   selectedRow.value = null
 }
 
-const init = async () => {
-  pageNo.value = baseSearch.value.pageNo
-  pageSize.value = baseSearch.value.pageSize
+async function init() {
   let res = await getFileConfigPageList(baseSearch.value)
   data.value = res.records
   total.value = res.total
   selectedRow.value = data.value.find((item) => item.metaData === oriMetaData.value) || null
 }
+
+const { handlePageUpdate: update } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.value.pageNo = pageNo
+  return init()
+})
 
 const open = async (sendOriMetaData, idx, titleColName = '') => {
   const currentPageSize = baseSearch.value.pageSize
@@ -106,14 +104,8 @@ const confirm = async () => {
 }
 
 const handleSearch = (form) => {
+  baseSearch.value.pageNo = 1
   baseSearch.value.metaData = form?.metaData
-  init()
-}
-const update = async (no, size) => {
-  baseSearch.value.pageNo = no
-  updatePageSize(baseSearch.value, size)
-  pageNo.value = no
-  pageSize.value = baseSearch.value.pageSize
   init()
 }
 

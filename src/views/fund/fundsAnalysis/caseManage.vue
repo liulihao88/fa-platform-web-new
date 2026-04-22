@@ -11,7 +11,7 @@ import {
   updateInvolvedPersonApi,
 } from '@/api/analysis'
 import { buildDescriptionOptions } from '@/utils/gFunc'
-import { useGlobalTablePageSize, useRelativeHeight } from '@/hooks'
+import { useRelativeHeight, useTablePagination } from '@/hooks'
 import { useCommonHook } from '@/store'
 
 const route = useRoute()
@@ -19,7 +19,6 @@ const { proxy } = getCurrentInstance()
 const pageRef = useTemplateRef('pageRef')
 const tableSectionRef = useTemplateRef('tableSectionRef')
 const { height: tableHeight } = useRelativeHeight(tableSectionRef, pageRef, { minHeight: 320, offset: 50 })
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 const { getDictItems, setCommonItems, sysAllDictItems } = useCommonHook()
 
 const searchForm = reactive({
@@ -30,7 +29,6 @@ const searchForm = reactive({
   cardNum: '',
   accountNum: '',
 })
-syncPageSize(searchForm)
 
 const searchItems = [
   { label: '涉案人名称', prop: 'customerName', type: 'input', placeholder: '请输入涉案人名称' },
@@ -175,11 +173,10 @@ function handleReset() {
   fetchList()
 }
 
-function handleUpdate(pageNo: number, pageSize: number) {
+const { handlePageUpdate: handleUpdate } = useTablePagination(searchForm, (pageNo) => {
   searchForm.pageNo = pageNo
-  updatePageSize(searchForm, pageSize)
-  fetchList()
-}
+  return fetchList()
+})
 
 async function showPersonDetail({ row }: { row: Record<string, any> }) {
   personDetail.value = await getCompanyOrPersonDetailApi({ involvedId: row.id })

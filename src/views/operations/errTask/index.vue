@@ -3,7 +3,7 @@ import { computed, ref, getCurrentInstance } from 'vue'
 import { getCaseNameFilePageList } from '@/api/analysis'
 import { useCommonHook } from '@/store'
 import ErrorHandlerDialog from './errorHandlerDialog.vue'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 type ErrTaskRecord = {
   id: string
@@ -20,7 +20,6 @@ type ErrTaskRecord = {
 
 const { proxy } = getCurrentInstance()
 const { getDictItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 const headerRef = ref()
 const errorHandlerDialogRef = ref()
@@ -35,7 +34,6 @@ const baseSearch = {
   column: 'createTime',
   caseName: '',
 }
-syncPageSize(baseSearch)
 
 const items = [
   {
@@ -180,12 +178,6 @@ function handleSearch(form) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 function handleErrorProcess({ row }: { row: ErrTaskRecord }) {
   errorHandlerDialogRef.value?.open({
     caseId: row.caseId,
@@ -198,6 +190,11 @@ async function init() {
   data.value = res?.records ?? []
   total.value = res?.total ?? 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 init()
 proxy.$initTableHeight(headerRef, true)

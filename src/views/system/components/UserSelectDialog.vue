@@ -5,7 +5,7 @@ import { useCommonHook } from '@/store'
 import { getUserList } from '@/api/system'
 import { getDictLabel, ensureArray } from '@/views/system/utils'
 import { useSelectionMap } from '@/views/system/useSelectionMap'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 
 defineOptions({
   name: 'SystemUserSelectDialog',
@@ -16,8 +16,6 @@ const emits = defineEmits<{
 }>()
 
 const { getDictItems } = useCommonHook()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
-
 const isShow = ref(false)
 const title = ref('选择用户')
 const multiple = ref(true)
@@ -34,7 +32,6 @@ const baseSearch = {
   username: '',
   realname: '',
 }
-syncPageSize(baseSearch)
 
 const { selectedRows, selectedCount, clearSelected } = useSelectionMap()
 const tableSelection = computed({
@@ -78,17 +75,16 @@ function handleSearch(form?) {
   init()
 }
 
-function handleUpdate(pageNo, pageSize) {
-  baseSearch.pageNo = pageNo
-  updatePageSize(baseSearch, pageSize)
-  init()
-}
-
 async function init() {
   const res = await getUserList(baseSearch)
   data.value = normalizeRows(res?.records || [])
   total.value = res?.total || 0
 }
+
+const { handlePageUpdate: handleUpdate } = useTablePagination(baseSearch, (pageNo) => {
+  baseSearch.pageNo = pageNo
+  return init()
+})
 
 function handleConfirm() {
   if (multiple.value && selectedCount.value === 0) {

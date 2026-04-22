@@ -4,9 +4,8 @@ import { ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { $toast, confirm } from '@oeos-components/utils'
 import { confirmFaErrorProcess, getCaseNameFileById, getFaErrorMessageList } from '@/api/analysis'
-import { useGlobalTablePageSize } from '@/hooks'
+import { useTablePagination } from '@/hooks'
 const { appContext, proxy } = getCurrentInstance()
-const { syncPageSize, updatePageSize } = useGlobalTablePageSize()
 
 type ErrorHandlerParams = {
   caseId?: string
@@ -41,7 +40,6 @@ const pagination = ref({
   pageNo: 1,
   pageSize: 10,
 })
-syncPageSize(pagination.value)
 
 const columns = [
   {
@@ -102,11 +100,10 @@ function getErrorTypeText(errorType?: string) {
   return textMap[errorType || ''] || errorType || '-'
 }
 
-function handleUpdate(pageNo: number, pageSize: number) {
+const { handlePageUpdate: handleUpdate } = useTablePagination(pagination, (pageNo) => {
   pagination.value.pageNo = pageNo
-  updatePageSize(pagination.value, pageSize)
-  fetchErrorList()
-}
+  return fetchErrorList()
+})
 
 function handleClose() {
   isShow.value = false
