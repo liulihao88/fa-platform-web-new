@@ -12,7 +12,7 @@ export function installOeos(app) {
       showPrefix: true,
     },
     oTable: {
-      pageSizes: [10, 30, 50, 100],
+      pageSizes: [5, 10, 30, 50],
       pageSize: DEFAULT_PAGE_SIZE,
     },
   })
@@ -27,4 +27,6 @@ export function installOeos(app) {
   Object.keys(utils).forEach((v) => {
     app.config.globalProperties[v] = utils[v]
   })
+  const $dev = import.meta.env.MODE === 'development'
+  app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
 }

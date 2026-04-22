@@ -98,8 +98,6 @@ window.VueApp = app
 
 app.use(useElementPlus)
 
-const $dev = import.meta.env.MODE === 'development'
-app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
 app.config.globalProperties.$show = true
 Object.keys(globalData).forEach((v) => {
   app.config.globalProperties[v] = globalData[v]
