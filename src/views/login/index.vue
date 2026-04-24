@@ -177,13 +177,15 @@ function handleChangeCheckCode() {
     .then(async (res) => {
       randCodeData.randCodeImage = res
       randCodeData.requestCodeSuccess = true
-      const worker = await createWorker('eng')
-      const ret = await worker.recognize(res as any)
-      formData.captcha = ret.data.text
-      console.log(`24 ret.data.text`, ret.data.text)
-      formData.captcha = ret.data.text.replace(/[\s.?)()]+/g, '')
-      if (formData.captcha.length !== 4 || /[OoaigIlL1yjs05é]/.test(formData.captcha)) {
-        handleChangeCheckCode()
+      if (proxy.$dev) {
+        const worker = await createWorker('eng')
+        const ret = await worker.recognize(res as any)
+        formData.captcha = ret.data.text
+        console.log(`24 ret.data.text`, ret.data.text)
+        formData.captcha = ret.data.text.replace(/[\s.?)()]+/g, '')
+        if (formData.captcha.length !== 4 || /[OoaigIlL1yjs05é]/.test(formData.captcha)) {
+          handleChangeCheckCode()
+        }
       }
     })
     .catch(() => {
@@ -238,7 +240,13 @@ useEventListener(document, 'keydown', ({ code }) => {
                 ]"
                 prop="username"
               >
-                <el-input v-model="formData.username" clearable placeholder="账号" :prefix-icon="useRenderIcon(User)" />
+                <el-input
+                  v-model="formData.username"
+                  v-focus
+                  clearable
+                  placeholder="账号"
+                  :prefix-icon="useRenderIcon(User)"
+                />
               </el-form-item>
             </Motion>
 
@@ -258,7 +266,6 @@ useEventListener(document, 'keydown', ({ code }) => {
               <el-form-item prop="captcha">
                 <o-input
                   v-model="formData.captcha"
-                  v-focus
                   placeholder="验证码"
                   :clearable="false"
                   :prefix-icon="useRenderIcon(Lock)"
