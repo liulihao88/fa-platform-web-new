@@ -3,22 +3,21 @@ import Motion from './utils/motion'
 import { useRouter } from 'vue-router'
 import { createWorker } from 'tesseract.js'
 import { loginRules } from './utils/rule'
-import { ref, reactive, toRaw } from 'vue'
+import { getCurrentInstance, ref, reactive, toRaw } from 'vue'
 import { useNav } from '@/layout/hooks/useNav'
 import { useEventListener } from '@vueuse/core'
 import type { FormInstance } from 'element-plus'
 import { useLayout } from '@/layout/hooks/useLayout'
-import { useUserStoreHook } from '@/store/modules/user'
 import { initRouter, getTopMenu } from '@/router/utils'
-import { bg, avatar, illustration } from './utils/static'
+import { bg, illustration } from './utils/static'
 import { useRenderIcon } from '@/components/ReIcon/src/hooks'
 import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
 import { getCodeInfo, login } from '@/api/login'
 import { setToken } from '@/utils/auth'
 import { validForm, tryCatch, $toast, debounce } from '@oeos-components/utils'
+import NativeRefresh from '@/components/nativeRefresh.vue'
 import { useCommonHook } from '@/store/common'
-const { setCommonItems, sysAllDictItems, userInfo } = useCommonHook()
-console.log(`81 setCommonItems`, setCommonItems)
+const { setCommonItems } = useCommonHook()
 
 import dayIcon from '@/assets/svg/day.svg?component'
 import darkIcon from '@/assets/svg/dark.svg?component'
@@ -29,11 +28,13 @@ defineOptions({
   name: 'Login',
 })
 
+const { proxy } = getCurrentInstance()!
 const router = useRouter()
 const loading = ref(false)
 const disabled = ref(false)
 const formDataRef = ref<FormInstance>()
 const codeImg = ref('https://cdn.jsdelivr.net/gh/themusecatcher/resources@0.1.2/2.jpg')
+const allowTestData = !import.meta.env.PROD && Boolean(proxy?.$dev)
 
 const { initStorage } = useLayout()
 initStorage()
@@ -43,8 +44,8 @@ dataThemeChange(overallStyle.value)
 const { title, getLogo } = useNav()
 
 const formData = reactive({
-  username: 'admin',
-  password: '1qaz@WSX',
+  username: allowTestData ? 'admin' : '',
+  password: allowTestData ? '1qaz@WSX' : '',
   captcha: '',
 })
 
@@ -201,6 +202,7 @@ useEventListener(document, 'keydown', ({ code }) => {
 
 <template>
   <div class="select-none">
+    <NativeRefresh />
     <img :src="bg" class="wave" />
     <div class="flex-c absolute right-5 top-3">
       <!-- 主题 -->
@@ -282,11 +284,10 @@ useEventListener(document, 'keydown', ({ code }) => {
             </Motion>
 
             <Motion :delay="250">
-              <div>
+              <div v-if="allowTestData">
                 <el-button
                   class="w-full !mt-4"
                   size="default"
-                  type="primary"
                   icon="el-icon-user"
                   :loading="loading"
                   :disabled="disabled"
@@ -295,11 +296,10 @@ useEventListener(document, 'keydown', ({ code }) => {
                   admin登录
                 </el-button>
               </div>
-              <div>
+              <div v-if="allowTestData">
                 <el-button
                   class="w-full !mt-4"
                   size="default"
-                  type="primary"
                   icon="el-icon-user-filled"
                   :loading="loading"
                   :disabled="disabled"
@@ -308,11 +308,10 @@ useEventListener(document, 'keydown', ({ code }) => {
                   检察官登录
                 </el-button>
               </div>
-              <div>
+              <div v-if="allowTestData">
                 <el-button
                   class="w-full !mt-4"
                   size="default"
-                  type="primary"
                   icon="el-icon-avatar"
                   :loading="loading"
                   :disabled="disabled"
@@ -324,7 +323,7 @@ useEventListener(document, 'keydown', ({ code }) => {
               <el-button
                 class="w-full !mt-4"
                 size="default"
-                icon="el-icon-right"
+                type="primary"
                 :loading="loading"
                 :disabled="disabled"
                 @click="onLogin()"

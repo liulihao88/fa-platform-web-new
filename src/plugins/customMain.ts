@@ -28,5 +28,5 @@ export function installOeos(app) {
     app.config.globalProperties[v] = utils[v]
   })
   const $dev = import.meta.env.MODE === 'development'
-  app.config.globalProperties.$dev = utils.getStorage('fa-$dev') ?? $dev
+  app.config.globalProperties.$dev = import.meta.env.PROD ? false : (utils.getStorage('fa-$dev') ?? $dev)
 }

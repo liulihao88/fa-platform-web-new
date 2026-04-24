@@ -5,8 +5,8 @@
  * 快捷键 cmd + return
  */
 import Mousetrap from 'mousetrap'
-import { ref, getCurrentInstance, nextTick, onMounted } from 'vue'
-import { $toast, setStorage } from '@oeos-components/utils'
+import { ref, getCurrentInstance, onMounted } from 'vue'
+import { setStorage } from '@oeos-components/utils'
 import useNativeRefresh from '@/store/nativeRefresh'
 import { useNav } from '@/layout/hooks/useNav'
 import { useDataThemeChange } from '@/layout/hooks/useDataThemeChange'
@@ -30,8 +30,10 @@ function nativeRefresh() {
   console.clear()
   useRefresh.refreshHandler()
 }
-const isDev = ref(proxy.$dev)
+const canSwitchDev = !import.meta.env.PROD
+const isDev = ref(canSwitchDev ? proxy.$dev : false)
 function changeMode() {
+  if (!canSwitchDev) return
   isDev.value = !isDev.value
   setStorage('fa-$dev', isDev.value)
   instance.appContext.app.config.globalProperties.$dev = isDev.value
@@ -57,6 +59,7 @@ defineExpose({
   </o-tooltip>
 
   <o-tooltip
+    v-if="canSwitchDev"
     content="开发环境有测试数据;没有二次确认"
     class="po-f t-8 r-550"
     style="right: calc(50% + 30px); z-index: 999"
