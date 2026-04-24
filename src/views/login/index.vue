@@ -183,7 +183,7 @@ function handleChangeCheckCode() {
         formData.captcha = ret.data.text
         console.log(`24 ret.data.text`, ret.data.text)
         formData.captcha = ret.data.text.replace(/[\s.?)()]+/g, '')
-        if (formData.captcha.length !== 4 || /[OoaigIlL1yjs05é]/.test(formData.captcha)) {
+        if (formData.captcha.length !== 4 || /\[OoaigIlL1yjs05é\]/.test(formData.captcha)) {
           handleChangeCheckCode()
         }
       }
